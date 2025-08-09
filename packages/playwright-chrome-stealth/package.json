@@ -1,0 +1,38 @@
+{
+  "name": "@scrapeloop/playwright-chrome-stealth",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Playwright Chrome stealth utilities",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun run tsup && bun run postbuild",
+    "postbuild": "cp dist/index.d.ts dist/index.d.mts",
+    "dev": "bun run tsup --watch",
+    "typecheck": "bun tsc --noEmit",
+    "lint": "bun eslint --config ../../eslint.config.mjs .",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "debug": "^4.4.1",
+    "playwright": "^1.54.2",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.12",
+    "@types/node": "^24.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  }
+}

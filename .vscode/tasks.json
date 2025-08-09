@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run TypeScript Check",
+      "type": "shell",
+      "command": "tsc --tsBuildInfoFile null --incremental false --noEmit",
+      "problemMatcher": "$tsc",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

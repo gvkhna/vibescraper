@@ -1,0 +1,9 @@
+[project]
+name = "playwright-camoufox"
+version = "0.1.0"
+description = "Camoufox browser automation"
+requires-python = ">=3.11"
+dependencies = ["camoufox[geoip]", "browserforge", "pyyaml", "psutil"]
+
+[tool.uv]
+dev-dependencies = ["pytest>=7.0", "black>=24.0", "ruff>=0.1.0"]

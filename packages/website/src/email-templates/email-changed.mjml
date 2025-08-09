@@ -1,0 +1,5 @@
+<mj-text>
+  <h3>Account email updated</h3>
+  <p>Your email for {{ public_brand_name }} has been changed to {{ email }}.</p>
+  <p>- {{ public_brand_name }} Team</p>
+</mj-text>

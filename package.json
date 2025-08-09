@@ -1,0 +1,49 @@
+{
+  "name": "scrapeloop",
+  "type": "module",
+  "version": "0.0.1",
+  "packageManager": "pnpm@10.14.0",
+  "engines": {
+    "npm": "please-use-pnpm",
+    "yarn": "please-use-pnpm"
+  },
+  "scripts": {
+    "dev": "bun turbo run dev",
+    "build": "bun turbo run build",
+    "lint": "bun turbo run lint",
+    "typecheck": "bun turbo run typecheck",
+    "test": "bun turbo run test",
+    "clean": "bun turbo run clean",
+    "dev:website": "bun turbo run dev --filter=@scrapeloop/website",
+    "build:website": "bun turbo run build --filter=@scrapeloop/website"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.3.2",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.33.0",
+    "@stylistic/eslint-plugin": "^5.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "@typescript-eslint/utils": "^8.39.0",
+    "astro-eslint-parser": "^1.2.2",
+    "babel-plugin-react-compiler": "19.1.0-rc.2",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-astro": "^1.3.1",
+    "eslint-plugin-compat": "^6.0.2",
+    "eslint-plugin-no-only-tests": "^3.3.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-compiler": "19.1.0-rc.2",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.3.0",
+    "prettier": "^3.6.2",
+    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-classnames": "^0.8.2",
+    "prettier-plugin-merge": "^0.8.0",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "turbo": "^2.5.5",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.0"
+  }
+}

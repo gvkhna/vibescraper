@@ -1,0 +1,28 @@
+{
+  "name": "@scrapeloop/shared-types",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "bun run tsup",
+    "dev": "bun run tsup --watch",
+    "typecheck": "bun tsc --noEmit",
+    "lint": "bun eslint --config ../../eslint.config.mjs .",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "zod": "^4.0.15"
+  }
+}

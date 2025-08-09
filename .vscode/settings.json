@@ -1,0 +1,111 @@
+{
+  "search.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/tmp": true,
+    "src/browser/**": true
+  },
+
+  "typescriptExplorer.typeTree.view.icons.colors.enable": true,
+  "prettier.documentSelectors": ["**/*.astro", "**/*.ts"],
+  "prettier.prettierPath": "./node_modules/prettier",
+  "editor.formatOnSave": true,
+  "typescript.experimental.expandableHover": true,
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "custom-language-properties": {
+    "astro.comments.blockComment": ["{/*", "*/}"]
+  },
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["javascript", "javascriptreact", "astro", "typescript", "typescriptreact"],
+  "eslint.runtime": "node",
+  "eslint.debug": false,
+  "svg.preview.background": "transparent",
+  "workbench.colorTheme": "Default Dark Modern",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "tailwindCSS.experimental.configFile": "packages/website/src/styles/global.css",
+  "tailwindCSS.classFunctions": ["tw", "clsx", "tw\\.[a-z-]+", "cn"],
+  // "tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]],
+  "[plaintext]": {
+    "editor.wordWrap": "bounded",
+    "editor.unicodeHighlight.ambiguousCharacters": false,
+    "editor.unicodeHighlight.invisibleCharacters": false
+  },
+  "[mdx]": {
+    "editor.wordWrap": "bounded",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[astro]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[tailwindcss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[mjs]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "jupyter.kernels.excludePythonEnvironments": [
+    "/usr/bin/python3",
+    "/usr/bin/python",
+    "/opt/homebrew/bin/python3",
+    "/opt/homebrew/bin/python",
+    "/bin/python",
+    "/bin/python3"
+  ],
+  "python.defaultInterpreterPath": "${env:HOME}/.asdf/shims/python",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.analysis.typeCheckingMode": "off", // turn off type errors
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none", // suppress "cannot import" errors
+    "reportUndefinedVariable": "none",
+    "reportUnknownVariableType": "none",
+    "reportUnknownMemberType": "none",
+    "reportGeneralTypeIssues": "none"
+  },
+  "python.analysis.autoSearchPaths": true,
+  "python.analysis.useLibraryCodeForTypes": true,
+  "python.analysis.indexing": true,
+  "python.analysis.autoImportCompletions": true,
+  "markdown.validate.enabled": true
+}

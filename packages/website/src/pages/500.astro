@@ -1,0 +1,140 @@
+---
+import Main from '@/layouts/main-layout.astro'
+
+interface Props {
+  error: unknown
+}
+
+const {error} = Astro.props
+
+// Gather detailed request information
+const request = Astro.request
+const url = new URL(request.url)
+const userAgent = request.headers.get('user-agent') || 'unknown'
+const referer = request.headers.get('referer') || 'none'
+const method = request.method
+const timestamp = new Date().toISOString()
+const ip =
+  request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+
+// Extract error details safely
+let errorMessage = 'Unknown error'
+let errorStack = 'No stack trace available'
+let errorName = 'Error'
+
+if (error instanceof Error) {
+  errorMessage = error.message
+  errorStack = error.stack || 'No stack trace available'
+  errorName = error.name
+} else if (typeof error === 'string') {
+  errorMessage = error
+} else if (error && typeof error === 'object') {
+  errorMessage = JSON.stringify(error, null, 2)
+}
+
+// Create comprehensive error log
+const errorDetails = {
+  timestamp,
+  error: {
+    name: errorName,
+    message: errorMessage,
+    stack: errorStack
+  },
+  request: {
+    method,
+    url: url.toString(),
+    pathname: url.pathname,
+    search: url.search,
+    userAgent,
+    referer,
+    ip
+  },
+  headers: Object.fromEntries(request.headers.entries())
+}
+
+// Log detailed error information to console
+console.error('500 ERROR DETAILS:', JSON.stringify(errorDetails, null, 2))
+
+// Also log the original error for immediate visibility
+console.error(`[500 ERROR] ${timestamp}`)
+console.error(`URL: ${method} ${url.toString()}`)
+console.error(`User-Agent: ${userAgent}`)
+console.error(`IP: ${ip}`)
+console.error(`Referer: ${referer}`)
+console.error(`Error: ${errorName}: ${errorMessage}`)
+if (error instanceof Error && error.stack) {
+  console.error(`Stack: ${error.stack}`)
+}
+console.error('---')
+
+// Generate error ID for reference
+const errorId = `${timestamp.replace(/[^\d]/g, '').slice(-8)}-${Math.random().toString(36).substring(2, 6)}`
+---
+
+<Main title='500 - Server Error'>
+  <main>
+    <div class='max-w-9xl mx-auto w-full px-4 py-8 sm:px-6 lg:px-8'>
+      <div class='m-auto mt-16 max-w-2xl'>
+        <div class='px-4 text-center'>
+          <div class='mb-8 inline-flex font-semibold text-red-600'>Server Error: 500</div>
+          <div class='mb-6 text-gray-700'>
+            Something went wrong on our end. We've been notified and are working to fix
+            it.
+          </div>
+          <div class='mb-4 text-sm text-gray-500'>
+            Error ID: <code class='rounded bg-gray-100 px-2 py-1'>{errorId}</code>
+          </div>
+          <div class='mb-8 text-sm text-gray-400'>
+            Timestamp: {timestamp}
+          </div>
+          <div class='space-y-4'>
+            <a
+              href='/'
+              class='rounded bg-indigo-500 px-5 py-4 text-white hover:bg-indigo-600'
+            >
+              Back To Home
+            </a>
+            <div>
+              <button
+                onclick='window.history.back()'
+                class='ml-4 rounded bg-gray-300 px-5 py-4 text-gray-700 hover:bg-gray-400'
+              >
+                Go Back
+              </button>
+            </div>
+          </div>
+
+          <!-- Development mode error details -->
+          {
+            import.meta.env.DEV && (
+              <details class='mt-8 rounded border border-red-200 bg-red-50 p-4 text-left'>
+                <summary class='mb-2 cursor-pointer font-medium text-red-700'>
+                  Development Error Details
+                </summary>
+                <div class='space-y-2 text-sm'>
+                  <div>
+                    <strong>Error:</strong> {errorName}: {errorMessage}
+                  </div>
+                  <div>
+                    <strong>URL:</strong> {method} {url.toString()}
+                  </div>
+                  <div>
+                    <strong>User Agent:</strong> {userAgent}
+                  </div>
+                  {error instanceof Error && error.stack && (
+                    <div>
+                      <strong>Stack Trace:</strong>
+                      <pre class='mt-2 overflow-auto rounded bg-red-100 p-2 text-xs'>
+                        {error.stack}
+                      </pre>
+                    </div>
+                  )}
+                </div>
+              </details>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </main>
+</Main>

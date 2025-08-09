@@ -1,0 +1,47 @@
+---
+import {SEO} from 'astro-seo'
+import '@/styles/global.css'
+
+export interface Props {
+  title: string
+  desc?: string
+  ogimageUrl?: string
+}
+
+const {title, desc, ogimageUrl} = Astro.props
+---
+
+<!doctype html>
+<html lang='en'>
+  <head>
+    <SEO
+      charset='utf-8'
+      {title}
+      description={desc}
+      openGraph={{
+        basic: {
+          title: title,
+          type: 'website',
+          image: ogimageUrl || '/ogimage.jpg',
+          url: Astro.url.href
+        }
+      }}
+      extend={{
+        link: [
+          {rel: 'icon', href: '/favicon-96x96.png', type: 'image/png', sizes: '96x96'},
+          {rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml'},
+          {rel: 'shortcut icon', href: '/favicon.ico'},
+          {rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png'},
+          {rel: 'manifest', href: '/site.webmanifest'}
+        ],
+        meta: [
+          {name: 'apple-mobile-web-app-title', content: 'Scrape Loop'},
+          {name: 'viewport', content: 'width=device-width'}
+        ]
+      }}
+    />
+  </head>
+  <body class='bg-black font-sans tracking-tight text-zinc-900 antialiased'>
+    <slot />
+  </body>
+</html>

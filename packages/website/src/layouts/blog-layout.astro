@@ -1,0 +1,50 @@
+---
+import MainLayout from './main-layout.astro'
+import {SEO, type Props as SEOProps} from 'astro-seo'
+// import Header from '@/partials/home/header.astro'
+// import Footer from '@/partials/home/footer.astro'
+// import CTA from '@/partials/home/cta.astro'
+export interface Props {
+  title: string
+  seo?: (attrs: {brand: string; hostname: string}) => SEOProps
+  schema?: (attrs: {brand: string; hostname: string}) => Record<string, any>
+}
+import {PUBLIC_VARS} from '@/vars.public'
+// import GoogleAdsense from '@/partials/analytics/google-adsense.astro'
+const brandName = 'Scrape Loop'
+const {title, seo, schema} = Astro.props
+// category='Blog'
+// categoryHref='/blog/'
+// name='Blog'
+
+// href={Astro.url.pathname}
+console.log('schema', schema)
+console.log('hostname', Astro.site?.toString())
+---
+
+<MainLayout
+  {title}
+  seo={seo && PUBLIC_VARS.PUBLIC_HOSTNAME
+    ? seo({brand: brandName, hostname: PUBLIC_VARS.PUBLIC_HOSTNAME})
+    : undefined}
+>
+  {
+    schema && PUBLIC_VARS.PUBLIC_HOSTNAME && (
+      <script
+        is:inline
+        type='application/ld+json'
+        set:html={JSON.stringify(
+          schema({brand: brandName, hostname: PUBLIC_VARS.PUBLIC_HOSTNAME}),
+          null,
+          2
+        )}
+      />
+    )
+  }
+  {/* <Header /> */}
+
+  <slot />
+  {/* <GoogleAdsense /> */}
+  {/* <CTA /> */}
+  {/* <Footer /> */}
+</MainLayout>

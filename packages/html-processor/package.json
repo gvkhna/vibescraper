@@ -1,0 +1,37 @@
+{
+  "name": "@scrapeloop/html-processor",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    }
+  },
+  "scripts": {
+    "build": "bun run tsup",
+    "dev": "bun run tsup --watch",
+    "typecheck": "bun tsc --noEmit",
+    "test": "bun test",
+    "postbuild": "cp dist/index.d.ts dist/index.d.mts"
+  },
+  "dependencies": {
+    "cheerio": "^1.1.2",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "domelementtype": "^2.3.0",
+    "domhandler": "^5.0.3",
+    "jsdom": "^26.1.0",
+    "prettier": "^3.6.2",
+    "tiktoken": "^1.0.21"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^24.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  }
+}

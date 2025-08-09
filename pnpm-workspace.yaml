@@ -1,0 +1,13 @@
+packages:
+  - packages/*
+  - apps/*
+
+onlyBuiltDependencies:
+  - '@dashevo/protobufjs'
+  - '@tailwindcss/oxide'
+  - core-js
+  - esbuild
+  - fsevents
+  - microtime
+  - protobufjs
+  - sharp

@@ -1,0 +1,16 @@
+<mj-text>
+  <h3>Verify your email!</h3>
+  <p>You're receiving this email because you recently signed up for an account for {{ public_brand_name }}. To complete the verification process, hit the button below to continue.</p>
+</mj-text>
+
+<mj-button align="left" background-color="#033FFF" color="#FFFFFF" href="{{ confirmation_url }}"> Verify email </mj-button>
+
+<mj-divider border-width="1px" border-color="#d1d5db" />
+
+<mj-text>
+  <p>Or you can copy the following link into your browser.</p>
+  <p>
+    <a href="{{ confirmation_url }}" alt="confirmation link">{{ confirmation_url }}</a>
+  </p>
+  <p>- {{ public_brand_name }} Team</p>
+</mj-text>

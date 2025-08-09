@@ -1,0 +1,14 @@
+<mj-text>
+  <h3>Your account has been locked!</h3>
+  <p>Your account has been locked due to an excessive number of unsuccessful sign in attempts for {{ public_brand_name }}.</p>
+  <p>Click the button below to unlock your account:</p>
+</mj-text>
+<mj-button align="left" background-color="#033FFF" color="#FFFFFF" href="{{ unlock_url }}"> Unlock account </mj-button>
+<mj-divider border-width="1px" border-color="#d1d5db" />
+<mj-text>
+  <p>Or you can copy the following link into your browser.</p>
+  <p>
+    <a href="{{ unlock_url }}" alt="unlock link">{{ unlock_url }}</a>
+  </p>
+  <p>- {{ public_brand_name }} Team</p>
+</mj-text>

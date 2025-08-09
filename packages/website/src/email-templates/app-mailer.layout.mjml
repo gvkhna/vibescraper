@@ -1,0 +1,17 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Helvetica, Arial, sans-serif" line-height="1.5" font-size="16px" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body>
+    <mj-section>
+      <mj-column>{{{content_for_layout}}}</mj-column>
+    </mj-section>
+    {{#if tracker_url}}
+    <mj-raw>
+      <img src="{{ tracker_url }}" alt="" style="height: 1px !important; max-height: 1px !important; max-width: 1px !important; width: 1px !important" width="1" height="1" />
+    </mj-raw>
+    {{/if}}
+  </mj-body>
+</mjml>

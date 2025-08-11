@@ -4,7 +4,9 @@ import * as React from 'react'
 import {Button} from '@/components/ui/button'
 import {
   Dialog,
-  DialogContent
+  DialogContent,
+  DialogTitle,
+  DialogDescription
 } from '@/components/ui/dialog'
 import {Label} from '@/components/ui/label'
 import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from '@/components/ui/select'
@@ -107,6 +109,10 @@ export function ScraperSettingsDialog({
       onOpenChange={onOpenChange}
     >
       <DialogContent className='border-white/10 bg-[#151517] p-0 text-white sm:!max-w-2xl' showCloseButton={false}>
+        <DialogTitle className='sr-only'>Scraper Settings</DialogTitle>
+        <DialogDescription className='sr-only'>
+          Configure extraction settings for your project
+        </DialogDescription>
         <div className='flex h-[480px]'>
           {/* Left Sidebar */}
           <div className='w-48 shrink-0 border-r border-white/10 bg-[#0A0A0B]/50 p-3'>

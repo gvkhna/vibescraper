@@ -1,5 +1,4 @@
 /// <reference types="astro/client" />
-/// <reference lib="dom" />
 
 declare namespace App {
   interface Locals {

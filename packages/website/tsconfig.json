@@ -35,7 +35,6 @@
     "verbatimModuleSyntax": true
   },
   "include": [
-    "src/types.d.ts",
     "src/env.d.ts",
     ".astro/types.d.ts",
     "src/**/*.ts",

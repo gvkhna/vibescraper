@@ -163,7 +163,7 @@ export function ProjectDialogs() {
             setCurrentProjectDialog('new-project', null)
           } else {
             setCurrentProjectDialog(null, null)
-            // Reset for next time
+            // Reset default name for next time the dialog opens
             setDefaultProjectName('')
           }
         }}

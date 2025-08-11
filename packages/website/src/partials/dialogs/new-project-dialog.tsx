@@ -30,12 +30,7 @@ export function NewProjectDialog({
   trigger
 }: NewProjectDialogProps) {
   const [isCreating, setIsCreating] = useState(false)
-  const [projectName, setProjectName] = useState(defaultProjectName)
-
-  // Update project name when default changes
-  if (defaultProjectName && !projectName) {
-    setProjectName(defaultProjectName)
-  }
+  const [projectName, setProjectName] = useState(defaultProjectName || '')
 
   const handleSubmit = async () => {
     if (!projectName.trim()) {
@@ -45,7 +40,7 @@ export function NewProjectDialog({
     setIsCreating(true)
     try {
       await createProject(projectName)
-      setProjectName('')
+      // Don't clear projectName here - the key change will reset the component
       onOpenChange(false)
     } catch (e) {
       setIsCreating(false)
@@ -58,9 +53,6 @@ export function NewProjectDialog({
       onOpenChange={(newOpen) => {
         if (!isCreating) {
           onOpenChange(newOpen)
-          if (!newOpen) {
-            setProjectName('')
-          }
         }
       }}
     >

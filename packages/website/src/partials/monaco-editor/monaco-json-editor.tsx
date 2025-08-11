@@ -2,7 +2,7 @@ import {useRef, useEffect, forwardRef, useImperativeHandle, useState} from 'reac
 import {Editor, type OnMount} from '@monaco-editor/react'
 import {monaco as monacoNS} from './monaco-namespace'
 import debug from 'debug'
-const log = debug('app:monaco')
+const log = debug('app:monaco-json')
 
 // Types for custom completions
 export interface CustomCompletion {
@@ -13,7 +13,7 @@ export interface CustomCompletion {
 }
 
 // Types for editor props
-export interface MonacoTextEditorProps {
+export interface MonacoJsonEditorProps {
   value: string
   onChange?: (value: string | undefined) => void
   onSave?: () => void
@@ -27,7 +27,7 @@ export interface ExternalEditorRefHandle {
   layout: () => void
 }
 
-export const MonacoTextEditor = forwardRef<ExternalEditorRefHandle, MonacoTextEditorProps>(
+export const MonacoJsonEditor = forwardRef<ExternalEditorRefHandle, MonacoJsonEditorProps>(
   ({value, onChange, readOnly = false, onSave, options = {}}, ref) => {
     // const externalEditorRef = useRef<any>(null)
     const [isVisible, setIsVisible] = useState(true)
@@ -42,9 +42,6 @@ export const MonacoTextEditor = forwardRef<ExternalEditorRefHandle, MonacoTextEd
         }
       }
     }))
-
-    // // Use our custom hook for Monaco setup
-    // const monacoInstance = useHandlebarsMonaco(customCompletions)
 
     useEffect(() => {
       const handleVisibilityChange = () => {
@@ -211,4 +208,4 @@ export const MonacoTextEditor = forwardRef<ExternalEditorRefHandle, MonacoTextEd
   }
 )
 
-MonacoTextEditor.displayName = 'MonacoTextEditor'
+MonacoJsonEditor.displayName = 'MonacoTextEditor'

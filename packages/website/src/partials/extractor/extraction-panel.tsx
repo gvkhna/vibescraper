@@ -119,19 +119,19 @@ export function ExtractionPanel({isProcessing = false}: ExtractionPanelProps) {
           />
 
           <ExtractionTabsTrigger
-            value='data'
-            className='gap-1.5 px-3 py-1.5 text-sm hover:bg-white/5 data-[state=active]:bg-white/10'
-          >
-            <Database className='h-3.5 w-3.5' />
-            Data
-          </ExtractionTabsTrigger>
-          
-          <ExtractionTabsTrigger
             value='data-schema'
             className='gap-1.5 px-3 py-1.5 text-sm hover:bg-white/5 data-[state=active]:bg-white/10'
           >
             <FileJson2 className='h-3.5 w-3.5' />
             Schema
+          </ExtractionTabsTrigger>
+
+          <ExtractionTabsTrigger
+            value='data'
+            className='gap-1.5 px-3 py-1.5 text-sm hover:bg-white/5 data-[state=active]:bg-white/10'
+          >
+            <Database className='h-3.5 w-3.5' />
+            Data
           </ExtractionTabsTrigger>
         </ExtractionTabsList>
 

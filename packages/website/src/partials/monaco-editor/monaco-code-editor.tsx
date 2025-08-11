@@ -2,7 +2,7 @@ import {useRef, useEffect, forwardRef, useImperativeHandle, useState} from 'reac
 import {Editor, type OnMount, useMonaco} from '@monaco-editor/react'
 import {monaco as monacoNS} from './monaco-namespace'
 import debug from 'debug'
-const log = debug('app:monaco')
+const log = debug('app:monaco-code')
 
 // Types for custom completions
 export interface CustomCompletion {

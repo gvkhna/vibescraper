@@ -196,7 +196,7 @@ export const MonacoJsonEditor = forwardRef<ExternalEditorRefHandle, MonacoJsonEd
           <Editor
             height={'100%'}
             width={'100%'}
-            language='plaintext'
+            language='jsonc'
             value={value}
             onChange={onChange}
             onMount={handleEditorDidMount}

@@ -1,10 +1,13 @@
+overrides:
+  "@types/node": "-"
+
 packages:
   - packages/*
   - apps/*
 
 onlyBuiltDependencies:
-  - '@dashevo/protobufjs'
-  - '@tailwindcss/oxide'
+  - "@dashevo/protobufjs"
+  - "@tailwindcss/oxide"
   - core-js
   - esbuild
   - fsevents

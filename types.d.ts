@@ -52,8 +52,8 @@
 // Commented: Use EventTarget from DOM or explicit imports for EventEmitter
 // <reference path="node_modules/@types/node-legacy/events.d.ts" />
 
-/// <reference path="node_modules/@types/node-legacy/fs.d.ts" />
-/// <reference path="node_modules/@types/node-legacy/fs/promises.d.ts" />
+// <reference path="node_modules/@types/node-legacy/fs.d.ts" />
+// <reference path="node_modules/@types/node-legacy/fs/promises.d.ts" />
 
 // Commented: Use fetch API and modern web standards instead
 // <reference path="node_modules/@types/node-legacy/http.d.ts" />

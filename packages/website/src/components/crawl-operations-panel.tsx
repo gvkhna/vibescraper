@@ -1,8 +1,4 @@
 'use client'
-declare let setInterval: WindowOrWorkerGlobalScope['setInterval']
-declare let clearInterval: WindowOrWorkerGlobalScope['clearInterval']
-declare let setTimeout: WindowOrWorkerGlobalScope['setTimeout']
-declare let clearTimeout: WindowOrWorkerGlobalScope['clearTimeout']
 
 import * as React from 'react'
 import {Button} from '@/components/ui/button'
@@ -25,13 +21,14 @@ export function CrawlOperationsPanel({isOpen, onClose}: CrawlOperationsPanelProp
   const [progress, setProgress] = React.useState(65)
 
   React.useEffect(() => {
-    if (isRunning) {
-      const interval = setInterval(() => {
-        setProgress((prev) => Math.min(100, prev + Math.random() * 2))
-      }, 1000)
-      return () => {
-        clearInterval(interval)
-      }
+    if (!isRunning) {
+      return
+    }
+    const interval = setInterval(() => {
+      setProgress((prev) => Math.min(100, prev + Math.random() * 2))
+    }, 1000)
+    return () => {
+      clearInterval(interval)
     }
   }, [isRunning])
 

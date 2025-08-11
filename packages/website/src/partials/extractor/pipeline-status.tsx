@@ -43,8 +43,8 @@ export function PipelineStatus({isActive, onComplete}: PipelineStatusProps) {
   const [currentStage, setCurrentStage] = React.useState<PipelineStage>('ready')
   const [completedStages, setCompletedStages] = React.useState<Set<PipelineStage>>(new Set())
   const [isAnimating, setIsAnimating] = React.useState(false)
-  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null)
-  const timeoutsRef = React.useRef<NodeJS.Timeout[]>([])
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const timeoutsRef = React.useRef<ReturnType<typeof setTimeout>[]>([])
 
   const runPipeline = React.useCallback(() => {
     setIsAnimating(true)

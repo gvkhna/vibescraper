@@ -1,6 +1,3 @@
-declare let setTimeout: WindowOrWorkerGlobalScope['setTimeout']
-declare let clearTimeout: WindowOrWorkerGlobalScope['clearTimeout']
-
 import debug from 'debug'
 
 const log = debug('app:async')

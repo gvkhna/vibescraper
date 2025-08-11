@@ -1,6 +1,3 @@
-declare let setInterval: WindowOrWorkerGlobalScope['setInterval']
-declare let clearInterval: WindowOrWorkerGlobalScope['clearInterval']
-
 import {Hono, type Context} from 'hono'
 import {auth} from '../lib/auth'
 import {fileURLToPath} from 'node:url'

@@ -178,37 +178,25 @@ export function ScraperSettingsDialog({
                       value='fetch'
                       className='text-white/90'
                     >
-                      <div className='space-y-0.5'>
-                        <div>Simple Fetch</div>
-                        <div className='text-xs text-white/50'>Fast, lightweight HTTP requests</div>
-                      </div>
+                      Simple Fetch
                     </SelectItem>
                     <SelectItem
                       value='playwright'
                       className='text-white/90'
                     >
-                      <div className='space-y-0.5'>
-                        <div>Playwright</div>
-                        <div className='text-xs text-white/50'>Full browser rendering for JS sites</div>
-                      </div>
+                      Playwright
                     </SelectItem>
                     <SelectItem
                       value='playwright-stealth'
                       className='text-white/90'
                     >
-                      <div className='space-y-0.5'>
-                        <div>Playwright Stealth</div>
-                        <div className='text-xs text-white/50'>Bypasses basic anti-bot detection</div>
-                      </div>
+                      Playwright Stealth
                     </SelectItem>
                     <SelectItem
                       value='camoufox'
                       className='text-white/90'
                     >
-                      <div className='space-y-0.5'>
-                        <div>Camoufox</div>
-                        <div className='text-xs text-white/50'>Advanced anti-detection browser</div>
-                      </div>
+                      Camoufox
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -346,46 +334,31 @@ export function ScraperSettingsDialog({
                       value='raw-html'
                       className='text-white/90'
                     >
-                      <div className='space-y-0.5'>
-                        <div>Raw HTML</div>
-                        <div className='text-xs text-white/50'>Unprocessed HTML content</div>
-                      </div>
+                      Raw HTML
                     </SelectItem>
                     <SelectItem
                       value='cleaned-html'
                       className='text-white/90'
                     >
-                      <div className='space-y-0.5'>
-                        <div>Cleaned HTML</div>
-                        <div className='text-xs text-white/50'>Basic cleanup and formatting</div>
-                      </div>
+                      Cleaned HTML
                     </SelectItem>
                     <SelectItem
                       value='filtered-html'
                       className='text-white/90'
                     >
-                      <div className='space-y-0.5'>
-                        <div>Filtered HTML</div>
-                        <div className='text-xs text-white/50'>Removes unwanted tags and attributes</div>
-                      </div>
+                      Filtered HTML
                     </SelectItem>
                     <SelectItem
                       value='readability-html'
                       className='text-white/90'
                     >
-                      <div className='space-y-0.5'>
-                        <div>Readability</div>
-                        <div className='text-xs text-white/50'>Extracts main content only</div>
-                      </div>
+                      Readability
                     </SelectItem>
                     <SelectItem
                       value='markdown'
                       className='text-white/90'
                     >
-                      <div className='space-y-0.5'>
-                        <div>Markdown</div>
-                        <div className='text-xs text-white/50'>Converts to Markdown format</div>
-                      </div>
+                      Markdown
                     </SelectItem>
                   </SelectContent>
                 </Select>

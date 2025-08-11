@@ -93,18 +93,71 @@ export default [
         '@typescript-eslint/no-unsafe-member-access': 'off',
 
         // Disallow dynamic imports
+        // eslint config fragment
         'no-restricted-syntax': [
           'error',
+
+          // Already in your config
           {
             selector: 'ImportExpression',
             message: 'Dynamic imports are not allowed. Use static imports instead.'
           },
           {
-            selector: 'FunctionExpression'
+            selector: 'FunctionExpression',
+            message:
+              'Avoid Function expressions - use arrow functions or named function declarations instead.'
           },
           {
-            selector: 'WithStatement'
+            selector: 'WithStatement',
+            message:
+              '`with` is disallowed - it is confusing, non-standard in strict mode, and breaks optimization.'
+          },
+
+          // === Additional suggestions ===
+
+          {
+            selector: 'LabeledStatement',
+            message: 'Labels make code harder to read. Use clearer control flow instead.'
+          },
+          // Example:
+          // labelName: for (const x of arr) { ... }
+
+          {
+            selector: 'SequenceExpression',
+            message: 'Comma operator is rarely needed - split into separate statements.'
+          },
+          // Example:
+          // a = 1, b = 2;
+
+          {
+            selector:
+              'UnaryExpression[operator="delete"][argument.type="MemberExpression"][argument.object.type="Identifier"]',
+            message:
+              'Avoid deleting object properties on regular objects - use maps or `undefined` assignment instead.'
+          },
+          // Example:
+          // delete obj.prop;
+
+          {
+            selector: 'BinaryExpression[operator="in"][right.type="ArrayExpression"]',
+            message: '`in` with arrays checks for index existence, not values. This is likely a mistake.'
+          },
+          // Example:
+          // if (2 in [10, 20]) { ... } // checks index, not value
+
+          {
+            selector: 'CallExpression[callee.type="Identifier"][callee.name="eval"]',
+            message: '`eval` is dangerous and should never be used.'
+          },
+          // Example:
+          // eval("console.log('bad')");
+
+          {
+            selector: 'CallExpression[callee.type="Identifier"][callee.name="Function"]',
+            message: 'Avoid the Function constructor - it behaves like eval.'
           }
+          // Example:
+          // const fn = new Function('a', 'b', 'return a + b');
         ],
 
         'no-restricted-imports': [

@@ -69,9 +69,6 @@ export function ProjectDialogs() {
         projectId={project.project.publicId}
         projectName={project.project.name}
         createdAt={project.project.createdAt}
-        openConfirmDeleteProjectDialog={() => {
-          setCurrentProjectDialog('confirm-delete-project', null)
-        }}
       />
 
       <ProjectNotFoundDialog
@@ -177,6 +174,9 @@ export function ProjectDialogs() {
             toast.error(getErrorMessage(error))
             throw error
           }
+        }}
+        openConfirmDeleteProjectDialog={() => {
+          setCurrentProjectDialog('confirm-delete-project', null)
         }}
       />
     </>

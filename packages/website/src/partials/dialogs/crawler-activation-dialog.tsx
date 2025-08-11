@@ -2,18 +2,13 @@
 
 import * as React from 'react'
 import {Button} from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle
-} from '@/components/ui/dialog'
+import {Dialog, DialogContent, DialogDescription, DialogTitle} from '@/components/ui/dialog'
 import {Label} from '@/components/ui/label'
 import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from '@/components/ui/select'
 import {Switch} from '@/components/ui/switch'
 import {Input} from '@/components/ui/input'
 import {Textarea} from '@/components/ui/textarea'
-import {Zap, Calendar, Link2, Globe, AlertCircle, Trash2} from 'lucide-react'
+import {Zap, Calendar, Link2, Globe, AlertCircle} from 'lucide-react'
 import {Badge} from '@/components/ui/badge'
 import {cn} from '@/lib/utils'
 import type {ProjectPublicId} from '@/db/schema'
@@ -39,7 +34,6 @@ interface CrawlerActivationDialogProps {
   projectId: ProjectPublicId
   projectName: string
   createdAt: SQLUTCTimestamp
-  openConfirmDeleteProjectDialog: () => void
   // onActivate: (config: CrawlerActivationDialogConfig) => void
   // projectName?: string
 }
@@ -49,8 +43,7 @@ export function CrawlerActivationDialog({
   onOpenChange,
   projectId,
   projectName,
-  createdAt,
-  openConfirmDeleteProjectDialog
+  createdAt
   // onActivate,
   // projectName = 'Example Store'
 }: CrawlerActivationDialogProps) {
@@ -461,14 +454,28 @@ export function CrawlerActivationDialog({
                       .
                       {config.followLinks && (
                         <div className='mt-2 space-y-1'>
-                          <div>• Will crawl up to <span className='font-medium text-white'>{config.maxDepth} levels deep</span></div>
-                          <div>• Maximum <span className='font-medium text-white'>{config.maxPages || 100} pages</span></div>
-                          {config.sameOriginOnly && <div>• <span className='font-medium text-white'>Same origin only</span></div>}
+                          <div>
+                            • Will crawl up to{' '}
+                            <span className='font-medium text-white'>{config.maxDepth} levels deep</span>
+                          </div>
+                          <div>
+                            • Maximum{' '}
+                            <span className='font-medium text-white'>{config.maxPages ?? 100} pages</span>
+                          </div>
+                          {config.sameOriginOnly && (
+                            <div>
+                              • <span className='font-medium text-white'>Same origin only</span>
+                            </div>
+                          )}
                           {config.includePattern && (
-                            <div>• Include: <span className='font-mono text-white'>{config.includePattern}</span></div>
+                            <div>
+                              • Include: <span className='font-mono text-white'>{config.includePattern}</span>
+                            </div>
                           )}
                           {config.excludePattern && (
-                            <div>• Exclude: <span className='font-mono text-white'>{config.excludePattern}</span></div>
+                            <div>
+                              • Exclude: <span className='font-mono text-white'>{config.excludePattern}</span>
+                            </div>
                           )}
                         </div>
                       )}
@@ -481,36 +488,25 @@ export function CrawlerActivationDialog({
 
           {/* Bottom Actions */}
           <div className='border-t border-white/10 px-6 py-4'>
-            <div className='flex items-center justify-between'>
+            <div className='flex justify-end gap-3'>
               <Button
-                variant='ghost'
-                className='border border-red-600/30 bg-red-600/10 text-red-400
-                  shadow-[0_0_15px_rgba(239,68,68,0.2)] hover:bg-red-600/20 hover:text-red-300'
-                onClick={openConfirmDeleteProjectDialog}
+                variant='outline'
+                onClick={() => {
+                  onOpenChange(false)
+                }}
+                className='border-white/20 text-white hover:bg-white/10'
               >
-                <Trash2 className='mr-2 h-4 w-4' />
-                Delete Project
+                Cancel
               </Button>
-              <div className='flex gap-3'>
-                <Button
-                  variant='outline'
-                  onClick={() => {
-                    onOpenChange(false)
-                  }}
-                  className='border-white/20 text-white hover:bg-white/10'
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => {
-                    nowait(activateProject())
-                  }}
-                  className='bg-green-600 text-white shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:bg-green-700'
-                >
-                  <Zap className='mr-2 h-4 w-4' />
-                  Activate Extraction
-                </Button>
-              </div>
+              <Button
+                onClick={() => {
+                  nowait(activateProject())
+                }}
+                className='bg-green-600 text-white shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:bg-green-700'
+              >
+                <Zap className='mr-2 h-4 w-4' />
+                Activate Extraction
+              </Button>
             </div>
           </div>
         </div>

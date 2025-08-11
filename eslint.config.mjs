@@ -92,6 +92,21 @@ export default [
         '@typescript-eslint/restrict-template-expressions': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'off',
 
+        // Disallow dynamic imports
+        'no-restricted-syntax': [
+          'error',
+          {
+            selector: 'ImportExpression',
+            message: 'Dynamic imports are not allowed. Use static imports instead.'
+          },
+          {
+            selector: 'FunctionExpression'
+          },
+          {
+            selector: 'WithStatement'
+          }
+        ],
+
         'no-restricted-imports': [
           'error',
           {

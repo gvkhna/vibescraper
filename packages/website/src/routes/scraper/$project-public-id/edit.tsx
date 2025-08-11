@@ -1,5 +1,5 @@
 import {createFileRoute, useNavigate} from '@tanstack/react-router'
-import {DetailPage} from '@/partials/detail/extractor-page'
+import {ExtractorPage} from '@/partials/extractor/extractor-page'
 import {z} from 'zod'
 import {useEffect} from 'react'
 import {useProjectStore} from '@/store/use-project-store'
@@ -44,7 +44,7 @@ function Page() {
 
   return (
     <>
-      <DetailPage
+      <ExtractorPage
         projectPublicId={projectPublicId}
         chatId={chatId}
       />

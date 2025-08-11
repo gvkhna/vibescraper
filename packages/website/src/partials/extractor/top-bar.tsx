@@ -13,10 +13,10 @@ import {
 import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from '@/components/ui/select'
 import {Badge} from '@/components/ui/badge'
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
-import {ChevronDown, Plus, Play, RefreshCw, Download, Zap, RefreshCwOff} from 'lucide-react'
-import {nowait} from '@/lib/async-utils'
+import {ChevronDown, Plus, Download, Zap, RefreshCwOff} from 'lucide-react'
+import {ScrapeButtonWithHover} from './scrape-button-with-hover'
 
-interface TopBarProps {
+export interface TopBarProps {
   siteName: string
   onNewSite: () => void
   currentUrl?: string
@@ -27,6 +27,13 @@ interface TopBarProps {
   dataSource?: 'fetch' | 'cached'
   onDataSourceChange?: (source: 'fetch' | 'cached') => void
   onActivate?: () => void
+  onClearCache?: () => void
+  onForceRefetch?: () => void
+  cacheInfo?: {
+    isCached: boolean
+    timestamp?: Date | null
+    size?: string | null
+  }
 }
 
 export function TopBar({
@@ -39,7 +46,10 @@ export function TopBar({
   isLoading,
   dataSource = 'cached',
   onDataSourceChange,
-  onActivate
+  onActivate,
+  onClearCache,
+  onForceRefetch,
+  cacheInfo
 }: TopBarProps) {
   return (
     <div className='flex h-[56px] flex-shrink-0 items-center gap-3 border-b border-white/10 bg-[#151517] px-4'>
@@ -63,21 +73,13 @@ export function TopBar({
           </form>
 
           {onScrape && (
-            <Button
-              onClick={() => {
-                nowait(onScrape())
-              }}
-              disabled={isLoading}
-              className='h-9 bg-blue-600 px-4 text-white shadow-[0_0_20px_rgba(59,130,246,0.3)]
-                hover:bg-blue-700'
-            >
-              {isLoading ? (
-                <RefreshCw className='mr-2 h-4 w-4 animate-spin' />
-              ) : (
-                <Play className='mr-2 h-4 w-4' />
-              )}
-              Scrape
-            </Button>
+            <ScrapeButtonWithHover
+              onScrape={onScrape}
+              onClearCache={onClearCache}
+              onForceRefetch={onForceRefetch}
+              isLoading={isLoading}
+              cacheInfo={cacheInfo}
+            />
           )}
 
           {onDataSourceChange && (

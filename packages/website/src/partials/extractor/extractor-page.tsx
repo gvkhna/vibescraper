@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import {Tabs, TabsList, TabsTrigger, TabsContent} from '@/components/ui/tabs'
-import {TopBar} from './top-bar'
+import {TopBar, type TopBarProps} from './top-bar'
 import {WorkspaceLayout} from './workspace-layout'
 import {NewSiteModal} from './new-site-modal'
 // import {ActivationModal} from '../dialogs/crawler-activation-dialog'
@@ -27,6 +27,14 @@ export function ExtractorPage({projectPublicId, chatId}: ExtractorPageProps) {
   const [siteName, setSiteName] = React.useState('Example Store')
   const [isLoading, setIsLoading] = React.useState(false)
   const [dataSource, setDataSource] = React.useState<'fetch' | 'cached'>('cached')
+
+  // Cache info state - this would typically come from your backend/store
+  const [cacheInfo, setCacheInfo] = React.useState<TopBarProps['cacheInfo']>({
+    isCached: true,
+    // 30 minutes ago
+    timestamp: new Date(Date.now() - 1000 * 60 * 30),
+    size: '245 KB'
+  })
 
   const currentEditorUrl = useProjectStore((state) => state.projectSlice.projectCommit?.currentEditorUrl)
   const updateCurrentEditorUrl = useProjectStore((state) => state.projectSlice.updateCurrentEditorUrl)
@@ -53,11 +61,29 @@ export function ExtractorPage({projectPublicId, chatId}: ExtractorPageProps) {
     // This matches the sum of all pipeline step durations
     await new Promise((resolve) => setTimeout(resolve, 6300))
     setIsLoading(false)
+
+    // Update cache info after successful scrape
+    setCacheInfo({
+      isCached: true,
+      timestamp: new Date(),
+      size: '245 KB'
+    })
   }
 
-  const handleActivate = (config: any) => {
-    // Handle activation with the provided configuration
-    // This would typically send the config to your backend
+  const handleClearCache = () => {
+    // Clear cache for the current URL
+    setCacheInfo({
+      isCached: false,
+      timestamp: null,
+      size: null
+    })
+    // TODO: Call backend API to clear cache
+  }
+
+  const handleForceRefetch = () => {
+    // Force refetch bypassing cache
+    setDataSource('fetch')
+    nowait(handleScrape())
   }
 
   const handleUrlFormSubmit = (e: React.FormEvent) => {
@@ -65,10 +91,10 @@ export function ExtractorPage({projectPublicId, chatId}: ExtractorPageProps) {
     if (!currentUrl.trim() || isLoading) {
       return false
     }
-    
+
     // Update the currentEditorUrl in the project state
     nowait(updateCurrentEditorUrl(currentUrl))
-    
+
     return false
   }
 
@@ -91,6 +117,9 @@ export function ExtractorPage({projectPublicId, chatId}: ExtractorPageProps) {
           setCurrentProjectDialog('crawler-activation-dialog', null)
           // setShowActivationModal(true)
         }}
+        onClearCache={handleClearCache}
+        onForceRefetch={handleForceRefetch}
+        cacheInfo={cacheInfo}
       />
 
       {/* Main Content */}

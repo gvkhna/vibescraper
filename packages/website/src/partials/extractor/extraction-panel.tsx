@@ -39,8 +39,9 @@ import debug from 'debug'
 
 const log = debug('app:extraction-panel')
 
-// Define which tabs belong in the dropdown (moved Filtered out)
+// Define which tabs belong in the dropdown
 const DROPDOWN_TABS: DropdownTab[] = [
+  {value: 'filtered-html', label: 'Filtered', icon: Filter},
   {value: 'raw-html', label: 'Raw HTML', icon: Code},
   {value: 'cleaned-html', label: 'Cleaned', icon: BrushCleaning},
   {value: 'readability-html', label: 'Readability', icon: BookOpen},
@@ -75,7 +76,7 @@ export function ExtractionPanel({isProcessing = false}: ExtractionPanelProps) {
   }
 
   const currentActiveTab = activeTab[projectPublicId] ?? 'preview'
-  const currentLastDropdownTab = lastExtractionDropdownTab[projectPublicId] ?? 'raw-html'
+  const currentLastDropdownTab = lastExtractionDropdownTab[projectPublicId] ?? 'filtered-html'
 
   // Handler for dropdown tab changes that also updates the last selected dropdown tab
   const handleDropdownTabChange = (value: ExtractionPanelTabType) => {
@@ -107,14 +108,6 @@ export function ExtractionPanel({isProcessing = false}: ExtractionPanelProps) {
           >
             <Globe className='h-3.5 w-3.5' />
             Preview
-          </ExtractionTabsTrigger>
-
-          <ExtractionTabsTrigger
-            value='filtered-html'
-            className='gap-1.5 px-3 py-1.5 text-sm hover:bg-white/5 data-[state=active]:bg-white/10'
-          >
-            <Filter className='h-3.5 w-3.5' />
-            Filtered
           </ExtractionTabsTrigger>
 
           {/* Dropdown for HTML/Markdown related tabs */}

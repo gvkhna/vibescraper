@@ -41,7 +41,8 @@
     "src/**/*.tsx",
     "src/**/*.astro",
     "astro.config.ts",
-    ".vite-plugins/*.ts"
+    ".vite-plugins/*.ts",
+    "drizzle.config.ts"
   ],
   "exclude": ["node_modules", "dist", "src/**/_*.ts", "src/**/_*.tsx", "src/**/*tmp*.ts", "src/**/*tmp*.tsx"]
 }

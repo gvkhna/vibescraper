@@ -57,7 +57,7 @@ export function makeTools(
         try {
           // 1. Get the project commit to access settings
           const projectCommit = await db.query.projectCommit.findFirst({
-            where: (table) => dbEq(table.publicId, projectCommitPublicId)
+            where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
           })
           if (!projectCommit) {
             return {
@@ -68,7 +68,7 @@ export function makeTools(
           }
           // 2. Check if URL exists in projectUrl table, create if not
           let projectUrl = await db.query.projectUrl.findFirst({
-            where: (table) => dbAnd(dbEq(table.projectId, project.id), dbEq(table.url, input.url))
+            where: (table, {and, eq}) => and(eq(table.projectId, project.id), eq(table.url, input.url))
           })
           if (!projectUrl) {
             const [newUrl] = await db
@@ -83,8 +83,8 @@ export function makeTools(
           // 3. Check for cached httpResponse if !force
           if (!input.force) {
             const existingResponse = await db.query.httpResponse.findFirst({
-              where: (table) => dbEq(table.projectUrlId, projectUrl.id),
-              orderBy: (table) => [dbDesc(table.createdAt)]
+              where: (table, {eq}) => eq(table.projectUrlId, projectUrl.id),
+              orderBy: (table, {desc}) => [desc(table.createdAt)]
             })
             if (existingResponse) {
               return {
@@ -106,9 +106,9 @@ export function makeTools(
           // For now, return pending status
           return {
             success: true,
-            httpResponseId: void 0,
-            statusCode: void 0,
-            contentType: void 0,
+            httpResponseId: undefined,
+            statusCode: undefined,
+            contentType: undefined,
             cached: false
           }
         } catch (error) {
@@ -146,7 +146,7 @@ export function makeTools(
         try {
           // 1. Find the project URL
           const projectUrl = await db.query.projectUrl.findFirst({
-            where: (table) => dbAnd(dbEq(table.projectId, project.id), dbEq(table.url, input.url))
+            where: (table, {and, eq}) => and(eq(table.projectId, project.id), eq(table.url, input.url))
           })
           if (!projectUrl) {
             return {
@@ -156,8 +156,8 @@ export function makeTools(
           }
           // 2. Find the latest httpResponse
           const httpResponse = await db.query.httpResponse.findFirst({
-            where: (table) => dbEq(table.projectUrlId, projectUrl.id),
-            orderBy: (table) => [dbDesc(table.createdAt)]
+            where: (table, {eq}) => eq(table.projectUrlId, projectUrl.id),
+            orderBy: (table) => [sqlDesc(table.createdAt)]
           })
           if (!httpResponse) {
             return {
@@ -167,12 +167,13 @@ export function makeTools(
           }
           // 3. Get the content based on storage type
           let content = ''
+          const storageId = httpResponse.storageId
           if (httpResponse.storageType === 'text') {
             content = httpResponse.body
-          } else if (httpResponse.storageType === 'storage' && httpResponse.storageId) {
+          } else if (storageId) {
             // TODO: Fetch from storage service
             const storageItem = await db.query.storage.findFirst({
-              where: (table) => dbEq(table.id, httpResponse.storageId as any)
+              where: (table, {eq}) => eq(table.id, storageId as schema.StorageId)
             })
             if (storageItem) {
               // TODO: Actually fetch from S3/storage
@@ -225,11 +226,11 @@ export function makeTools(
           .optional(),
         error: z.string().optional()
       }),
-      execute: async () => {
+      execute: async (inputs, opts) => {
         try {
           // 1. Get the active extractor version from projectCommit
           const projectCommit = await db.query.projectCommit.findFirst({
-            where: (table) => dbEq(table.publicId, projectCommitPublicId)
+            where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
           })
           if (!projectCommit?.activeExtractorVersion) {
             return {
@@ -241,10 +242,10 @@ export function makeTools(
           }
           // 2. Fetch the extractor script from database
           const extractor = await db.query.extractor.findFirst({
-            where: (table) =>
-              dbAnd(
-                dbEq(table.projectId, project.id),
-                dbEq(table.version, projectCommit.activeExtractorVersion)
+            where: (table, {and, eq}) =>
+              and(
+                eq(table.projectId, project.id),
+                eq(table.version, projectCommit.activeExtractorVersion ?? 0)
               )
           })
           if (!extractor) {
@@ -265,7 +266,7 @@ export function makeTools(
             script: extractor.script,
             language: 'js' as const,
             version: extractor.version,
-            diagnostics: diagnostics.length > 0 ? diagnostics : void 0
+            diagnostics: diagnostics.length > 0 ? diagnostics : undefined
           }
         } catch (error) {
           log('readScript error:', error)
@@ -302,8 +303,8 @@ export function makeTools(
         try {
           // 1. Get current version number
           const latestExtractor = await db.query.extractor.findFirst({
-            where: (table) => dbEq(table.projectId, project.id),
-            orderBy: (table) => [dbDesc(table.version)]
+            where: (table, {eq}) => eq(table.projectId, project.id),
+            orderBy: (table, {desc}) => [desc(table.version)]
           })
           const newVersion = (latestExtractor?.version ?? 0) + 1
           // 2. TODO: Validate the script syntax
@@ -327,12 +328,12 @@ export function makeTools(
           await db
             .update(schema.projectCommit)
             .set({activeExtractorVersion: newVersion})
-            .where(dbEq(schema.projectCommit.publicId, projectCommitPublicId))
+            .where(sqlEq(schema.projectCommit.publicId, projectCommitPublicId))
           // 5. TODO: Optionally trigger re-extraction if httpResponse exists
           return {
             success: true,
             version: newVersion,
-            diagnostics: diagnostics.length > 0 ? diagnostics : void 0
+            diagnostics: diagnostics.length > 0 ? diagnostics : undefined
           }
         } catch (error) {
           log('writeScript error:', error)
@@ -348,7 +349,7 @@ export function makeTools(
       inputSchema: z.object({}),
       outputSchema: z.object({
         success: z.boolean(),
-        schema: z.record(z.any()).optional(),
+        schema: z.record(z.any(), z.any()).optional(),
         version: z.number().optional(),
         error: z.string().optional()
       }),
@@ -356,7 +357,7 @@ export function makeTools(
         try {
           // 1. Get the active schema version from projectCommit
           const projectCommit = await db.query.projectCommit.findFirst({
-            where: (table) => dbEq(table.publicId, projectCommitPublicId)
+            where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
           })
           if (!projectCommit?.activeSchemaVersion) {
             return {
@@ -367,8 +368,8 @@ export function makeTools(
           }
           // 2. Fetch the projectSchema from database
           const projectSchema = await db.query.projectSchema.findFirst({
-            where: (table) =>
-              dbAnd(dbEq(table.projectId, project.id), dbEq(table.version, projectCommit.activeSchemaVersion))
+            where: (table, {and, eq}) =>
+              and(eq(table.projectId, project.id), eq(table.version, projectCommit.activeSchemaVersion ?? 0))
           })
           if (!projectSchema) {
             return {
@@ -394,7 +395,7 @@ export function makeTools(
     writeSchema: tool({
       description: 'Replace JSON Schema; server validates',
       inputSchema: z.object({
-        schema: z.record(z.any()).describe('The complete JSON Schema object'),
+        schema: z.record(z.any(), z.any()).describe('The complete JSON Schema object'),
         message: z.string().optional().describe('Commit message for this version')
       }),
       outputSchema: z.object({
@@ -412,14 +413,14 @@ export function makeTools(
         try {
           // 1. Get current version number
           const latestSchema = await db.query.projectSchema.findFirst({
-            where: (table) => dbEq(table.projectId, project.id),
-            orderBy: (table) => [dbDesc(table.version)]
+            where: (table, {eq}) => eq(table.projectId, project.id),
+            orderBy: (table, {desc}) => [desc(table.version)]
           })
           const newVersion = (latestSchema?.version ?? 0) + 1
           // 2. TODO: Validate the JSON Schema format
           const validation = {
             valid: true,
-            errors: void 0 as string[] | undefined
+            errors: undefined as string[] | undefined
           }
           if (!validation.valid) {
             return {
@@ -442,7 +443,7 @@ export function makeTools(
           await db
             .update(schema.projectCommit)
             .set({activeSchemaVersion: newVersion})
-            .where(dbEq(schema.projectCommit.publicId, projectCommitPublicId))
+            .where(sqlEq(schema.projectCommit.publicId, projectCommitPublicId))
           // 5. TODO: Optionally re-validate existing extraction items against new schema
           return {
             success: true,

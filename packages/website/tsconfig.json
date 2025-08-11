@@ -34,6 +34,6 @@
     "target": "ESNext",
     "verbatimModuleSyntax": true
   },
-  "include": ["src/types.d.ts", ".astro/types.d.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.astro", "astro.config.ts"],
+  "include": ["src/ambient.d.ts", "src/types.d.ts", ".astro/types.d.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.astro", "astro.config.ts"],
   "exclude": ["node_modules", "dist", "src/**/_*.tmp.ts", "src/**/_*.tmp.tsx"]
 }

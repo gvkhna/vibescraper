@@ -147,7 +147,7 @@ export default function viteMaildev(): Plugin {
       })
 
       // Also listen for WebSocket server close
-      server.ws?.on('close', () => {
+      server.ws.on('close', () => {
         dbg('WebSocket server closing')
         stopMaildev()
       })

@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import type {Plugin} from 'vite'
 import type {Runner} from 'graphile-worker'
+import process from 'node:process'
 
 let runner: Runner | null = null
 let cleanupRegistered = false
@@ -105,7 +106,7 @@ export function workerPlugin(): Plugin {
       })
 
       // Also listen for WebSocket server close
-      server.ws?.on('close', async () => {
+      server.ws.on('close', async () => {
         console.log('[worker-plugin] WebSocket server closing')
         await stopWorker()
       })

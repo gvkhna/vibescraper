@@ -40,7 +40,8 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.astro",
-    "astro.config.ts"
+    "astro.config.ts",
+    ".vite-plugins/*.ts"
   ],
   "exclude": ["node_modules", "dist", "src/**/_*.ts", "src/**/_*.tsx", "src/**/*tmp*.ts", "src/**/*tmp*.tsx"]
 }

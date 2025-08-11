@@ -83,7 +83,7 @@ export function base64ToBytes(base64: string): Uint8Array | null {
       return Uint8Array.from(Buffer.from(base64, 'base64'))
     } else if (typeof globalThis.atob !== 'undefined') {
       // Browser
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
+       
       const binary = globalThis.atob(base64)
       const len = binary.length
       const bytes = new Uint8Array(len)
@@ -119,7 +119,7 @@ export function bytesToBase64(bytes: Uint8Array): string | null {
       for (let i = 0; i < bytes.length; i++) {
         binary += String.fromCharCode(bytes[i])
       }
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
+       
       return globalThis.btoa(binary)
     } else {
       throw new Error('Base64 encoding not supported in this environment')

@@ -24,24 +24,26 @@
 
 // NOTE: These definitions support Node.js and TypeScript 5.8+.
 
-// Reference required TypeScript libraries:
-/// <reference lib="es2020" />
-/// <reference lib="esnext.disposable" />
-/// <reference lib="esnext.float16" />
+// Reference required TypeScript libraries (ESNext only, no DOM):
+/// <reference lib="esnext" />
+
+// DOM types come from @types/web (aliased as @types/node in package.json)
+// This provides browser-compatible timer types (setTimeout returns number)
+/// <reference types="@types/node" />
 
 // Iterator definitions required for compatibility with TypeScript <5.6:
 /// <reference path="node_modules/@types/node-legacy/compatibility/iterators.d.ts" />
 
 // Definitions for Node.js modules specific to TypeScript 5.7+:
-/// <reference path="node_modules/@types/node-legacy/globals.typedarray.d.ts" />
-/// <reference path="node_modules/@types/node-legacy/buffer.buffer.d.ts" />
+// <reference path="node_modules/@types/node-legacy/globals.typedarray.d.ts" />
+// <reference path="node_modules/@types/node-legacy/buffer.buffer.d.ts" />
 
 // Definitions for Node.js modules that are not specific to any version of TypeScript:
-/// <reference path="node_modules/@types/node-legacy/globals.d.ts" />
+// <reference path="node_modules/@types/node-legacy/globals.d.ts" />
 /// <reference path="node_modules/@types/node-legacy/assert.d.ts" />
 /// <reference path="node_modules/@types/node-legacy/assert/strict.d.ts" />
 /// <reference path="node_modules/@types/node-legacy/async_hooks.d.ts" />
-/// <reference path="node_modules/@types/node-legacy/buffer.d.ts" />
+// <reference path="node_modules/@types/node-legacy/buffer.d.ts" />
 /// <reference path="node_modules/@types/node-legacy/child_process.d.ts" />
 /// <reference path="node_modules/@types/node-legacy/cluster.d.ts" />
 /// <reference path="node_modules/@types/node-legacy/console.d.ts" />
@@ -82,7 +84,7 @@
 /// <reference path="node_modules/@types/node-legacy/tls.d.ts" />
 /// <reference path="node_modules/@types/node-legacy/trace_events.d.ts" />
 /// <reference path="node_modules/@types/node-legacy/tty.d.ts" />
-/// <reference path="node_modules/@types/node-legacy/url.d.ts" />
+// <reference path="node_modules/@types/node-legacy/url.d.ts" />
 /// <reference path="node_modules/@types/node-legacy/util.d.ts" />
 /// <reference path="node_modules/@types/node-legacy/v8.d.ts" />
 /// <reference path="node_modules/@types/node-legacy/vm.d.ts" />

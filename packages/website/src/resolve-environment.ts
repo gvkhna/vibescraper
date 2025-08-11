@@ -1,4 +1,4 @@
-/* eslint-disable no-restricted-globals */
+ 
 import {z} from 'zod'
 
 export function resolveEnvironment<T extends z.ZodType>(schema: T): z.infer<T> {

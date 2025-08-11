@@ -244,7 +244,7 @@ export function makeTools(
             where: (table) =>
               dbAnd(
                 dbEq(table.projectId, project.id),
-                dbEq(table.version, projectCommit.activeExtractorVersion!)
+                dbEq(table.version, projectCommit.activeExtractorVersion)
               )
           })
           if (!extractor) {
@@ -370,7 +370,7 @@ export function makeTools(
             where: (table) =>
               dbAnd(
                 dbEq(table.projectId, project.id),
-                dbEq(table.version, projectCommit.activeSchemaVersion!)
+                dbEq(table.version, projectCommit.activeSchemaVersion)
               )
           })
           if (!projectSchema) {

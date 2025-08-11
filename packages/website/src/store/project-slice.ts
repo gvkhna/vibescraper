@@ -199,8 +199,8 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
         true,
         'project/duplicateProject/start'
       )
-      let success = false
-      let newProjectPublicId: ProjectPublicId | null = null
+      const success = false
+      const newProjectPublicId: ProjectPublicId | null = null
       throw new Error('unimplemented yet')
       try {
         // TODO: duplicate endpoint doesn't exist on server

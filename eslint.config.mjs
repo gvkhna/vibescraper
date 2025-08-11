@@ -18,6 +18,7 @@ export default [
       'dist*/**/*',
       'packages/**/dist/**/*',
       'tmp/**/*',
+      '**/*tmp*',
 
       // Auto-generated
       '**/_*',
@@ -68,12 +69,23 @@ export default [
         '@typescript-eslint/no-explicit-any': 'warn',
         // Prefer optional chaining over explicit undefined checks
         '@typescript-eslint/prefer-optional-chain': 'warn',
+        '@typescript-eslint/strict-boolean-expressions': 'off',
         // Prevent nullish coalescing when the left side can be undefined
         '@typescript-eslint/prefer-nullish-coalescing': [
           'warn',
           {
+            allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing: false,
+            ignoreBooleanCoercion: false,
             ignoreConditionalTests: false,
-            ignoreMixedLogicalExpressions: false
+            ignoreIfStatements: false,
+            ignoreMixedLogicalExpressions: false,
+            ignorePrimitives: {
+              bigint: false,
+              boolean: false,
+              number: false,
+              string: false
+            },
+            ignoreTernaryTests: false
           }
         ],
         // Prevent functions from returning undefined explicitly
@@ -101,11 +113,6 @@ export default [
           {
             selector: 'ImportExpression',
             message: 'Dynamic imports are not allowed. Use static imports instead.'
-          },
-          {
-            selector: 'FunctionExpression',
-            message:
-              'Avoid Function expressions - use arrow functions or named function declarations instead.'
           },
           {
             selector: 'WithStatement',

@@ -115,7 +115,7 @@ export function ScraperSettingsDialog({
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
-          className='mt-4'
+          className='mt-2'
         >
           <TabsList className='grid w-full grid-cols-4 bg-[#0A0A0B]'>
             <TabsTrigger
@@ -171,32 +171,49 @@ export function ScraperSettingsDialog({
                     id='fetch-type'
                     className='mt-2 border-white/20 bg-[#0A0A0B]'
                   >
-                    <SelectValue />
+                    <SelectValue placeholder='Select fetch method'>
+                      {commitSettings.fetchType === 'fetch' && 'Simple Fetch'}
+                      {commitSettings.fetchType === 'playwright' && 'Playwright'}
+                      {commitSettings.fetchType === 'playwright-stealth' && 'Playwright Stealth'}
+                      {commitSettings.fetchType === 'camoufox' && 'Camoufox'}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent className='border-white/10 bg-[#1a1a1b]'>
                     <SelectItem
                       value='fetch'
                       className='text-white/90'
                     >
-                      Simple Fetch
+                      <div className='space-y-0.5'>
+                        <div>Simple Fetch</div>
+                        <div className='text-xs text-white/50'>Fast, lightweight HTTP requests</div>
+                      </div>
                     </SelectItem>
                     <SelectItem
                       value='playwright'
                       className='text-white/90'
                     >
-                      Playwright
+                      <div className='space-y-0.5'>
+                        <div>Playwright</div>
+                        <div className='text-xs text-white/50'>Full browser rendering for JS sites</div>
+                      </div>
                     </SelectItem>
                     <SelectItem
                       value='playwright-stealth'
                       className='text-white/90'
                     >
-                      Playwright Stealth
+                      <div className='space-y-0.5'>
+                        <div>Playwright Stealth</div>
+                        <div className='text-xs text-white/50'>Bypasses basic anti-bot detection</div>
+                      </div>
                     </SelectItem>
                     <SelectItem
                       value='camoufox'
                       className='text-white/90'
                     >
-                      Camoufox
+                      <div className='space-y-0.5'>
+                        <div>Camoufox</div>
+                        <div className='text-xs text-white/50'>Advanced anti-detection browser</div>
+                      </div>
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -219,7 +236,12 @@ export function ScraperSettingsDialog({
                     id='schedule'
                     className='mt-2 border-white/20 bg-[#0A0A0B]'
                   >
-                    <SelectValue />
+                    <SelectValue placeholder='Select schedule'>
+                      {commitSettings.schedule === 'manual' && 'Manual'}
+                      {commitSettings.schedule === 'every-6-hours' && 'Every 6 hours'}
+                      {commitSettings.schedule === 'daily' && 'Daily'}
+                      {commitSettings.schedule === 'weekly' && 'Weekly'}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent className='border-white/10 bg-[#1a1a1b]'>
                     <SelectItem
@@ -327,38 +349,59 @@ export function ScraperSettingsDialog({
                     id='cleaning-method'
                     className='mt-2 border-white/20 bg-[#0A0A0B]'
                   >
-                    <SelectValue />
+                    <SelectValue placeholder='Select processing method'>
+                      {extractorSettings.cleaningMethod === 'raw-html' && 'Raw HTML'}
+                      {extractorSettings.cleaningMethod === 'cleaned-html' && 'Cleaned HTML'}
+                      {extractorSettings.cleaningMethod === 'filtered-html' && 'Filtered HTML'}
+                      {extractorSettings.cleaningMethod === 'readability-html' && 'Readability'}
+                      {extractorSettings.cleaningMethod === 'markdown' && 'Markdown'}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent className='border-white/10 bg-[#1a1a1b]'>
                     <SelectItem
                       value='raw-html'
                       className='text-white/90'
                     >
-                      Raw HTML
+                      <div className='space-y-0.5'>
+                        <div>Raw HTML</div>
+                        <div className='text-xs text-white/50'>Unprocessed HTML content</div>
+                      </div>
                     </SelectItem>
                     <SelectItem
                       value='cleaned-html'
                       className='text-white/90'
                     >
-                      Cleaned HTML
+                      <div className='space-y-0.5'>
+                        <div>Cleaned HTML</div>
+                        <div className='text-xs text-white/50'>Basic cleanup and formatting</div>
+                      </div>
                     </SelectItem>
                     <SelectItem
                       value='filtered-html'
                       className='text-white/90'
                     >
-                      Filtered HTML
+                      <div className='space-y-0.5'>
+                        <div>Filtered HTML</div>
+                        <div className='text-xs text-white/50'>Removes unwanted tags and attributes</div>
+                      </div>
                     </SelectItem>
                     <SelectItem
                       value='readability-html'
                       className='text-white/90'
                     >
-                      Readability
+                      <div className='space-y-0.5'>
+                        <div>Readability</div>
+                        <div className='text-xs text-white/50'>Extracts main content only</div>
+                      </div>
                     </SelectItem>
                     <SelectItem
                       value='markdown'
                       className='text-white/90'
                     >
-                      Markdown
+                      <div className='space-y-0.5'>
+                        <div>Markdown</div>
+                        <div className='text-xs text-white/50'>Converts to Markdown format</div>
+                      </div>
                     </SelectItem>
                   </SelectContent>
                 </Select>

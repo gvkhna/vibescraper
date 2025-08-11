@@ -12,6 +12,7 @@ import {useEffect, useState} from 'react'
 import {getErrorMessage} from '@/lib/error-message'
 import {CrawlerActivationDialog} from './crawler-activation-dialog'
 import {ScraperSettingsDialog} from './scraper-settings-dialog'
+import api from '@/lib/api-client'
 
 const log = debug('app:project-dialogs')
 
@@ -51,10 +52,8 @@ export function ProjectDialogs() {
   // Fetch default project name when new-project dialog is about to open
   useEffect(() => {
     if (currentProjectDialog.type === 'new-project' && !defaultProjectName) {
-      import('@/lib/api-client')
-        .then(({default: api}) => {
-          return api.projects.newDefaultProjectName.$get({})
-        })
+      api.projects.newDefaultProjectName
+        .$get({})
         .then((resp) => {
           if (resp.ok) {
             return resp.json()

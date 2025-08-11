@@ -17,6 +17,19 @@ export default [
     ]
   },
   {
+    files: ['**/*.{js,ts,jsx,tsx}'],
+    rules: {
+      // Disallow dynamic imports
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ImportExpression',
+          message: 'Dynamic imports are not allowed. Use static imports instead.'
+        }
+      ]
+    }
+  },
+  {
     files: ['src/store/**/*.{js,ts}'],
     plugins: {
       'enforce-zustand-set': zustandSetRule

@@ -7,7 +7,7 @@ export interface AuthContextValue {
 }
 
 // Create the context with a default undefined value to force checks
-export const AuthContext = createContext<AuthContextValue | undefined>(undefined)
+export const AuthContext = createContext<AuthContextValue | null>(null)
 
 // Provide the context value to the subtree
 export const AuthProvider: FC<PropsWithChildren<AuthContextValue>> = ({session, children}) => {
@@ -18,7 +18,7 @@ export const AuthProvider: FC<PropsWithChildren<AuthContextValue>> = ({session, 
 // A custom hook for consuming the EnvContext
 export function useAuthContext(): AuthContextValue {
   const context = useContext(AuthContext)
-  if (context === undefined) {
+  if (context === null) {
     throw new Error('useAuthContext must be used within an EnvProvider')
   }
   return context

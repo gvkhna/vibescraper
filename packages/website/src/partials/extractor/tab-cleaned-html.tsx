@@ -8,7 +8,7 @@ import {nowait} from '@/lib/async-utils'
 
 export function TabCleanedHtml() {
   const [copied, setCopied] = React.useState(false)
-  
+
   // Placeholder content for now
   const content = ''
 

@@ -13,7 +13,8 @@ export default [
       'src/components/ai-elements/**',
       'src/components/ui/**',
       'src/**/_*.tmp.ts',
-      'src/**/_*.tmp.tsx'
+      'src/**/_*.tmp.tsx',
+      '**/*stories*'
     ]
   },
   {

@@ -52,7 +52,7 @@ export const PermissionPolicyV1 = BasePolicySchema.extend({
   actorPermissions: z
     .record(
       z.string().transform((val) => val as schema.ActorPublicId), // Actor ID
-      z.array(z.enum(PermissionPolicyActionValues))
+      z.array(z.enum(PermissionPolicyActionValues)).optional()
     )
     .default({})
 })

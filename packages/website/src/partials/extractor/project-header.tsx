@@ -41,7 +41,7 @@ export function ProjectHeader({
             aria-label='Project Name'
           />
           <div className='mt-2 flex items-center gap-3'>
-            <PipelineStatus isActive={isProcessing || false} />
+            <PipelineStatus isActive={isProcessing ?? false} />
             <Badge className='bg-white/10'>v3 Schema</Badge>
           </div>
         </div>

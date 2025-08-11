@@ -82,7 +82,7 @@ export function TopBar({
             />
           )}
 
-          {onDataSourceChange && (
+          {/* {onDataSourceChange && (
             <Select
               value={dataSource}
               onValueChange={(v: 'fetch' | 'cached') => {
@@ -113,7 +113,7 @@ export function TopBar({
                 </SelectItem>
               </SelectContent>
             </Select>
-          )}
+          )} */}
 
           {onActivate && (
             <Button

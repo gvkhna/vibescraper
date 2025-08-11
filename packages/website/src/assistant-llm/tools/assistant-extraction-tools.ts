@@ -1,6 +1,6 @@
 import {tool} from 'ai'
 import {z} from 'zod'
-import {db as database} from '../db/db'
+import {db as database} from '@/db/db'
 import * as schema from '@/db/schema'
 import debug from 'debug'
 import {eq as sqlEq, and as sqlAnd, desc as sqlDesc} from 'drizzle-orm'
@@ -368,10 +368,7 @@ export function makeTools(
           // 2. Fetch the projectSchema from database
           const projectSchema = await db.query.projectSchema.findFirst({
             where: (table) =>
-              dbAnd(
-                dbEq(table.projectId, project.id),
-                dbEq(table.version, projectCommit.activeSchemaVersion)
-              )
+              dbAnd(dbEq(table.projectId, project.id), dbEq(table.version, projectCommit.activeSchemaVersion))
           })
           if (!projectSchema) {
             return {

@@ -19,7 +19,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
-    "noErrorTruncation": true,
+    "noErrorTruncation": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
@@ -42,5 +42,5 @@
     "src/**/*.astro",
     "astro.config.ts"
   ],
-  "exclude": ["node_modules", "dist", "src/**/_*.tmp.ts", "src/**/_*.tmp.tsx"]
+  "exclude": ["node_modules", "dist", "src/**/_*.ts", "src/**/_*.tsx", "src/**/*tmp*.ts", "src/**/*tmp*.tsx"]
 }

@@ -106,10 +106,10 @@ export function ScraperSettingsDialog({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className='border-white/10 bg-[#151517] p-0 text-white sm:!max-w-4xl'>
-        <div className='flex h-[600px]'>
+      <DialogContent className='border-white/10 bg-[#151517] p-0 text-white sm:!max-w-2xl' showCloseButton={false}>
+        <div className='flex h-[480px]'>
           {/* Left Sidebar */}
-          <div className='w-56 shrink-0 border-r border-white/10 bg-[#0A0A0B]/50 p-3'>
+          <div className='w-48 shrink-0 border-r border-white/10 bg-[#0A0A0B]/50 p-3'>
             <div className='mb-4 flex items-center justify-between px-2 py-1'>
               <button
                 onClick={() => {
@@ -733,7 +733,7 @@ export function ScraperSettingsDialog({
                     nowait(handleSave())
                   }}
                   disabled={isSaving}
-                  className='bg-blue-600 shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:bg-blue-700'
+                  className='bg-blue-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:bg-blue-700'
                 >
                   {isSaving ? (
                     <>

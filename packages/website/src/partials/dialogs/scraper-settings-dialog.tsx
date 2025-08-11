@@ -746,8 +746,8 @@ export function ScraperSettingsDialog({
 
                     <div className='space-y-4'>
                       <div className='rounded-lg border border-white/10 bg-[#0A0A0B] p-4'>
-                        <div className='flex items-center justify-between'>
-                          <div className='space-y-1'>
+                        <div className='flex items-center justify-between gap-6'>
+                          <div className='flex-1 space-y-1'>
                             <h4 className='font-medium text-white'>Delete Project</h4>
                             <p className='text-sm text-white/60'>
                               Permanently delete <span className='font-medium text-white'>{projectName}</span> and all of its data

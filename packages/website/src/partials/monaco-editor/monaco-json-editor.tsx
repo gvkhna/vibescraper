@@ -21,6 +21,7 @@ export interface MonacoJsonEditorProps {
   // width?: string
   readOnly?: boolean
   options?: monacoNS.editor.IStandaloneEditorConstructionOptions
+  theme?: 'light' | 'dark'
 }
 
 export interface ExternalEditorRefHandle {
@@ -28,7 +29,7 @@ export interface ExternalEditorRefHandle {
 }
 
 export const MonacoJsonEditor = forwardRef<ExternalEditorRefHandle, MonacoJsonEditorProps>(
-  ({value, onChange, readOnly = false, onSave, options = {}}, ref) => {
+  ({value, onChange, readOnly = false, onSave, options = {}, theme = 'dark'}, ref) => {
     // const externalEditorRef = useRef<any>(null)
     const [isVisible, setIsVisible] = useState(true)
 
@@ -143,39 +144,56 @@ export const MonacoJsonEditor = forwardRef<ExternalEditorRefHandle, MonacoJsonEd
       })
     }
 
-    // Default editor options
+    // Default editor options optimized for JSON editing
     const defaultOptions: monacoNS.editor.IStandaloneEditorConstructionOptions = {
       minimap: {enabled: false},
       scrollBeyondLastLine: false,
       lineNumbers: 'on',
-      wordWrap: 'on',
-      wrappingIndent: 'same',
-      tabSize: 4,
+      // JSON typically looks better without word wrap
+      wordWrap: 'off',
+      wrappingIndent: 'indent',
+      // Standard for JSON
+      tabSize: 2,
+      // Use spaces instead of tabs
+      insertSpaces: true,
       renderWhitespace: 'selection',
       readOnly,
-      fontSize: 14,
+      fontSize: 13,
+      fontFamily:
+        '"SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Menlo, Consolas, "Courier New", monospace',
       renderControlCharacters: true,
       automaticLayout: true,
-      // quickSuggestions: {
-      //   other: true,
-      //   comments: true,
-      //   strings: true
-      // },
+      // Enable quick suggestions for JSON
+      quickSuggestions: {
+        other: true,
+        comments: false,
+        strings: true
+      },
       acceptSuggestionOnEnter: 'on',
-      // suggestOnTriggerCharacters: true,
-      // wordBasedSuggestions: 'off', // Don't show word-based suggestions, only our handlebars ones
-      // parameterHints: {
-      //   enabled: true
-      // },
+      suggestOnTriggerCharacters: true,
+      // JSON-specific formatting
+      formatOnType: true,
+      formatOnPaste: true,
+      // Bracket matching
+      bracketPairColorization: {
+        enabled: true,
+        independentColorPoolPerBracketType: true
+      },
+      matchBrackets: 'always',
+      // Folding
+      folding: true,
+      foldingStrategy: 'indentation',
+      showFoldingControls: 'mouseover',
+      // Validation and hints
+      parameterHints: {
+        enabled: true
+      },
       suggest: {
         snippetsPreventQuickSuggestions: false,
         showIcons: true,
         showStatusBar: true,
-        preview: true
-        // filteredTypes: {
-        //   keyword: false,
-        //   snippet: false
-        // }
+        preview: true,
+        insertMode: 'replace'
       },
       scrollbar: {
         useShadows: false,
@@ -183,7 +201,14 @@ export const MonacoJsonEditor = forwardRef<ExternalEditorRefHandle, MonacoJsonEd
         horizontalScrollbarSize: 10,
         vertical: 'auto',
         horizontal: 'auto'
-      }
+      },
+      // JSON error detection
+      'semanticHighlighting.enabled': true,
+      detectIndentation: true,
+      // Better selection
+      columnSelection: false,
+      multiCursorModifier: 'ctrlCmd'
+      // Comments support for JSONC
     }
 
     return (
@@ -197,10 +222,40 @@ export const MonacoJsonEditor = forwardRef<ExternalEditorRefHandle, MonacoJsonEd
             height={'100%'}
             width={'100%'}
             language='jsonc'
+            theme={theme === 'dark' ? 'vs-dark' : 'light'}
             value={value}
             onChange={onChange}
             onMount={handleEditorDidMount}
             options={{...defaultOptions, ...options}}
+            beforeMount={(monaco) => {
+              // Configure JSON defaults for better JSONC support
+              monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                validate: true,
+                // Allow comments in JSONC
+                allowComments: true,
+                // Warn on trailing commas
+                trailingCommas: 'warning',
+                // Don't error on comments
+                comments: 'ignore',
+                // You can add JSON schemas here if needed
+                schemas: [],
+                enableSchemaRequest: false
+              })
+
+              // Configure Monaco editor defaults
+              monaco.languages.json.jsonDefaults.setModeConfiguration({
+                documentFormattingEdits: true,
+                documentRangeFormattingEdits: true,
+                completionItems: true,
+                hovers: true,
+                documentSymbols: true,
+                tokens: true,
+                colors: true,
+                foldingRanges: true,
+                diagnostics: true,
+                selectionRanges: true
+              })
+            }}
           />
         </div>
       </div>

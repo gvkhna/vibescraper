@@ -1,5 +1,5 @@
 import {useEffect, useRef} from 'react'
-import {MonacoTextEditor, type ExternalEditorRefHandle} from './monaco-text-editor'
+import {MonacoJsonEditor, type ExternalEditorRefHandle} from './monaco-json-editor'
 import type {ProjectPublicId} from '@/db/schema'
 import {TextEditorContextProvider} from './text-editor-context'
 import debug from 'debug'
@@ -40,7 +40,7 @@ export function ViewerText(props: {publicId: ProjectPublicId; textFileData: Text
 
   return (
     <TextEditorContextProvider publicId={publicId}>
-      <MonacoTextEditor
+      <MonacoJsonEditor
         ref={editorRef}
         value={textFileData}
         readOnly={true}

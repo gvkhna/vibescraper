@@ -17,6 +17,10 @@
     "dev:website": "bun turbo run dev --filter=@scrapeloop/website",
     "build:website": "bun turbo run build --filter=@scrapeloop/website"
   },
+  "dependencies": {
+    "@types/node": "npm:@types/web@latest",
+    "@types/node-legacy": "npm:@types/node@latest"
+  },
   "devDependencies": {
     "@eslint/compat": "^1.3.2",
     "@eslint/eslintrc": "^3.3.1",

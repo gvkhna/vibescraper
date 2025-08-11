@@ -29,5 +29,6 @@
     "strictNullChecks": true,
     "target": "ESNext",
     "verbatimModuleSyntax": true
-  }
+  },
+  "include": ["types.d.ts"]
 }

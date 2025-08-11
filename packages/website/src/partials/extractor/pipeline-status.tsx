@@ -44,24 +44,15 @@ export function PipelineStatus({isActive, onComplete}: PipelineStatusProps) {
   const [completedStages, setCompletedStages] = React.useState<Set<PipelineStage>>(new Set())
   const [isAnimating, setIsAnimating] = React.useState(false)
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null)
+  const timeoutsRef = React.useRef<NodeJS.Timeout[]>([])
 
-  React.useEffect(() => {
-    if (isActive && currentStage === 'ready') {
-      runPipeline()
-    } else if (!isActive) {
-      // Reset when inactive
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-      setCurrentStage('ready')
-      setCompletedStages(new Set())
-      setIsAnimating(false)
-    }
-  }, [isActive])
-
-  const runPipeline = () => {
+  const runPipeline = React.useCallback(() => {
     setIsAnimating(true)
     const completed = new Set<PipelineStage>()
+
+    // Clear any existing timeouts
+    timeoutsRef.current.forEach(clearTimeout)
+    timeoutsRef.current = []
 
     let totalDelay = 0
     PIPELINE_STEPS.forEach((step, index) => {
@@ -70,7 +61,7 @@ export function PipelineStatus({isActive, onComplete}: PipelineStatusProps) {
         return
       }
 
-      timeoutRef.current = setTimeout(() => {
+      const timeout = setTimeout(() => {
         setCurrentStage(step.id)
         if (index > 1) {
           completed.add(PIPELINE_STEPS[index - 1].id)
@@ -81,19 +72,52 @@ export function PipelineStatus({isActive, onComplete}: PipelineStatusProps) {
           // Mark the last actual step as completed
           completed.add('storing')
           setCompletedStages(new Set(completed))
-          setTimeout(() => {
+          const completeTimeout = setTimeout(() => {
             setIsAnimating(false)
             onComplete?.()
           }, 500)
+          timeoutsRef.current.push(completeTimeout)
         }
       }, totalDelay)
 
+      timeoutsRef.current.push(timeout)
       totalDelay += step.duration
     })
-  }
+  }, [onComplete])
+
+  React.useEffect(() => {
+    if (isActive && currentStage === 'ready') {
+      runPipeline()
+    } else if (!isActive) {
+      // Reset when inactive
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      // Clear all pipeline timeouts
+      timeoutsRef.current.forEach(clearTimeout)
+      timeoutsRef.current = []
+
+      setCurrentStage('ready')
+      setCompletedStages(new Set())
+      setIsAnimating(false)
+    }
+  }, [isActive, currentStage, runPipeline])
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    // Capture refs in effect scope
+    const timeoutRefValue = timeoutRef
+    const timeoutsRefValue = timeoutsRef
+
+    return () => {
+      if (timeoutRefValue.current) {
+        clearTimeout(timeoutRefValue.current)
+      }
+      timeoutsRefValue.current.forEach(clearTimeout)
+    }
+  }, [])
 
   const currentStepIndex = PIPELINE_STEPS.findIndex((s) => s.id === currentStage)
-  const currentLabel = PIPELINE_STEPS[currentStepIndex]?.label || 'Ready'
 
   const getStageStatus = (stageId: PipelineStage) => {
     if (completedStages.has(stageId)) {

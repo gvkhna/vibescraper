@@ -2,61 +2,64 @@
 
 import * as React from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { ProjectHeader } from '@/components/dashboard/project-header'
-import { OverviewTab } from '@/components/dashboard/overview-tab'
-import { MonitoringTab } from '@/components/dashboard/monitoring-tab'
-import { APIAccessTab } from '@/components/dashboard/api-access-tab'
+import {ProjectHeader} from './project-header'
+import {OverviewTab} from './overview-tab'
+import {MonitoringTab} from './monitoring-tab'
+import {APIAccessTab} from './api-access-tab'
+import {DashboardShell} from './dashboard-shell'
 
-export default function Page() {
+export function DashboardPage() {
   const [projectName, setProjectName] = React.useState('Acme Product Crawler')
 
   return (
-    <div className='space-y-4'>
-      <ProjectHeader
-        name={projectName}
-        onNameChange={setProjectName}
-        onRun={() => {
-          // Run triggered
-        }}
-      />
+    <DashboardShell>
+      <div className='space-y-4'>
+        <ProjectHeader
+          name={projectName}
+          onNameChange={setProjectName}
+          onRun={() => {
+            // Run triggered
+          }}
+        />
 
-      <div className='rounded-lg border border-white/10 bg-[#0f0f10] p-4'>
-        <Tabs defaultValue='overview' className='w-full'>
-          <TabsList className='grid w-full grid-cols-3 bg-transparent p-0 h-auto'>
-            <TabsTrigger 
-              value='overview' 
-              className='data-[state=active]:bg-white/10 data-[state=active]:text-white rounded-md py-2'
-            >
-              Overview
-            </TabsTrigger>
-            <TabsTrigger 
-              value='monitoring'
-              className='data-[state=active]:bg-white/10 data-[state=active]:text-white rounded-md py-2'
-            >
-              Monitoring
-            </TabsTrigger>
-            <TabsTrigger 
-              value='api-access'
-              className='data-[state=active]:bg-white/10 data-[state=active]:text-white rounded-md py-2'
-            >
-              API Access
-            </TabsTrigger>
-          </TabsList>
+        <div className='rounded-lg border border-white/10 bg-[#0f0f10] p-4'>
+          <Tabs defaultValue='overview' className='w-full'>
+            <TabsList className='grid w-full grid-cols-3 bg-transparent p-0 h-auto'>
+              <TabsTrigger 
+                value='overview' 
+                className='data-[state=active]:bg-white/10 data-[state=active]:text-white rounded-md py-2'
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger 
+                value='monitoring'
+                className='data-[state=active]:bg-white/10 data-[state=active]:text-white rounded-md py-2'
+              >
+                Monitoring
+              </TabsTrigger>
+              <TabsTrigger 
+                value='api-access'
+                className='data-[state=active]:bg-white/10 data-[state=active]:text-white rounded-md py-2'
+              >
+                API Access
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value='overview' className='mt-4'>
-            <OverviewTab />
-          </TabsContent>
+            <TabsContent value='overview' className='mt-4'>
+              <OverviewTab />
+            </TabsContent>
 
-          <TabsContent value='monitoring' className='mt-4'>
-            <MonitoringTab />
-          </TabsContent>
+            <TabsContent value='monitoring' className='mt-4'>
+              <MonitoringTab />
+            </TabsContent>
 
-          <TabsContent value='api-access' className='mt-4'>
-            <APIAccessTab />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value='api-access' className='mt-4'>
+              <APIAccessTab />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
-    </div>
+    </DashboardShell>
   )
 }
 

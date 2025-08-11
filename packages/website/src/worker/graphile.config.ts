@@ -66,14 +66,14 @@ export async function startWorker() {
 
   runner = await run({
     preset,
-    taskList: taskList as never,
-    parsedCronItems: parseCronItems([
-      {
-        task: 'example',
-        match: '* * * * *',
-        payload: {input: 'hello'}
-      }
-    ])
+    taskList: taskList as never
+    // parsedCronItems: parseCronItems([
+    //   {
+    //     task: 'example',
+    //     match: '* * * * *',
+    //     payload: {input: 'hello'}
+    //   }
+    // ])
   })
   await runner.promise
   return runner

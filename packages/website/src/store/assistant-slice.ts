@@ -53,6 +53,7 @@ export interface AssistantProjectChatMessagesState {
 
 export interface AssistantSlice {
   selectedProjectChat: Record<ProjectPublicId, ProjectChatPublicId | undefined>
+  pendingInitialMessage: Record<ProjectPublicId, ProjectChatPublicId | undefined | null>
   projectChatsState: Record<ProjectPublicId, AssistantProjectChatState | undefined>
   chatMessages: Record<ProjectChatMessagePublicId, ProjectChatMessageDTOType | undefined>
 
@@ -107,6 +108,8 @@ export interface AssistantSlice {
     chatId: ProjectChatPublicId,
     chatMessageId: ProjectChatMessagePublicId
   ) => Promise<void>
+
+  clearPendingInitialMessage: (projectPublicId: ProjectPublicId) => void
 }
 
 export const createAssistantSlice: StateSlice<AssistantSlice> = (set, get) =>
@@ -114,6 +117,7 @@ export const createAssistantSlice: StateSlice<AssistantSlice> = (set, get) =>
     projectChatsState: {},
     chatMessages: {},
     selectedProjectChat: {},
+    pendingInitialMessage: {},
     projectChatMessagesState: {},
     projectComponentIdempotencyKeys: {},
     activeProjectVersionBlocks: {},
@@ -206,7 +210,10 @@ export const createAssistantSlice: StateSlice<AssistantSlice> = (set, get) =>
             const body = await resp.json()
             set(
               (draft) => {
-                draft.assistantSlice.chatMessages[body.result.publicId] = body.result
+                const message = body.result
+                Object.assign(draft.assistantSlice.chatMessages, {
+                  [body.result.publicId]: message
+                })
               },
               true,
               'assistant/fetchProjectChatMessage'
@@ -598,7 +605,10 @@ export const createAssistantSlice: StateSlice<AssistantSlice> = (set, get) =>
               for (let i = 0; i < messagesLen; i++) {
                 const message = messages[i]
 
-                draft.assistantSlice.chatMessages[message.publicId] = message
+                Object.assign(draft.assistantSlice.chatMessages, {
+                  [message.publicId]: message
+                })
+
                 messageIds.push(message.publicId)
 
                 const timeIsRecent =
@@ -646,5 +656,14 @@ export const createAssistantSlice: StateSlice<AssistantSlice> = (set, get) =>
           'assistant/loadProjectChatMessages:error'
         )
       }
+    },
+    clearPendingInitialMessage(projectPublicId) {
+      set(
+        (draft) => {
+          draft.assistantSlice.pendingInitialMessage[projectPublicId] = null
+        },
+        true,
+        'assistant/clearPendingInitialMessage'
+      )
     }
   }) as AssistantSlice

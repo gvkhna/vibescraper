@@ -56,6 +56,7 @@ export default defineConfig({
               envDir: projectRoot,
               plugins: [
                 tanstackRouter({
+                  target: 'react',
                   routesDirectory: './src/routes',
                   generatedRouteTree: './src/routeTree.gen.ts',
                   routeFileIgnorePrefix: '-',
@@ -73,7 +74,7 @@ export default defineConfig({
       }
     },
     react({
-      experimentalDisableStreaming: true,
+      // experimentalDisableStreaming: true,
       babel: {
         plugins: [['babel-plugin-react-compiler']]
       }

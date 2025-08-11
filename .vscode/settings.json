@@ -2,10 +2,8 @@
   "search.exclude": {
     "**/.git": true,
     "**/node_modules": true,
-    "**/tmp": true,
-    "src/browser/**": true
+    "**/tmp": true
   },
-
   "typescriptExplorer.typeTree.view.icons.colors.enable": true,
   "prettier.documentSelectors": ["**/*.astro", "**/*.ts"],
   "prettier.prettierPath": "./node_modules/prettier",
@@ -26,6 +24,7 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "tailwindCSS.classAttributes": ["class", "className", "classNames", "ngClass", "class:list"],
   "tailwindCSS.experimental.configFile": "packages/website/src/styles/global.css",
   "tailwindCSS.classFunctions": ["tw", "clsx", "tw\\.[a-z-]+", "cn"],
   // "tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]],

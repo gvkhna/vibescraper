@@ -50,7 +50,7 @@ export const auth = betterAuth({
   account: {
     accountLinking: {
       enabled: true,
-      trustedProviders: ['google', 'linkedin']
+      trustedProviders: ['google', 'github']
     }
   },
   hooks: {
@@ -112,12 +112,12 @@ export const auth = betterAuth({
     }
   },
   socialProviders: {
-    // ...(PUBLIC_VARS.PUBLIC_LINKEDIN_CLIENT_ID && PRIVATE_VARS.LINKEDIN_CLIENT_SECRET
+    // ...(PUBLIC_VARS.PUBLIC_GITHUB_CLIENT_ID && PRIVATE_VARS.GITHUB_CLIENT_SECRET
     //   ? {
-    //       linkedin: {
+    //       github: {
     //         enabled: true,
-    //         clientId: PUBLIC_VARS.PUBLIC_LINKEDIN_CLIENT_ID,
-    //         clientSecret: PRIVATE_VARS.LINKEDIN_CLIENT_SECRET
+    //         clientId: PUBLIC_VARS.PUBLIC_GITHUB_CLIENT_ID,
+    //         clientSecret: PRIVATE_VARS.GITHUB_CLIENT_SECRET
     //       }
     //     }
     //   : {}),
@@ -126,8 +126,7 @@ export const auth = betterAuth({
     //       google: {
     //         enabled: true,
     //         clientId: PUBLIC_VARS.PUBLIC_GOOGLE_CLIENT_ID,
-    //         clientSecret: PRIVATE_VARS.GOOGLE_CLIENT_SECRET,
-    //         redirectURI: ''
+    //         clientSecret: PRIVATE_VARS.GOOGLE_CLIENT_SECRET
     //       }
     //     }
     //   : {})

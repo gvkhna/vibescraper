@@ -20,6 +20,9 @@ import {abilityForActor} from '@/lib/permission-policy-schema'
 import {HttpStatusCode} from '@/lib/http-status-codes'
 import {asyncForEach} from '@/lib/async-utils'
 import {createPaginationEntity, DEFAULT_PAGE_SIZE} from '@/store/pagination-entity-state'
+import {generateText} from 'ai'
+import {getModelBySize} from '@/assistant-llm'
+import {extractUrlFromPrompt} from '@/lib/url-utils'
 
 const log = debug('app:server:projects')
 
@@ -431,12 +434,8 @@ const app = new Hono<HonoServer>()
         return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
       }
 
-      const actor = await userActor(db, user)
-      const subjectPolicy = await projectSubjectPolicy(db, project.subjectPolicyId)
-      const abilities = abilityForActor(actor)
-
-      if (abilities.cannot('delete', subject('Policy', subjectPolicy.policy))) {
-        return c.json({message: 'Access unauthorized'}, HttpStatusCode.Forbidden)
+      if (await userCannotProjectAction(db, 'delete', user, project.subjectPolicyId)) {
+        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
       }
 
       try {
@@ -573,6 +572,211 @@ const app = new Hono<HonoServer>()
     }
   )
   .post(
+    '/newPrompt',
+    validator('json', async (value) => {
+      return value as {
+        prompt: string
+      }
+    }),
+    async (c) => {
+      const {prompt} = c.req.valid('json')
+      const user = c.get('user')
+      const db = c.get('db')
+
+      if (!user) {
+        return c.json({message: 'Invalid auth'}, HttpStatusCode.Forbidden)
+      }
+
+      if (!prompt) {
+        return c.json({message: 'Prompt cannot be blank'}, HttpStatusCode.UnprocessableEntity)
+      }
+
+      const actor = await db.query.actor.findFirst({
+        where: (table, {eq: tableEq}) => tableEq(table.userId, user.id)
+      })
+
+      if (!actor) {
+        return c.json({message: 'Permissions invalid'}, HttpStatusCode.Forbidden)
+      }
+
+      // Extract URL from prompt
+      const urlInfo = extractUrlFromPrompt(prompt)
+      log('Extracted URL info:', urlInfo)
+
+      // Determine project name
+      let projectName: string
+      let extractedUrl: string | null = urlInfo.url
+
+      // Check if prompt is short enough to use as project name
+      const isShortPrompt = prompt.trim().length <= 100
+
+      // Format prompt as name - remove quotes, collapse whitespace, trim
+      const formatPromptAsName = (text: string) =>
+        text
+          .replace(/^['"`]+|['"`]+$/g, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+
+      // If prompt is short enough, use it as the name
+      if (isShortPrompt) {
+        projectName = formatPromptAsName(prompt)
+      } else {
+        // For longer prompts, try to generate a title with AI
+        const model = getModelBySize('small')
+
+        if (model) {
+          try {
+            const result = await generateText({
+              model: model,
+              messages: [
+                {
+                  role: 'system',
+                  content:
+                    `You are a concise title-generator. ` +
+                    `Given a user's first chat message, output a 2-6 word title.`
+                },
+                {
+                  role: 'user',
+                  content: `First message: "${prompt}"`
+                }
+              ]
+            })
+            projectName = formatPromptAsName(result.text)
+          } catch (error) {
+            log('AI generation error:', error)
+            // Fallback to truncated prompt
+            projectName = formatPromptAsName(prompt.substring(0, 50) + '...')
+          }
+        } else {
+          // No AI available, use truncated prompt
+          projectName = formatPromptAsName(prompt.substring(0, 50) + '...')
+        }
+      }
+
+      // If we didn't find a URL and AI is available, try to extract one with AI
+      if (!extractedUrl) {
+        const model = getModelBySize('small')
+
+        if (model) {
+          try {
+            const result = await generateText({
+              model: model,
+              messages: [
+                {
+                  role: 'system',
+                  content:
+                    `Extract a URL from the user's message if they mention a website or domain. ` +
+                    `Only output a valid URL starting with http:// or https://. ` +
+                    `If no website is mentioned, output "none".`
+                },
+                {
+                  role: 'user',
+                  content: prompt
+                }
+              ]
+            })
+
+            const aiResponse = result.text.trim().toLowerCase()
+            if (aiResponse !== 'none' && aiResponse.startsWith('http')) {
+              try {
+                const url = new URL(aiResponse)
+                extractedUrl = url.href
+                log('AI extracted URL:', extractedUrl)
+              } catch (e) {
+                log('AI returned invalid URL:', aiResponse)
+              }
+            }
+          } catch (error) {
+            log('AI URL extraction error:', error)
+          }
+        }
+      }
+
+      // Create project and initial chat
+      const result = await db.transaction(async (tx) => {
+        const [subjectPolicy] = await tx
+          .insert(schema.subjectPolicy)
+          .values({
+            policy: createDefaultPolicy(actor.publicId)
+          })
+          .returning()
+
+        // Insert the project
+        const [project] = await tx
+          .insert(schema.project)
+          .values({
+            name: projectName,
+            subjectPolicyId: subjectPolicy.id,
+            userId: user.id
+          })
+          .returning()
+
+        // Insert the staged project commit
+        await tx.insert(schema.projectCommit).values({
+          projectId: project.id,
+          userId: user.id,
+          type: 'staged',
+          currentEditorUrl: extractedUrl
+        })
+
+        // Create initial chat
+        const [projectChat] = await tx
+          .insert(schema.projectChat)
+          .values({
+            projectId: project.id,
+            title: projectName,
+            chatType: 'chat',
+            titleStatus: 'generated'
+          })
+          .returning()
+
+        // insert the one "empty" chat
+        await tx.insert(schema.projectChat).values({
+          projectId: project.id,
+          title: '',
+          chatType: 'empty',
+          titleStatus: 'initial'
+        })
+
+        // Create initial user message
+        const [chatMessage] = await tx
+          .insert(schema.projectChatMessage)
+          .values({
+            projectChatId: projectChat.id,
+            role: 'user',
+            index: 0,
+            content: {
+              parts: [{type: 'text', state: 'done', text: prompt}]
+            },
+            status: 'done'
+          })
+          .returning()
+
+        return {
+          project,
+          projectChat,
+          chatMessage
+        }
+      })
+
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (!result) {
+        return c.json({message: 'Failed to create project'}, HttpStatusCode.BadRequest)
+      }
+
+      const {id: _, ...restOfProject} = result.project
+      return c.json(
+        {
+          project: {
+            ...restOfProject
+          },
+          chatPublicId: result.projectChat.publicId
+        },
+        HttpStatusCode.Ok
+      )
+    }
+  )
+  .post(
     '/new',
     validator('json', async (value) => {
       return value as {
@@ -582,7 +786,6 @@ const app = new Hono<HonoServer>()
     async (c) => {
       const {projectName} = c.req.valid('json')
       const user = c.get('user')
-      const session = c.get('session')
       const db = c.get('db')
 
       if (!user) {
@@ -620,18 +823,16 @@ const app = new Hono<HonoServer>()
           .returning()
 
         // Insert the staged project commit
-        const [projectCommit] = await tx
-          .insert(schema.projectCommit)
-          .values({
-            projectId: project.id,
-            userId: user.id,
-            type: 'staged'
-          })
-          .returning()
+        await tx.insert(schema.projectCommit).values({
+          projectId: project.id,
+          userId: user.id,
+          type: 'staged'
+        })
 
         return project
       })
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!result) {
         return c.json({message: 'Failed to create project'}, HttpStatusCode.BadRequest)
       }

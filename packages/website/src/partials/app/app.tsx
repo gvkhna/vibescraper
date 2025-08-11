@@ -1,7 +1,7 @@
 import {StrictMode, type PropsWithChildren} from 'react'
 import {SWRConfig} from 'swr'
 import {ThemeProvider} from 'next-themes'
-import {Toaster} from '@/components/ui/toaster'
+import {Toaster} from '@/components/ui/sonner'
 import {ErrorBoundary} from 'react-error-boundary'
 import {EnvProvider, type EnvContextValue} from '@/partials/app/env-context'
 import {RouterProvider, createRouter} from '@tanstack/react-router'
@@ -14,15 +14,6 @@ import {NotFoundPage} from './not-found-page'
 // Create a new router instance
 const router = createRouter({
   routeTree: routeTree,
-
-  // routeTree: Route,
-  // routeTree: rootRoute,
-  // routeMasks: [...domainRouteMasks],
-  // routeTree: Route,
-  // routeTree: rootRoute('__root.tsx', [
-  //   // This will mount all routes from /routes/domain1/* to the root /*
-  //   physical('/', 'aiagentzoo')
-  // ]),
   defaultPreload: 'intent',
   basepath: '/app',
   defaultErrorComponent: (props) => <ErrorPage {...props} />,
@@ -85,4 +76,5 @@ export function App(props: PropsWithChildren<AppProps>) {
       </EnvProvider>
     </StrictMode>
   )
+  return <StrictMode></StrictMode>
 }

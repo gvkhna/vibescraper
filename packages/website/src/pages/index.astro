@@ -4,8 +4,136 @@ import {STRINGS} from '../strings'
 ---
 
 <MainLayout
-  title=''
-  description={``}
-  shortDescription={``}
+  title='Scrapeloop'
+  description='Vibe scraping is here.'
+  shortDescription='AI-powered web scraping'
 >
+  <div class='min-h-screen bg-[#0A0A0B] text-white/80'>
+    <div class='mx-auto max-w-3xl px-6 py-12 font-mono'>
+      {/* Header */}
+      <div class='mb-16 flex items-center justify-between text-sm'>
+        <span>Scrapeloop</span>
+        <div class='space-x-6'>
+          <a href='/detail' class='underline'>Get Started</a>
+          <a href='/dashboard' class='underline'>Dashboard</a>
+        </div>
+      </div>
+
+      {/* Title */}
+      <h1 class='mb-4 text-2xl font-bold text-white'>Scrapeloop</h1>
+      <p class='mb-12 text-5xl font-bold text-white'>Vibe scraping is here.</p>
+      
+      <p class='mb-12 text-base leading-relaxed'>
+        Use an AI coding agent to build scrapers that automatically adapt to website
+        changes. Define your schema once, and let the AI handle the rest.
+      </p>
+
+      {/* Image */}
+      <div class='mb-16'>
+        <img
+          src='https://placehold.co/900x450/0A0A0B/3B82F6?text=Scrapeloop&font=roboto-mono'
+          alt='Scrapeloop Interface'
+          class='w-full'
+        />
+      </div>
+
+      {/* Build your scraper */}
+      <h2 class='mb-6 text-2xl font-bold text-white'>## Build your scraper</h2>
+      <p class='mb-6 text-base leading-relaxed'>
+        Tell the AI agent what data you need. It understands your intent and builds a
+        scraper that extracts exactly what you're looking for, in the schema you define.
+      </p>
+      
+      <pre class='mb-6 overflow-x-auto bg-[#151517] p-4 text-sm'>{`{
+  "product_name": "string",
+  "price": "number",
+  "availability": "boolean",
+  "features": ["string"],
+  "description": "string"
+}`}</pre>
+
+      <p class='mb-16 text-base leading-relaxed'>
+        The AI agent automatically navigates pages, handles pagination, and extracts
+        data according to your schema. No more brittle CSS selectors or XPath queries.
+      </p>
+
+      {/* Automatically respond to changes */}
+      <h2 class='mb-6 text-2xl font-bold text-white'>## Automatically respond to changes</h2>
+      <p class='mb-6 text-base leading-relaxed'>
+        When websites change their layout or structure, traditional scrapers break.
+        Scrapeloop's AI agent automatically adapts to these changes.
+      </p>
+      
+      <ul class='mb-16 space-y-2 text-base'>
+        <li>* Periodic QA checks ensure data quality</li>
+        <li>* Monitor pages over time with version history</li>
+        <li>* Edit schemas on the fly or let the AI suggest improvements</li>
+        <li>* Automatic error recovery and retry logic</li>
+      </ul>
+
+      {/* Query your data */}
+      <h2 class='mb-6 text-2xl font-bold text-white'>## Query your data</h2>
+      <p class='mb-6 text-base leading-relaxed'>
+        Access your scraped data through multiple interfaces designed for different
+        use cases.
+      </p>
+      
+      <ul class='mb-16 space-y-2 text-base'>
+        <li>* SQL analysis for complex queries</li>
+        <li>* Tell the AI agent to analyze data for you</li>
+        <li>* Simple JSON API for programmatic access</li>
+        <li>* Export everything in standard formats</li>
+      </ul>
+
+      {/* Pricing */}
+      <h2 class='mb-8 text-2xl font-bold text-white'>## Pricing</h2>
+      <div class='mb-16'>
+        <div class='grid grid-cols-3 gap-8 mb-6 text-base'>
+          <div>
+            <p class='font-bold text-white mb-2'>Free</p>
+            <p class='mb-4'>$0/month</p>
+            <ul class='space-y-1 text-sm'>
+              <li>1 site</li>
+              <li>10 pages/month</li>
+              <li>Basic support</li>
+            </ul>
+          </div>
+          <div>
+            <p class='font-bold text-white mb-2'>Pro</p>
+            <p class='mb-4'>$49/month</p>
+            <ul class='space-y-1 text-sm'>
+              <li>Unlimited sites</li>
+              <li>1,000 pages/month</li>
+              <li>Priority support</li>
+            </ul>
+          </div>
+          <div>
+            <p class='font-bold text-white mb-2'>Scale</p>
+            <p class='mb-4'>Custom</p>
+            <ul class='space-y-1 text-sm'>
+              <li>Custom limits</li>
+              <li>Dedicated support</li>
+              <li>SLA available</li>
+            </ul>
+          </div>
+        </div>
+        
+        <p class='text-base'>Pricing scales with your usage.</p>
+      </div>
+
+      {/* Footer */}
+      <div class='border-t border-white/10 pt-8'>
+        <div class='mb-4 space-x-6 text-sm'>
+          <a href='/detail' class='underline'>Get Started</a>
+          <span class='text-white/30'>|</span>
+          <a href='#' class='underline'>Documentation</a>
+          <span class='text-white/30'>|</span>
+          <a href='#' class='underline'>API</a>
+          <span class='text-white/30'>|</span>
+          <a href='#' class='underline'>Contact</a>
+        </div>
+        <p class='text-sm text-white/50'>© 2024 Scrapeloop</p>
+      </div>
+    </div>
+  </div>
 </MainLayout>

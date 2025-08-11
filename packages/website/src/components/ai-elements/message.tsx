@@ -1,64 +1,59 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/avatar';
-import type { ComponentProps, HTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
-import type { UIMessage } from 'ai';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
+import type {ComponentProps, HTMLAttributes} from 'react'
+import {cn} from '@/lib/utils'
+import type {UIMessage} from 'ai'
 
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
-  from: UIMessage['role'];
-};
+  from: UIMessage['role']
+  'data-error'?: boolean
+}
 
-export const Message = ({ className, from, ...props }: MessageProps) => (
+export const Message = ({className, from, ...props}: MessageProps) => (
   <div
     className={cn(
       'group flex w-full items-end justify-end gap-2 py-4',
       from === 'user' ? 'is-user' : 'is-assistant flex-row-reverse justify-end',
       '[&>div]:max-w-[80%]',
-      className,
+      className
     )}
     {...props}
   />
-);
+)
 
-export type MessageContentProps = HTMLAttributes<HTMLDivElement>;
+export type MessageContentProps = HTMLAttributes<HTMLDivElement> & {
+  'data-error'?: boolean
+}
 
-export const MessageContent = ({
-  children,
-  className,
-  ...props
-}: MessageContentProps) => (
+export const MessageContent = ({children, className, ...props}: MessageContentProps) => (
   <div
     className={cn(
-      'flex flex-col gap-2 rounded-lg text-sm text-foreground px-4 py-3 overflow-hidden',
+      'text-foreground flex flex-col gap-2 overflow-hidden rounded-lg px-4 py-3 text-sm',
       'group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground',
       'group-[.is-assistant]:bg-secondary group-[.is-assistant]:text-foreground',
-      className,
+      'data-[error=true]:text-foreground data-[error=true]:!bg-red-400',
+      className
     )}
     {...props}
   >
-    <div className="is-user:dark">{children}</div>
+    <div className='is-user:dark'>{children}</div>
   </div>
-);
+)
 
 export type MessageAvatarProps = ComponentProps<typeof Avatar> & {
-  src: string;
-  name?: string;
-};
+  src: string
+  name?: string
+}
 
-export const MessageAvatar = ({
-  src,
-  name,
-  className,
-  ...props
-}: MessageAvatarProps) => (
+export const MessageAvatar = ({src, name, className, ...props}: MessageAvatarProps) => (
   <Avatar
-    className={cn('size-8 ring ring-1 ring-border', className)}
+    className={cn('ring-border size-8 ring', className)}
     {...props}
   >
-    <AvatarImage alt="" className="mt-0 mb-0" src={src} />
+    <AvatarImage
+      alt=''
+      className='mb-0 mt-0'
+      src={src}
+    />
     <AvatarFallback>{name?.slice(0, 2) || 'ME'}</AvatarFallback>
   </Avatar>
-);
+)

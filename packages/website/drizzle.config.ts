@@ -1,14 +1,16 @@
+#!/usr/bin/env bun
+/* eslint-disable no-restricted-globals */
 /* eslint-disable no-console */
-import {config} from 'dotenv'
+// import {config} from 'dotenv'
 import {defineConfig} from 'drizzle-kit'
-import {fileURLToPath} from 'node:url'
-import {dirname, resolve} from 'node:path'
-import process from 'node:process'
+// import {fileURLToPath} from 'node:url'
+// import {dirname, resolve} from 'node:path'
+// import process from 'node:process'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const projectRootEnv = resolve(__dirname, '../../.env')
+// const __dirname = dirname(fileURLToPath(import.meta.url))
+// const projectRootEnv = resolve(__dirname, '../../.env')
 
-config({path: projectRootEnv})
+// config({path: projectRootEnv})
 
 console.log('drizzle.config.ts - database url: ', process.env.DATABASE_URL!)
 

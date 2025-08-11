@@ -27,7 +27,7 @@ export function NewProjectDialog(props: PropsWithChildren<NewProjectDialogProps>
   const showResponseError = useShowResponseError()
   const navigate = useNavigate()
 
-  const addRecentProject = useProjectStore((state) => state.recentProjectsSlice.addRecentProject)
+  // const addRecentProject = useProjectStore((state) => state.recentProjectsSlice.addRecentProject)
   const [projectName, setProjectName] = useState('')
   const {children, open, onOpenChange} = props
 
@@ -41,7 +41,8 @@ export function NewProjectDialog(props: PropsWithChildren<NewProjectDialogProps>
       if (resp.ok) {
         const json = await resp.json()
         if (json.project.publicId) {
-          addRecentProject({publicId: json.project.publicId, name: json.project.name})
+          // TODO: Re-enable when recentProjectsSlice is available
+          // addRecentProject({publicId: json.project.publicId, name: json.project.name})
           nowait(
             navigate({
               to: '/project/$project-public-id',

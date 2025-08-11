@@ -1,4 +1,4 @@
-import type {ProjectFileRef} from './project-slice'
+// import type {ProjectFileRef} from './project-slice' // TODO: ProjectFileRef doesn't exist
 import type {StateSlice} from './use-project-store'
 import type {ProjectPublicId} from '@/db/schema'
 import type {LoadingState} from './async-entity-state'
@@ -10,14 +10,17 @@ export type TabId = BrandedType<string, 'TabId'>
 
 const log = debug('editor-slice')
 
-export type LeftPanelTab =
+export type ExtractionPanelTabType =
   | 'preview'
   | 'raw-html'
   | 'cleaned-html'
   | 'filtered-html'
   | 'readability-html'
   | 'markdown'
+  | 'data'
   | 'data-schema'
+
+export type AssistantPanelView = 'conversation' | 'chat-history'
 
 // export type EditorTab = {
 //   tabId: TabId
@@ -35,11 +38,18 @@ export type LeftPanelTab =
 export interface EditorSlice {
   // leftPanelWidth: string
 
-  activeTab: Record<ProjectPublicId, LeftPanelTab | undefined | null>
+  activeTab: Record<ProjectPublicId, ExtractionPanelTabType | undefined | null>
+  setActiveTab: (id: ExtractionPanelTabType) => void
+
+  // Store the last selected dropdown tab for quick access
+  lastExtractionDropdownTab: Record<ProjectPublicId, ExtractionPanelTabType | undefined | null>
+  setLastExtractionDropdownTab: (tab: ExtractionPanelTabType) => void
 
   // setLeftPanelTab: (id: EditorSlice['leftPanelTab']) => void
   // setLeftPanelWidth: (width: string) => void
 
+  assistantPanelView: Record<ProjectPublicId, AssistantPanelView | undefined | null>
+  setAssistantPanelView: (view: AssistantPanelView) => void
   rightPanelSize: number
   setRightPanelSize: (size: number) => void
   rightPanelOpen: boolean
@@ -62,7 +72,9 @@ export interface EditorSlice {
 export const createEditorSlice: StateSlice<EditorSlice> = (set, get) =>
   ({
     activeTab: {},
+    lastExtractionDropdownTab: {},
     rightPanelOpen: true,
+    assistantPanelView: {},
     // bottomPanelOpen: false,
     leftPanelTab: 'preview',
     leftPanelWidth: '36rem',
@@ -167,6 +179,20 @@ export const createEditorSlice: StateSlice<EditorSlice> = (set, get) =>
     //     'editor/failTabLoading'
     //   )
     // },
+    setAssistantPanelView(view) {
+      const activeProjectId = get().projectSlice.project?.project.publicId
+
+      if (!activeProjectId) {
+        return
+      }
+      set(
+        (draft) => {
+          draft.editorSlice.assistantPanelView[activeProjectId] = view
+        },
+        true,
+        'editor/setAssistantPanelView'
+      )
+    },
     setActiveTab: (id) => {
       const activeProjectId = get().projectSlice.project?.project.publicId
 
@@ -179,6 +205,20 @@ export const createEditorSlice: StateSlice<EditorSlice> = (set, get) =>
         },
         true,
         'editor/setActiveTab'
+      )
+    },
+    setLastExtractionDropdownTab: (tab) => {
+      const activeProjectId = get().projectSlice.project?.project.publicId
+
+      if (!activeProjectId) {
+        return
+      }
+      set(
+        (draft) => {
+          draft.editorSlice.lastExtractionDropdownTab[activeProjectId] = tab
+        },
+        true,
+        'editor/setLastExtractionDropdownTab'
       )
     }
   }) as EditorSlice

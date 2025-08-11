@@ -32,9 +32,17 @@ const preprocessOptionalValueToTrue = (val: unknown) => {
 
 // Define your environment schema.
 const envSchema = z.object({
-  ANTHROPIC_API_KEY: z.string().optional(),
-  GROQ_API_KEY: z.string().optional(),
-  OPENAI_API_KEY: z.string().optional(),
+  // Model configuration
+  AI_PREFERRED_PROVIDER: z.string().optional(),
+  AI_PROVIDER_BASE_URL: z.string().optional(),
+  AI_SMALL_MODEL: z.string().optional(),
+  AI_MEDIUM_MODEL: z.string().optional(),
+  AI_LARGE_MODEL: z.string().optional(),
+
+  // OpenAI-compatible configuration (for Ollama, LM Studio, etc.)
+  AI_OPENAI_COMPATIBLE_API_KEY: z.string().optional(),
+  AI_OPENAI_COMPATIBLE_NAME: z.string().optional(),
+
   AWS_ACCESS_KEY_ID: z.string().optional(),
   AWS_BUCKET_NAME: z.string().optional(),
   AWS_FORCE_PATH_STYLE: z.string().optional(),
@@ -44,10 +52,12 @@ const envSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(1),
   // CF_R2_TOKEN: z.string().optional(),
   CRYPT_SECRET_KEY: z.string().min(1),
+  GITHUB_CLIENT_SECRET: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
   DATABASE_URL: z.string().min(1),
-  DEBUG_DATABASE: z.preprocess(preprocessOptionalValueToTrue, z.boolean()),
+  DEBUG_DATABASE: z.string().optional(),
   DEBUG: z.string().optional(),
-  MOCK_LLM_TEST: z.string().optional(),
+  MOCK_LLM: z.string().optional(),
   SMTP_ADDRESS: z.string().min(1),
   SMTP_FROM_EMAIL: z.string().min(1),
   SMTP_PASSWORD: z.string().min(1),

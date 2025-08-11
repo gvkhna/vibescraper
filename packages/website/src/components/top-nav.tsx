@@ -41,7 +41,7 @@ export function TopNav() {
             size='sm'
             variant='ghost'
             className='gap-2 text-white hover:bg-white/10'
-            onClick={() => window.open('https://docs.example.com', '_blank')}
+            onClick={() => globalThis.window.open('https://docs.example.com', '_blank')}
             aria-label='Open Documentation'
           >
             <BookOpen className='h-4 w-4' />

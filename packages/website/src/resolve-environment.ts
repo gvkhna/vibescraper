@@ -1,8 +1,5 @@
 /* eslint-disable no-restricted-globals */
 import {z} from 'zod'
-import debug from 'debug'
-
-const log = debug('app:siteconfig')
 
 export function resolveEnvironment<T extends z.ZodType>(schema: T): z.infer<T> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -11,8 +8,8 @@ export function resolveEnvironment<T extends z.ZodType>(schema: T): z.infer<T> {
   const combinedEnv: Record<string, unknown> = {}
 
   // If running in a Vite-like environment (Astro, etc.) that provides `import.meta.env`
-  // eslint-disable-next-line
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (import.meta?.env) {
     for (const [key, value] of Object.entries(import.meta.env)) {
       // If `value` is already a string or undefined, store it
       // (Depending on your environment, `import.meta.env` could be typed as string | boolean, etc.)
@@ -35,10 +32,9 @@ export function resolveEnvironment<T extends z.ZodType>(schema: T): z.infer<T> {
   }
 
   // If running in Node.js or Bun environment
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (typeof process !== 'undefined' && process.env) {
+  if (typeof global.process !== 'undefined' && global.process.env) {
     // For each key in process.env, if we don't already have a value, we set it
-    for (const [key, value] of Object.entries(process.env)) {
+    for (const [key, value] of Object.entries(global.process.env as typeof process.env)) {
       combinedEnv[key] ??= value
     }
   }

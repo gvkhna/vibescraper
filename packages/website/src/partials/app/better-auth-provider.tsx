@@ -21,8 +21,20 @@ export function BetterAuthProvider({children}: {children: ReactNode}) {
       }}
       magicLink={true}
       Link={Link}
+      viewPaths={{
+        SIGN_IN: 'signin',
+        SIGN_OUT: 'signout',
+        SIGN_UP: 'signup',
+        FORGOT_PASSWORD: 'forgot-password',
+        RESET_PASSWORD: 'reset-password',
+        MAGIC_LINK: 'magic-link'
+        // SETTINGS: 'settings'
+      }}
       social={{
-        providers: ['google', 'linkedin']
+        providers: ['google', 'github']
+      }}
+      settings={{
+        url: '/app/settings'
       }}
       avatar={{
         upload: async (file: File) => {

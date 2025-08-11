@@ -16,7 +16,9 @@ if (PUBLIC_VARS.DEV) {
 
 class AppDebugLogWriter implements LogWriter {
   write(message: string) {
-    log(message)
+    if (PUBLIC_VARS.PROD && PRIVATE_VARS.DEBUG_DATABASE) {
+      log(message)
+    }
   }
 }
 const logger = new DefaultLogger({writer: new AppDebugLogWriter()})
@@ -118,7 +120,7 @@ export const db: typeof dbNeon = (() => {
       // Debug queries - log everything about query execution
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       debug: (connection: any, query: any, params: any, types: any) => {
-        if (PUBLIC_VARS.DEV && PRIVATE_VARS.DEBUG_DATABASE) {
+        if (PRIVATE_VARS.DEBUG_DATABASE) {
           log('\n🔍 DEBUG: Query Execution')
           log(`Connection ID: ${connection}`)
           log(`Query: ${query}`)
@@ -128,7 +130,7 @@ export const db: typeof dbNeon = (() => {
       },
 
       onclose: (connId) => {
-        if (PUBLIC_VARS.DEV && PRIVATE_VARS.DEBUG_DATABASE) {
+        if (PRIVATE_VARS.DEBUG_DATABASE) {
           log(`Connection ${connId} closed`)
         }
       },

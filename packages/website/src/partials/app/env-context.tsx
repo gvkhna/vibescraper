@@ -1,4 +1,4 @@
-import {createContext, type PropsWithChildren, useContext, type FC} from 'react'
+import {createContext, type PropsWithChildren, useContext, type FC, useMemo} from 'react'
 
 // Define the shape of the environment variables your context will contain
 export interface EnvContextValue {
@@ -10,7 +10,10 @@ export const EnvContext = createContext<EnvContextValue | null>(null)
 
 // Provide the context value to the subtree
 export const EnvProvider: FC<PropsWithChildren<EnvContextValue>> = ({publicAppHostname, children}) => {
-  const value: EnvContextValue = {publicAppHostname}
+  const value = useMemo<EnvContextValue>(
+    () => ({publicAppHostname}),
+    [publicAppHostname]
+  )
   return <EnvContext.Provider value={value}>{children}</EnvContext.Provider>
 }
 

@@ -18,7 +18,7 @@ import {useNavigate} from '@tanstack/react-router'
 import {useShowResponseError} from '@/hooks/use-show-response-error'
 import {useProjectStore} from '@/store/use-project-store'
 import {useAllProjects} from '@/partials/project-editor/use-all-projects'
-import {DashboardLayout} from '@/partials/dashboard/dashboard-layout'
+// import {DashboardShell} from '@/components/dashboard-shell'
 import {nowait} from '@/lib/async-utils'
 
 export function AllProjectsPage() {
@@ -111,9 +111,10 @@ export const Route = createFileRoute('/projects/')({
 })
 
 function RouteComponent() {
-  return (
-    <DashboardLayout>
-      <AllProjectsPage />
-    </DashboardLayout>
-  )
+  return null
+  // return (
+  //   <DashboardShell>
+  //     <AllProjectsPage />
+  //   </DashboardShell>
+  // )
 }

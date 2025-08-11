@@ -1,92 +1,117 @@
-'use client'
 import {Button} from '@/components/ui/button'
-import {Card, CardHeader, CardTitle} from '@/components/ui/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import {MoreHorizontal, Trash2} from 'lucide-react'
+import {MoreHorizontal, Trash2, MessageSquare, Clock, Plus} from 'lucide-react'
+import {cn} from '@/lib/utils'
+import {formatDistanceToNow} from 'date-fns'
 import {useProjectStore} from '@/store/use-project-store'
-import debug from 'debug'
 import {nowait} from '@/lib/async-utils'
+import debug from 'debug'
 
 const log = debug('app:assistant-chat-history')
 
-export function AssistantChatHistory() {
-  const project = useProjectStore((state) => state.projectSlice.project?.project)
+interface AssistantChatHistoryProps {
+  className?: string
+}
 
+export function AssistantChatHistory({className}: AssistantChatHistoryProps) {
+  const project = useProjectStore((state) => state.projectSlice.project?.project)
   const projectChatsState = useProjectStore((state) => state.assistantSlice.projectChatsState)
+  const selectedProjectChat = useProjectStore((state) => state.assistantSlice.selectedProjectChat)
   const selectChat = useProjectStore((state) => state.assistantSlice.selectChat)
   const newChat = useProjectStore((state) => state.assistantSlice.newChat)
   const deleteProjectChat = useProjectStore((state) => state.assistantSlice.deleteProjectChat)
+  const setAssistantPanelView = useProjectStore((state) => state.editorSlice.setAssistantPanelView)
 
   const projectPublicId = project?.publicId
   if (!projectPublicId) {
     log('expected project public id not found!')
-    return
+    return null
   }
 
-  const conversations = projectChatsState[project.publicId]
+  const conversations = projectChatsState[projectPublicId]
   if (!conversations) {
     log('expected project conversations but not found!')
-    return
+    return null
   }
 
+  const selectedChatId = selectedProjectChat[projectPublicId]
+  const displayChats = conversations.projectChats
+
   return (
-    <div className='flex min-h-screen flex-col bg-gray-50'>
-      {/* <header className='sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
-        <div className='flex h-14 items-center px-4'>
-          <div className='relative max-w-md flex-1'>
-            <Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
-            <Input
-              type='search'
-              placeholder='Search for a chat...'
-              className='w-full bg-muted/50 pl-8'
-            />
-          </div>
-        </div>
-      </header> */}
-      <div className='flex-1 space-y-4 p-4'>
-        <div className='flex pb-4'>
-          <Button
-            className='flex-1'
-            onClick={() => {
-              newChat(projectPublicId)
-            }}
-          >
-            New Chat
-          </Button>
-        </div>
-        {conversations.projectChats
-          .filter((chat) => chat.chatType !== 'empty')
-          .map((conversation) => (
-            <div
-              key={conversation.publicId}
-              className='group relative cursor-pointer transition-colors'
-              onClick={() => {
-                selectChat(projectPublicId, conversation.publicId)
-              }}
-            >
-              <Card className='hover:bg-muted/50 relative transition-colors'>
-                <CardHeader className='px-4 pb-4 pt-4'>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center gap-2'>
-                      <CardTitle className='text-base'>{conversation.title || 'Untitled Chat'}</CardTitle>
-                      {/* {conversation.locked && <Lock className='h-4 w-4 text-muted-foreground' />} */}
+    <div className={cn('flex h-full flex-col overflow-hidden bg-[#0A0A0B]', className)}>
+      {/* New Chat Button */}
+      <div className='flex-shrink-0 border-b border-white/10 p-3'>
+        <Button
+          className='w-full bg-blue-600 text-white hover:bg-blue-700'
+          onClick={() => {
+            newChat(projectPublicId)
+            setAssistantPanelView('conversation')
+          }}
+        >
+          <Plus className='mr-2 h-4 w-4' />
+          New Chat
+        </Button>
+      </div>
+
+      {/* Chat List */}
+      <div className='flex-1 overflow-y-auto overflow-x-hidden'>
+        <div className='space-y-1 p-3'>
+          {displayChats.length === 0 ? (
+            <div className='flex h-32 items-center justify-center px-2 text-center'>
+              <div>
+                <MessageSquare className='mx-auto mb-2 h-6 w-6 text-white/30' />
+                <p className='text-xs text-white/50'>No conversations yet</p>
+                <p className='mt-1 text-xs text-white/30'>Start a new chat</p>
+              </div>
+            </div>
+          ) : (
+            displayChats
+              .filter((chat) => chat.chatType !== 'empty')
+              .map((chat) => (
+                <div
+                  key={chat.publicId}
+                  className={cn(
+                    'group relative cursor-pointer rounded-lg transition-all',
+                    'hover:bg-white/5',
+                    selectedChatId === chat.publicId && 'bg-white/10'
+                  )}
+                  onClick={() => {
+                    selectChat(projectPublicId, chat.publicId)
+                    setAssistantPanelView('conversation')
+                  }}
+                >
+                  <div className='flex items-start gap-3 p-3'>
+                    <div className='min-w-0 flex-1 overflow-hidden'>
+                      <h3 className='truncate text-sm font-medium text-white'>
+                        {chat.title || 'Untitled Chat'}
+                      </h3>
+                      <div className='mt-1 flex items-center gap-3 text-xs text-white/40'>
+                        <span className='flex items-center gap-1'>
+                          <Clock className='h-3 w-3' />
+                          {chat.updatedAt
+                            ? formatDistanceToNow(new Date(chat.updatedAt), {addSuffix: true})
+                            : 'recently'}
+                        </span>
+                      </div>
                     </div>
+
                     <div
                       onClick={(e) => {
                         e.stopPropagation()
                       }}
+                      className='flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100'
                     >
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
                             variant='ghost'
                             size='icon'
-                            className='h-8 w-8'
+                            className='h-7 w-7 text-white/60 hover:bg-white/10 hover:text-white'
                           >
                             <MoreHorizontal className='h-4 w-4' />
                             <span className='sr-only'>More options</span>
@@ -94,25 +119,12 @@ export function AssistantChatHistory() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                           align='end'
-                          className='w-[180px]'
+                          className='w-[160px] border-white/10 bg-[#151517]'
                         >
-                          {/* <DropdownMenuItem>
-                            <Share className='mr-2 h-4 w-4' />
-                            <span>Share</span>
-                          </DropdownMenuItem> */}
-                          {/* <DropdownMenuItem>
-                            <Pencil className='mr-2 h-4 w-4' />
-                            <span>Rename</span>
-                          </DropdownMenuItem> */}
-                          {/* <DropdownMenuItem>
-                            <Star className='mr-2 h-4 w-4' />
-                            <span>Favorite</span>
-                          </DropdownMenuItem> */}
-                          {/* <DropdownMenuSeparator /> */}
                           <DropdownMenuItem
-                            className='text-destructive'
+                            className='text-red-400 hover:bg-red-900/20 hover:text-red-400'
                             onClick={() => {
-                              nowait(deleteProjectChat(projectPublicId, conversation.publicId))
+                              nowait(deleteProjectChat(projectPublicId, chat.publicId))
                             }}
                           >
                             <Trash2 className='mr-2 h-4 w-4' />
@@ -122,26 +134,10 @@ export function AssistantChatHistory() {
                       </DropdownMenu>
                     </div>
                   </div>
-                </CardHeader>
-                {/* <CardContent className='px-4 pb-4 pt-0'>
-                <p className='line-clamp-1 text-sm text-muted-foreground'>{conversation.preview}</p>
-              </CardContent> */}
-                {/* <CardFooter className='pt-2'>
-                <div className='flex items-center gap-2'>
-                  <Avatar className='h-6 w-6'>
-                    <AvatarImage
-                      src={conversation.avatar || '/placeholder.svg'}
-                      alt={conversation.user}
-                    />
-                    <AvatarFallback>{conversation.user.substring(0, 2)}</AvatarFallback>
-                  </Avatar>
-                  <span className='text-sm font-medium'>{conversation.user}</span>
-                  <span className='text-xs text-muted-foreground'>{conversation.updated}</span>
                 </div>
-              </CardFooter> */}
-              </Card>
-            </div>
-          ))}
+              ))
+          )}
+        </div>
       </div>
     </div>
   )

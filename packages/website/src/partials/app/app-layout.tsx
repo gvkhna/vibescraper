@@ -5,10 +5,10 @@ export interface AppLayoutProps {}
 export function AppLayout({children}: PropsWithChildren<AppLayoutProps>) {
   return (
     <>
-      <div className='bg-background relative flex min-h-screen flex-col'>
+      {/* <div className='bg-background relative flex min-h-screen flex-col'>
         <main className=''>{children}</main>
-      </div>
-      <Toaster />
+      </div> */}
+      {/* <Toaster /> */}
     </>
   )
 }

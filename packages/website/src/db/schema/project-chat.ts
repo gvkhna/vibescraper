@@ -82,10 +82,18 @@ export const projectChatMessage = pgTable(
 
     /* AI usage for cost analytics */
     usage: jsonb().$type<{
-      finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | 'unknown'
-      promptTokens: number
-      completionTokens: number
-      totalTokens: number
+      finalized?: boolean
+      aborted?: boolean
+      continuation?: boolean
+      errored?: boolean
+      errorMessage?: string | null
+      finishReason?: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | 'unknown'
+      inputTokens?: number
+      outputTokens?: number
+      totalTokens?: number
+      reasoningTokens?: number
+      cachedInputTokens?: number
+      durationMs?: number
     } | null>(),
     ...TIMESTAMPS_SCHEMA
   },

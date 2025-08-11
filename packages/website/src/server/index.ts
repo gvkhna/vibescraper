@@ -1,7 +1,7 @@
 declare let setInterval: WindowOrWorkerGlobalScope['setInterval']
 declare let clearInterval: WindowOrWorkerGlobalScope['clearInterval']
 
-import {Hono} from 'hono'
+import {Hono, type Context} from 'hono'
 import {auth} from '../lib/auth'
 import {fileURLToPath} from 'node:url'
 import * as schema from '@/db/schema'
@@ -78,6 +78,50 @@ app.on(['POST', 'GET'], '/auth/*', (c) => {
   log('calling auth handler', c.req.path)
   return auth.handler(c.req.raw)
 })
+
+const MAX_BODY_PREVIEW = 10_000 // characters
+// TODO: move it somewhere more appropriate
+// for debugging hono request/response
+export async function logRequestDetails(c: Context) {
+  const req = c.req.raw.clone()
+
+  /* ---------- headers ---------- */
+  const headersObj = Object.fromEntries(req.headers.entries())
+  log('[Headers]', headersObj)
+
+  /* ---------- body (safe) ------ */
+  if (req.bodyUsed) {
+    log('[Body]', '[already consumed]')
+    return
+  }
+
+  const ct = req.headers.get('content-type') ?? ''
+
+  // Clone can throw "unusable" in Undici if body is empty/locked
+  let bodyText: string | undefined
+  try {
+    const clone = req.clone()
+
+    if (ct.includes('application/json') || ct.startsWith('text/')) {
+      bodyText = await clone.text()
+    } else if (ct.startsWith('multipart/form-data')) {
+      bodyText = '[multipart/form-data omitted]'
+    } else if (ct) {
+      bodyText = `[${ct} body omitted]`
+    } else {
+      bodyText = '[no body]'
+    }
+  } catch (err) {
+    log('[Body logging error]', err)
+    bodyText = '[unreadable body]'
+  }
+
+  if (bodyText && bodyText.length > MAX_BODY_PREVIEW) {
+    bodyText = bodyText.slice(0, MAX_BODY_PREVIEW) + '… (truncated)'
+  }
+
+  log('[Body]', bodyText)
+}
 
 // ================================================================
 // **IMPORTANT: DO NOT RETURN ARRAYS OR RAW DATABASE OBJECTS DIRECTLY!**

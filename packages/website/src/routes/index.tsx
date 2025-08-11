@@ -1,10 +1,10 @@
 import {createFileRoute} from '@tanstack/react-router'
-import DashboardApp from '@/partials/dashboard/dashboard-app'
+import {VibecodingLandingPage} from '@/partials/vibecoding/landing-page'
 
 export const Route = createFileRoute('/')({
   component: Page
 })
 
 function Page() {
-  return <DashboardApp />
+  return <VibecodingLandingPage />
 }

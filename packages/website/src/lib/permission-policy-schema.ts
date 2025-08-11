@@ -27,8 +27,8 @@ export const AuditEntry = z.object({
     })
   ]),
   actionType: z.enum(PermissionPolicyActionValues),
-  patches: z.array(z.object({}).transform((val) => val as Patch)),
-  inversePatches: z.array(z.object({}).transform((val) => val as Patch))
+  patches: z.array(z.object({}).transform((val) => val as unknown as Patch)),
+  inversePatches: z.array(z.object({}).transform((val) => val as unknown as Patch))
 })
 
 export type AuditEntrySchema = Readonly<z.infer<typeof AuditEntry>>

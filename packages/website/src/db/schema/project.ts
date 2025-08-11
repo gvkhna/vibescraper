@@ -146,6 +146,7 @@ export const projectCommit = pgTable(
       .$type<ProjectCommitSettings>(),
     activeSchemaVersion: integer(),
     activeExtractorVersion: integer(),
+    currentEditorUrl: text(),
     ...TIMESTAMPS_SCHEMA
   },
   (table) => [uniqueIndex().on(table.publicId)]

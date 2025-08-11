@@ -4,11 +4,8 @@
     "**/node_modules": true,
     "**/tmp": true
   },
-  "typescriptExplorer.typeTree.view.icons.colors.enable": true,
-  "prettier.documentSelectors": ["**/*.astro", "**/*.ts"],
+  // "prettier.documentSelectors": ["**/*.astro", "**/*.ts"],
   "prettier.prettierPath": "./node_modules/prettier",
-  "editor.formatOnSave": true,
-  "typescript.experimental.expandableHover": true,
   "files.associations": {
     "*.css": "tailwindcss"
   },
@@ -19,68 +16,66 @@
   "eslint.validate": ["javascript", "javascriptreact", "astro", "typescript", "typescriptreact"],
   "eslint.runtime": "node",
   "eslint.debug": false,
-  "svg.preview.background": "transparent",
-  "workbench.colorTheme": "Default Dark Modern",
-  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.tsdk": "./node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
   "tailwindCSS.classAttributes": ["class", "className", "classNames", "ngClass", "class:list"],
   "tailwindCSS.experimental.configFile": "packages/website/src/styles/global.css",
   "tailwindCSS.classFunctions": ["tw", "clsx", "tw\\.[a-z-]+", "cn"],
   // "tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]],
+  "editor.formatOnSave": true,
   "[plaintext]": {
     "editor.wordWrap": "bounded",
-    "editor.unicodeHighlight.ambiguousCharacters": false,
-    "editor.unicodeHighlight.invisibleCharacters": false
+    "editor.unicodeHighlight.ambiguousCharacters": true,
+    "editor.unicodeHighlight.invisibleCharacters": true
+  },
+  "markdown.validate.enabled": true,
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.unicodeHighlight.ambiguousCharacters": true,
+    "editor.unicodeHighlight.invisibleCharacters": true,
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
   },
   "[mdx]": {
     "editor.wordWrap": "bounded",
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[astro]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[tailwindcss]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[css]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[mjs]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "jupyter.kernels.excludePythonEnvironments": [
     "/usr/bin/python3",
@@ -105,6 +100,5 @@
   "python.analysis.autoSearchPaths": true,
   "python.analysis.useLibraryCodeForTypes": true,
   "python.analysis.indexing": true,
-  "python.analysis.autoImportCompletions": true,
-  "markdown.validate.enabled": true
+  "python.analysis.autoImportCompletions": true
 }

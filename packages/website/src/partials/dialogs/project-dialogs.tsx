@@ -4,7 +4,6 @@ import {DeleteProjectConfirmDialog} from '@/partials/dialogs/delete-project-conf
 import {NewProjectDialog} from '@/partials/dialogs/new-project-dialog'
 import {RenameProjectDialog} from '@/partials/dialogs/rename-project-dialog'
 import {useProjectStore} from '@/store/use-project-store'
-import api from '@/lib/api-client'
 import {ProjectNotFoundDialog} from './project-not-found-dialog'
 import {useNavigate} from '@tanstack/react-router'
 import {nowait} from '@/lib/async-utils'
@@ -12,6 +11,7 @@ import debug from 'debug'
 import {useEffect} from 'react'
 import {getErrorMessage} from '@/lib/error-message'
 import {CrawlerActivationDialog} from './crawler-activation-dialog'
+import {ScraperSettingsDialog} from './scraper-settings-dialog'
 
 const log = debug('app:project-dialogs')
 
@@ -21,6 +21,7 @@ export type ProjectDialogsConfig = {
   'new-project': null
   'project-not-found': null
   'crawler-activation-dialog': null
+  'scraper-settings': null
 }
 
 export type ProjectDialogType = keyof ProjectDialogsConfig
@@ -137,6 +138,44 @@ export function ProjectDialogs() {
             setCurrentProjectDialog('new-project', null)
           } else {
             setCurrentProjectDialog(null, null)
+          }
+        }}
+      />
+
+      <ScraperSettingsDialog
+        key={
+          currentProjectDialog.type === 'scraper-settings'
+            ? 'scraper-settings-open'
+            : 'scraper-settings-closed'
+        }
+        open={currentProjectDialog.type === 'scraper-settings'}
+        onOpenChange={(open) => {
+          if (open) {
+            setCurrentProjectDialog('scraper-settings', null)
+          } else {
+            setCurrentProjectDialog(null, null)
+          }
+        }}
+        projectId={project.project.publicId}
+        projectName={project.project.name}
+        initialSettings={{
+          commit: projectCommit?.settingsJson,
+          extractor: null
+        }}
+        onSave={async (settings) => {
+          try {
+            // TODO: Implement API call to save settings
+            // This would typically update projectCommit.settingsJson and extractor.settingsJson
+            log('Saving settings:', settings)
+
+            // Simulate saving for now
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+
+            toast.success('Settings saved successfully')
+            setCurrentProjectDialog(null, null)
+          } catch (error) {
+            toast.error(getErrorMessage(error))
+            throw error
           }
         }}
       />

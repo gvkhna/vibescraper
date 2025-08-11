@@ -111,11 +111,12 @@ export function ExtractorPage({projectPublicId, chatId}: ExtractorPageProps) {
         saveUrl={handleUrlFormSubmit}
         onScrape={handleScrape}
         isLoading={isLoading}
-        dataSource={dataSource}
-        onDataSourceChange={setDataSource}
         onActivate={() => {
           setCurrentProjectDialog('crawler-activation-dialog', null)
           // setShowActivationModal(true)
+        }}
+        onSettings={() => {
+          setCurrentProjectDialog('scraper-settings', null)
         }}
         onClearCache={handleClearCache}
         onForceRefetch={handleForceRefetch}

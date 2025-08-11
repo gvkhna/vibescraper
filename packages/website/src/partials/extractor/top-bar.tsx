@@ -10,10 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from '@/components/ui/select'
-import {Badge} from '@/components/ui/badge'
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
-import {ChevronDown, Plus, Download, Zap, RefreshCwOff} from 'lucide-react'
+import {ChevronDown, Plus, Zap, Settings} from 'lucide-react'
 import {ScrapeButtonWithHover} from './scrape-button-with-hover'
 
 export interface TopBarProps {
@@ -24,9 +22,8 @@ export interface TopBarProps {
   saveUrl: (e: React.FormEvent) => boolean
   onScrape?: () => Promise<void>
   isLoading?: boolean
-  dataSource?: 'fetch' | 'cached'
-  onDataSourceChange?: (source: 'fetch' | 'cached') => void
   onActivate?: () => void
+  onSettings?: () => void
   onClearCache?: () => void
   onForceRefetch?: () => void
   cacheInfo?: {
@@ -44,9 +41,8 @@ export function TopBar({
   saveUrl,
   onScrape,
   isLoading,
-  dataSource = 'cached',
-  onDataSourceChange,
   onActivate,
+  onSettings,
   onClearCache,
   onForceRefetch,
   cacheInfo
@@ -82,38 +78,16 @@ export function TopBar({
             />
           )}
 
-          {/* {onDataSourceChange && (
-            <Select
-              value={dataSource}
-              onValueChange={(v: 'fetch' | 'cached') => {
-                onDataSourceChange(v)
-              }}
+          {onSettings && (
+            <Button
+              variant='outline'
+              onClick={onSettings}
+              className='h-9 border-white/20 px-4 text-white hover:bg-white/10'
             >
-              <SelectTrigger className='w-40 border-white/20 bg-[#0A0A0B]'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className='border-white/10 bg-[#1a1a1b]'>
-                <SelectItem
-                  value='cached'
-                  className='text-white/90 hover:bg-white/10'
-                >
-                  <div className='flex items-center gap-2'>
-                    <RefreshCwOff className='h-4 w-4' />
-                    <span>Cached</span>
-                  </div>
-                </SelectItem>
-                <SelectItem
-                  value='fetch'
-                  className='text-white/90 hover:bg-white/10'
-                >
-                  <div className='flex items-center gap-2'>
-                    <Download className='h-4 w-4' />
-                    <span>Re-fetch</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          )} */}
+              <Settings className='mr-2 h-4 w-4' />
+              Settings
+            </Button>
+          )}
 
           {onActivate && (
             <Button

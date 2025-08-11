@@ -1,116 +1,132 @@
-import {type PropsWithChildren, useEffect, useState} from 'react'
+'use client'
+
+import {type ReactNode, useState} from 'react'
 import {
   Dialog,
   DialogDescription,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogFooter
 } from '@/components/ui/dialog'
 import {Input} from '@/components/ui/input'
 import {Button} from '@/components/ui/button'
-import {useNavigate} from '@tanstack/react-router'
-import {useShowResponseError} from '@/hooks/use-show-response-error'
-import api from '@/lib/api-client'
-import {useProjectStore} from '@/store/use-project-store'
+import {Plus, Loader2} from 'lucide-react'
 import {nowait} from '@/lib/async-utils'
-import debug from 'debug'
-
-const log = debug('app:new-project-dialog')
 
 export interface NewProjectDialogProps {
   open: boolean
-  onOpenChange: (state: boolean) => void
+  onOpenChange: (open: boolean) => void
+  createProject: (projectName: string) => Promise<void>
+  defaultProjectName: string
+  trigger?: ReactNode
 }
 
-export function NewProjectDialog(props: PropsWithChildren<NewProjectDialogProps>) {
-  const showResponseError = useShowResponseError()
-  const navigate = useNavigate()
+export function NewProjectDialog({
+  open,
+  onOpenChange,
+  createProject,
+  defaultProjectName,
+  trigger
+}: NewProjectDialogProps) {
+  const [isCreating, setIsCreating] = useState(false)
+  const [projectName, setProjectName] = useState(defaultProjectName)
 
-  // const addRecentProject = useProjectStore((state) => state.recentProjectsSlice.addRecentProject)
-  const [projectName, setProjectName] = useState('')
-  const {children, open, onOpenChange} = props
-
-  const handleSubmit = async () => {
-    try {
-      const resp = await api.projects.new.$post({
-        json: {
-          projectName: projectName
-        }
-      })
-      if (resp.ok) {
-        const json = await resp.json()
-        if (json.project.publicId) {
-          // TODO: Re-enable when recentProjectsSlice is available
-          // addRecentProject({publicId: json.project.publicId, name: json.project.name})
-          nowait(
-            navigate({
-              to: '/project/$project-public-id',
-              params: {'project-public-id': json.project.publicId}
-            })
-          )
-        }
-      } else {
-        nowait(showResponseError(resp))
-      }
-    } finally {
-      setProjectName('')
-      onOpenChange(false)
-    }
+  // Update project name when default changes
+  if (defaultProjectName && !projectName) {
+    setProjectName(defaultProjectName)
   }
 
-  // set a default project name like Project #1
-  useEffect(() => {
-    if (open && !projectName) {
-      api.projects.newDefaultProjectName
-        .$get({})
-        .then((resp) => {
-          if (resp.ok) {
-            return resp.json()
-          } else {
-            throw new Error('default project name not found')
-          }
-        })
-        .then((res) => {
-          if (res.name && !projectName) {
-            setProjectName(res.name)
-          }
-        })
-        .catch((e: unknown) => {
-          log('ignoring error', e)
-        })
+  const handleSubmit = async () => {
+    if (!projectName.trim()) {
+      return
     }
-  }, [open, projectName])
+    
+    setIsCreating(true)
+    try {
+      await createProject(projectName)
+      setProjectName('')
+      onOpenChange(false)
+    } catch (e) {
+      setIsCreating(false)
+    }
+  }
 
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(newOpen) => {
+        if (!isCreating) {
+          onOpenChange(newOpen)
+          if (!newOpen) {
+            setProjectName('')
+          }
+        }
+      }}
     >
-      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
-
-      <DialogContent>
-        <DialogDescription>{''}</DialogDescription>
+      <DialogContent className='border-white/10 bg-[#151517] text-white sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle>New Project</DialogTitle>
+          <div className='mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-500/10'>
+            <Plus className='h-10 w-10 text-blue-400' />
+          </div>
+          <DialogTitle className='pt-4 text-center text-xl text-white'>New Project</DialogTitle>
+          <DialogDescription className='text-center text-white/60'>
+            Create a new web scraping project to get started
+          </DialogDescription>
         </DialogHeader>
+        
         <form
-          method='post'
-          className='flex flex-col gap-4'
           onSubmit={(e) => {
             e.preventDefault()
             nowait(handleSubmit())
             return false
           }}
+          className='space-y-4'
         >
-          <Input
-            placeholder='Project Name'
-            value={projectName}
-            onChange={(e) => {
-              setProjectName(e.target.value)
-            }}
-          />
-          <Button type='submit'>Submit</Button>
+          <div className='space-y-2'>
+            <Input
+              placeholder='Project Name'
+              value={projectName}
+              onChange={(e) => {
+                setProjectName(e.target.value)
+              }}
+              disabled={isCreating}
+              className='border-white/20 bg-[#0A0A0B] text-white placeholder:text-white/40'
+              autoFocus
+            />
+          </div>
+
+          <DialogFooter className='flex flex-col sm:flex-row sm:justify-between sm:space-x-2'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => {
+                onOpenChange(false)
+              }}
+              disabled={isCreating}
+              className='mb-2 border-white/20 text-white hover:bg-white/10 sm:mb-0'
+            >
+              Cancel
+            </Button>
+
+            <Button
+              type='submit'
+              disabled={isCreating || !projectName.trim()}
+              className='bg-blue-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:bg-blue-700'
+            >
+              {isCreating ? (
+                <>
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className='mr-2 h-4 w-4' />
+                  Create Project
+                </>
+              )}
+            </Button>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

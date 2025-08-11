@@ -44,6 +44,7 @@ export interface ProjectSlice {
   duplicateProject: () => Promise<{success: boolean; newProjectPublicId: ProjectPublicId | null}>
   renameProject: (newProjectName: string) => Promise<{success: boolean}>
   deleteProject: () => Promise<{success: boolean}>
+  createProject: (projectName: string) => Promise<{success: boolean; projectPublicId: ProjectPublicId | null}>
   updateCurrentEditorUrl: (url: string) => Promise<{success: boolean}>
 }
 
@@ -229,6 +230,30 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
         )
       }
       return {success, newProjectPublicId}
+    },
+    createProject: async (projectName: string) => {
+      let success = false
+      let projectPublicId: ProjectPublicId | null = null
+      try {
+        const response = await api.projects.new.$post({
+          json: {
+            projectName
+          }
+        })
+        if (response.ok) {
+          const body = await response.json()
+          projectPublicId = body.project.publicId
+          success = true
+        } else {
+          const errorBody = await response.json()
+          log('error creating project', errorBody)
+          throw new Error(errorBody.message || 'Failed to create project')
+        }
+      } catch (error) {
+        log('error creating project', error)
+        throw error
+      }
+      return {success, projectPublicId}
     },
     deleteProject: async () => {
       const projectPublicId = get().projectSlice.project?.project.publicId

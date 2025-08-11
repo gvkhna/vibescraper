@@ -8,7 +8,7 @@ import {ProjectNotFoundDialog} from './project-not-found-dialog'
 import {useNavigate} from '@tanstack/react-router'
 import {nowait} from '@/lib/async-utils'
 import debug from 'debug'
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import {getErrorMessage} from '@/lib/error-message'
 import {CrawlerActivationDialog} from './crawler-activation-dialog'
 import {ScraperSettingsDialog} from './scraper-settings-dialog'
@@ -31,6 +31,7 @@ export type ProjectDialogState =
 
 export function ProjectDialogs() {
   const navigate = useNavigate()
+  const [defaultProjectName, setDefaultProjectName] = useState('')
 
   const project = useProjectStore((state) => state.projectSlice.project)
   const projectCommit = useProjectStore((state) => state.projectSlice.projectCommit)
@@ -42,12 +43,39 @@ export function ProjectDialogs() {
   const setCurrentProjectDialog = useProjectStore((state) => state.projectSlice.setCurrentProjectDialog)
 
   const deleteProject = useProjectStore((state) => state.projectSlice.deleteProject)
+  const createProject = useProjectStore((state) => state.projectSlice.createProject)
 
   // const deleteFile = useProjectStore((state) => state.projectSlice.deleteFile)
   // const loadProjectTriggers = useProjectStore((state) => state.projectSlice.loadProjectTriggers)
 
+  // Fetch default project name when new-project dialog is about to open
+  useEffect(() => {
+    if (currentProjectDialog.type === 'new-project' && !defaultProjectName) {
+      import('@/lib/api-client')
+        .then(({default: api}) => {
+          return api.projects.newDefaultProjectName.$get({})
+        })
+        .then((resp) => {
+          if (resp.ok) {
+            return resp.json()
+          } else {
+            throw new Error('default project name not found')
+          }
+        })
+        .then((res) => {
+          if (res.name) {
+            setDefaultProjectName(res.name)
+          }
+        })
+        .catch((e: unknown) => {
+          log('ignoring error fetching default project name', e)
+          setDefaultProjectName('New Project')
+        })
+    }
+  }, [currentProjectDialog.type, defaultProjectName])
+
   if (!project) {
-    return
+    return null
   }
 
   return (
@@ -135,6 +163,22 @@ export function ProjectDialogs() {
             setCurrentProjectDialog('new-project', null)
           } else {
             setCurrentProjectDialog(null, null)
+            // Reset for next time
+            setDefaultProjectName('')
+          }
+        }}
+        defaultProjectName={defaultProjectName}
+        createProject={async (projectName: string) => {
+          const result = await createProject(projectName)
+          if (result.success && result.projectPublicId) {
+            toast.success(`Project "${projectName}" created successfully`)
+            await navigate({
+              to: '/scraper/$project-public-id/edit',
+              params: {'project-public-id': result.projectPublicId}
+            })
+          } else {
+            toast.error('Failed to create project. Please try again.')
+            throw new Error('Failed to create project')
           }
         }}
       />

@@ -5,8 +5,6 @@
 /// <reference lib="esnext" />
 
 // DOM types come from @types/web (aliased as @types/node in package.json)
-// This provides browser-compatible timer types (setTimeout returns number)
-/// <reference types="@types/node" />
 
 // Iterator definitions required for compatibility with TypeScript <5.6:
 // <reference path="node_modules/@types/node-legacy/compatibility/iterators.d.ts" />
@@ -29,6 +27,7 @@
 // <reference path="node_modules/@types/node-legacy/buffer.d.ts" />
 
 /// <reference path="node_modules/@types/node-legacy/child_process.d.ts" />
+
 // <reference path="node_modules/@types/node-legacy/cluster.d.ts" />
 
 // Commented: Console is provided by ESNext/DOM
@@ -52,6 +51,7 @@
 
 // Commented: Use EventTarget from DOM or explicit imports for EventEmitter
 // <reference path="node_modules/@types/node-legacy/events.d.ts" />
+
 /// <reference path="node_modules/@types/node-legacy/fs.d.ts" />
 /// <reference path="node_modules/@types/node-legacy/fs/promises.d.ts" />
 

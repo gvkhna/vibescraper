@@ -1,20 +1,12 @@
 import type {StateSlice} from './use-project-store'
 import api from '@/lib/api-client'
-import type {
-  ProjectChatCursor,
-  ProjectChatPublicId,
-  ProjectCommitDTOType,
-  ProjectCommitPublicId,
-  ProjectDTOType,
-  ProjectPublicId
-} from '@/db/schema'
+import type {ProjectChatCursor, ProjectChatPublicId, ProjectDTOType, ProjectPublicId} from '@/db/schema'
 import type {
   ProjectDialogsConfig,
   ProjectDialogState,
   ProjectDialogType
 } from '@/partials/dialogs/project-dialogs'
 import {
-  failSaving,
   finishLoading,
   finishSaving,
   initialAsyncEntityState,
@@ -24,13 +16,11 @@ import {
 } from './async-entity-state'
 import debug from 'debug'
 import {initialPaginationEntityState, updatePaginationEntityState} from './pagination-entity-state'
-import {getErrorMessage} from '@/lib/error-message'
 
 const log = debug('app:project-slice')
 
 export interface ProjectSlice {
   project: ProjectDTOType | null
-  projectCommit: ProjectCommitDTOType | null
   asyncEntityState: AsyncEntityState
   currentProjectDialog: ProjectDialogState
   setCurrentProjectDialog: <T extends ProjectDialogType | null>(
@@ -40,18 +30,15 @@ export interface ProjectSlice {
   setProjectPublic: () => Promise<{success: boolean}>
   setProjectPrivate: () => Promise<{success: boolean}>
   loadProject: (projectPublicId: ProjectPublicId, chatId?: ProjectChatPublicId) => Promise<void>
-  reloadProjectCommit: (projectCommitPublicId: ProjectCommitPublicId) => Promise<void>
   duplicateProject: () => Promise<{success: boolean; newProjectPublicId: ProjectPublicId | null}>
   renameProject: (newProjectName: string) => Promise<{success: boolean}>
   deleteProject: () => Promise<{success: boolean}>
   createProject: (projectName: string) => Promise<{success: boolean; projectPublicId: ProjectPublicId | null}>
-  updateCurrentEditorUrl: (url: string) => Promise<{success: boolean}>
 }
 
 export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
   ({
     project: null,
-    projectCommit: null,
     asyncEntityState: initialAsyncEntityState(),
     currentProjectDialog: {type: null, payload: null},
     setCurrentProjectDialog(type, payload) {
@@ -166,10 +153,10 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
             'project/renameProject:update'
           )
 
-          // const addRecentProject = get().recentProjectsSlice.addRecentProject
-          // const removeRecentProject = get().recentProjectsSlice.removeRecentProject
-          // removeRecentProject(projectId)
-          // addRecentProject({publicId: projectId, name: newProjectName})
+          const addRecentProject = get().recentProjectsSlice.addRecentProject
+          const removeRecentProject = get().recentProjectsSlice.removeRecentProject
+          removeRecentProject(projectId)
+          addRecentProject({publicId: projectId, name: newProjectName})
         } else {
           log('project renaming error', await response.json())
         }
@@ -243,6 +230,14 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
         if (response.ok) {
           const body = await response.json()
           projectPublicId = body.project.publicId
+
+          // Add to recent projects
+          const addRecentProject = get().recentProjectsSlice.addRecentProject
+          addRecentProject({
+            publicId: projectPublicId,
+            name: projectName
+          })
+
           success = true
         } else {
           const errorBody = await response.json()
@@ -275,11 +270,17 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
           }
         })
         if (response.ok) {
-          const body = await response.json()
+          await response.json()
+
+          // Remove project from recent projects list
+          const removeRecentProject = get().recentProjectsSlice.removeRecentProject
+          removeRecentProject(projectPublicId)
+
           set(
             (draft) => {
               draft.projectSlice.project = null
-              draft.projectSlice.projectCommit = null
+              draft.extractorSlice.projectCommit = null
+              draft.extractorSlice.projectCommitAsyncState = initialAsyncEntityState()
               draft.projectSlice.asyncEntityState = initialAsyncEntityState()
             },
             true,
@@ -363,7 +364,7 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
 
       try {
         // const loadProjectCommit = async (projectCommitPublicId: ProjectCommitPublicId) => {
-        //   const response = await api.projectCommits.projectCommitPublicId.$post({
+        //   const response = await api.project.projectCommitPublicId.$post({
         //     json: {projectCommitPublicId: projectCommitPublicId}
         //   })
         //   if (response.ok) {
@@ -414,7 +415,21 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
                   paginationState: chatPaginationState
                 }
 
-                draft.projectSlice.projectCommit = body.result.stagedCommit
+                // Set the initial project commit
+                draft.extractorSlice.projectCommit = body.result.stagedCommit
+                // Mark it as loaded
+                finishLoading(draft.extractorSlice.projectCommitAsyncState)
+
+                // Initialize schema state from the loaded project data
+                if (body.result.project.schemas) {
+                  const schemaFinishLoadingState = initialAsyncEntityState()
+                  finishLoading(schemaFinishLoadingState)
+
+                  draft.extractorSlice.projectSchemas[projectPubId] = {
+                    schemas: body.result.project.schemas,
+                    asyncEntityState: schemaFinishLoadingState
+                  }
+                }
 
                 const selectedChat = draft.assistantSlice.selectedProjectChat[projectPubId]
                 let chatSet = false
@@ -453,16 +468,16 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
               'project/loadProject:load'
             )
 
-            // await loadProjectCommit(projectCommitPublicId)
+            // Load the project commit in the extractor slice
+            await get().extractorSlice.reloadProjectCommit(projectCommitPublicId)
 
-            // TODO: recentProjectsSlice doesn't exist
-            // const addRecentProject = get().recentProjectsSlice.addRecentProject
-            // const removeRecentProject = get().recentProjectsSlice.removeRecentProject
-            // removeRecentProject(body.result.project.project.publicId)
-            // addRecentProject({
-            //   publicId: body.result.project.project.publicId,
-            //   name: body.result.project.project.name
-            // })
+            const addRecentProject = get().recentProjectsSlice.addRecentProject
+            const removeRecentProject = get().recentProjectsSlice.removeRecentProject
+            removeRecentProject(body.result.project.project.publicId)
+            addRecentProject({
+              publicId: body.result.project.project.publicId,
+              name: body.result.project.project.name
+            })
             set(
               (draft) => {
                 finishLoading(draft.projectSlice.asyncEntityState)
@@ -481,84 +496,5 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
         log('error project not found or error', e)
         get().projectSlice.setCurrentProjectDialog('project-not-found', null)
       }
-    },
-    reloadProjectCommit: async (projectCommitPublicId) => {
-      set(
-        (draft) => {
-          startLoading(draft.projectSlice.asyncEntityState)
-        },
-        true,
-        'project/reloadProjectCommit:start'
-      )
-      try {
-        const response = await api.projectCommits.projectCommitPublicId.$post({
-          json: {projectCommitPublicId: projectCommitPublicId}
-        })
-        if (response.ok) {
-          const body = await response.json()
-          set(
-            (draft) => {
-              // TODO: projectCommitFiles doesn't exist in ProjectSlice
-              // draft.projectSlice.projectCommitFiles = body.result.files
-              finishLoading(draft.projectSlice.asyncEntityState)
-            },
-            true,
-            'project/reloadProjectCommit:done'
-          )
-        } else {
-          const body = await response.json()
-          throw new Error(body.message)
-        }
-      } catch (e) {
-        log('error project not found or error', e)
-        get().projectSlice.setCurrentProjectDialog('project-not-found', null)
-      }
-    },
-    updateCurrentEditorUrl: async (url: string) => {
-      const projectCommitPublicId = get().projectSlice.projectCommit?.publicId
-      if (!projectCommitPublicId) {
-        log('error: no project commit to update')
-        return {success: false}
-      }
-
-      set(
-        (draft) => {
-          // Optimistically update the local state
-          if (draft.projectSlice.projectCommit) {
-            draft.projectSlice.projectCommit.currentEditorUrl = url
-          }
-        },
-        true,
-        'project/updateCurrentEditorUrl:start'
-      )
-
-      let success = false
-      try {
-        // Call API to persist the URL change
-        const response = await api.projectCommits.updateEditorUrl.$post({
-          json: {
-            projectCommitPublicId,
-            currentEditorUrl: url
-          }
-        })
-
-        if (response.ok) {
-          success = true
-          log('currentEditorUrl updated successfully:', url)
-        } else {
-          // Revert on failure
-          const body = await response.json()
-          log('error updating currentEditorUrl:', body.message)
-
-          // Reload project commit to get the correct state
-          await get().projectSlice.reloadProjectCommit(projectCommitPublicId)
-        }
-      } catch (e) {
-        log('error updating currentEditorUrl:', e)
-        // Reload project commit to get the correct state
-        await get().projectSlice.reloadProjectCommit(projectCommitPublicId)
-      }
-
-      return {success}
     }
   }) as ProjectSlice

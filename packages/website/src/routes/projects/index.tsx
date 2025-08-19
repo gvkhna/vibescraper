@@ -17,7 +17,7 @@ import {SidebarTrigger} from '@/components/ui/sidebar'
 import {useNavigate} from '@tanstack/react-router'
 import {useShowResponseError} from '@/hooks/use-show-response-error'
 import {useProjectStore} from '@/store/use-project-store'
-import {useAllProjects} from '@/partials/project-editor/use-all-projects'
+import {useAllProjects} from '@/partials/projects/use-all-projects'
 // import {DashboardShell} from '@/components/dashboard-shell'
 import {nowait} from '@/lib/async-utils'
 
@@ -81,7 +81,7 @@ export function AllProjectsPage() {
                             // })
                             nowait(
                               navigate({
-                                to: '/project/$project-public-id',
+                                to: '/scraper/$project-public-id/edit',
                                 params: {'project-public-id': project.publicId}
                               })
                             )

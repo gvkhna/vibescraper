@@ -161,7 +161,7 @@ export function MainContent({
             </TabsList>
           </div>
 
-          <div className='flex-1 overflow-hidden'>
+          <div className='flex-1'>
             <TabsContent
               value='rendered'
               className='m-0 h-full'

@@ -9,12 +9,14 @@ export default [
       '.astro/**/*',
       '.eslint-rules/**/*',
       '.storybook/**/*',
+      '.vite-plugins/**/*',
+      '**/*stories*',
       'astro.config.ts',
-      'src/components/ai-elements/**',
-      'src/components/ui/**',
+      'drizzle.config.ts',
       'src/**/_*.tmp.ts',
       'src/**/_*.tmp.tsx',
-      '**/*stories*'
+      'src/components/ai-elements/**',
+      'src/components/ui/**'
     ]
   },
   {

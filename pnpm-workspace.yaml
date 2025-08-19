@@ -1,9 +1,10 @@
 overrides:
-  "@types/node": "-"
+  "@scrapeloop/website>@types/node": "npm:@types/web@latest"
+  "@scrapeloop/website>@types/node-legacy": "npm:@types/node@latest"
+  "@scrapeloop/website>@typescript/lib-dom": "npm:@types/web@latest"
 
 packages:
   - packages/*
-  - apps/*
 
 onlyBuiltDependencies:
   - "@dashevo/protobufjs"

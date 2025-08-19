@@ -32,7 +32,6 @@ import type {
   ChatFileVersionBlockFileStatus,
   ChatFileVersionBlockType
 } from '@/partials/assistant-ui/chat-message-schema'
-
 const log = debug('app:assistant-slice')
 
 export const PROJECT_COMPONENT_IDEMPOTENCY_RECENT_WINDOW = 10 // minutes
@@ -208,6 +207,7 @@ export const createAssistantSlice: StateSlice<AssistantSlice> = (set, get) =>
           })
           if (resp.ok) {
             const body = await resp.json()
+            log('fetch chat message response', body)
             set(
               (draft) => {
                 const message = body.result

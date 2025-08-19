@@ -8,6 +8,8 @@ import mergeDeepLeft from 'ramda/es/mergeDeepLeft'
 import {createAssistantSlice, type AssistantSlice} from './assistant-slice'
 import {createEditorSlice, type EditorSlice} from './editor-slice'
 import {createProjectSlice, type ProjectSlice} from './project-slice'
+import {createRecentProjectsSlice, type RecentProjectsSlice} from './recent-projects-slice'
+import {createExtractorSlice, type ExtractorSlice} from './extractor-slice'
 
 // Do not use
 // enableMapSet() prefer to use json objects for clear serialization
@@ -17,6 +19,8 @@ export interface CombinedState {
   assistantSlice: AssistantSlice
   editorSlice: EditorSlice
   projectSlice: ProjectSlice
+  recentProjectsSlice: RecentProjectsSlice
+  extractorSlice: ExtractorSlice
 }
 
 export type StateSlice<T> = StateCreator<
@@ -33,9 +37,13 @@ export const useProjectStore = create<CombinedState>()(
     subscribeWithSelector(
       persist(
         immer((...api) => ({
-          assistantSlice: createAssistantSlice(...api),
-          editorSlice: createEditorSlice(...api),
-          projectSlice: createProjectSlice(...api)
+          assistantSlice: (createAssistantSlice as (...a: unknown[]) => AssistantSlice)(...api),
+          editorSlice: (createEditorSlice as (...a: unknown[]) => EditorSlice)(...api),
+          projectSlice: (createProjectSlice as (...a: unknown[]) => ProjectSlice)(...api),
+          recentProjectsSlice: (createRecentProjectsSlice as (...a: unknown[]) => RecentProjectsSlice)(
+            ...api
+          ),
+          extractorSlice: (createExtractorSlice as (...a: unknown[]) => ExtractorSlice)(...api)
         })),
         {
           name: LOCAL_STORAGE_PROJECT_STORE_KEY,
@@ -43,8 +51,8 @@ export const useProjectStore = create<CombinedState>()(
           partialize: (state) => {
             return {
               assistantSlice: {
-                selectedProjectChat: state.assistantSlice.selectedProjectChat,
-                projectComponentIdempotencyKeys: state.assistantSlice.projectComponentIdempotencyKeys
+                selectedProjectChat: state.assistantSlice.selectedProjectChat
+                // projectComponentIdempotencyKeys: state.assistantSlice.projectComponentIdempotencyKeys
               },
               projectSlice: {
                 project: state.projectSlice.project
@@ -53,7 +61,11 @@ export const useProjectStore = create<CombinedState>()(
               editorSlice: {
                 rightPanelSize: state.editorSlice.rightPanelSize,
                 rightPanelOpen: state.editorSlice.rightPanelOpen,
-                activeTab: state.editorSlice.activeTab
+                activeTab: state.editorSlice.activeTab,
+                lastExtractionDropdownTab: state.editorSlice.lastExtractionDropdownTab
+              },
+              recentProjectsSlice: {
+                recentProjects: state.recentProjectsSlice.recentProjects
               }
             }
           },
@@ -78,7 +90,13 @@ export const useProjectStore = create<CombinedState>()(
                 : currentState.projectSlice,
               editorSlice: typedPersistedState?.editorSlice
                 ? mergeDeepLeft(typedPersistedState.editorSlice, currentState.editorSlice)
-                : currentState.editorSlice
+                : currentState.editorSlice,
+              recentProjectsSlice: typedPersistedState?.recentProjectsSlice
+                ? mergeDeepLeft(typedPersistedState.recentProjectsSlice, currentState.recentProjectsSlice)
+                : currentState.recentProjectsSlice,
+              extractorSlice: typedPersistedState?.extractorSlice
+                ? mergeDeepLeft(typedPersistedState.extractorSlice, currentState.extractorSlice)
+                : currentState.extractorSlice
             }
           }
         }

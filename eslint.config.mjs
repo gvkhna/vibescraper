@@ -25,7 +25,8 @@ export default [
 
       // Non-TS files
       '**/*.cjs',
-      '**/*.js'
+      '**/*.js',
+      '**/*.mjs'
     ]
   },
   ...tseslint.config(

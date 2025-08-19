@@ -41,7 +41,7 @@ export function VibecodingLandingPageAdvanced() {
 
     setIsLoading(true)
 
-    // TODO: Process with AI SDK using selected model and options
+    // FUTURE: Process with AI SDK using selected model and options
     // Simulate async processing for now
     setTimeout(() => {
       setIsLoading(false)
@@ -75,9 +75,8 @@ export function VibecodingLandingPageAdvanced() {
             value={input}
             placeholder='Describe what you want to scrape... e.g., "Get all product listings from example.com with prices, descriptions, and images"'
             disabled={isLoading}
-            className={`min-h-[140px] resize-none border-white/20 bg-white/10 text-white
-              placeholder:text-white/60 transition-opacity
-              ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`min-h-[140px] resize-none border-white/20 bg-white/10 text-white transition-opacity
+              placeholder:text-white/60 ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}
           />
           <PromptInputToolbar>
             <PromptInputTools>
@@ -93,7 +92,7 @@ export function VibecodingLandingPageAdvanced() {
                 <GlobeIcon size={16} />
                 <span>Search</span>
               </PromptInputButton>
-              <PromptInputButton 
+              <PromptInputButton
                 variant='ghost'
                 disabled={isLoading}
               >
@@ -167,11 +166,9 @@ export function VibecodingLandingPageAdvanced() {
                 }}
                 disabled={isLoading}
                 className={`group rounded-lg border border-white/20 bg-white/10 p-4 text-left transition-all
-                  ${
-                    isLoading
-                      ? 'opacity-50 cursor-not-allowed'
-                      : 'hover:border-blue-500/50 hover:bg-white/20'
-                  }`}
+                ${
+                  isLoading ? 'cursor-not-allowed opacity-50' : 'hover:border-blue-500/50 hover:bg-white/20'
+                }`}
               >
                 <h3 className={`font-medium text-white ${!isLoading ? 'group-hover:text-blue-400' : ''}`}>
                   {task.title}

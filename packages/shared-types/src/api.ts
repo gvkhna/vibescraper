@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import {z} from 'zod'
 
 // API request/response types
 export interface ContactFormData {
@@ -19,11 +19,11 @@ export const ContactFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.email(),
   company: z.string().optional(),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
+  message: z.string().min(10, 'Message must be at least 10 characters')
 })
 
 export const LeadDataSchema = ContactFormSchema.extend({
   source: z.string(),
   timestamp: z.date(),
-  userId: z.string().optional(),
+  userId: z.string().optional()
 })

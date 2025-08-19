@@ -6,7 +6,6 @@ import sharp from 'sharp'
 import * as schema from '@/db/schema'
 import {eq as sqlEq, and as sqlAnd} from 'drizzle-orm'
 import debug from 'debug'
-import {bufferToFile, type BinarySource} from '@/lib/binary-utils'
 
 const log = debug('app:account')
 
@@ -65,7 +64,7 @@ const app = new Hono<HonoServer>().post('/uploadAvatar', async (c) => {
         width: 512,
         height: 512,
         fit: 'cover',
-        position: 'centre',
+        // position: 'centre',
         withoutEnlargement: true
       })
       .webp({quality: 90})
@@ -77,8 +76,8 @@ const app = new Hono<HonoServer>().post('/uploadAvatar', async (c) => {
   // 4. Store processed image
   let newAvatarStorage: {id: schema.StorageId; publicId: schema.StoragePublicId}
   try {
-    const webpFile = bufferToFile(webpBuffer, 'avatar.webp', 'image/webp')
-    // const webpFile = new File([webpBuffer], 'avatar.webp', {type: 'image/webp'})
+    // TODO: setup testing for storage apis
+    const webpFile = new File([webpBuffer as never], 'avatar.webp', {type: 'image/webp'})
     newAvatarStorage = await storagePutFile(db, webpFile)
   } catch (err) {
     return c.json({error: 'Failed to store avatar image'}, HttpStatusCode.BadRequest)

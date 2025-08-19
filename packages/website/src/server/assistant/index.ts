@@ -182,7 +182,7 @@ const app = new Hono<HonoServer>()
       })
 
       if (projectChatMessage) {
-        const {id: _, projectChatId: __, ...chatMessageDTO} = projectChatMessage
+        const {id: _, projectChatId: __, usage: ___, ...chatMessageDTO} = projectChatMessage
         const projectChatMessageDTO: schema.ProjectChatMessageDTOType = chatMessageDTO
 
         return c.json(
@@ -507,7 +507,12 @@ const app = new Hono<HonoServer>()
         return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
       }
 
-      const {id: _, projectChatId: __, ...projectChatMessageCols} = getTableColumns(schema.projectChatMessage)
+      const {
+        id: _,
+        projectChatId: __,
+        usage: ___,
+        ...projectChatMessageCols
+      } = getTableColumns(schema.projectChatMessage)
 
       const messages = await db
         .select(projectChatMessageCols)

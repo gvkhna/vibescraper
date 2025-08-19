@@ -1,6 +1,7 @@
 import {tool} from 'ai'
 import {z} from 'zod'
 import debug from 'debug'
+import tools from '@/assistant-llm/tools'
 
 const log = debug('app:test-tools')
 
@@ -11,17 +12,48 @@ export function makeTestTools() {
   return {
     // Simple tool with no parameters
     ping: tool({
-      description: 'Simple ping test - returns pong',
-      inputSchema: z.object({}),
-      outputSchema: z.object({
-        success: z.boolean(),
-        message: z.string()
-      }),
-      execute: async () => {
+      ...tools.ping,
+      execute: async ({input}, opts) => {
         log('ping called')
         return {
           success: true,
           message: 'pong'
+        }
+      }
+    }),
+
+    // Schema update tool
+    'schema-update': tool({
+      ...tools['schema-update'],
+      execute: async ({filename, content, version}, opts) => {
+        log('schema-update called for:', filename)
+
+        // Simulate some async work
+        await new Promise((resolve) => setTimeout(resolve, 500))
+
+        return {
+          success: true,
+          filename,
+          version: version ?? 'v1',
+          message: `Schema ${filename} updated successfully`
+        }
+      }
+    }),
+
+    // Code update tool
+    'code-update': tool({
+      ...tools['code-update'],
+      execute: async ({filename, content, version}, opts) => {
+        log('code-update called for:', filename)
+
+        // Simulate some async work
+        await new Promise((resolve) => setTimeout(resolve, 800))
+
+        return {
+          success: true,
+          filename,
+          version: version ?? 'v1',
+          message: `Code ${filename} updated successfully`
         }
       }
     })

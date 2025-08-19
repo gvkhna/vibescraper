@@ -1,15 +1,15 @@
 {
   "name": "@scrapeloop/playwright-chrome-stealth",
   "version": "1.0.0",
-  "type": "module",
   "description": "Playwright Chrome stealth utilities",
-  "main": "./dist/index.js",
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
       "import": "./dist/index.mjs",
-      "default": "./dist/index.mjs"
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [
@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
+    "@types/node": "24.2.1",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
   }

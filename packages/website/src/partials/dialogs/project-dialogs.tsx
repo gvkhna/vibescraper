@@ -35,7 +35,7 @@ export function ProjectDialogs() {
   const [defaultProjectName, setDefaultProjectName] = useState('')
 
   const project = useProjectStore((state) => state.projectSlice.project)
-  const projectCommit = useProjectStore((state) => state.projectSlice.projectCommit)
+  const projectCommit = useProjectStore((state) => state.extractorSlice.projectCommit)
 
   // const setProjectPrivate = useProjectStore((state) => state.projectSlice.setProjectPrivate)
   // const setProjectPublic = useProjectStore((state) => state.projectSlice.setProjectPublic)
@@ -170,7 +170,7 @@ export function ProjectDialogs() {
         createProject={async (projectName: string) => {
           const result = await createProject(projectName)
           if (result.success && result.projectPublicId) {
-            toast.success(`Project "${projectName}" created successfully`)
+            toast.success(`Scraper "${projectName}" created successfully`)
             await navigate({
               to: '/scraper/$project-public-id/edit',
               params: {'project-public-id': result.projectPublicId}

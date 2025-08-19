@@ -61,7 +61,7 @@ export function NewProjectDialog({
           <div className='mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-500/10'>
             <Plus className='h-10 w-10 text-blue-400' />
           </div>
-          <DialogTitle className='pt-4 text-center text-xl text-white'>New Project</DialogTitle>
+          <DialogTitle className='pt-4 text-center text-xl text-white'>New Scraper</DialogTitle>
           <DialogDescription className='text-center text-white/60'>
             Create a new web scraping project to get started
           </DialogDescription>
@@ -77,7 +77,7 @@ export function NewProjectDialog({
         >
           <div className='space-y-2'>
             <Input
-              placeholder='Project Name'
+              placeholder='Scraper Name'
               value={projectName}
               onChange={(e) => {
                 setProjectName(e.target.value)
@@ -114,7 +114,7 @@ export function NewProjectDialog({
               ) : (
                 <>
                   <Plus className='mr-2 h-4 w-4' />
-                  Create Project
+                  Create Scraper
                 </>
               )}
             </Button>

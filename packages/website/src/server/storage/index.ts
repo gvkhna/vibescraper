@@ -11,11 +11,13 @@ import {join as pathJoin, dirname as pathDirname, resolve as pathResolve} from '
 import {S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand} from '@aws-sdk/client-s3'
 import {fileURLToPath} from 'node:url'
 import {HttpStatusCode} from '@/lib/http-status-codes'
-import {createHashSha256} from '@/lib/crypt-helper'
 import {sqlTimestampToDate} from '@/lib/format-dates'
 import {PRIVATE_VARS} from '@/vars.private'
 import {FetchHttpHandler} from '@smithy/fetch-http-handler'
+import {type BrowserClient} from '@smithy/types'
+
 import debug from 'debug'
+import {hashBytes} from '@/lib/hash-helper'
 
 const log = debug('app:server:storage')
 
@@ -42,7 +44,7 @@ const s3Client = new S3Client({
   },
   forcePathStyle: PRIVATE_VARS.AWS_FORCE_PATH_STYLE === 'true',
   requestHandler: new FetchHttpHandler({})
-})
+}) as BrowserClient<S3Client>
 
 function storageKeyToPath(key: string) {
   // aa/xx/yy/full-uuid
@@ -215,8 +217,10 @@ export async function storageDeleteBlob(
 
 export async function storagePutFile(db: typeof database, file: File) {
   const buffer = await file.arrayBuffer()
+  log('buffer', buffer)
   const bytes = new Uint8Array(buffer)
-  const hash = createHashSha256(bytes)
+  log('bytes', bytes)
+  const hash = hashBytes(bytes)
   const fileId = await storeFile(buffer, file.type)
 
   const [storageItem] = await db

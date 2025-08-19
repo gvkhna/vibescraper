@@ -79,6 +79,7 @@ export function AssistantChat({
   const chatMessages = useProjectStore((state) => state.assistantSlice.chatMessages)
   const fetchProjectChatMessage = useProjectStore((state) => state.assistantSlice.fetchProjectChatMessage)
   const loadProjectChatTitle = useProjectStore((state) => state.assistantSlice.loadProjectChatTitle)
+  const reloadProjectCommit = useProjectStore((state) => state.extractorSlice.reloadProjectCommit)
   const pendingInitialMessage = useProjectStore(
     (state) => state.assistantSlice.pendingInitialMessage[projectPublicId]
   )
@@ -99,67 +100,116 @@ export function AssistantChat({
 
   const chatEndpoint = api.assistant.extractorChat.$url().pathname
 
-  const {messages, sendMessage, status, error, regenerate, clearError, stop, setMessages} =
-    useChat<SLUIMessage>({
-      id: selectedChat,
-      transport: new DefaultChatTransport({
-        api: chatEndpoint,
-        prepareSendMessagesRequest: ({messages: sendMessages, trigger}) => {
-          const lastMessage = sendMessages.slice(-1)
-          return {
-            body: {
-              messages: lastMessage,
-              trigger,
-              model,
-              // webSearch,
-              projectChatPublicId: selectedChat,
-              projectPublicId: projectPublicId,
-              projectCommitPublicId: projectCommitPublicId
-            }
+  const {
+    messages,
+    sendMessage,
+    status,
+    error: chatError,
+    regenerate,
+    clearError,
+    stop,
+    setMessages,
+    addToolResult
+  } = useChat<SLUIMessage>({
+    id: selectedChat,
+    transport: new DefaultChatTransport({
+      api: chatEndpoint,
+      prepareSendMessagesRequest: ({messages: sendMessages, trigger}) => {
+        const lastMessage = sendMessages.slice(-1)
+        return {
+          body: {
+            messages: lastMessage,
+            trigger,
+            model,
+            // webSearch,
+            projectChatPublicId: selectedChat,
+            projectPublicId: projectPublicId,
+            projectCommitPublicId: projectCommitPublicId
           }
         }
-      }),
-      messages: initialMessages,
-      onData(dataPart) {
-        log('onData', dataPart)
-        // log('resp:', response)
-        // if (props.initialMessages.length === 0) {
-        //   log('starting new chat kicking off reloading')
-        //   // this means we received a response when the chat was initially empty
-        //   // so we can just trigger an api request to generate a title
-        //   queueMicrotask(() => {
-        //     nowait(loadProjectChatTitle(props.projectPublicId, props.projectChat.publicId))
-        //   })
-        // }
-      },
-      // onError(err) {
-      //   log('onError', err)
-      //   // toast.error(err.message)
-      //   // clearError()
-      // },
-      onFinish(opts) {
-        log('onFinish', opts)
-        if (opts.message.id) {
-          nowait(fetchProjectChatMessage(selectedChat, opts.message.id as ProjectChatMessagePublicId))
-        }
-      },
-      onToolCall(opts) {
-        log('onToolCall', opts)
       }
-    })
+    }),
+    messages: initialMessages,
+    onData(dataPart) {
+      log('onData', dataPart)
+      // log('resp:', response)
+      // if (props.initialMessages.length === 0) {
+      //   log('starting new chat kicking off reloading')
+      //   // this means we received a response when the chat was initially empty
+      //   // so we can just trigger an api request to generate a title
+      //   queueMicrotask(() => {
+      //     nowait(loadProjectChatTitle(props.projectPublicId, props.projectChat.publicId))
+      //   })
+      // }
+    },
+    // onError(err) {
+    //   log('onError', err)
+    //   // toast.error(err.message)
+    //   // clearError()
+    // },
+    onFinish(opts) {
+      log('onFinish', opts)
+      if (opts.message.id) {
+        // Fetch the message which will trigger schema sync if needed
+        nowait(fetchProjectChatMessage(selectedChat, opts.message.id as ProjectChatMessagePublicId))
+
+        // Check if message contains any write tool calls that completed successfully
+        const hasWriteToolCall = opts.message.parts.some((part) => {
+          // Check for any write tool completion
+          if (
+            (part.type === 'tool-writeSchema' || part.type === 'tool-writeScript') &&
+            part.state === 'output-available'
+          ) {
+            log(`Found successful tool call in message part:`, part)
+            return true
+          }
+          return false
+        })
+
+        if (hasWriteToolCall) {
+          log('Detected write tool call in message, reloading project commit...')
+          // Use queueMicrotask to avoid updating state during render
+          queueMicrotask(() => {
+            reloadProjectCommit(projectCommitPublicId).catch((err: unknown) => {
+              log('Error reloading project commit after write tool call:', err)
+            })
+          })
+        }
+      }
+    },
+    onToolCall(opts) {
+      log('onToolCall', opts)
+    }
+  })
 
   useEffect(() => {
     log('use chat status', status)
   }, [status])
 
-  useEffect(() => {
-    log('messages: ', messages)
-  }, [messages])
+  // useEffect(() => {
+  //   log('messages: ', messages)
+
+  //   // Update tool call states in the store
+  //   messages.forEach(message => {
+  //     updateToolCallsFromMessage(message)
+  //   })
+  // }, [messages])
+
+  // Monitor for schema update completions
+  // useEffect(() => {
+  //   const cleanup = monitorSchemaUpdates(messages, (filename, version) => {
+  //     log('Schema update completed:', filename, version)
+  //     // TODO: Trigger backend sync to reload schema
+  //     // For now, just log that we detected the completion
+  //     log('Would trigger schema reload for:', projectPublicId, filename, version)
+  //   })
+
+  //   return cleanup
+  // }, [messages, projectPublicId])
 
   useEffect(() => {
-    log('error', error)
-
-    if (error) {
+    if (chatError) {
+      // log('error', error)
       // Get the last message
       const lastMessage = messages[messages.length - 1]
 
@@ -186,7 +236,7 @@ export function AssistantChat({
         clearError()
       }
     }
-  }, [error, messages, setMessages, clearError])
+  }, [messages, setMessages, clearError, chatError])
 
   // Handle automatic initial message submission when chat is first loaded with a pending message
   useEffect(() => {
@@ -260,6 +310,16 @@ export function AssistantChat({
                 >
                   {/* <div> */}
                   <MessageContent data-error={message.metadata?.error}>
+                    {/* Use aggregator for tool calls in assistant messages */}
+                    {/* {message.role === 'assistant' && (
+                      <ToolCallAggregator
+                        message={message}
+                        messageIndex={messageIndex}
+                        chatId={selectedChat}
+                      />
+                    )} */}
+
+                    {/* Render non-tool parts */}
                     {message.parts.map((part, i) => {
                       const type = part.type
                       switch (true) {
@@ -270,14 +330,21 @@ export function AssistantChat({
                           return null
                         }
                         case isToolKey(type): {
-                          if (type === 'tool-ping') {
+                          if (
+                            type === 'tool-ping' ||
+                            type === 'tool-readSchema' ||
+                            type === 'tool-writeSchema' ||
+                            type === 'tool-readScript' ||
+                            type === 'tool-writeScript'
+                          ) {
+                            // console.log('tool', type, part.toolCallId, part.state)
                             return (
                               <Tool
                                 defaultOpen={false}
                                 key={`${message.id}-${i}`}
                               >
                                 <ToolHeader
-                                  type={'tool-ping'}
+                                  type={type}
                                   state={part.state}
                                 />
                                 <ToolContent>

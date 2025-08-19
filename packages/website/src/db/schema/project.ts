@@ -8,6 +8,8 @@ import {TIMESTAMPS_SCHEMA, type BrandedType, type SQLUTCTimestamp, type StrictOm
 import {type SubjectPolicyDTOType, type SubjectPolicyId, subjectPolicy} from './permissions'
 import {user, type UserId} from './better-auth'
 import type {ProjectChatDTOType, ProjectChatCursor} from './project-chat'
+import type {JsonObject, JsonValue} from 'type-fest'
+import type {CodeExecutionMessage} from '@scrapeloop/sandbox'
 
 export type ProjectId = BrandedType<ULID, 'ProjectId'>
 export type ProjectPublicId = BrandedType<ULID, 'ProjectPublicId'>
@@ -55,6 +57,48 @@ export type ExtractorSettings = {
   maxOutputSize: number // -1 means unlimited
 }
 
+// Cache data structure for development/preview mode
+export type ProjectCommitCacheData = {
+  url: string
+
+  // STAGE 1: Fetch
+  fetchStatus: 'initial' | 'cached' | 'completed' | 'failed'
+  fetchError?: string | null // Error details when fetchStatus is 'failed' (timeout, non-OK status, network error, etc.)
+  statusCode?: number | null // HTTP status code (only populated when fetch completed or got HTTP response)
+  contentType?: string | null // Content-Type header (only populated when fetch completed or got HTTP response)
+  responseTimeMs?: number | null // Response time in milliseconds (only populated when fetch completed)
+  headers?: Record<string, string> | null // HTTP headers (only populated when fetch completed or got HTTP response)
+
+  // STAGE 2: Processing
+  processingStatus: 'initial' | 'completed' | 'failed'
+  processingError?: string | null // Error details when processingStatus is 'failed' (not HTML, parse error, etc.)
+  html?: string | null // Raw HTML (only populated when fetch completed successfully)
+  formattedHtml?: string | null // Formatted HTML (only populated when processing completed successfully)
+  cleanedHtml?: string | null // Cleaned HTML (only populated when processing completed successfully)
+  text?: string | null // Plain text (only populated when processing completed successfully)
+  readabilityResult?: {
+    title: string | null
+    byline: string | null
+    dir: string | null
+    lang: string | null
+    content: string | null
+    textContent: string | null
+    excerpt: string | null
+    length: number | null
+    siteName: string | null
+  } | null // Readability extraction result (only populated when processing completed successfully)
+  markdown?: string | null // Markdown conversion (only populated when processing completed successfully)
+
+  // STAGE 3: Extraction Script
+  extractionScriptStatus: 'initial' | 'completed' | 'failed'
+  extractionResult?: JsonValue // Parsed result from script execution (only populated when script completed successfully)
+  extractionMessages?: CodeExecutionMessage[] | null // All messages from sandbox (logs, exceptions, etc.)
+
+  // STAGE 4: Schema Validation
+  schemaValidationStatus: 'initial' | 'completed' | 'failed'
+  schemaValidationErrors?: string[] | null // Detailed validation errors (only populated when validation failed)
+}
+
 // [projects]
 //    ├── [projectCommit] (central config - stores active versions & settings)
 //    ├── [projectUrls]
@@ -99,6 +143,7 @@ export type ProjectDTOType = {
   subjectPolicy: SubjectPolicyDTOType
   chats: ProjectChatDTOType[]
   chatsPageInfo: PaginationEntityState<ProjectChatCursor>
+  schemas?: ProjectSchemaDTOType[]
 }
 
 export type ProjectCommitId = BrandedType<ULID, 'ProjectCommitId'>
@@ -147,6 +192,9 @@ export const projectCommit = pgTable(
     activeSchemaVersion: integer(),
     activeExtractorVersion: integer(),
     currentEditorUrl: text(),
+    // Cache for development/preview mode
+    cachedData: jsonb().$type<ProjectCommitCacheData | null>(),
+    cachedAt: timestamp({mode: 'string'}).$type<SQLUTCTimestamp>(),
     ...TIMESTAMPS_SCHEMA
   },
   (table) => [uniqueIndex().on(table.publicId)]
@@ -157,9 +205,12 @@ export type ProjectCommitDTOType = StrictOmit<
   'id' | 'projectId' | 'userId'
 >
 
-// Project Schemas (versioned like extractors)
+// Project Schemas (versioned)
 export type ProjectSchemaId = BrandedType<ULID, 'ProjectSchemaId'>
-export type ProjectSchemaPublicId = BrandedType<ULID, 'ProjectSchemaPublicId'>
+export type ProjectSchemaPublicId = BrandedType<string, 'ProjectSchemaPublicId'>
+
+// Type for the actual schema JSON content
+export type SchemaJsonContent = JsonObject
 
 export const projectSchema = pgTable(
   'projectSchema',
@@ -178,14 +229,11 @@ export const projectSchema = pgTable(
       .references(() => project.id, {onDelete: 'cascade'})
       .$type<ProjectId>(),
     version: integer().notNull(),
-    name: text().notNull(),
-    description: text(),
-    schemaJson: jsonb().notNull(),
-    schemaType: text().notNull().default('json_schema').$type<'json_schema' | 'zod'>(),
-    isActive: boolean().notNull().default(true),
+    schemaJson: jsonb().notNull().$type<SchemaJsonContent>(),
+    message: text(),
     ...TIMESTAMPS_SCHEMA
   },
-  (table) => [uniqueIndex().on(table.projectId, table.version), uniqueIndex().on(table.publicId)]
+  (table) => [uniqueIndex().on(table.publicId)]
 )
 
 export type ProjectSchemaDTOType = StrictOmit<typeof projectSchema.$inferSelect, 'id' | 'projectId'>

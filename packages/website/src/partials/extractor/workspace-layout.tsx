@@ -10,10 +10,10 @@ import {AssistantPanel} from '../assistant-ui/assistant-panel'
 import {useProjectStore} from '@/store/use-project-store'
 
 interface WorkspaceLayoutProps {
-  isProcessing?: boolean
+  // Removed isProcessing - now handled by pipeline status component internally
 }
 
-export function WorkspaceLayout({isProcessing = false}: WorkspaceLayoutProps) {
+export function WorkspaceLayout({}: WorkspaceLayoutProps) {
   // const [showSchemaPanel, setShowSchemaPanel] = React.useState(true)
   // const [showDataPanel, setShowDataPanel] = React.useState(true)
 
@@ -55,7 +55,7 @@ export function WorkspaceLayout({isProcessing = false}: WorkspaceLayoutProps) {
             defaultSize={showDataPanel ? 70 : 100}
             minSize={40}
           > */}
-          <ExtractionPanel isProcessing={isProcessing} />
+          <ExtractionPanel />
           {/* </ResizablePanel> */}
 
           {/* Bottom Panel - Extracted Data */}

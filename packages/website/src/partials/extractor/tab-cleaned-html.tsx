@@ -2,26 +2,43 @@
 
 import * as React from 'react'
 import {Button} from '@/components/ui/button'
-import {ScrollArea} from '@/components/ui/scroll-area'
-import {Copy} from 'lucide-react'
+import {BrushCleaning, Copy} from 'lucide-react'
 import {nowait} from '@/lib/async-utils'
+import {EmptyStateData} from '@/components/empty-state-data'
+import {useProjectStore} from '@/store/use-project-store'
+import {TextViewer} from '@/partials/monaco-editor/text-viewer'
 
 export function TabCleanedHtml() {
   const [copied, setCopied] = React.useState(false)
 
-  // Placeholder content for now
-  const content = ''
+  // Get cached cleaned HTML from project store
+  const cachedData = useProjectStore((state) => state.extractorSlice.projectCommit?.cachedData)
+  const content = cachedData?.cleanedHtml ?? ''
 
   const handleCopy = () => {
-    nowait(globalThis.navigator.clipboard.writeText(content))
-    setCopied(true)
-    setTimeout(() => {
-      setCopied(false)
-    }, 2000)
+    if (content) {
+      nowait(globalThis.navigator.clipboard.writeText(content))
+      setCopied(true)
+      setTimeout(() => {
+        setCopied(false)
+      }, 2000)
+    }
+  }
+
+  // Show empty state if no cleaned HTML
+  if (!content) {
+    return (
+      <EmptyStateData
+        icon={BrushCleaning}
+        title='No Cleaned HTML'
+        description='Run extraction to view cleaned HTML'
+        details='Cleaned HTML removes scripts, styles, and unnecessary elements'
+      />
+    )
   }
 
   return (
-    <div className='relative h-full bg-[#0D1117]'>
+    <div className='relative flex h-full flex-col bg-[#0D1117]'>
       <div className='absolute right-4 top-4 z-10'>
         <Button
           variant='ghost'
@@ -33,11 +50,12 @@ export function TabCleanedHtml() {
           {copied && <span className='ml-2 text-xs'>Copied!</span>}
         </Button>
       </div>
-      <ScrollArea className='h-full'>
-        <pre className='p-6 font-mono text-sm leading-relaxed text-gray-300'>
-          <code>{content || 'Cleaned HTML will appear here'}</code>
-        </pre>
-      </ScrollArea>
+      <div className='flex-1'>
+        <TextViewer
+          textData={content}
+          lang='html'
+        />
+      </div>
     </div>
   )
 }

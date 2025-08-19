@@ -2,7 +2,7 @@
 import type {Meta, StoryObj} from '@storybook/react'
 import {type FC, type PropsWithChildren, useEffect, useState} from 'react'
 import {ChatFileProjectVersionBlock} from './chat-file-version-block'
-import type {ChatFileVersionBlockChatFileVersionBlockFileChange} from './chat-message-schema'
+import type {ChatFileVersionBlockFileChange} from './chat-message-schema'
 
 const meta = {
   title: 'Assistant/ExtractorVersion',
@@ -10,7 +10,14 @@ const meta = {
   parameters: {
     layout: 'fullscreen'
   },
-  args: {}
+  args: {
+    versionBlock: {
+      type: 'extractor',
+      version: '',
+      changes: [],
+      overallStatus: 'in-progress'
+    }
+  }
 } satisfies Meta<typeof ChatFileProjectVersionBlock>
 
 export default meta
@@ -123,6 +130,7 @@ export const ProjectVersionMessageDefault: Story = {
           </p>
           <ChatFileProjectVersionBlock
             versionBlock={{
+              type: 'extractor',
               version: 'Version 2',
               changes: changes,
               overallStatus: overallStatus
@@ -140,6 +148,7 @@ export const ProjectVersionMessageDefault: Story = {
           <h2 className='mb-2 text-lg font-medium'>Error State</h2>
           <ChatFileProjectVersionBlock
             versionBlock={{
+              type: 'extractor',
               version: 'Version with Error',
               changes: [
                 {
@@ -167,6 +176,7 @@ export const ProjectVersionMessageDefault: Story = {
           <h2 className='mb-2 text-lg font-medium'>Completed State</h2>
           <ChatFileProjectVersionBlock
             versionBlock={{
+              type: 'extractor',
               version: 'Completed Version',
               changes: [
                 {
@@ -196,5 +206,12 @@ export const ProjectVersionMessageDefault: Story = {
       </div>
     )
   },
-  args: {}
+  args: {
+    versionBlock: {
+      type: 'extractor',
+      version: '',
+      changes: [],
+      overallStatus: 'in-progress'
+    }
+  }
 }

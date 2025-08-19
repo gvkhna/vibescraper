@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
+    "lib": ["ESNext", "DOM"],
     "allowImportingTsExtensions": true
   },
   "include": ["src/**/*", "tsup.config.ts"],

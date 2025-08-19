@@ -9,6 +9,7 @@ import {PUBLIC_VARS} from '@/vars.public'
 import debug from 'debug'
 
 const log = debug('app:db')
+const dbLog = debug('db:log')
 
 if (PUBLIC_VARS.DEV) {
   log(`Database - ${PRIVATE_VARS.DATABASE_URL}`)
@@ -16,9 +17,7 @@ if (PUBLIC_VARS.DEV) {
 
 class AppDebugLogWriter implements LogWriter {
   write(message: string) {
-    if (PUBLIC_VARS.PROD && PRIVATE_VARS.DEBUG_DATABASE) {
-      log(message)
-    }
+    dbLog(message)
   }
 }
 const logger = new DefaultLogger({writer: new AppDebugLogWriter()})
@@ -120,19 +119,15 @@ export const db: typeof dbNeon = (() => {
       // Debug queries - log everything about query execution
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       debug: (connection: any, query: any, params: any, types: any) => {
-        if (PRIVATE_VARS.DEBUG_DATABASE) {
-          log('\n🔍 DEBUG: Query Execution')
-          log(`Connection ID: ${connection}`)
-          log(`Query: ${query}`)
-          log(`Parameters: ${JSON.stringify(params)}`)
-          log(`Parameter Types: ${JSON.stringify(types)}`)
-        }
+        dbLog('\n🔍 DEBUG: Query Execution')
+        dbLog(`Connection ID: ${connection}`)
+        dbLog(`Query: ${query}`)
+        dbLog(`Parameters: ${JSON.stringify(params)}`)
+        dbLog(`Parameter Types: ${JSON.stringify(types)}`)
       },
 
       onclose: (connId) => {
-        if (PRIVATE_VARS.DEBUG_DATABASE) {
-          log(`Connection ${connId} closed`)
-        }
+        dbLog(`Connection ${connId} closed`)
       },
 
       // Additional options to improve error reporting
@@ -157,14 +152,14 @@ export const db: typeof dbNeon = (() => {
         .then((res) => {
           log('Reindexing complete')
 
-          if (PRIVATE_VARS.DEBUG_DATABASE) {
+          if (PRIVATE_VARS.DEBUG?.includes('db')) {
             postgresClient
               .unsafe(`set log_statement = 'all';set log_min_duration_statement = 0;`)
               .then((logRes) => {
-                log('debug database logging all statements')
+                dbLog('debug database logging all statements')
               })
               .catch((e: unknown) => {
-                log('error turning on debug log all statements', e)
+                dbLog('error turning on debug log all statements', e)
               })
           }
         })
@@ -180,7 +175,7 @@ export const db: typeof dbNeon = (() => {
         })
     }
 
-    const dbPostgres = drizzlePostgres({client: postgresClient, schema, logger, casing: 'camelCase'})
+    const dbPostgres = drizzlePostgres({client: postgresClient, schema, casing: 'camelCase'})
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-explicit-any
     return dbPostgres as any

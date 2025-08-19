@@ -545,6 +545,18 @@ const app = new Hono<HonoServer>()
       const paginateProjectChats = createPaginationEntity<schema.ProjectChatCursor>()
       const {items: projectChats, pageInfo} = paginateProjectChats(chats, DEFAULT_PAGE_SIZE)
 
+      // Get all schemas for this project
+      const schemas = await db.query.projectSchema.findMany({
+        where: (table, {eq: tableEq}) => tableEq(table.projectId, project.id),
+        orderBy: (table, {desc: tableDesc}) => [tableDesc(table.version)]
+      })
+
+      // Convert to DTOs (remove id and projectId)
+      const schemaDTOs: schema.ProjectSchemaDTOType[] = schemas.map(s => {
+        const {id: _schemaId, projectId: _schemaProjectId, ...dto} = s
+        return dto
+      })
+
       const {id: _11, userId: _12, subjectPolicyId: _13, ...restOfProject} = project
       const projectDTO: schema.ProjectDTOType['project'] = restOfProject
       const {id: _14, ...restOfSubjectPolicy} = subjectPolicy
@@ -559,7 +571,8 @@ const app = new Hono<HonoServer>()
           chatsPageInfo: pageInfo,
           subjectPolicy: {
             ...subjectPolicyDTO
-          }
+          },
+          schemas: schemaDTOs
         },
         stagedCommit
       }
@@ -843,6 +856,196 @@ const app = new Hono<HonoServer>()
           project: {
             ...restOfResult
           }
+        },
+        HttpStatusCode.Ok
+      )
+    }
+  )
+  .post(
+    '/schemas',
+    validator('json', (value) => {
+      return value as {
+        projectPublicId: schema.ProjectPublicId
+      }
+    }),
+    async (c) => {
+      const {projectPublicId} = c.req.valid('json')
+      const user = c.get('user')
+      const db = c.get('db')
+
+      // Get project to verify access
+      const project = await db.query.project.findFirst({
+        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+      })
+
+      if (!project) {
+        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+      }
+
+      if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
+        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+      }
+
+      // Get all schemas for this project
+      const schemas = await db.query.projectSchema.findMany({
+        where: (table, {eq: tableEq}) => tableEq(table.projectId, project.id),
+        orderBy: (table, {desc: tableDesc}) => [tableDesc(table.version)]
+      })
+
+      // Convert to DTOs
+      const schemaDTOs: schema.ProjectSchemaDTOType[] = schemas.map(s => {
+        const {id: _schemaId, projectId: _schemaProjectId, ...dto} = s
+        return dto
+      })
+
+      return c.json(
+        {
+          schemas: schemaDTOs
+        },
+        HttpStatusCode.Ok
+      )
+    }
+  )
+  .post(
+    '/schema',
+    validator('json', (value) => {
+      return value as {
+        projectPublicId: schema.ProjectPublicId
+        schemaPublicId: schema.ProjectSchemaPublicId
+      }
+    }),
+    async (c) => {
+      const {projectPublicId, schemaPublicId} = c.req.valid('json')
+      const user = c.get('user')
+      const db = c.get('db')
+
+      // Get project to verify access
+      const project = await db.query.project.findFirst({
+        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+      })
+
+      if (!project) {
+        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+      }
+
+      if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
+        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+      }
+
+      // Get the specific schema version
+      const schemaData = await db.query.projectSchema.findFirst({
+        where: (table, {eq: tableEq, and: tableAnd}) =>
+          tableAnd(
+            tableEq(table.projectId, project.id),
+            tableEq(table.publicId, schemaPublicId)
+          )
+      })
+
+      if (!schemaData) {
+        return c.json({message: 'Schema not found'}, HttpStatusCode.NotFound)
+      }
+
+      // Return the DTO (omitting id and projectId)
+      const {id: _, projectId: _p, ...schemaDTO} = schemaData
+      
+      return c.json(
+        {
+          schema: schemaDTO as schema.ProjectSchemaDTOType
+        },
+        HttpStatusCode.Ok
+      )
+    }
+  )
+  .post(
+    '/schemaByVersion',
+    validator('json', (value) => {
+      return value as {
+        projectPublicId: schema.ProjectPublicId
+        version: number
+      }
+    }),
+    async (c) => {
+      const {projectPublicId, version} = c.req.valid('json')
+      const user = c.get('user')
+      const db = c.get('db')
+
+      // Get project to verify access
+      const project = await db.query.project.findFirst({
+        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+      })
+
+      if (!project) {
+        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+      }
+
+      if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
+        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+      }
+
+      // Get the specific schema version
+      const schemaData = await db.query.projectSchema.findFirst({
+        where: (table, {eq: tableEq, and: tableAnd}) =>
+          tableAnd(
+            tableEq(table.projectId, project.id),
+            tableEq(table.version, version)
+          )
+      })
+
+      if (!schemaData) {
+        return c.json({message: 'Schema not found'}, HttpStatusCode.NotFound)
+      }
+
+      // Return the DTO (omitting id and projectId)
+      const {id: _, projectId: _p, ...schemaDTO} = schemaData
+      
+      return c.json(
+        {
+          schema: schemaDTO as schema.ProjectSchemaDTOType
+        },
+        HttpStatusCode.Ok
+      )
+    }
+  )
+  .post(
+    '/extractors',
+    validator('json', (value) => {
+      return value as {
+        projectPublicId: schema.ProjectPublicId
+      }
+    }),
+    async (c) => {
+      const {projectPublicId} = c.req.valid('json')
+      const user = c.get('user')
+      const db = c.get('db')
+
+      // Get project to verify access
+      const project = await db.query.project.findFirst({
+        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+      })
+
+      if (!project) {
+        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+      }
+
+      if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
+        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+      }
+
+      // Get all extractors for this project
+      const extractors = await db.query.extractor.findMany({
+        where: (table, {eq: tableEq}) => tableEq(table.projectId, project.id),
+        orderBy: (table, {desc: tableDesc}) => [tableDesc(table.version)]
+      })
+
+      // Convert to DTOs
+      const extractorDTOs: schema.ExtractorDTOType[] = extractors.map(e => {
+        const {id: _extractorId, projectId: _extractorProjectId, ...dto} = e
+        return dto
+      })
+
+      return c.json(
+        {
+          extractors: extractorDTOs
         },
         HttpStatusCode.Ok
       )

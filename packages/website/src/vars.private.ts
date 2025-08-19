@@ -55,7 +55,6 @@ const envSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   DATABASE_URL: z.string().min(1),
-  DEBUG_DATABASE: z.string().optional(),
   DEBUG: z.string().optional(),
   MOCK_LLM: z.string().optional(),
   SMTP_ADDRESS: z.string().min(1),

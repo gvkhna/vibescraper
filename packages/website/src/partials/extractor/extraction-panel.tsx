@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from 'react'
 import {Button} from '@/components/ui/button'
 import {
   ExtractionTabs,
@@ -21,49 +22,85 @@ import {
   PanelBottomOpen,
   FileJson2,
   BrushCleaning,
-  FileType2
+  FileType2,
+  FileCode2,
+  Braces
 } from 'lucide-react'
 import {PipelineStatus} from './pipeline-status'
 import {useProjectStore} from '@/store/use-project-store'
-import {ExtractionTabsDropdown, type DropdownTab} from './extraction-tabs-dropdown'
-import type {ExtractionPanelTabType} from '@/store/editor-slice'
+import {SplitButtonDropdown, type SplitButtonDropdownTab} from '@/components/split-button-dropdown'
+import type {ExtractionPanelTabType, ConfigurationTabType} from '@/store/editor-slice'
 import {TabPreview} from './tab-preview'
 import {TabRawHtml} from './tab-raw-html'
+import {TabFormattedHtml} from './tab-formatted-html'
 import {TabCleanedHtml} from './tab-cleaned-html'
-import {TabFilteredHtml} from './tab-filtered-html'
+// import {TabFilteredHtml} from './tab-filtered-html'
 import {TabReadabilityHtml} from './tab-readability-html'
 import {TabMarkdown} from './tab-markdown'
+import {TabPlaintext} from './tab-plaintext'
 import {TabData} from './tab-data'
 import {TabDataSchema} from './tab-data-schema'
+import {TabScript} from './tab-script'
+import {TabLog} from './tab-log'
 import debug from 'debug'
 
 const log = debug('app:extraction-panel')
 
-// Define which tabs belong in the dropdown
-const DROPDOWN_TABS: DropdownTab[] = [
-  {value: 'filtered-html', label: 'Filtered', icon: Filter},
+// Define which tabs belong in the HTML/content dropdown
+const CONTENT_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType>[] = [
+  {value: 'preview', label: 'Preview', icon: Globe},
+  // {value: 'filtered-html', label: 'Filtered', icon: Filter},
   {value: 'raw-html', label: 'Raw HTML', icon: Code},
-  {value: 'cleaned-html', label: 'Cleaned', icon: BrushCleaning},
-  {value: 'readability-html', label: 'Readability', icon: BookOpen},
+  {value: 'formatted-html', label: 'Formatted HTML', icon: FileCode2},
+  {value: 'cleaned-html', label: 'Cleaned HTML', icon: BrushCleaning},
+  {value: 'plaintext', label: 'Plaintext', icon: FileText},
+  {value: 'readability-html', label: 'Readability HTML', icon: BookOpen},
   {value: 'markdown', label: 'Markdown', icon: FileType2}
 ]
 
-interface ExtractionPanelProps {
-  isProcessing?: boolean
-}
+// Define which tabs belong in the configuration dropdown (schema/script/log)
+const CONFIGURATION_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType>[] = [
+  {value: 'data-schema', label: 'Schema', icon: FileJson2},
+  {value: 'script', label: 'Script', icon: Braces},
+  {value: 'log', label: 'Log', icon: FileText}
+]
 
-export function ExtractionPanel({isProcessing = false}: ExtractionPanelProps) {
+export function ExtractionPanel() {
   // Get active project ID
   const projectPublicId = useProjectStore((state) => state.projectSlice.project?.project.publicId)
+
+  // Get scraping state from the parent extractor page context
+  // Note: This could be improved by moving isLoading to the store if needed
 
   // Get activeTab from store, with fallback to 'preview'
   const activeTab = useProjectStore((state) => state.editorSlice.activeTab)
   const setActiveTab = useProjectStore((state) => state.editorSlice.setActiveTab)
 
+  // Subscribe to schema changes for version display
+  // const schemas = useProjectStore((state) =>
+  //   projectPublicId ? state.extractorSlice.projectSchemas[projectPublicId]?.schemas : null
+  // )
+
+  // // Get active schema from the reactive schemas array
+  // const activeSchema = React.useMemo(() => {
+  //   if (!schemas) {
+  //     return null
+  //   }
+  //   return schemas.find((s) => s.isActive) ?? null
+  // }, [schemas])
+
   // Get last selected dropdown tab from store
   const lastExtractionDropdownTab = useProjectStore((state) => state.editorSlice.lastExtractionDropdownTab)
   const setLastExtractionDropdownTab = useProjectStore(
     (state) => state.editorSlice.setLastExtractionDropdownTab
+  )
+
+  // Get last selected configuration dropdown tab from store
+  const lastConfigurationDropdownTab = useProjectStore(
+    (state) => state.editorSlice.lastConfigurationDropdownTab
+  )
+  const setLastConfigurationDropdownTab = useProjectStore(
+    (state) => state.editorSlice.setLastConfigurationDropdownTab
   )
 
   // Get panel state from editor slice
@@ -75,24 +112,27 @@ export function ExtractionPanel({isProcessing = false}: ExtractionPanelProps) {
     return null
   }
 
-  const currentActiveTab = activeTab[projectPublicId] ?? 'preview'
-  const currentLastDropdownTab = lastExtractionDropdownTab[projectPublicId] ?? 'filtered-html'
+  const currentActiveTab = activeTab[projectPublicId] ?? 'cleaned-html'
+  const currentLastContentDropdownTab = lastExtractionDropdownTab[projectPublicId] ?? 'cleaned-html'
+  const currentLastConfigurationDropdownTab = lastConfigurationDropdownTab[projectPublicId] ?? 'data-schema'
 
-  // Handler for dropdown tab changes that also updates the last selected dropdown tab
-  const handleDropdownTabChange = (value: ExtractionPanelTabType) => {
+  // Handler for all tab changes - maintains last dropdown tab when appropriate
+  const handleTabChange = (value: ExtractionPanelTabType) => {
     setActiveTab(value)
-    // Check if this is one of the dropdown tabs and update the last selected
-    if (DROPDOWN_TABS.some((tab) => tab.value === value)) {
+    // Check if this is one of the content dropdown tabs and update the last selected
+    if (CONTENT_DROPDOWN_TABS.some((tab) => tab.value === value)) {
       setLastExtractionDropdownTab(value)
+    }
+    // Check if this is one of the configuration dropdown tabs and update the last selected
+    if (CONFIGURATION_DROPDOWN_TABS.some((tab) => tab.value === value)) {
+      setLastConfigurationDropdownTab(value as ConfigurationTabType)
     }
   }
 
   return (
     <ExtractionTabs
       value={currentActiveTab}
-      onValueChange={(value) => {
-        setActiveTab(value)
-      }}
+      onValueChange={handleTabChange}
       className='flex h-full flex-col bg-[#0A0A0B]'
     >
       {/* Combined Toolbar with Tabs */}
@@ -102,29 +142,21 @@ export function ExtractionPanel({isProcessing = false}: ExtractionPanelProps) {
       >
         {/* Left side - Tabs */}
         <ExtractionTabsList className='h-9 gap-x-1 bg-transparent p-0'>
-          <ExtractionTabsTrigger
-            value='preview'
-            className='gap-1.5 px-3 py-1.5 text-sm hover:bg-white/5 data-[state=active]:bg-white/10'
-          >
-            <Globe className='h-3.5 w-3.5' />
-            Preview
-          </ExtractionTabsTrigger>
-
-          {/* Dropdown for HTML/Markdown related tabs */}
-          <ExtractionTabsDropdown
-            tabs={DROPDOWN_TABS}
+          {/* Dropdown for HTML/Markdown related tabs (including Preview) */}
+          <SplitButtonDropdown
+            tabs={CONTENT_DROPDOWN_TABS}
             activeTab={currentActiveTab}
-            lastDropdownTab={currentLastDropdownTab}
-            onTabChange={handleDropdownTabChange}
+            lastDropdownTab={currentLastContentDropdownTab}
+            onTabChange={handleTabChange}
           />
 
-          <ExtractionTabsTrigger
-            value='data-schema'
-            className='gap-1.5 px-3 py-1.5 text-sm hover:bg-white/5 data-[state=active]:bg-white/10'
-          >
-            <FileJson2 className='h-3.5 w-3.5' />
-            Schema
-          </ExtractionTabsTrigger>
+          {/* Dropdown for Configuration tabs (Schema/Script/Log) */}
+          <SplitButtonDropdown
+            tabs={CONFIGURATION_DROPDOWN_TABS}
+            activeTab={currentActiveTab}
+            lastDropdownTab={currentLastConfigurationDropdownTab}
+            onTabChange={handleTabChange}
+          />
 
           <ExtractionTabsTrigger
             value='data'
@@ -137,7 +169,7 @@ export function ExtractionPanel({isProcessing = false}: ExtractionPanelProps) {
 
         {/* Right side - Status and Panel toggles */}
         <div className='flex items-center gap-2'>
-          <PipelineStatus isActive={isProcessing} />
+          <PipelineStatus />
 
           {/* Panel toggles */}
           <div className='flex items-center gap-1'>
@@ -183,7 +215,7 @@ export function ExtractionPanel({isProcessing = false}: ExtractionPanelProps) {
       </div>
 
       {/* Tab Content */}
-      <div className='flex-1 overflow-hidden'>
+      <div className='flex-1'>
         <ExtractionTabsContent
           value='preview'
           className='m-0 h-full'
@@ -199,6 +231,13 @@ export function ExtractionPanel({isProcessing = false}: ExtractionPanelProps) {
         </ExtractionTabsContent>
 
         <ExtractionTabsContent
+          value='formatted-html'
+          className='m-0 h-full'
+        >
+          <TabFormattedHtml />
+        </ExtractionTabsContent>
+
+        <ExtractionTabsContent
           value='cleaned-html'
           className='m-0 h-full'
         >
@@ -206,11 +245,18 @@ export function ExtractionPanel({isProcessing = false}: ExtractionPanelProps) {
         </ExtractionTabsContent>
 
         <ExtractionTabsContent
+          value='plaintext'
+          className='m-0 h-full'
+        >
+          <TabPlaintext />
+        </ExtractionTabsContent>
+
+        {/* <ExtractionTabsContent
           value='filtered-html'
           className='m-0 h-full'
         >
           <TabFilteredHtml />
-        </ExtractionTabsContent>
+        </ExtractionTabsContent> */}
 
         <ExtractionTabsContent
           value='readability-html'
@@ -238,6 +284,20 @@ export function ExtractionPanel({isProcessing = false}: ExtractionPanelProps) {
           className='m-0 h-full'
         >
           <TabDataSchema />
+        </ExtractionTabsContent>
+
+        <ExtractionTabsContent
+          value='script'
+          className='m-0 h-full'
+        >
+          <TabScript />
+        </ExtractionTabsContent>
+
+        <ExtractionTabsContent
+          value='log'
+          className='m-0 h-full'
+        >
+          <TabLog />
         </ExtractionTabsContent>
       </div>
     </ExtractionTabs>

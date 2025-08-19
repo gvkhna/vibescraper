@@ -10,11 +10,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel
 } from '@/components/ui/dropdown-menu'
-import {Avatar, AvatarImage, AvatarFallback} from '@/components/ui/avatar'
 import {Bell, BookOpen, ChevronDown, KeyRound} from 'lucide-react'
 import {ApiKeysDialog} from '@/components/api-keys-dialog'
 import {Input} from '@/components/ui/input'
 import {cn} from '@/lib/utils'
+import {UserAvatar} from '@daveyplate/better-auth-ui'
+import {authReactClient} from '@/lib/auth-react-client'
 
 export function TopNav() {
   const [apiKeysOpen, setApiKeysOpen] = React.useState(false)
@@ -31,7 +32,9 @@ export function TopNav() {
             size='sm'
             variant='ghost'
             className='gap-2 text-white hover:bg-white/10'
-            onClick={() => { setApiKeysOpen(true); }}
+            onClick={() => {
+              setApiKeysOpen(true)
+            }}
             aria-label='Manage API Keys'
           >
             <KeyRound className='h-4 w-4 text-[#3B82F6]' />
@@ -141,6 +144,8 @@ function Notifications() {
 }
 
 function UserMenu() {
+  const session = authReactClient.useSession()
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -149,13 +154,13 @@ function UserMenu() {
           className='gap-2 hover:bg-white/10'
           aria-label='User menu'
         >
-          <Avatar className='h-7 w-7'>
-            <AvatarImage
-              alt='User'
-              src='/placeholder.svg?height=32&width=32'
-            />
-            <AvatarFallback>US</AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            user={session.data?.user}
+            className='h-7 w-7'
+            classNames={{
+              fallback: 'bg-white/10 text-white/70 text-xs'
+            }}
+          />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

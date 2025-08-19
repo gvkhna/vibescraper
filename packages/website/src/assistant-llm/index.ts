@@ -13,7 +13,8 @@ import {createTogetherAI} from '@ai-sdk/togetherai'
 import {PRIVATE_VARS} from '@/vars.private'
 import type {LanguageModel} from 'ai'
 import debug from 'debug'
-import mockTestModel from './mock-llm/mock-test'
+import {mockTestModel} from './mock-llm/mock-test'
+import {mockTestToolsModel} from './mock-llm/mock-test-tools'
 
 const log = debug('app:assistant-llm')
 
@@ -27,6 +28,10 @@ export function getModelBySize(size: ModelSize): LanguageModel | null {
 
   if (PRIVATE_VARS.MOCK_LLM === 'test') {
     return mockTestModel()
+  }
+
+  if (PRIVATE_VARS.MOCK_LLM === 'test-tools') {
+    return mockTestToolsModel()
   }
 
   if (size === 'small') {

@@ -1,28 +1,40 @@
 {
   "name": "@scrapeloop/shared-types",
   "version": "0.0.1",
-  "private": true,
-  "main": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs",
-      "default": "./dist/index.mjs"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
-    "build": "bun run tsup",
-    "dev": "bun run tsup --watch",
+    "build": "vite build",
     "typecheck": "bun tsc --noEmit",
     "lint": "bun eslint --config ../../eslint.config.mjs .",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "devDependencies": {
+    "@types/debug": "^4.1.12",
     "tsup": "^8.5.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
-    "zod": "^4.0.15"
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "core-js": "^3.45.0",
+    "debug": "^4.4.1",
+    "type-fest": "^4.41.0",
+    "vite-plugin-dts": "^4.5.4",
+    "zod": "^4.0.17"
+  },
+  "peerDependencies": {
+    "vite": "^6"
   }
 }

@@ -9,22 +9,27 @@ import debug from 'debug'
 import process from 'node:process'
 import {PRIVATE_VARS} from '@/vars.private'
 import type {Runner} from 'graphile-worker'
-import {addJob, startWorker} from '@/worker/graphile.config'
+import {addJob, startWorker} from '@/task-queue/graphile.config'
 
 import account from './account'
 import assistant from './assistant'
 // import sandbox from './sandbox'
 import projects from './projects'
-import projectCommits from './project-commits'
+import project from './project'
 import storage from './storage'
 import whoami from './whoami'
 import {PUBLIC_VARS} from '@/vars.public'
+import {SandboxManager} from '@scrapeloop/sandbox'
 
 const log = debug('app:server:index')
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = pathDirname(__filename)
 const __cwd = globalThis.process.cwd()
+
+const sandboxWorker = debug('app:sandbox:worker')
+
+const sandboxManager = new SandboxManager(PRIVATE_VARS.TMP_DIR, sandboxWorker)
 
 export function selectTableColumns<T extends object>(table: T, columnNames: (keyof T)[]) {
   return columnNames.reduce<Partial<T>>((acc, columnName) => {
@@ -44,6 +49,7 @@ export type HonoServer = {
     db: typeof db
     user: (Omit<typeof auth.$Infer.Session.user, 'id'> & {id: schema.UserId}) | null
     session: typeof auth.$Infer.Session.session | null
+    sandbox: typeof sandboxManager | null
   }
 }
 
@@ -57,6 +63,7 @@ app.use('*', async (c, next) => {
 
   const session = await auth.api.getSession({headers: c.req.raw.headers})
   c.set('db', db)
+  c.set('sandbox', sandboxManager)
 
   if (!session) {
     c.set('user', null)
@@ -145,7 +152,7 @@ const routes = app
   .route('/account', account)
   .route('/assistant', assistant)
   .route('/projects', projects)
-  .route('/projectCommits', projectCommits)
+  .route('/project', project)
   .route('/whoami', whoami)
   .route('/storage', storage)
   .get('/', (c) => {

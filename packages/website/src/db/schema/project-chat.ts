@@ -102,5 +102,5 @@ export const projectChatMessage = pgTable(
 
 export type ProjectChatMessageDTOType = StrictOmit<
   typeof projectChatMessage.$inferSelect,
-  'id' | 'projectChatId'
+  'id' | 'projectChatId' | 'usage'
 >

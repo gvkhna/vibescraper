@@ -30,6 +30,5 @@
     "target": "ESNext",
     "verbatimModuleSyntax": true,
     "lib": ["ESNext"]
-  },
-  "include": ["types.d.ts"]
+  }
 }

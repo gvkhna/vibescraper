@@ -18,7 +18,7 @@ function LoadingScreen() {
 
 export function AssistantChatLoader() {
   const project = useProjectStore((state) => state.projectSlice.project?.project)
-  const projectCommit = useProjectStore((state) => state.projectSlice.projectCommit)
+  const projectCommit = useProjectStore((state) => state.extractorSlice.projectCommit)
   const projectChatsState = useProjectStore((state) => state.assistantSlice.projectChatsState)
   const selectedProjectChat = useProjectStore((state) => state.assistantSlice.selectedProjectChat)
   const projectChatMessagesState = useProjectStore((state) => state.assistantSlice.projectChatMessagesState)

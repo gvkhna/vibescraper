@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Button } from '@/components/ui/button'
+import {Button} from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -10,34 +10,35 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel
 } from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { Bell, BookOpen, ChevronDown, KeyRound } from 'lucide-react'
-import { ApiKeysDialog } from '@/components/api-keys-dialog'
-import { cn } from '@/lib/utils'
+import {Bell, BookOpen, ChevronDown, KeyRound} from 'lucide-react'
+import {ApiKeysDialog} from '@/components/api-keys-dialog'
+import {cn} from '@/lib/utils'
+import {UserAvatar} from '@daveyplate/better-auth-ui'
+import {authReactClient} from '@/lib/auth-react-client'
 
 export function DashboardNav() {
   const [apiKeysOpen, setApiKeysOpen] = React.useState(false)
 
   return (
-    <header
-      className={cn('sticky top-0 z-30', 'border-b border-white/10 bg-[#0A0A0B] backdrop-blur-md')}
-    >
+    <header className={cn('sticky top-0 z-30', 'border-b border-white/10 bg-[#0A0A0B] backdrop-blur-md')}>
       <div className='flex h-14 items-center gap-3 px-4 md:px-6'>
         {/* Brand - hidden on mobile when space is needed */}
-        <div className='hidden md:flex min-w-0 items-center gap-2'>
+        <div className='hidden min-w-0 items-center gap-2 md:flex'>
           <span className='font-semibold text-white'>Scrapeloop</span>
         </div>
-        
+
         {/* Project Selector - takes more space on mobile */}
         <ProjectSelector />
-        
+
         {/* Actions */}
         <div className='ml-auto flex items-center gap-2'>
           <Button
             size='sm'
             variant='ghost'
             className='gap-2 text-white/70 hover:bg-white/10 hover:text-white'
-            onClick={() => { setApiKeysOpen(true); }}
+            onClick={() => {
+              setApiKeysOpen(true)
+            }}
             aria-label='Manage API Keys'
           >
             <KeyRound className='h-4 w-4 text-blue-500' />
@@ -71,11 +72,12 @@ function ProjectSelector() {
       <DropdownMenuTrigger asChild>
         <Button
           variant='ghost'
-          className='gap-2 text-white/90 hover:bg-white/10 hover:text-white flex-1 md:flex-initial justify-start'
+          className='flex-1 justify-start gap-2 text-white/90 hover:bg-white/10 hover:text-white
+            md:flex-initial'
           aria-label='Select Project'
         >
-          <span className='max-w-[20ch] md:max-w-[28ch] truncate'>Acme Product Crawler</span>
-          <ChevronDown className='h-4 w-4 text-white/50 ml-auto md:ml-2' />
+          <span className='max-w-[20ch] truncate md:max-w-[28ch]'>Acme Product Crawler</span>
+          <ChevronDown className='ml-auto h-4 w-4 text-white/50 md:ml-2' />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-64 border-white/10 bg-[#1a1a1b]'>
@@ -138,21 +140,23 @@ function Notifications() {
 }
 
 function UserMenu() {
+  const session = authReactClient.useSession()
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant='ghost'
-          className='gap-2 hover:bg-white/10 p-1 md:px-3'
+          className='gap-2 p-1 hover:bg-white/10 md:px-3'
           aria-label='User menu'
         >
-          <Avatar className='h-7 w-7'>
-            <AvatarImage
-              alt='User'
-              src='/placeholder.svg?height=32&width=32'
-            />
-            <AvatarFallback className='bg-white/10 text-white/70 text-xs'>US</AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            user={session.data?.user}
+            className='h-7 w-7'
+            classNames={{
+              fallback: 'bg-white/10 text-white/70 text-xs'
+            }}
+          />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

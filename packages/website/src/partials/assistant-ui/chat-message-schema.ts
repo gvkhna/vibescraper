@@ -1,8 +1,9 @@
 import type {ProjectChatMessageDTOType, projectChatMessage} from '@/db/schema'
 import type {StrictOmit} from '@/db/schema/common'
-import {type InferUITools, type ToolSet, type UIMessage, tool} from 'ai'
+import {type InferUIMessageChunk, type InferUITools, type UIMessage, type UIMessageChunk} from 'ai'
 import debug from 'debug'
 import z from 'zod'
+import tools from '@/assistant-llm/tools'
 
 const log = debug('app:chat-message-schema')
 
@@ -20,28 +21,10 @@ const dataPartSchema = z.object({
 
 type SLDataPart = z.infer<typeof dataPartSchema>
 
-const tools: ToolSet = {
-  // someTool: tool({})
-  ping: tool({
-    description: 'Simple ping test - returns pong',
-    inputSchema: z.object({}),
-    outputSchema: z.object({
-      success: z.boolean(),
-      message: z.string()
-    }),
-    execute: async () => {
-      log('ping called')
-      return {
-        success: true,
-        message: 'pong'
-      }
-    }
-  })
-}
-
 type SLTools = InferUITools<typeof tools>
 
 export type SLUIMessage = UIMessage<SLMetadata, SLDataPart, SLTools>
+export type SLUIMessageChunk = InferUIMessageChunk<SLUIMessage>
 
 export type ChatMessagePersistanceType = typeof projectChatMessage.$inferSelect
 export type ChatMessageSchemaType = StrictOmit<SLUIMessage, 'id' | 'role'>

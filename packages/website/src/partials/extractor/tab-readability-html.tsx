@@ -1,26 +1,98 @@
 'use client'
 
-import {ScrollArea} from '@/components/ui/scroll-area'
+import * as React from 'react'
+import {Button} from '@/components/ui/button'
+import {BookOpen, Copy} from 'lucide-react'
+import {EmptyStateData} from '@/components/empty-state-data'
+import {useProjectStore} from '@/store/use-project-store'
+import {nowait} from '@/lib/async-utils'
+import {TextViewer} from '@/partials/monaco-editor/text-viewer'
 
 export function TabReadabilityHtml() {
+  const [copied, setCopied] = React.useState(false)
+
+  // Get cached readability result from project store
+  const cachedData = useProjectStore((state) => state.extractorSlice.projectCommit?.cachedData)
+  const readabilityResult = cachedData?.readabilityResult
+  const readabilityContent = readabilityResult?.content ?? null
+
+  const handleCopy = () => {
+    if (readabilityContent) {
+      nowait(globalThis.navigator.clipboard.writeText(readabilityContent))
+      setCopied(true)
+      setTimeout(() => {
+        setCopied(false)
+      }, 2000)
+    }
+  }
+
+  // Show empty state if no readability content
+  if (!readabilityContent) {
+    return (
+      <EmptyStateData
+        icon={BookOpen}
+        title='No Readability Content'
+        description='Run extraction to view article content'
+        details='Readability extracts the main article content in a clean format'
+      />
+    )
+  }
+
   return (
-    <ScrollArea className='h-full bg-[#151517]'>
-      <div className='mx-auto max-w-4xl p-8'>
-        <article className='prose prose-invert prose-lg max-w-none'>
-          <h1 className='mb-6 text-4xl font-bold text-white'>ACME Widget</h1>
-          <div className='mb-8 text-3xl font-semibold text-[#3B82F6]'>$19.99</div>
-          <p className='mb-8 text-xl leading-relaxed text-gray-300'>
-            High-quality widget for all your needs. This premium product combines durability with ease of use,
-            making it perfect for both professionals and hobbyists.
-          </p>
-          <h2 className='mb-6 text-2xl font-semibold text-white'>Features</h2>
-          <ul className='space-y-3 text-lg text-gray-300'>
-            <li>Durable construction that lasts for years</li>
-            <li>Easy to use interface</li>
-            <li>1-year warranty included</li>
-          </ul>
-        </article>
+    <div className='relative flex h-full flex-col bg-[#0D1117]'>
+      <div className='absolute right-4 top-4 z-10 flex gap-2'>
+        {/* {readabilityResult?.title && (
+          <div className='rounded bg-white/10 px-3 py-1 text-sm text-white'>
+            {readabilityResult.title}
+          </div>
+        )} */}
+        <Button
+          variant='ghost'
+          size='sm'
+          onClick={handleCopy}
+          className='bg-white/10 text-white hover:bg-white/20'
+        >
+          <Copy className='h-4 w-4' />
+          {copied && <span className='ml-2 text-xs'>Copied!</span>}
+        </Button>
       </div>
-    </ScrollArea>
+      <div className='flex-1'>
+        <TextViewer
+          textData={readabilityContent}
+          lang='html'
+        />
+      </div>
+      {/* {readabilityResult && (
+        <div className='border-t border-white/10 bg-[#0A0A0B] p-3'>
+          <div className='flex flex-wrap gap-4 text-xs text-gray-400'>
+            {readabilityResult.byline && (
+              <div>
+                <span className='font-semibold'>Author:</span> {readabilityResult.byline}
+              </div>
+            )}
+            {readabilityResult.siteName && (
+              <div>
+                <span className='font-semibold'>Site:</span> {readabilityResult.siteName}
+              </div>
+            )}
+            {readabilityResult.length !== null && (
+              <div>
+                <span className='font-semibold'>Length:</span> {readabilityResult.length} chars
+              </div>
+            )}
+            {readabilityResult.lang && (
+              <div>
+                <span className='font-semibold'>Language:</span> {readabilityResult.lang}
+              </div>
+            )}
+          </div>
+          {readabilityResult.excerpt && (
+            <div className='mt-2 text-xs text-gray-500'>
+              <span className='font-semibold'>Excerpt:</span> {readabilityResult.excerpt}
+            </div>
+          )}
+        </div>
+      )} */}
+    </div>
   )
 }

@@ -1,4 +1,4 @@
-import {BetterAuthProvider} from '@/partials/app/better-auth-provider'
+import {BetterAuthUIProvider} from '@/partials/app/better-auth-ui-provider'
 import {NotFoundPage} from '@/partials/app/not-found-page'
 import {createRootRoute, Link, Outlet, redirect} from '@tanstack/react-router'
 import {TanStackRouterDevtools} from '@tanstack/react-router-devtools'
@@ -10,9 +10,9 @@ export const Route = createRootRoute({
   errorComponent: () => <ErrorPage />,
   component: () => (
     <>
-      <BetterAuthProvider>
+      <BetterAuthUIProvider>
         <Outlet />
-      </BetterAuthProvider>
+      </BetterAuthUIProvider>
       {/* <TanStackRouterDevtools /> */}
       {/* {PUBLIC_VARS.DEV && <TanStackRouterDevtools />} */}
     </>

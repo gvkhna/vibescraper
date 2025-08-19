@@ -21,7 +21,7 @@ const createStreamBody = (stream: ReadStream) => {
     },
 
     cancel() {
-      stream.destroy()
+      stream.close()
     }
   })
   return body

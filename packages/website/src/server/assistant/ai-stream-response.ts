@@ -5,13 +5,7 @@ import {eq as sqlEq} from 'drizzle-orm'
 import debug from 'debug'
 import {HttpStatusCode} from '@/lib/http-status-codes'
 import {streamSSE} from 'hono/streaming'
-import {
-  streamText as aiStreamText,
-  JsonToSseTransformStream,
-  type LanguageModel,
-  type LanguageModelUsage,
-  type Tool
-} from 'ai'
+import {streamText as aiStreamText, JsonToSseTransformStream, type LanguageModel, type ToolSet} from 'ai'
 import {
   convertUIMessageToChatMessage,
   type SLUIMessage,
@@ -30,7 +24,7 @@ export interface AIStreamArgs {
   model: LanguageModel
   conversationHistory: ChatMessagePersistanceType[]
   assistantMessage: typeof schema.projectChatMessage.$inferSelect
-  tools?: Record<string, Tool>
+  tools?: ToolSet
 }
 
 export function aiStreamResponse(args: AIStreamArgs): Response {
@@ -85,104 +79,105 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
       //     })
       // },
       onChunk: ({chunk}) => {
-        const chunkType = chunk.type
-        switch (chunkType) {
-          case 'tool-call': {
-            type part = typeof chunk
-            // Tool execution completed
-            // toolCalls.push({
-            //   toolCallId: chunk.toolCallId,
-            //   toolName: chunk.toolName,
-            //   error: chunk.error,
-            //   invalid: chunk.invalid
-            // })
+        logAI('[CHUNK]', JSON.stringify(chunk))
+        // const chunkType = chunk.type
+        // switch (chunkType) {
+        //   case 'tool-call': {
+        //     type part = typeof chunk
+        //     // Tool execution completed
+        //     // toolCalls.push({
+        //     //   toolCallId: chunk.toolCallId,
+        //     //   toolName: chunk.toolName,
+        //     //   error: chunk.error,
+        //     //   invalid: chunk.invalid
+        //     // })
 
-            if (chunk.error) {
-              logAI('[Tool Error]', chunk.toolName, chunk.error)
-            }
-            break
-          }
-          case 'reasoning-delta': {
-            type part = typeof chunk
-            // Reasoning tokens (for models like o1)
-            // messageChunks.push({
-            //   type: 'reasoning',
-            //   text: chunk.text
-            // })
+        //     if (chunk.error) {
+        //       logAI('[Tool Error]', chunk.toolName, chunk.error)
+        //     }
+        //     break
+        //   }
+        //   case 'reasoning-delta': {
+        //     type part = typeof chunk
+        //     // Reasoning tokens (for models like o1)
+        //     // messageChunks.push({
+        //     //   type: 'reasoning',
+        //     //   text: chunk.text
+        //     // })
 
-            break
-          }
-          case 'source': {
-            type part = typeof chunk
-            // Web search or RAG sources
-            let sourceUrl: string | undefined
+        //     break
+        //   }
+        //   case 'source': {
+        //     type part = typeof chunk
+        //     // Web search or RAG sources
+        //     let sourceUrl: string | undefined
 
-            if (chunk.sourceType === 'url' && 'url' in chunk) {
-              sourceUrl = chunk.url
-            } else if ('filename' in chunk) {
-              // Document sources don't have URL, use ID or filename
-              sourceUrl = chunk.filename ?? chunk.id
-            } else {
-              sourceUrl = chunk.id
-            }
+        //     if (chunk.sourceType === 'url' && 'url' in chunk) {
+        //       sourceUrl = chunk.url
+        //     } else if ('filename' in chunk) {
+        //       // Document sources don't have URL, use ID or filename
+        //       sourceUrl = chunk.filename ?? chunk.id
+        //     } else {
+        //       sourceUrl = chunk.id
+        //     }
 
-            // messageChunks.push({
-            //   type: 'source',
-            //   url: sourceUrl,
-            //   title: chunk.title,
-            //   sourceType: chunk.sourceType
-            // })
+        //     // messageChunks.push({
+        //     //   type: 'source',
+        //     //   url: sourceUrl,
+        //     //   title: chunk.title,
+        //     //   sourceType: chunk.sourceType
+        //     // })
 
-            if (PUBLIC_VARS.DEV) {
-              logAI('[Source]', chunk.title)
-            }
-            break
-          }
-          case 'text-delta': {
-            type part = typeof chunk
-            // Regular text output
-            // messageChunks.push({
-            //   type: 'text',
-            //   text: chunk.text
-            // })
+        //     if (PUBLIC_VARS.DEV) {
+        //       logAI('[Source]', chunk.title)
+        //     }
+        //     break
+        //   }
+        //   case 'text-delta': {
+        //     type part = typeof chunk
+        //     // Regular text output
+        //     // messageChunks.push({
+        //     //   type: 'text',
+        //     //   text: chunk.text
+        //     // })
 
-            break
-          }
-          case 'tool-input-delta': {
-            type part = typeof chunk
-            break
-          }
-          case 'tool-input-start': {
-            type part = typeof chunk
-            if (PUBLIC_VARS.DEV) {
-              logAI('[Tool]', chunk.toolName)
-            }
-            break
-          }
-          case 'tool-result': {
-            type part = typeof chunk
-            // Tool execution result
-            // toolCalls.push({
-            //   toolCallId: chunk.toolCallId,
-            //   toolName: chunk.toolName,
-            //   input: chunk.input,
-            //   output: chunk.output
-            // })
+        //     break
+        //   }
+        //   case 'tool-input-delta': {
+        //     type part = typeof chunk
+        //     break
+        //   }
+        //   case 'tool-input-start': {
+        //     type part = typeof chunk
+        //     if (PUBLIC_VARS.DEV) {
+        //       logAI('[Tool]', chunk.toolName)
+        //     }
+        //     break
+        //   }
+        //   case 'tool-result': {
+        //     type part = typeof chunk
+        //     // Tool execution result
+        //     // toolCalls.push({
+        //     //   toolCallId: chunk.toolCallId,
+        //     //   toolName: chunk.toolName,
+        //     //   input: chunk.input,
+        //     //   output: chunk.output
+        //     // })
 
-            break
-          }
-          case 'raw': {
-            type part = typeof chunk
-            break
-          }
-          default: {
-            const _exhaustive: never = chunkType
-            if (PUBLIC_VARS.DEV) {
-              logAI('[Unknown Chunk]', `Unhandled type: ${JSON.stringify(_exhaustive)}`)
-            }
-            break
-          }
-        }
+        //     break
+        //   }
+        //   case 'raw': {
+        //     type part = typeof chunk
+        //     break
+        //   }
+        //   default: {
+        //     const _exhaustive: never = chunkType
+        //     if (PUBLIC_VARS.DEV) {
+        //       logAI('[Unknown Chunk]', `Unhandled type: ${JSON.stringify(_exhaustive)}`)
+        //     }
+        //     break
+        //   }
+        // }
       },
       onError: async (error) => {
         // Type guard for error object
@@ -346,8 +341,20 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
         state.finalized = true
         state.errored = true
 
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        logAI('ERROR ', errorMessage)
+        let errorMessage: string
+        if (error instanceof Error) {
+          errorMessage = error.message
+          // Also log the stack trace in development
+          if (PUBLIC_VARS.DEV && error.stack) {
+            logAI('ERROR Stack:', error.stack)
+          }
+        } else if (typeof error === 'object' && error !== null) {
+          // Handle objects that aren't Error instances
+          errorMessage = JSON.stringify(error, null, 2)
+        } else {
+          errorMessage = String(error)
+        }
+        logAI('ERROR:', errorMessage)
 
         if (state.errorMessage) {
           state.errorMessage = `${state.errorMessage}\n${errorMessage}`

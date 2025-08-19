@@ -22,7 +22,7 @@ function ExtractionTabs({className, ...props}: ExtractionTabsProps) {
   return (
     <TabsPrimitive.Root
       data-slot='tabs'
-      className={cn('flex flex-col gap-2', className)}
+      className={cn('flex flex-col gap-0', className)}
       onValueChange={props.onValueChange as any}
       {...props}
     />

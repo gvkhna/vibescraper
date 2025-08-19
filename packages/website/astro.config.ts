@@ -8,7 +8,6 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import node from '@astrojs/node'
 import react from '@astrojs/react'
 import mdx from '@astrojs/mdx'
-import monacoEditorEsmPlugin from 'vite-plugin-monaco-editor-esm'
 import sitemap from '@astrojs/sitemap'
 import viteMaildev from './.vite-plugins/vite-maildev'
 import {tanstackRouter} from '@tanstack/router-plugin/vite'
@@ -16,7 +15,9 @@ import {tanstackRouter} from '@tanstack/router-plugin/vite'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const projectRoot = resolve(__dirname, '../..')
 
-const env = loadEnv(process.env.NODE_ENV ?? 'development', projectRoot, '')
+const processEnv = process.env as Record<string, string>
+
+const env = loadEnv(processEnv.NODE_ENV ?? 'development', projectRoot, '')
 // console.log('Loading env from:', projectRoot)
 // console.log('Loaded env vars:', Object.keys(env))
 // console.log('PUBLIC_HOSTNAME:', env.PUBLIC_HOSTNAME)
@@ -31,6 +32,7 @@ export default defineConfig({
     host: true,
     allowedHosts: true
   },
+  outDir: 'dist',
   output: 'server',
 
   devToolbar: {
@@ -65,8 +67,7 @@ export default defineConfig({
                 }),
                 viteMaildev(),
                 tailwindcss(),
-                tsconfigPaths(),
-                monacoEditorEsmPlugin({})
+                tsconfigPaths()
               ]
             }
           })

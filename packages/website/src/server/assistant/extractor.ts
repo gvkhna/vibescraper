@@ -13,9 +13,10 @@ import {
   type ChatMessagePersistanceType
 } from '@/partials/assistant-ui/chat-message-schema'
 import {getModelBySize, type ModelSize} from '@/assistant-llm'
-import {TestPingPrompt, TestPrompt} from '@/assistant-llm/prompts'
+import {SchemaToolsPrompt, TestPingPrompt, TestPrompt} from '@/assistant-llm/prompts'
 import {aiStreamResponse} from './ai-stream-response'
 import {makeTestTools} from '@/assistant-llm/tools/test-tools'
+import {makeExtractionTools} from '@/assistant-llm/tools/assistant-extraction-tools'
 // import type {ProjectVersionBlockType} from '@partials/assistant-ui/project-version-block'
 // import {makeTools} from '@/private-llm/assistant-tools'
 
@@ -28,9 +29,15 @@ const app = new Hono<HonoServer>().post(
       editorSliceActiveTab: z.string().optional(),
       messages: z.array(z.custom<SLUIMessage>()),
       model: z.string().optional(),
-      projectChatPublicId: z.string(),
-      projectCommitPublicId: z.string(),
-      projectPublicId: z.string(),
+      projectChatPublicId: z.custom<schema.ProjectChatPublicId>((val) => {
+        return typeof val === 'string'
+      }),
+      projectCommitPublicId: z.custom<schema.ProjectCommitPublicId>((val) => {
+        return typeof val === 'string'
+      }),
+      projectPublicId: z.custom<schema.ProjectPublicId>((val) => {
+        return typeof val === 'string'
+      }),
       trigger: z.string()
     })
     const parsed = endpointSchema.safeParse(value)
@@ -57,7 +64,7 @@ const app = new Hono<HonoServer>().post(
     }
 
     const projectChat = await db.query.projectChat.findFirst({
-      where: (table, {eq}) => eq(table.publicId, projectChatPublicId as schema.ProjectChatPublicId)
+      where: (table, {eq}) => eq(table.publicId, projectChatPublicId)
     })
 
     if (!projectChat) {
@@ -176,12 +183,22 @@ const app = new Hono<HonoServer>().post(
       return c.json({error: 'Model not configured'}, 500)
     }
 
+    // const systemPrompt = ExtractorPrompt({})
+
+    const systemPrompt = SchemaToolsPrompt({})
+
     // const systemPrompt = TestPrompt({
     //   activeTab: editorSliceActiveTab
     // })
-    const systemPrompt = TestPingPrompt({})
+    // const systemPrompt = TestPingPrompt({})
 
-    const tools = makeTestTools()
+    const sandbox = c.get('sandbox')
+    if (!sandbox) {
+      return c.json({error: 'Sandbox not available'}, HttpStatusCode.BadGateway)
+    }
+
+    const tools = makeExtractionTools(db, project, projectCommitPublicId, sandbox)
+    // const tools = makeTestTools()
 
     return aiStreamResponse({
       requestContext: c,

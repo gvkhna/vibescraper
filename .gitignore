@@ -8,14 +8,18 @@ dist*
 .claude
 routeTree.gen.ts
 *.log
+
 # dependencies
 node_modules
 
-packages/website/storage/*
-!packages/website/storage/.keep
-packages/website/tmp/*
-!packages/website/tmp/.keep
-!packages/website/tmp/maildev/.keep
+*tmp*
+!packages/**/tmp/
+packages/**/tmp/*
+!packages/**/tmp/.keep
+
+**/storage/*
+!**/storage/
+!**/storage/.keep
 
 # logs
 npm-debug.log*
@@ -33,5 +37,4 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-*tmp*
 *.tsbuildinfo

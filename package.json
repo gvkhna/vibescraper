@@ -2,7 +2,6 @@
   "name": "scrapeloop",
   "type": "module",
   "version": "0.0.1",
-  "packageManager": "pnpm@10.14.0",
   "engines": {
     "npm": "please-use-pnpm",
     "yarn": "please-use-pnpm"
@@ -15,18 +14,20 @@
     "test": "bun turbo run test",
     "clean": "bun turbo run clean",
     "dev:website": "bun turbo run dev --filter=@scrapeloop/website",
-    "build:website": "bun turbo run build --filter=@scrapeloop/website"
+    "build:website": "bun turbo run build --filter=@scrapeloop/website",
+    "pnpm-upgrade-version": "pnpm uninstall corepack;pnpm install -D corepack;corepack prepare pnpm@latest --activate;corepack use pnpm@latest"
   },
   "devDependencies": {
     "@eslint/compat": "^1.3.2",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.33.0",
     "@stylistic/eslint-plugin": "^5.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.39.1",
-    "@typescript-eslint/parser": "^8.39.1",
-    "@typescript-eslint/utils": "^8.39.1",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
+    "@typescript-eslint/utils": "^8.40.0",
     "astro-eslint-parser": "^1.2.2",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
+    "corepack": "^0.34.0",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^1.3.1",
@@ -42,8 +43,9 @@
     "prettier-plugin-classnames": "^0.8.2",
     "prettier-plugin-merge": "^0.8.0",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "turbo": "^2.5.5",
+    "turbo": "^2.5.6",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.39.1"
-  }
+    "typescript-eslint": "^8.40.0"
+  },
+  "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b"
 }

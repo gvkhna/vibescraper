@@ -14,8 +14,7 @@
   "scripts": {
     "build": "vite build",
     "typecheck": "bun tsc --noEmit",
-    "test": "vitest",
-    "test:run": "vitest run",
+    "test": "vitest --run",
     "run:html-format": "bun run src/html-format-run.ts",
     "run:html-markdown": "bun run src/html-markdown-run.ts",
     "run:html-readability": "bun run src/html-readability-run.ts",

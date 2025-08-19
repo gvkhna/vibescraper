@@ -6,7 +6,7 @@
  */
 
 import {JSDOM} from 'jsdom'
-import readabilityScript from './assets/readability-js.txt?raw'
+import readabilityScript from './readability-js.payload?raw'
 
 export interface ReadabilityResult {
   /**

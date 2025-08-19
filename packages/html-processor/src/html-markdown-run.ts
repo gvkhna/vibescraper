@@ -14,7 +14,7 @@ import {htmlMarkdown} from './html-markdown'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 async function convertHtmlAssetsToMarkdown() {
-  const assetsDir = resolve(__dirname, 'assets')
+  const assetsDir = resolve(__dirname, 'fixtures')
 
   try {
     // Read all files in the assets directory
@@ -22,14 +22,14 @@ async function convertHtmlAssetsToMarkdown() {
 
     // Filter for HTML test files that need markdown conversion
     const htmlFiles = files.filter(
-      (file) => file.includes('html-to-markdown.test') && file.endsWith('-raw.html')
+      (file) => file.includes('html-to-markdown.test') && file.endsWith('-raw.fixture')
     )
 
     console.log(`Found ${htmlFiles.length} HTML files to convert`)
 
     for (const htmlFile of htmlFiles) {
       const htmlPath = resolve(assetsDir, htmlFile)
-      const mdFileName = htmlFile.replace('-raw.html', '-converted.md')
+      const mdFileName = htmlFile.replace('-raw.fixture', '-converted.fixture')
       const mdPath = resolve(assetsDir, mdFileName)
 
       console.log(`Converting ${htmlFile} to ${mdFileName}...`)

@@ -1,10 +1,10 @@
 import {describe, it, expect} from 'vitest'
 
 // Import test assets using ?raw
-import sampleRawHtml from './assets/html-to-markdown.test.sample-raw.html?raw'
-import sampleConvertedMd from './assets/html-to-markdown.test.sample-converted.md?raw'
-import mediumRawHtml from './assets/html-to-markdown.test.medium-raw.html?raw'
-import mediumConvertedMd from './assets/html-to-markdown.test.medium-converted.md?raw'
+import sampleRawHtml from './fixtures/html-to-markdown.test.sample-raw.fixture?raw'
+import sampleConvertedMd from './fixtures/html-to-markdown.test.sample-converted.fixture?raw'
+import mediumRawHtml from './fixtures/html-to-markdown.test.medium-raw.fixture?raw'
+import mediumConvertedMd from './fixtures/html-to-markdown.test.medium-converted.fixture?raw'
 import {htmlMarkdown} from './html-markdown'
 
 describe('htmlToMarkdown', () => {

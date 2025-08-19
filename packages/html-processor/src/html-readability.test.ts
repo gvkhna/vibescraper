@@ -2,8 +2,8 @@ import {describe, it, expect} from 'vitest'
 import {htmlReadability} from './html-readability'
 
 // Import test assets using ?raw
-import mediumRawHtml from './assets/html-to-markdown.test.medium-raw.html?raw'
-import mediumExpectedResult from './assets/html-readability.test.medium.txt?raw'
+import mediumRawHtml from './fixtures/html-to-markdown.test.medium-raw.fixture?raw'
+import mediumExpectedResult from './fixtures/html-readability.test.medium-text.fixture?raw'
 
 describe('htmlReadability', () => {
   it('should extract readable content from Medium article correctly', () => {

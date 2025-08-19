@@ -1,12 +1,8 @@
-declare module '*.html?raw' {
+declare module '*.fixture?raw' {
   const content: string
   export default content
 }
-declare module '*.txt?raw' {
-  const content: string
-  export default content
-}
-declare module '*.md?raw' {
+declare module '*.payload?raw' {
   const content: string
   export default content
 }

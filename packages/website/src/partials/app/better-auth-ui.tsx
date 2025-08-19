@@ -1,6 +1,6 @@
 'use client'
 
-import {AuthCard} from '@daveyplate/better-auth-ui'
+import {AuthView} from '@daveyplate/better-auth-ui'
 
 interface AuthPageTemplateProps {
   pathname: string
@@ -45,7 +45,7 @@ export function AuthPageTemplate({pathname}: AuthPageTemplateProps) {
   return (
     <div className='flex min-h-screen items-center justify-center bg-[#0A0A0B] p-4'>
       <div className='w-full max-w-sm'>
-        <AuthCard
+        <AuthView
           pathname={pathname}
           redirectTo={config.redirectTo}
           cardHeader={

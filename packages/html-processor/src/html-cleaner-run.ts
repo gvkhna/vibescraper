@@ -14,9 +14,9 @@ import {htmlCleaner} from './html-cleaner'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 async function processHtmlFiles() {
-  const mediumHtmlPath = resolve(__dirname, 'assets', 'html-to-markdown.test.medium-raw.html')
-  const mediumOutputPath = resolve(__dirname, 'assets', 'html-cleaner.test.medium.html')
-  const mediumOutputTextPath = resolve(__dirname, 'assets', 'html-cleaner.test.medium.txt')
+  const mediumHtmlPath = resolve(__dirname, 'fixtures', 'html-to-markdown.test.medium-raw.fixture')
+  const mediumOutputPath = resolve(__dirname, 'fixtures', 'html-cleaner.test.medium.fixture')
+  const mediumOutputTextPath = resolve(__dirname, 'fixtures', 'html-cleaner.test.medium-text.fixture')
 
   const mediumHtml = await readFile(mediumHtmlPath, 'utf-8')
 

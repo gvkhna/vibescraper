@@ -14,8 +14,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 async function formatHtmlFile() {
   try {
     // Paths
-    const inputPath = resolve(__dirname, 'assets', 'hackernews-raw.html')
-    const outputPath = resolve(__dirname, 'assets', 'hackernews-formatted.html')
+    const inputPath = resolve(__dirname, 'fixtures', 'format-html.test.hackernews-raw.fixture')
+    const outputPath = resolve(__dirname, 'fixtures', 'format-html.test.hackernews-formatted.fixture')
 
     console.log('📖 Reading raw HTML from:', inputPath)
 

@@ -483,6 +483,13 @@ bun maildev              # Start mail development server
 - **SQL injection**: Drizzle ORM prevents injection
 - **XSS protection**: React's built-in XSS prevention
 
+## Development Guidelines
+
+### AI Assistant Usage
+- **Important**: Do not mention Claude Code usage, AI assistance, or automated code generation in commit messages, pull requests, or code comments unless specifically requested by the user
+- Keep development workflow natural and focused on the actual changes being made
+- Commit messages should describe what was changed, not how it was implemented
+
 ---
 
 This guide covers the essential patterns and practices for working with the Vibescraper codebase. Always refer to the latest code for the most up-to-date implementations and patterns.

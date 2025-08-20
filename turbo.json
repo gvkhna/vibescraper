@@ -10,6 +10,11 @@
       "cache": false,
       "persistent": true
     },
+    "dev#@vibescraper/website": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    },
     "lint": {
       "dependsOn": ["^build"],
       "outputs": []

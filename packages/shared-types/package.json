@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "vite build",
+    "dev": "vite build --watch",
     "typecheck": "bun tsc --noEmit",
     "lint": "bun eslint --config ../../eslint.config.mjs .",
     "clean": "rm -rf dist",

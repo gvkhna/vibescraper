@@ -21,6 +21,77 @@ const log = debug('app:scrape-processor')
 // }
 
 /**
+ * Custom validation logic for handling both single objects and arrays
+ * @param schemaObject - The JSON schema to validate against
+ * @param data - The extracted data (can be single object or array)
+ * @returns Validation result with item-level errors for arrays
+ */
+function validateExtractionResult(schemaObject: JsonObject, data: JsonValue): {
+  success: boolean
+  message?: string
+  itemErrors?: Array<{ itemIndex: number; errors: string[] }>
+} {
+  try {
+    // If data is an array, validate each item individually
+    if (Array.isArray(data)) {
+      const itemErrors: Array<{ itemIndex: number; errors: string[] }> = []
+      let hasErrors = false
+
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i]
+        const validation = validateDataAgainstSchema(schemaObject, item)
+        
+        if (!validation.success) {
+          hasErrors = true
+          itemErrors.push({
+            itemIndex: i,
+            errors: validation.message ? [validation.message] : ['Validation failed']
+          })
+        }
+      }
+
+      if (hasErrors) {
+        const totalErrors = itemErrors.reduce((sum, item) => sum + item.errors.length, 0)
+        return {
+          success: false,
+          message: `Validation failed for ${itemErrors.length} out of ${data.length} items (${totalErrors} total errors)`,
+          itemErrors
+        }
+      }
+
+      return {
+        success: true,
+        message: `All ${data.length} items validated successfully`
+      }
+    } else {
+      // Single object - validate normally
+      const validation = validateDataAgainstSchema(schemaObject, data)
+      
+      if (!validation.success) {
+        return {
+          success: false,
+          message: validation.message,
+          itemErrors: [{
+            itemIndex: 0,
+            errors: validation.message ? [validation.message] : ['Validation failed']
+          }]
+        }
+      }
+
+      return {
+        success: true,
+        message: 'Single object validated successfully'
+      }
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Unknown validation error'
+    }
+  }
+}
+
+/**
  * Run extraction script against cleaned HTML and validate against schema
  *
  * IMPORTANT: extractionResult behavior:
@@ -89,15 +160,19 @@ async function runExtraction(
     if ('result' in executionResult && extractionScriptStatus === 'completed') {
       result.extractionResult = executionResult.result as JsonValue
 
-      // Run schema validation
+      // Run schema validation with array/object detection
       const schemaCompilation = compileJsonSchema(schemaObject)
       if (schemaCompilation.success) {
-        const validation = validateDataAgainstSchema(schemaObject, result.extractionResult)
+        const validation = validateExtractionResult(schemaObject, result.extractionResult)
         if (validation.success) {
           result.schemaValidationStatus = 'completed'
         } else {
           result.schemaValidationStatus = 'failed'
           result.schemaValidationErrors = validation.message ? [validation.message] : ['Validation failed']
+          // Store item-level errors for detailed frontend display
+          if (validation.itemErrors) {
+            result.schemaValidationItemErrors = validation.itemErrors
+          }
         }
       } else {
         result.schemaValidationStatus = 'failed'
@@ -183,6 +258,7 @@ export type ExtractionStage = {
   // STAGE 4: Schema Validation
   schemaValidationStatus: schema.ProjectCommitCacheData['schemaValidationStatus']
   schemaValidationErrors?: schema.ProjectCommitCacheData['schemaValidationErrors'] // Detailed validation errors (only populated when validation failed)
+  schemaValidationItemErrors?: schema.ProjectCommitCacheData['schemaValidationItemErrors'] // Item-level validation errors for arrays
 }
 
 export type ScrapeProcessorResult = {
@@ -625,6 +701,9 @@ export async function scrapeProcess({
         cacheData.schemaValidationStatus = extractionStage.schemaValidationStatus
         if (extractionStage.schemaValidationErrors) {
           cacheData.schemaValidationErrors = extractionStage.schemaValidationErrors
+        }
+        if (extractionStage.schemaValidationItemErrors) {
+          cacheData.schemaValidationItemErrors = extractionStage.schemaValidationItemErrors
         }
       }
     }

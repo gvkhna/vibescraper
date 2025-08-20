@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "vite build",
+    "dev": "vite build --watch",
     "typecheck": "bun tsc --noEmit",
     "test": "vitest --run",
     "run:html-format": "bun run src/html-format-run.ts",

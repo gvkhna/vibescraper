@@ -97,6 +97,10 @@ export type ProjectCommitCacheData = {
   // STAGE 4: Schema Validation
   schemaValidationStatus: 'initial' | 'completed' | 'failed'
   schemaValidationErrors?: string[] | null // Detailed validation errors (only populated when validation failed)
+  schemaValidationItemErrors?: Array<{
+    itemIndex: number
+    errors: string[]
+  }> | null // Item-level validation errors for arrays (only populated when validation failed)
 }
 
 // [projects]

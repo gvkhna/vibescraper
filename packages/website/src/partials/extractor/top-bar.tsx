@@ -66,20 +66,20 @@ export function TopBar({
   return (
     <div className='flex h-[56px] flex-shrink-0 items-center gap-3 border-b border-white/10 bg-[#151517] px-4'>
       {/* Logo */}
-      <div className='flex items-center'>
+      <div className='flex-shrink-0'>
         <span className='text-lg font-semibold'>Vibescraper</span>
       </div>
 
       {/* URL Bar and Controls */}
       {currentUrl && onUrlChange && (
         <>
-          <form onSubmit={saveUrl}>
+          <form onSubmit={saveUrl} className='flex-1 min-w-0 max-w-2xl'>
             <Input
               value={currentUrl}
               onChange={(e) => {
                 onUrlChange(e.target.value)
               }}
-              className='max-w-lg border-white/20 bg-[#0A0A0B] font-mono text-sm'
+              className='w-full border-white/20 bg-[#0A0A0B] font-mono text-sm'
               placeholder='Enter URL to scrape...'
             />
           </form>
@@ -131,7 +131,7 @@ export function TopBar({
                       cursor-default transition-all duration-300
                       ${isLiveMode 
                         ? 'border-green-500/50 bg-green-500/15 text-green-400 hover:bg-green-500/20 shadow-[0_0_8px_rgba(34,197,94,0.3)]' 
-                        : 'border-green-500/50 bg-green-500/10 text-green-400 hover:bg-green-500/15'
+                        : 'border-green-500/20 bg-green-500/5 text-green-400/60 hover:bg-green-500/8 hover:text-green-400/80'
                       }
                     `}
                   >
@@ -191,7 +191,7 @@ export function TopBar({
       )}
 
       {/* Right side - Project Selector and User Menu */}
-      <div className='ml-auto flex items-center gap-3'>
+      <div className='ml-auto flex flex-shrink-0 items-center gap-3'>
         {/* Project Selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

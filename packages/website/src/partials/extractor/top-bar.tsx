@@ -11,6 +11,9 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import {ChevronDown, Plus, Zap, Settings} from 'lucide-react'
+import {Switch} from '@/components/ui/switch'
+import {Badge} from '@/components/ui/badge'
+import {HoverCard, HoverCardContent, HoverCardTrigger} from '@/components/ui/hover-card'
 import {ScrapeButtonWithHover} from './scrape-button-with-hover'
 import {useProjectStore} from '@/store/use-project-store'
 import {useNavigate} from '@tanstack/react-router'
@@ -53,6 +56,9 @@ export function TopBar({
   const recentProjects = useProjectStore((state) => state.recentProjectsSlice.recentProjects)
   const currentProject = useProjectStore((state) => state.projectSlice.project)
   const session = authReactClient.useSession()
+
+  // Live mode state (temporary React state for UI demo)
+  const [isLiveMode, setIsLiveMode] = React.useState(false)
 
   // Use current project name or fall back to "Scraper"
   const displayName = currentProject?.project.name ?? 'Scraper'
@@ -99,7 +105,77 @@ export function TopBar({
             </Button>
           )}
 
+          {/* Live Mode Toggle - Disabled for now, focusing on UI */}
           {onActivate && (
+            <div className='flex items-center gap-3'>
+              {/* Live Mode Switch */}
+              <Switch
+                checked={isLiveMode}
+                onCheckedChange={setIsLiveMode}
+                className={`h-6 w-11 border-0 transition-all duration-300 data-[state=checked]:bg-green-500
+                data-[state=unchecked]:bg-white/20 data-[state=checked]:shadow-[0_0_8px_rgba(34,197,94,0.3)]
+                [&>span]:h-5 [&>span]:w-5 [&>span]:data-[state=checked]:translate-x-[1.375rem]
+                [&>span]:data-[state=checked]:bg-white [&>span]:data-[state=unchecked]:bg-white`}
+              />
+
+              {/* Live Mode Badge with Hover */}
+              <HoverCard openDelay={200}>
+                <HoverCardTrigger asChild>
+                  <Badge
+                    variant='outline'
+                    className={`cursor-default transition-all duration-300 ${
+                      isLiveMode
+                        ? `border-green-500/50 bg-green-500/20 text-green-400
+                          shadow-[0_0_6px_rgba(34,197,94,0.2)] hover:bg-green-500/30`
+                        : 'border-green-500/30 bg-green-500/10 text-green-400 hover:bg-green-500/20'
+                    } `}
+                  >
+                    <Zap className='h-3 w-3' />
+                    Live Mode
+                    {isLiveMode && (
+                      <div
+                        className='ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-green-400
+                          shadow-[0_0_4px_rgba(34,197,94,0.6)]'
+                      />
+                    )}
+                  </Badge>
+                </HoverCardTrigger>
+
+                <HoverCardContent
+                  className='w-80 border-white/10 bg-black/90 backdrop-blur-xl'
+                  align='start'
+                >
+                  <div className='space-y-3'>
+                    {/* <div className='text-xs font-medium text-white/80'>Live Mode Settings</div> */}
+
+                    <div className='space-y-2 text-sm text-white/70'>
+                      <div className='flex items-center gap-2'>
+                        <div
+                          className={`h-2 w-2 rounded-full
+                          ${isLiveMode ? 'bg-green-400 shadow-[0_0_4px_rgba(34,197,94,0.6)]' : 'bg-white/40'}`}
+                        />
+                        <span>Currently in {isLiveMode ? 'Live' : 'Sandbox'} mode</span>
+                      </div>
+
+                      <div className='border-l border-white/10 pl-3 text-xs text-white/60'>
+                        <div className='mb-1'>
+                          <strong className='text-white/80'>Sandbox Mode:</strong> Data is not saved, perfect
+                          for testing and experimentation.
+                        </div>
+                        <div>
+                          <strong className='text-white/80'>Live Mode:</strong> Data is saved to your project,
+                          enabling real scraping workflows.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+            </div>
+          )}
+
+          {/* Original Activate Button - Commented out for reference */}
+          {/* {onActivate && (
             <Button
               variant='outline'
               onClick={onActivate}
@@ -108,7 +184,7 @@ export function TopBar({
               <Zap className='mr-2 h-4 w-4' />
               Activate
             </Button>
-          )}
+          )} */}
         </>
       )}
 

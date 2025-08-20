@@ -1,7 +1,6 @@
 {
   "name": "@vibescraper/website",
   "type": "module",
-  "version": "0.0.1",
   "scripts": {
     "dev": "bun --env-file=../../.env astro dev",
     "build": "bun --env-file=../../.env astro build",

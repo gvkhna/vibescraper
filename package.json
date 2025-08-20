@@ -1,10 +1,11 @@
 {
   "name": "vibescraper",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "engines": {
     "npm": "please-use-pnpm",
-    "yarn": "please-use-pnpm"
+    "yarn": "please-use-pnpm",
+    "bun": "please-use-pnpm"
   },
   "scripts": {
     "dev": "bun turbo run dev",

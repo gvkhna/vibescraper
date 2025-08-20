@@ -1,6 +1,5 @@
 {
   "name": "@vibescraper/playwright-chrome-stealth",
-  "version": "1.0.0",
   "description": "Playwright Chrome stealth utilities",
   "type": "module",
   "main": "./dist/index.mjs",

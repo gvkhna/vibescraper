@@ -56,7 +56,7 @@ export function VibecodingLandingPageAdvanced() {
         <div className='mb-8 text-center'>
           <div className='mb-4 flex items-center justify-center gap-3'>
             <Sparkles className='h-10 w-10 text-blue-500' />
-            <h1 className='text-4xl font-bold text-white'>Scrapeloop</h1>
+            <h1 className='text-4xl font-bold text-white'>Vibescraper</h1>
           </div>
           <p className='text-xl text-white/80'>AI-powered web scraping with natural language</p>
         </div>

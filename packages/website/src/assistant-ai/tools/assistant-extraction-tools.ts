@@ -3,9 +3,9 @@ import {db as database} from '@/db/db'
 import * as schema from '@/db/schema'
 import debug from 'debug'
 import {eq as sqlEq} from 'drizzle-orm'
-import {compileJsonSchema} from '@scrapeloop/shared-types'
+import {compileJsonSchema} from '@vibescraper/shared-types'
 import {scrapeProcess} from '@/server/project/scrape-process'
-import {SandboxManager} from '@scrapeloop/sandbox'
+import {SandboxManager} from '@vibescraper/sandbox'
 import tools from '.'
 
 const log = debug('app:assistant-extraction-tools')

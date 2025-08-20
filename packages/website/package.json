@@ -1,5 +1,5 @@
 {
-  "name": "@scrapeloop/website",
+  "name": "@vibescraper/website",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -82,9 +82,9 @@
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@radix-ui/react-use-controllable-state": "^1.2.2",
-    "@scrapeloop/html-processor": "workspace:*",
-    "@scrapeloop/shared-types": "workspace:*",
-    "@scrapeloop/sandbox": "workspace:*",
+    "@vibescraper/html-processor": "workspace:*",
+    "@vibescraper/shared-types": "workspace:*",
+    "@vibescraper/sandbox": "workspace:*",
     "@smithy/fetch-http-handler": "^5.1.1",
     "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.1.12",

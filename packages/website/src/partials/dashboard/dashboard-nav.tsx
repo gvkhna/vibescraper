@@ -24,7 +24,7 @@ export function DashboardNav() {
       <div className='flex h-14 items-center gap-3 px-4 md:px-6'>
         {/* Brand - hidden on mobile when space is needed */}
         <div className='hidden min-w-0 items-center gap-2 md:flex'>
-          <span className='font-semibold text-white'>Scrapeloop</span>
+          <span className='font-semibold text-white'>Vibescraper</span>
         </div>
 
         {/* Project Selector - takes more space on mobile */}

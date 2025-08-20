@@ -4,7 +4,7 @@ import * as React from 'react'
 import {FileText, Terminal, AlertCircle, Info, AlertTriangle} from 'lucide-react'
 import {EmptyStateData} from '@/components/empty-state-data'
 import {useProjectStore} from '@/store/use-project-store'
-import type {CodeExecutionMessage} from '@scrapeloop/sandbox'
+import type {CodeExecutionMessage} from '@vibescraper/sandbox'
 import {cn} from '@/lib/utils'
 
 export function TabLog() {

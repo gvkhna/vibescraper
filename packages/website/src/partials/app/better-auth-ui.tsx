@@ -8,13 +8,13 @@ interface AuthPageTemplateProps {
 
 const authConfig = {
   signin: {
-    title: 'Welcome to Scrapeloop',
+    title: 'Welcome to Vibescraper',
     subtitle: 'Sign in to continue to your dashboard.',
     redirectTo: '/app/'
   },
   signup: {
     title: 'Create your account',
-    subtitle: 'Join Scrapeloop to start vibe scraping.',
+    subtitle: 'Join Vibescraper to start vibe scraping.',
     redirectTo: '/app/'
   },
   signout: {

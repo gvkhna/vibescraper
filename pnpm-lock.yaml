@@ -5,9 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@scrapeloop/website>@types/node': npm:@types/web@latest
-  '@scrapeloop/website>@types/node-legacy': npm:@types/node@latest
-  '@scrapeloop/website>@typescript/lib-dom': npm:@types/web@latest
+  '@vibescraper/website>@types/node': npm:@types/web@latest
+  '@vibescraper/website>@types/node-legacy': npm:@types/node@latest
+  '@vibescraper/website>@typescript/lib-dom': npm:@types/web@latest
 
 importers:
 
@@ -404,15 +404,6 @@ importers:
       '@radix-ui/react-use-controllable-state':
         specifier: ^1.2.2
         version: 1.2.2(@types/react@19.1.10)(react@19.1.1)
-      '@scrapeloop/html-processor':
-        specifier: workspace:*
-        version: link:../html-processor
-      '@scrapeloop/sandbox':
-        specifier: workspace:*
-        version: link:../sandbox
-      '@scrapeloop/shared-types':
-        specifier: workspace:*
-        version: link:../shared-types
       '@smithy/fetch-http-handler':
         specifier: ^5.1.1
         version: 5.1.1
@@ -428,6 +419,15 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@vibescraper/html-processor':
+        specifier: workspace:*
+        version: link:../html-processor
+      '@vibescraper/sandbox':
+        specifier: workspace:*
+        version: link:../sandbox
+      '@vibescraper/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
       ai:
         specifier: ^5.0.17
         version: 5.0.17(zod@4.0.17)

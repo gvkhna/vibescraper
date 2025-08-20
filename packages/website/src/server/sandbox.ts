@@ -5,7 +5,7 @@ import {eq} from 'drizzle-orm'
 import debug from 'debug'
 import {streamSSE} from 'hono/streaming'
 import {PRIVATE_VARS} from '@/vars.private'
-import {SandboxManager} from '@scrapeloop/sandbox'
+import {SandboxManager} from '@vibescraper/sandbox'
 import {HttpStatusCode} from '@/lib/http-status-codes'
 
 const log = debug('app:server:sandbox')

@@ -41,7 +41,7 @@ function RouteComponent() {
             <ArrowLeft className='mr-2 h-4 w-4' />
             Back to Dashboard
           </Button>
-          <div className='text-lg font-semibold text-white'>Scrapeloop</div>
+          <div className='text-lg font-semibold text-white'>Vibescraper</div>
         </div>
       </div>
 

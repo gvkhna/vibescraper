@@ -1,3 +1,3 @@
 export const STRINGS = {
-  BRAND_NAME: 'Scrapeloop'
+  BRAND_NAME: 'Vibescraper'
 }

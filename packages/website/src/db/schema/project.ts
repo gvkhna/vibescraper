@@ -9,7 +9,7 @@ import {type SubjectPolicyDTOType, type SubjectPolicyId, subjectPolicy} from './
 import {user, type UserId} from './better-auth'
 import type {ProjectChatDTOType, ProjectChatCursor} from './project-chat'
 import type {JsonObject, JsonValue} from 'type-fest'
-import type {CodeExecutionMessage} from '@scrapeloop/sandbox'
+import type {CodeExecutionMessage} from '@vibescraper/sandbox'
 
 export type ProjectId = BrandedType<ULID, 'ProjectId'>
 export type ProjectPublicId = BrandedType<ULID, 'ProjectPublicId'>

@@ -24,7 +24,7 @@ COPY packages/website/dist ./packages/website/dist
 COPY packages/website/src ./packages/website/src
 
 # Install dependencies using pnpm for proper workspace handling
-RUN pnpm install --frozen-lockfile --filter @scrapeloop/website...
+RUN pnpm install --frozen-lockfile --filter @vibescraper/website...
 
 EXPOSE 4321
 

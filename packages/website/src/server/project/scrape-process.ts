@@ -4,11 +4,11 @@ import {eq as sqlEq} from 'drizzle-orm'
 import {ulid} from 'ulid'
 import {sqlNow, type SQLUTCTimestamp} from '@/db/schema/common'
 import {hashString} from '@/lib/hash-helper'
-import {htmlFormat, htmlCleaner, htmlReadability, htmlMarkdown} from '@scrapeloop/html-processor'
-import {compileJsonSchema, validateDataAgainstSchema} from '@scrapeloop/shared-types'
+import {htmlFormat, htmlCleaner, htmlReadability, htmlMarkdown} from '@vibescraper/html-processor'
+import {compileJsonSchema, validateDataAgainstSchema} from '@vibescraper/shared-types'
 import debug from 'debug'
 import type {JsonObject, JsonValue} from 'type-fest'
-import type {SandboxManager, CodeExecutionMessage} from '@scrapeloop/sandbox'
+import type {SandboxManager, CodeExecutionMessage} from '@vibescraper/sandbox'
 
 const log = debug('app:scrape-processor')
 
@@ -370,7 +370,7 @@ export async function scrapeProcess({
             headers: {
               'User-Agent':
                 projectCommit.settingsJson.crawler.userAgent ??
-                'Mozilla/5.0 (compatible; Scrapeloop/1.0; +https://scrapeloop.com)'
+                'Mozilla/5.0 (compatible; Vibescraper/1.0; +https://vibescraper.com)'
             },
             signal: AbortSignal.timeout(projectCommit.settingsJson.crawler.requestTimeout || 30000)
           })

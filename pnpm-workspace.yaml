@@ -1,7 +1,7 @@
 overrides:
-  "@scrapeloop/website>@types/node": "npm:@types/web@latest"
-  "@scrapeloop/website>@types/node-legacy": "npm:@types/node@latest"
-  "@scrapeloop/website>@typescript/lib-dom": "npm:@types/web@latest"
+  "@vibescraper/website>@types/node": "npm:@types/web@latest"
+  "@vibescraper/website>@types/node-legacy": "npm:@types/node@latest"
+  "@vibescraper/website>@typescript/lib-dom": "npm:@types/web@latest"
 
 packages:
   - packages/*

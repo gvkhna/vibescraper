@@ -19,7 +19,7 @@ import project from './project'
 import storage from './storage'
 import whoami from './whoami'
 import {PUBLIC_VARS} from '@/vars.public'
-import {SandboxManager} from '@scrapeloop/sandbox'
+import {SandboxManager} from '@vibescraper/sandbox'
 
 const log = debug('app:server:index')
 

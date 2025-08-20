@@ -1,6 +1,6 @@
-# @scrapeloop/html-processor
+# @vibescraper/html-processor
 
-HTML processing utilities for the Scrapeloop project.
+HTML processing utilities for the Vibescraper project.
 
 ## Features
 
@@ -14,7 +14,7 @@ HTML processing utilities for the Scrapeloop project.
 ## Installation
 
 ```bash
-bun add @scrapeloop/html-processor
+bun add @vibescraper/html-processor
 ```
 
 ## Usage
@@ -22,7 +22,7 @@ bun add @scrapeloop/html-processor
 ### Format HTML
 
 ```typescript
-import { formatHtml } from '@scrapeloop/html-processor'
+import { formatHtml } from '@vibescraper/html-processor'
 
 const compressed = '<div><p>Hello</p></div>'
 const formatted = await formatHtml(compressed)
@@ -35,7 +35,7 @@ const formatted = await formatHtml(compressed)
 ### Convert HTML to Markdown
 
 ```typescript
-import { htmlToMarkdown } from '@scrapeloop/html-processor'
+import { htmlToMarkdown } from '@vibescraper/html-processor'
 
 const html = '<h1>Hello</h1><p>World</p>'
 const markdown = htmlToMarkdown(html)
@@ -45,14 +45,14 @@ const markdown = htmlToMarkdown(html)
 const markdown2 = htmlToMarkdown(wrappedHtml, { hasContainer: true })
 
 // Using presets
-import { htmlToMarkdownPresets } from '@scrapeloop/html-processor'
+import { htmlToMarkdownPresets } from '@vibescraper/html-processor'
 const minimal = htmlToMarkdownPresets.minimal(html)
 ```
 
 ### Clean HTML
 
 ```typescript
-import { cleanHtml } from '@scrapeloop/html-processor'
+import { cleanHtml } from '@vibescraper/html-processor'
 
 const result = await cleanHtml(htmlString, {
   removeScripts: true,

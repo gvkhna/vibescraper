@@ -1,5 +1,5 @@
 {
-  "name": "scrapeloop",
+  "name": "vibescraper",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -13,8 +13,8 @@
     "typecheck": "bun turbo run typecheck",
     "test": "bun turbo run test",
     "clean": "bun turbo run clean",
-    "dev:website": "bun turbo run dev --filter=@scrapeloop/website",
-    "build:website": "bun turbo run build --filter=@scrapeloop/website",
+    "dev:website": "bun turbo run dev --filter=@vibescraper/website",
+    "build:website": "bun turbo run build --filter=@vibescraper/website",
     "pnpm-upgrade-version": "pnpm uninstall corepack;pnpm install -D corepack;corepack prepare pnpm@latest --activate;corepack use pnpm@latest"
   },
   "devDependencies": {

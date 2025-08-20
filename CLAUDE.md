@@ -1,10 +1,10 @@
-# Scrapeloop Development Guide
+# Vibescraper Development Guide
 
-A comprehensive guide to the Scrapeloop codebase for development and AI assistance.
+A comprehensive guide to the Vibescraper codebase for development and AI assistance.
 
 ## Project Overview
 
-Scrapeloop is a modern web scraping and data extraction platform built with a monorepo architecture. It combines web scraping, data extraction, AI-powered assistance, and real-time collaboration features.
+Vibescraper is a modern web scraping and data extraction platform built with a monorepo architecture. It combines web scraping, data extraction, AI-powered assistance, and real-time collaboration features.
 
 ### Core Features
 - **Web Scraping**: Multiple fetching strategies (fetch, playwright, playwright-stealth, camoufox)
@@ -30,7 +30,7 @@ Scrapeloop is a modern web scraping and data extraction platform built with a mo
 ### Monorepo Structure
 
 ```
-scrapeloop/
+vibescraper/
 ├── packages/
 │   ├── website/              # Main web application
 │   ├── shared-types/         # Common TypeScript types
@@ -163,7 +163,7 @@ const useStore = create<CombinedState>()(
 ### Type Safety
 - **Branded types**: Database IDs are branded for type safety
 - **Strict TypeScript**: `noImplicitAny`, `strictNullChecks`
-- **Shared types**: Common types in `@scrapeloop/shared-types`
+- **Shared types**: Common types in `@vibescraper/shared-types`
 
 ### API Client Pattern
 ```typescript
@@ -485,4 +485,4 @@ bun maildev              # Start mail development server
 
 ---
 
-This guide covers the essential patterns and practices for working with the Scrapeloop codebase. Always refer to the latest code for the most up-to-date implementations and patterns.
+This guide covers the essential patterns and practices for working with the Vibescraper codebase. Always refer to the latest code for the most up-to-date implementations and patterns.

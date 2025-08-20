@@ -67,7 +67,7 @@ export function TopBar({
     <div className='flex h-[56px] flex-shrink-0 items-center gap-3 border-b border-white/10 bg-[#151517] px-4'>
       {/* Logo */}
       <div className='flex items-center'>
-        <span className='text-lg font-semibold'>Scrapeloop</span>
+        <span className='text-lg font-semibold'>Vibescraper</span>
       </div>
 
       {/* URL Bar and Controls */}

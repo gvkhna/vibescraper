@@ -1,5 +1,5 @@
 /// <reference types="astro/client" />
-/// <reference types="@scrapeloop/node-types" />
+/// <reference types="@vibescraper/node-types" />
 
 declare namespace App {
   interface Locals {

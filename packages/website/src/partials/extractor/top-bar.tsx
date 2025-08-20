@@ -107,15 +107,19 @@ export function TopBar({
 
           {/* Live Mode Toggle - Disabled for now, focusing on UI */}
           {onActivate && (
-            <div className='flex items-center gap-3'>
+            <div className='flex items-center gap-4'>
               {/* Live Mode Switch */}
               <Switch
                 checked={isLiveMode}
                 onCheckedChange={setIsLiveMode}
-                className={`h-6 w-11 border-0 transition-all duration-300 data-[state=checked]:bg-green-500
-                data-[state=unchecked]:bg-white/20 data-[state=checked]:shadow-[0_0_8px_rgba(34,197,94,0.3)]
-                [&>span]:h-5 [&>span]:w-5 [&>span]:data-[state=checked]:translate-x-[1.375rem]
-                [&>span]:data-[state=checked]:bg-white [&>span]:data-[state=unchecked]:bg-white`}
+                className={`
+                  ml-2 h-6 w-11 border-0 transition-all duration-300 
+                  data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-white/20
+                  data-[state=checked]:shadow-[0_0_12px_rgba(34,197,94,0.4)]
+                  [&>span]:h-5 [&>span]:w-5 [&>span]:data-[state=checked]:translate-x-[1.375rem]
+                  [&>span]:data-[state=checked]:bg-white [&>span]:data-[state=unchecked]:bg-white/70
+                  [&>span]:shadow-sm
+                `}
               />
 
               {/* Live Mode Badge with Hover */}
@@ -123,20 +127,18 @@ export function TopBar({
                 <HoverCardTrigger asChild>
                   <Badge
                     variant='outline'
-                    className={`cursor-default transition-all duration-300 ${
-                      isLiveMode
-                        ? `border-green-500/50 bg-green-500/20 text-green-400
-                          shadow-[0_0_6px_rgba(34,197,94,0.2)] hover:bg-green-500/30`
-                        : 'border-green-500/30 bg-green-500/10 text-green-400 hover:bg-green-500/20'
-                    } `}
+                    className={`
+                      cursor-default transition-all duration-300
+                      ${isLiveMode 
+                        ? 'border-green-500/50 bg-green-500/15 text-green-400 hover:bg-green-500/20 shadow-[0_0_8px_rgba(34,197,94,0.3)]' 
+                        : 'border-green-500/50 bg-green-500/10 text-green-400 hover:bg-green-500/15'
+                      }
+                    `}
                   >
                     <Zap className='h-3 w-3' />
                     Live Mode
                     {isLiveMode && (
-                      <div
-                        className='ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-green-400
-                          shadow-[0_0_4px_rgba(34,197,94,0.6)]'
-                      />
+                      <div className='ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-green-400 shadow-[0_0_6px_rgba(34,197,94,0.8)]' />
                     )}
                   </Badge>
                 </HoverCardTrigger>

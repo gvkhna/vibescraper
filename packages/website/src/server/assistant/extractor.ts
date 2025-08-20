@@ -12,11 +12,11 @@ import {
   type SLUIMessage,
   type ChatMessagePersistanceType
 } from '@/partials/assistant-ui/chat-message-schema'
-import {getModelBySize, type ModelSize} from '@/assistant-llm'
-import {SchemaToolsPrompt, TestPingPrompt, TestPrompt} from '@/assistant-llm/prompts'
+import {getModelBySize, type ModelSize} from '@/assistant-ai'
+import {SchemaToolsPrompt, TestPingPrompt, TestPrompt} from '@/assistant-ai/prompts'
 import {aiStreamResponse} from './ai-stream-response'
-import {makeTestTools} from '@/assistant-llm/tools/test-tools'
-import {makeExtractionTools} from '@/assistant-llm/tools/assistant-extraction-tools'
+import {makeTestTools} from '@/assistant-ai/tools/test-tools'
+import {makeExtractionTools} from '@/assistant-ai/tools/assistant-extraction-tools'
 // import type {ProjectVersionBlockType} from '@partials/assistant-ui/project-version-block'
 // import {makeTools} from '@/private-llm/assistant-tools'
 

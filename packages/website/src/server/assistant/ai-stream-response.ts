@@ -13,7 +13,7 @@ import {
 } from '@/partials/assistant-ui/chat-message-schema'
 import {PUBLIC_VARS} from '@/vars.public'
 import {sqlTimestampToDate} from '@/lib/format-dates'
-import {prepareContext} from '@/assistant-llm/assistant-prepare-context'
+import {prepareContext} from '@/assistant-ai/assistant-prepare-context'
 import {nowait} from '@/lib/async-utils'
 
 const log = debug('app:server:assistant')

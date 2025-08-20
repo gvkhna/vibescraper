@@ -3,7 +3,7 @@ import type {StrictOmit} from '@/db/schema/common'
 import {type InferUIMessageChunk, type InferUITools, type UIMessage, type UIMessageChunk} from 'ai'
 import debug from 'debug'
 import z from 'zod'
-import tools from '@/assistant-llm/tools'
+import tools from '@/assistant-ai/tools'
 
 const log = debug('app:chat-message-schema')
 

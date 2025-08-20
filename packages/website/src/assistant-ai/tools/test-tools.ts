@@ -1,7 +1,7 @@
 import {tool} from 'ai'
 import {z} from 'zod'
 import debug from 'debug'
-import tools from '@/assistant-llm/tools'
+import tools from '@/assistant-ai/tools'
 
 const log = debug('app:test-tools')
 

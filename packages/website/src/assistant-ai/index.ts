@@ -13,10 +13,10 @@ import {createTogetherAI} from '@ai-sdk/togetherai'
 import {PRIVATE_VARS} from '@/vars.private'
 import type {LanguageModel} from 'ai'
 import debug from 'debug'
-import {mockTestModel} from './mock-llm/mock-test'
-import {mockTestToolsModel} from './mock-llm/mock-test-tools'
+import {mockTestModel} from './mock/mock-test'
+import {mockTestToolsModel} from './mock/mock-test-tools'
 
-const log = debug('app:assistant-llm')
+const log = debug('app:assistant-ai')
 
 // Model size categories
 export type ModelSize = 'small' | 'medium' | 'large'

@@ -21,7 +21,7 @@ import {HttpStatusCode} from '@/lib/http-status-codes'
 import {asyncForEach} from '@/lib/async-utils'
 import {createPaginationEntity, DEFAULT_PAGE_SIZE} from '@/store/pagination-entity-state'
 import {generateText} from 'ai'
-import {getModelBySize} from '@/assistant-llm'
+import {getModelBySize} from '@/assistant-ai'
 import {extractUrlFromPrompt} from '@/lib/url-utils'
 
 const log = debug('app:server:projects')

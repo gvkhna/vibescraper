@@ -25,6 +25,7 @@ export type ModelSize = 'small' | 'medium' | 'large'
 export function getModelBySize(size: ModelSize): LanguageModel | null {
   // Get the model string from env vars based on size
   let modelString: string | undefined
+  let provider: string | undefined
 
   if (PRIVATE_VARS.MOCK_LLM === 'test') {
     return mockTestModel()
@@ -36,12 +37,14 @@ export function getModelBySize(size: ModelSize): LanguageModel | null {
 
   if (size === 'small') {
     modelString = PRIVATE_VARS.AI_SMALL_MODEL
+    provider = PRIVATE_VARS.AI_SMALL_PROVIDER
     if (!modelString) {
       log('No model defined for size: small. Set AI_SMALL_MODEL environment variable.')
       return null
     }
   } else if (size === 'medium') {
     modelString = PRIVATE_VARS.AI_MEDIUM_MODEL
+    provider = PRIVATE_VARS.AI_MEDIUM_PROVIDER
     if (!modelString) {
       log('No model defined for size: medium. Set AI_MEDIUM_MODEL environment variable.')
       return null
@@ -49,6 +52,7 @@ export function getModelBySize(size: ModelSize): LanguageModel | null {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   } else if (size === 'large') {
     modelString = PRIVATE_VARS.AI_LARGE_MODEL
+    provider = PRIVATE_VARS.AI_LARGE_PROVIDER
     if (!modelString) {
       log('No model defined for size: large. Set AI_LARGE_MODEL environment variable.')
       return null
@@ -59,9 +63,9 @@ export function getModelBySize(size: ModelSize): LanguageModel | null {
   }
 
   // Get preferred provider
-  const provider = PRIVATE_VARS.AI_PREFERRED_PROVIDER
+  provider ??= PRIVATE_VARS.AI_DEFAULT_PROVIDER
   if (!provider) {
-    log('No preferred provider defined. Set AI_PREFERRED_PROVIDER environment variable.')
+    log('No preferred provider defined. Set AI_DEFAULT_PROVIDER environment variable or one per model size.')
     return null
   }
 

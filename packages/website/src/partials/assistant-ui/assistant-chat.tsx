@@ -29,7 +29,7 @@ import {Reasoning, ReasoningContent, ReasoningTrigger} from '@/components/ai-ele
 import {Loader} from '@/components/ai-elements/loader'
 import {nowait} from '@/lib/async-utils'
 import {assistantPendingInitialMessageAwait} from './assistant-pending-initial-message-await'
-import {DefaultChatTransport} from 'ai'
+import {DefaultChatTransport, isToolUIPart} from 'ai'
 import type {
   ProjectPublicId,
   ProjectCommitPublicId,
@@ -40,7 +40,13 @@ import type {
 import {useProjectStore} from '@/store/use-project-store'
 import debug from 'debug'
 import api from '@/lib/api-client'
-import {convertChatMessageToUIMessage, isDataKey, isToolKey, type SLUIMessage} from './chat-message-schema'
+import {
+  convertChatMessageToUIMessage,
+  isDataKey,
+  isToolKey,
+  type SLUIMessage,
+  type SLUIMessageChunk
+} from './chat-message-schema'
 import {Action, Actions} from '@/components/ai-elements/actions'
 import {Tool, ToolContent, ToolHeader, ToolOutput, ToolInput} from '@/components/ai-elements/tool'
 
@@ -157,7 +163,7 @@ export function AssistantChat({
         const hasWriteToolCall = opts.message.parts.some((part) => {
           // Check for any write tool completion
           if (
-            (part.type === 'tool-writeSchema' || part.type === 'tool-writeScript') &&
+            (part.type === 'tool-schemaSet' || part.type === 'tool-scriptSet') &&
             part.state === 'output-available'
           ) {
             log(`Found successful tool call in message part:`, part)
@@ -330,14 +336,7 @@ export function AssistantChat({
                           return null
                         }
                         case isToolKey(type): {
-                          if (
-                            type === 'tool-ping' ||
-                            type === 'tool-readSchema' ||
-                            type === 'tool-writeSchema' ||
-                            type === 'tool-readScript' ||
-                            type === 'tool-writeScript'
-                          ) {
-                            // console.log('tool', type, part.toolCallId, part.state)
+                          if (isToolUIPart(part)) {
                             return (
                               <Tool
                                 defaultOpen={false}
@@ -357,6 +356,19 @@ export function AssistantChat({
                               </Tool>
                             )
                           }
+                          // const tool = part
+                          // const toolType = part.type
+
+                          // if (
+                          //   type === 'tool-ping' ||
+                          //   type === 'tool-schemaGet' ||
+                          //   type === 'tool-schemaSet' ||
+                          //   type === 'tool-scriptGet' ||
+                          //   type === 'tool-scriptSet'
+                          // ) {
+                          //   // console.log('tool', type, part.toolCallId, part.state)
+
+                          // }
 
                           return null
                         }

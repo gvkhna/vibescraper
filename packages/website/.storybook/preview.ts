@@ -1,5 +1,5 @@
 import type {Preview} from '@storybook/react'
-import '../src/styles/app.css'
+import '../src/global.css'
 import debug from 'debug'
 
 debug.enable('*')

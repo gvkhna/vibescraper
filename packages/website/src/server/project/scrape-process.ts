@@ -1,7 +1,6 @@
 import {db as database} from '@/db/db'
 import * as schema from '@/db/schema'
 import {eq as sqlEq} from 'drizzle-orm'
-import {ulid} from 'ulid'
 import {sqlNow, type SQLUTCTimestamp} from '@/db/schema/common'
 import {hashString} from '@/lib/hash-helper'
 import {htmlFormat, htmlCleaner, htmlReadability, htmlMarkdown} from '@vibescraper/html-processor'
@@ -26,21 +25,24 @@ const log = debug('app:scrape-processor')
  * @param data - The extracted data (can be single object or array)
  * @returns Validation result with item-level errors for arrays
  */
-function validateExtractionResult(schemaObject: JsonObject, data: JsonValue): {
+function validateExtractionResult(
+  schemaObject: JsonObject,
+  data: JsonValue
+): {
   success: boolean
   message?: string
-  itemErrors?: Array<{ itemIndex: number; errors: string[] }>
+  itemErrors?: Array<{itemIndex: number; errors: string[]}>
 } {
   try {
     // If data is an array, validate each item individually
     if (Array.isArray(data)) {
-      const itemErrors: Array<{ itemIndex: number; errors: string[] }> = []
+      const itemErrors: Array<{itemIndex: number; errors: string[]}> = []
       let hasErrors = false
 
       for (let i = 0; i < data.length; i++) {
         const item = data[i]
         const validation = validateDataAgainstSchema(schemaObject, item)
-        
+
         if (!validation.success) {
           hasErrors = true
           itemErrors.push({
@@ -66,15 +68,17 @@ function validateExtractionResult(schemaObject: JsonObject, data: JsonValue): {
     } else {
       // Single object - validate normally
       const validation = validateDataAgainstSchema(schemaObject, data)
-      
+
       if (!validation.success) {
         return {
           success: false,
           message: validation.message,
-          itemErrors: [{
-            itemIndex: 0,
-            errors: validation.message ? [validation.message] : ['Validation failed']
-          }]
+          itemErrors: [
+            {
+              itemIndex: 0,
+              errors: validation.message ? [validation.message] : ['Validation failed']
+            }
+          ]
         }
       }
 
@@ -112,9 +116,9 @@ async function runExtraction(
   try {
     // Execute the extraction script in sandbox
     log('Executing script in sandbox, input size:', cleanedHtml.length, 'chars')
-    const inputJson = JSON.stringify({html: cleanedHtml, url})
+    // const inputJson = JSON.stringify({html: cleanedHtml, url})
 
-    const executionResult = await sandbox.executeFunctionBuffered(script, inputJson, false)
+    const executionResult = await sandbox.executeFunctionBuffered(script, cleanedHtml, false)
     const {messages} = executionResult
 
     log(
@@ -386,7 +390,6 @@ export async function scrapeProcess({
         const [newProjectUrl] = await db
           .insert(schema.projectUrl)
           .values({
-            id: ulid() as schema.ProjectUrlId,
             projectId: project.id,
             url: urlToScrape
           })
@@ -430,7 +433,6 @@ export async function scrapeProcess({
         const [newCrawlRun] = await db
           .insert(schema.crawlRun)
           .values({
-            id: ulid() as schema.CrawlRunId,
             projectId: project.id,
             status: 'running'
           })
@@ -505,7 +507,6 @@ export async function scrapeProcess({
           const [httpResponse] = await db
             .insert(schema.httpResponse)
             .values({
-              id: ulid() as schema.HttpResponseId,
               crawlRunId: newCrawlRun.id,
               projectUrlId: projectUrl.id,
               statusCode: response.status,

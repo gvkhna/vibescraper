@@ -20,7 +20,7 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.preferences.preferTypeOnlyAutoImports": true,
   "tailwindCSS.classAttributes": ["class", "className", "classNames", "ngClass", "class:list"],
-  "tailwindCSS.experimental.configFile": "packages/website/src/styles/global.css",
+  "tailwindCSS.experimental.configFile": "packages/website/src/global.css",
   "tailwindCSS.classFunctions": ["tw", "clsx", "tw\\.[a-z-]+", "cn"],
   // "tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]],
   "editor.formatOnSave": true,

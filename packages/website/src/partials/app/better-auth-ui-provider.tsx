@@ -33,9 +33,9 @@ export function BetterAuthUIProvider({children}: {children: ReactNode}) {
       social={{
         providers: ['google', 'github']
       }}
-      settings={{
-        url: '/app/settings'
-      }}
+      // settings={{
+      //   url: '/app/settings'
+      // }}
       avatar={{
         size: 256,
         extension: 'webp',

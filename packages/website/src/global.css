@@ -1,7 +1,8 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @plugin '@tailwindcss/typography';
-@source '../../node_modules/@daveyplate/better-auth-ui';
+@source '../node_modules/@daveyplate/better-auth-ui';
+@source '../node_modules/@vibescraper/json-tree-table';
 
 @custom-variant dark (&:is(.dark *));
 

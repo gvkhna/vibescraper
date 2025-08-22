@@ -33,11 +33,14 @@ const preprocessOptionalValueToTrue = (val: unknown) => {
 // Define your environment schema.
 const envSchema = z.object({
   // Model configuration
-  AI_PREFERRED_PROVIDER: z.string().optional(),
+  AI_DEFAULT_PROVIDER: z.string().optional(),
   AI_PROVIDER_BASE_URL: z.string().optional(),
   AI_SMALL_MODEL: z.string().optional(),
+  AI_SMALL_PROVIDER: z.string().optional(),
   AI_MEDIUM_MODEL: z.string().optional(),
+  AI_MEDIUM_PROVIDER: z.string().optional(),
   AI_LARGE_MODEL: z.string().optional(),
+  AI_LARGE_PROVIDER: z.string().optional(),
 
   // OpenAI-compatible configuration (for Ollama, LM Studio, etc.)
   AI_OPENAI_COMPATIBLE_API_KEY: z.string().optional(),

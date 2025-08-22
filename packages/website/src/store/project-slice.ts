@@ -397,8 +397,10 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
           if (projectCommitPublicId) {
             set(
               (draft) => {
+                // @ts-ignore
                 draft.projectSlice.project = body.result.project
 
+                // @ts-ignore
                 const projectPubId = draft.projectSlice.project.project.publicId
 
                 const chatFinishLoadingState = initialAsyncEntityState()

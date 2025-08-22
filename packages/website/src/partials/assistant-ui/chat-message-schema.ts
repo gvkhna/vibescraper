@@ -63,6 +63,12 @@ export function isToolKey(value: string): value is `tool-${string}` {
   return value.startsWith('tool-')
 }
 
+type SLToolParts = Extract<SLUIMessageChunk, {type: `tool-${string}`}>
+
+function isToolPart(part: SLUIMessageChunk): part is SLToolParts {
+  return part.type.startsWith('tool-')
+}
+
 export function isDataKey(value: string): value is `data-${string}` {
   return value.startsWith('data-')
 }

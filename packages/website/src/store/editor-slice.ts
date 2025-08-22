@@ -19,13 +19,17 @@ export type ExtractionPanelTabType =
   | 'filtered-html'
   | 'readability-html'
   | 'markdown'
-  | 'data'
+  | 'data-table'
+  | 'data-json'
   | 'data-schema'
   | 'script'
   | 'log'
 
 // New type for the configuration dropdown (schema/script/log)
 export type ConfigurationTabType = 'data-schema' | 'script' | 'log'
+
+// New type for the data dropdown (data table/json)
+export type DataTabType = 'data-table' | 'data-json'
 
 export type AssistantPanelView = 'conversation' | 'chat-history'
 
@@ -56,6 +60,10 @@ export interface EditorSlice {
   lastConfigurationDropdownTab: Record<ProjectPublicId, ConfigurationTabType | undefined | null>
   setLastConfigurationDropdownTab: (tab: ConfigurationTabType) => void
 
+  // Store the last selected data dropdown tab (data table/json)
+  lastDataDropdownTab: Record<ProjectPublicId, DataTabType | undefined | null>
+  setLastDataDropdownTab: (tab: DataTabType) => void
+
   // setLeftPanelTab: (id: EditorSlice['leftPanelTab']) => void
   // setLeftPanelWidth: (width: string) => void
 
@@ -85,6 +93,7 @@ export const createEditorSlice: StateSlice<EditorSlice> = (set, get) =>
     activeTab: {},
     lastExtractionDropdownTab: {},
     lastConfigurationDropdownTab: {},
+    lastDataDropdownTab: {},
     rightPanelOpen: true,
     assistantPanelView: {},
     // bottomPanelOpen: false,
@@ -245,6 +254,20 @@ export const createEditorSlice: StateSlice<EditorSlice> = (set, get) =>
         },
         true,
         'editor/setLastConfigurationDropdownTab'
+      )
+    },
+    setLastDataDropdownTab: (tab) => {
+      const activeProjectId = get().projectSlice.project?.project.publicId
+
+      if (!activeProjectId) {
+        return
+      }
+      set(
+        (draft) => {
+          draft.editorSlice.lastDataDropdownTab[activeProjectId] = tab
+        },
+        true,
+        'editor/setLastDataDropdownTab'
       )
     }
   }) as EditorSlice

@@ -2,6 +2,7 @@ import TestExtractorPromptRaw from './test-extractor-prompt.txt?raw'
 import TestPromptRaw from './test-prompt.txt?raw'
 import TestPingPromptRaw from './test-ping-prompt.txt?raw'
 import SchemaToolsPromptRaw from './schema-tools-prompt.txt?raw'
+import ExtractorPromptRaw from './extractor-prompt.txt?raw'
 import template from 'lodash-es/template'
 
 export function TestPrompt(opts: object) {
@@ -14,6 +15,10 @@ export function TestExtractorPrompt(opts: object) {
 
 export function TestPingPrompt(opts: object) {
   return template(TestPingPromptRaw)(opts)
+}
+
+export function ExtractorPrompt(opts: object) {
+  return template(ExtractorPromptRaw)(opts)
 }
 
 export function SchemaToolsPrompt(opts: object) {

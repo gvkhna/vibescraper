@@ -84,7 +84,7 @@ function ExtractionTabsContent({className, value, ...props}: ExtractionTabsConte
     <TabsPrimitive.Content
       data-slot='tabs-content'
       value={value as any}
-      className={cn('flex-1 outline-none', className)}
+      className={cn('flex-1 min-h-0 outline-none', className)}
       {...props}
     />
   )

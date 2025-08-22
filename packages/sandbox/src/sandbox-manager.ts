@@ -518,8 +518,8 @@ export class SandboxManager extends EventTarget {
       await fs.rm(jobDir, {recursive: true, force: true})
 
       // Also cleanup any pending large payload files for this job
-      this.pendingLargeResults.delete(jobId)
-      await this.cleanupIpcFilesForJob(jobId)
+      // this.pendingLargeResults.delete(jobId)
+      // await this.cleanupIpcFilesForJob(jobId)
 
       this.jobs.delete(jobId)
       this.log(`[cleanup] Cleared job ${jobId}`)

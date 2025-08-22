@@ -351,8 +351,8 @@ export const extractor = pgTable(
       .references(() => project.id, {onDelete: 'cascade'})
       .$type<ProjectId>(),
     version: integer().notNull(),
-    name: text().notNull(),
-    description: text(),
+    // name: text().notNull(),
+    message: text(),
     script: text().notNull(),
     scriptLanguage: text().notNull().default('javascript').$type<'javascript'>(),
     settingsJson: jsonb()

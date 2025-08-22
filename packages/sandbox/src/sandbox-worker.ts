@@ -461,7 +461,7 @@ async function handleNewJob({jobId, code, testing, functionInput}: NewJobMessage
           throw new Error(`Expected result payload to be string, got ${typeof payload}`)
         }
         const payloadMessage = payload
-        
+
         // Check if result is large and needs file-based IPC
         if (payloadMessage.length >= LARGE_PAYLOAD_THRESHOLD) {
           // Large result - write to file and send wrapper
@@ -613,8 +613,8 @@ async function readLargePayload(filePath: string): Promise<string> {
   try {
     const content = await fs.readFile(fullPath, 'utf8')
     console.log('[worker] Successfully read file, content length:', content.length)
-    await fs.unlink(fullPath) // Cleanup after reading
-    console.log('[worker] Cleaned up file:', fullPath)
+    // await fs.unlink(fullPath) // Cleanup after reading
+    // console.log('[worker] Cleaned up file:', fullPath)
     return content
   } catch (error) {
     console.log('[worker] Error reading large payload file:', error)

@@ -1,12 +1,13 @@
 import {tool} from 'ai'
 import {db as database} from '@/db/db'
-import * as schema from '@/db/schema'
+import * as dbSchema from '@/db/schema'
 import debug from 'debug'
 import {eq as sqlEq} from 'drizzle-orm'
 import {compileJsonSchema} from '@vibescraper/shared-types'
 import {scrapeProcess} from '@/server/project/scrape-process'
 import {SandboxManager} from '@vibescraper/sandbox'
 import tools from '.'
+import {sqlFormatTimestampUTC, sqlTimestampToDate} from '@/lib/format-dates'
 
 const log = debug('app:assistant-extraction-tools')
 
@@ -16,8 +17,8 @@ const log = debug('app:assistant-extraction-tools')
  */
 export function makeExtractionTools(
   db: typeof database,
-  project: typeof schema.project.$inferSelect,
-  projectCommitPublicId: schema.ProjectCommitPublicId,
+  project: typeof dbSchema.project.$inferSelect,
+  projectCommitPublicId: dbSchema.ProjectCommitPublicId,
   sandbox: SandboxManager
 ) {
   return {
@@ -76,7 +77,7 @@ export function makeExtractionTools(
     //       })
     //       if (!projectUrl) {
     //         const [newUrl] = await db
-    //           .insert(schema.projectUrl)
+    //           .insert(dbSchema.projectUrl)
     //           .values({
     //             projectId: project.id,
     //             url: input.url
@@ -101,7 +102,7 @@ export function makeExtractionTools(
     //         }
     //       }
     //       // 4. Create new crawl run
-    //       await db.insert(schema.crawlRun).values({
+    //       await db.insert(dbSchema.crawlRun).values({
     //         projectId: project.id,
     //         status: 'pending'
     //       })
@@ -177,7 +178,7 @@ export function makeExtractionTools(
     //       } else if (storageId) {
     //         // TODO: Fetch from storage service
     //         const storageItem = await db.query.storage.findFirst({
-    //           where: (table, {eq}) => eq(table.id, storageId as schema.StorageId)
+    //           where: (table, {eq}) => eq(table.id, storageId as dbSchema.StorageId)
     //         })
     //         if (storageItem) {
     //           // TODO: Actually fetch from S3/storage
@@ -319,7 +320,7 @@ export function makeExtractionTools(
     //         column?: number
     //       }> = []
     //       // 3. Create new extractor version in database
-    //       await db.insert(schema.extractor).values({
+    //       await db.insert(dbSchema.extractor).values({
     //         projectId: project.id,
     //         version: newVersion,
     //         name: input.message ?? `Version ${newVersion}`,
@@ -330,9 +331,9 @@ export function makeExtractionTools(
     //       })
     //       // 4. Update projectCommit.activeExtractorVersion
     //       await db
-    //         .update(schema.projectCommit)
+    //         .update(dbSchema.projectCommit)
     //         .set({activeExtractorVersion: newVersion})
-    //         .where(sqlEq(schema.projectCommit.publicId, projectCommitPublicId))
+    //         .where(sqlEq(dbSchema.projectCommit.publicId, projectCommitPublicId))
     //       // 5. TODO: Optionally trigger re-extraction if httpResponse exists
     //       return {
     //         success: true,
@@ -348,9 +349,9 @@ export function makeExtractionTools(
     //     }
     //   }
     // }),
-    readSchema: tool({
-      ...tools.readSchema,
-      execute: async () => {
+    schemaGet: tool({
+      ...tools.schemaGet,
+      execute: async (_input, _opts) => {
         try {
           // Get the activeSchemaVersion from projectCommit
           const projectCommit = await db.query.projectCommit.findFirst({
@@ -358,7 +359,7 @@ export function makeExtractionTools(
           })
 
           const schemaVersion = projectCommit?.activeSchemaVersion
-          if (!schemaVersion) {
+          if (typeof schemaVersion !== 'number') {
             return {
               success: true,
               schema: null,
@@ -386,7 +387,7 @@ export function makeExtractionTools(
           // Return the active schema with all relevant info
           return {
             success: true,
-            schema: activeSchema.schemaJson as Record<string, unknown>,
+            schema: activeSchema.schemaJson,
             version: activeSchema.version,
             message: activeSchema.message
           }
@@ -399,8 +400,8 @@ export function makeExtractionTools(
         }
       }
     }),
-    writeSchema: tool({
-      ...tools.writeSchema,
+    schemaSet: tool({
+      ...tools.schemaSet,
       execute: async (input) => {
         try {
           // 1. Validate the JSON Schema format
@@ -420,7 +421,7 @@ export function makeExtractionTools(
           const newVersion = (latestSchema?.version ?? 0) + 1
 
           // 3. Create new projectSchema version in database
-          await db.insert(schema.projectSchema).values({
+          await db.insert(dbSchema.projectSchema).values({
             projectId: project.id,
             version: newVersion,
             schemaJson: input.schema,
@@ -429,9 +430,9 @@ export function makeExtractionTools(
 
           // 4. Update projectCommit.activeSchemaVersion
           await db
-            .update(schema.projectCommit)
+            .update(dbSchema.projectCommit)
             .set({activeSchemaVersion: newVersion})
-            .where(sqlEq(schema.projectCommit.publicId, projectCommitPublicId))
+            .where(sqlEq(dbSchema.projectCommit.publicId, projectCommitPublicId))
 
           return {
             success: true,
@@ -446,23 +447,24 @@ export function makeExtractionTools(
         }
       }
     }),
-    readScript: tool({
-      ...tools.readScript,
-      execute: async () => {
+    scriptGet: tool({
+      ...tools.scriptGet,
+      execute: async (_input, _opts) => {
         try {
           // Get the activeExtractorVersion from projectCommit
           const projectCommit = await db.query.projectCommit.findFirst({
             where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
           })
           const extractorVersion = projectCommit?.activeExtractorVersion
-          if (!extractorVersion) {
+          if (typeof extractorVersion !== 'number') {
             return {
               success: true,
               script: null,
               version: null,
-              name: null,
-              description: null,
-              scriptLanguage: null
+              message: null
+              // name: null,
+              // description: null,
+              // scriptLanguage: null
             }
           }
           // Get the specific extractor version
@@ -476,9 +478,10 @@ export function makeExtractionTools(
               success: true,
               script: null,
               version: null,
-              name: null,
-              description: null,
-              scriptLanguage: null
+              message: null
+              // name: null,
+              // description: null,
+              // scriptLanguage: null
             }
           }
           // Return the active extractor with all relevant info
@@ -486,9 +489,11 @@ export function makeExtractionTools(
             success: true,
             script: activeExtractor.script,
             version: activeExtractor.version,
-            name: activeExtractor.name,
-            description: activeExtractor.description,
-            scriptLanguage: activeExtractor.scriptLanguage
+            message: activeExtractor.message,
+            updatedAt: sqlTimestampToDate(activeExtractor.createdAt).toISOString()
+            // name: activeExtractor.name,
+            // description: activeExtractor.description,
+            // scriptLanguage: activeExtractor.scriptLanguage
           }
         } catch (error) {
           log('readScript error:', error)
@@ -499,9 +504,9 @@ export function makeExtractionTools(
         }
       }
     }),
-    writeScript: tool({
-      ...tools.writeScript,
-      execute: async ({script, name, description}) => {
+    scriptSet: tool({
+      ...tools.scriptSet,
+      execute: async (input) => {
         try {
           // Get the latest extractor version
           const latestExtractor = await db.query.extractor.findFirst({
@@ -512,22 +517,22 @@ export function makeExtractionTools(
           const newVersion = (latestExtractor?.version ?? 0) + 1
 
           // Create new extractor version
-          await db.insert(schema.extractor).values({
+          await db.insert(dbSchema.extractor).values({
             projectId: project.id,
             version: newVersion,
-            name: name ?? 'Main Extractor',
-            description: description ?? 'AI-generated extractor script',
-            script: script,
-            scriptLanguage: 'javascript' as const
+            // name: input.name ?? 'Main Extractor',
+            message: input.message,
+            script: input.script
+            // scriptLanguage: 'javascript' as const
           })
 
           log('Created new extractor version:', newVersion)
 
           // Update the project commit to use the new version
           await db
-            .update(schema.projectCommit)
+            .update(dbSchema.projectCommit)
             .set({activeExtractorVersion: newVersion})
-            .where(sqlEq(schema.projectCommit.publicId, projectCommitPublicId))
+            .where(sqlEq(dbSchema.projectCommit.publicId, projectCommitPublicId))
 
           return {
             success: true,
@@ -542,9 +547,9 @@ export function makeExtractionTools(
         }
       }
     }),
-    readHtml: tool({
-      ...tools.readHtml,
-      execute: async ({format = 'cleaned'}) => {
+    htmlGet: tool({
+      ...tools.htmlGet,
+      execute: async (input) => {
         try {
           // Get the project commit and its cached data
           const projectCommit = await db.query.projectCommit.findFirst({
@@ -562,7 +567,7 @@ export function makeExtractionTools(
           let html: string | null = null
 
           // Return the requested format
-          switch (format) {
+          switch (input?.format) {
             case 'raw':
               html = cachedData.html ?? null
               break
@@ -570,7 +575,8 @@ export function makeExtractionTools(
               html = cachedData.cleanedHtml ?? cachedData.html ?? null
               break
             case 'readability':
-              html = cachedData.readabilityResult?.content ?? cachedData.cleanedHtml ?? cachedData.html ?? null
+              html =
+                cachedData.readabilityResult?.content ?? cachedData.cleanedHtml ?? cachedData.html ?? null
               break
             case 'markdown':
               html = cachedData.markdown ?? cachedData.html ?? null
@@ -584,11 +590,12 @@ export function makeExtractionTools(
 
           return {
             success: true,
-            html: html,
+            format: input?.format,
+            content: html,
             url: cachedData.url,
             statusCode: cachedData.statusCode,
             cached: true,
-            timestamp: projectCommit.cachedAt ? new Date(projectCommit.cachedAt).toISOString() : null
+            fetchedAt: projectCommit.cachedAt ? new Date(projectCommit.cachedAt).toISOString() : null
           }
         } catch (error) {
           log('readHtml error:', error)
@@ -599,9 +606,9 @@ export function makeExtractionTools(
         }
       }
     }),
-    triggerScrape: tool({
-      ...tools.triggerScrape,
-      execute: async ({forceRefresh = false}) => {
+    runScrape: tool({
+      ...tools.runScrape,
+      execute: async (input) => {
         try {
           // Use the extracted scraping processor directly
           const result = await scrapeProcess({
@@ -622,14 +629,102 @@ export function makeExtractionTools(
 
           return {
             success: true,
-            extractionStage: result.extractionStage
-            // cached: result.cached,
-            // url: result.cachedData?.url,
-            // statusCode: result.cachedData?.statusCode,
-            // extractionResult: result.extractionResult
+            url: result.cachedData?.url ?? '',
+            fetchStatus: result.cachedData?.fetchStatus ?? 'initial',
+            processingStatus: result.cachedData?.processingStatus ?? 'initial',
+            extractStatus: result.cachedData?.extractionScriptStatus ?? 'initial',
+            validationStatus: result.cachedData?.schemaValidationStatus ?? 'initial'
           }
         } catch (error) {
           log('triggerScrape error:', error)
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        }
+      }
+    }),
+    resultsGet: tool({
+      ...tools.resultsGet,
+      execute: async (_input) => {
+        try {
+          // Get the project commit and its cached data
+          const projectCommit = await db.query.projectCommit.findFirst({
+            where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
+          })
+
+          if (!projectCommit?.cachedData) {
+            return {
+              success: false,
+              error: 'No extraction data available. Please trigger a scrape first.'
+            }
+          }
+
+          const cachedData = projectCommit.cachedData
+          const extractionResult = cachedData.extractionResult
+          const isArray = Array.isArray(extractionResult)
+
+          return {
+            success: true,
+            extractionStatus: cachedData.extractionScriptStatus,
+            result: extractionResult,
+            itemCount: isArray ? extractionResult.length : extractionResult ? 1 : 0,
+            validationStatus: cachedData.schemaValidationStatus,
+            validationErrors:
+              cachedData.schemaValidationErrors?.map((err) => ({
+                code: 'validation_failed',
+                path: [],
+                message: err
+              })) ?? null,
+            itemErrors:
+              cachedData.schemaValidationItemErrors?.map((item) => ({
+                itemIndex: item.itemIndex,
+                errors: item.errors.map((err) => ({
+                  code: 'validation_failed',
+                  path: [],
+                  message: err
+                }))
+              })) ?? null,
+            ranAt: projectCommit.cachedAt ? new Date(projectCommit.cachedAt).toISOString() : null
+          }
+        } catch (error) {
+          log('readExtractionResults error:', error)
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        }
+      }
+    }),
+    logsGet: tool({
+      ...tools.logsGet,
+      execute: async (_input) => {
+        try {
+          // Get the project commit and its cached data
+          const projectCommit = await db.query.projectCommit.findFirst({
+            where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
+          })
+
+          if (!projectCommit?.cachedData?.extractionMessages) {
+            return {
+              success: false,
+              error: 'No execution logs available. Please trigger a scrape first.'
+            }
+          }
+
+          const messages = projectCommit.cachedData.extractionMessages
+          const logs = messages.map((msg) => ({
+            type: msg.type as 'log' | 'exception' | 'status',
+            message: JSON.stringify(msg, null, 2),
+            timestamp: 'startedAt' in msg ? msg.startedAt : null
+          }))
+
+          return {
+            success: true,
+            logs
+          }
+        } catch (error) {
+          log('readExecutionLogs error:', error)
           return {
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error'

@@ -57,6 +57,7 @@ const DEFAULT_TAGS_TO_REMOVE = [
   'map',
   'textarea',
   'input',
+  'link',
   // 'button',
   'select',
   'option',

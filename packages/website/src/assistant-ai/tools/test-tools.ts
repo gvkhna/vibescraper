@@ -20,43 +20,43 @@ export function makeTestTools() {
           message: 'pong'
         }
       }
-    }),
+    })
 
     // Schema update tool
-    'schema-update': tool({
-      ...tools['schema-update'],
-      execute: async ({filename, content, version}, opts) => {
-        log('schema-update called for:', filename)
+    // 'schema-update': tool({
+    //   ...tools['schema-update'],
+    //   execute: async ({filename, content, version}, opts) => {
+    //     log('schema-update called for:', filename)
 
-        // Simulate some async work
-        await new Promise((resolve) => setTimeout(resolve, 500))
+    //     // Simulate some async work
+    //     await new Promise((resolve) => setTimeout(resolve, 500))
 
-        return {
-          success: true,
-          filename,
-          version: version ?? 'v1',
-          message: `Schema ${filename} updated successfully`
-        }
-      }
-    }),
+    //     return {
+    //       success: true,
+    //       filename,
+    //       version: version ?? 'v1',
+    //       message: `Schema ${filename} updated successfully`
+    //     }
+    //   }
+    // }),
 
     // Code update tool
-    'code-update': tool({
-      ...tools['code-update'],
-      execute: async ({filename, content, version}, opts) => {
-        log('code-update called for:', filename)
+    // 'code-update': tool({
+    //   ...tools['code-update'],
+    //   execute: async ({filename, content, version}, opts) => {
+    //     log('code-update called for:', filename)
 
-        // Simulate some async work
-        await new Promise((resolve) => setTimeout(resolve, 800))
+    //     // Simulate some async work
+    //     await new Promise((resolve) => setTimeout(resolve, 800))
 
-        return {
-          success: true,
-          filename,
-          version: version ?? 'v1',
-          message: `Code ${filename} updated successfully`
-        }
-      }
-    })
+    //     return {
+    //       success: true,
+    //       filename,
+    //       version: version ?? 'v1',
+    //       message: `Code ${filename} updated successfully`
+    //     }
+    //   }
+    // })
 
     // Tool with input parameters
     // echo: tool({

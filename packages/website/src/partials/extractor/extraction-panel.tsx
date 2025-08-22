@@ -24,12 +24,16 @@ import {
   BrushCleaning,
   FileType2,
   FileCode2,
-  Braces
+  Braces,
+  Copy,
+  CheckCircle,
+  AlertCircle,
+  FileJson
 } from 'lucide-react'
 import {PipelineStatus} from './pipeline-status'
 import {useProjectStore} from '@/store/use-project-store'
 import {SplitButtonDropdown, type SplitButtonDropdownTab} from '@/components/split-button-dropdown'
-import type {ExtractionPanelTabType, ConfigurationTabType} from '@/store/editor-slice'
+import type {ExtractionPanelTabType, ConfigurationTabType, DataTabType} from '@/store/editor-slice'
 import {TabPreview} from './tab-preview'
 import {TabRawHtml} from './tab-raw-html'
 import {TabFormattedHtml} from './tab-formatted-html'
@@ -39,6 +43,7 @@ import {TabReadabilityHtml} from './tab-readability-html'
 import {TabMarkdown} from './tab-markdown'
 import {TabPlaintext} from './tab-plaintext'
 import {TabData} from './tab-data'
+import {TabDataJson} from './tab-data-json'
 import {TabDataSchema} from './tab-data-schema'
 import {TabScript} from './tab-script'
 import {TabLog} from './tab-log'
@@ -63,6 +68,12 @@ const CONFIGURATION_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType
   {value: 'data-schema', label: 'Schema', icon: FileJson2},
   {value: 'script', label: 'Script', icon: Braces},
   {value: 'log', label: 'Log', icon: FileText}
+]
+
+// Define which tabs belong in the data dropdown (data table/json)
+const DATA_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType>[] = [
+  {value: 'data-table', label: 'Data Table', icon: Database},
+  {value: 'data-json', label: 'Data JSON', icon: FileJson}
 ]
 
 export function ExtractionPanel() {
@@ -103,6 +114,10 @@ export function ExtractionPanel() {
     (state) => state.editorSlice.setLastConfigurationDropdownTab
   )
 
+  // Get last selected data dropdown tab from store
+  const lastDataDropdownTab = useProjectStore((state) => state.editorSlice.lastDataDropdownTab)
+  const setLastDataDropdownTab = useProjectStore((state) => state.editorSlice.setLastDataDropdownTab)
+
   // Get panel state from editor slice
   const rightPanelOpen = useProjectStore((state) => state.editorSlice.rightPanelOpen)
   const toggleRightPanelOpen = useProjectStore((state) => state.editorSlice.toggleRightPanelOpen)
@@ -115,6 +130,7 @@ export function ExtractionPanel() {
   const currentActiveTab = activeTab[projectPublicId] ?? 'cleaned-html'
   const currentLastContentDropdownTab = lastExtractionDropdownTab[projectPublicId] ?? 'cleaned-html'
   const currentLastConfigurationDropdownTab = lastConfigurationDropdownTab[projectPublicId] ?? 'data-schema'
+  const currentLastDataDropdownTab = lastDataDropdownTab[projectPublicId] ?? 'data-table'
 
   // Handler for all tab changes - maintains last dropdown tab when appropriate
   const handleTabChange = (value: ExtractionPanelTabType) => {
@@ -126,6 +142,10 @@ export function ExtractionPanel() {
     // Check if this is one of the configuration dropdown tabs and update the last selected
     if (CONFIGURATION_DROPDOWN_TABS.some((tab) => tab.value === value)) {
       setLastConfigurationDropdownTab(value as ConfigurationTabType)
+    }
+    // Check if this is one of the data dropdown tabs and update the last selected
+    if (DATA_DROPDOWN_TABS.some((tab) => tab.value === value)) {
+      setLastDataDropdownTab(value as DataTabType)
     }
   }
 
@@ -158,15 +178,14 @@ export function ExtractionPanel() {
             onTabChange={handleTabChange}
           />
 
-          <ExtractionTabsTrigger
-            value='data'
-            className='gap-1.5 px-3 py-1.5 text-sm hover:bg-white/5 data-[state=active]:bg-white/10'
-          >
-            <Database className='h-3.5 w-3.5' />
-            Data
-          </ExtractionTabsTrigger>
+          {/* Dropdown for Data tabs (Data Table/JSON) */}
+          <SplitButtonDropdown
+            tabs={DATA_DROPDOWN_TABS}
+            activeTab={currentActiveTab}
+            lastDropdownTab={currentLastDataDropdownTab}
+            onTabChange={handleTabChange}
+          />
         </ExtractionTabsList>
-
         {/* Right side - Status and Panel toggles */}
         <div className='flex items-center gap-2'>
           <PipelineStatus />
@@ -215,38 +234,38 @@ export function ExtractionPanel() {
       </div>
 
       {/* Tab Content */}
-      <div className='flex-1'>
+      <div className='flex min-h-0 flex-1'>
         <ExtractionTabsContent
           value='preview'
-          className='m-0 h-full'
+          className='flex min-h-0 flex-col'
         >
           <TabPreview />
         </ExtractionTabsContent>
 
         <ExtractionTabsContent
           value='raw-html'
-          className='m-0 h-full'
+          className='flex min-h-0 flex-col'
         >
           <TabRawHtml />
         </ExtractionTabsContent>
 
         <ExtractionTabsContent
           value='formatted-html'
-          className='m-0 h-full'
+          className='flex min-h-0 flex-col'
         >
           <TabFormattedHtml />
         </ExtractionTabsContent>
 
         <ExtractionTabsContent
           value='cleaned-html'
-          className='m-0 h-full'
+          className='flex min-h-0 flex-col'
         >
           <TabCleanedHtml />
         </ExtractionTabsContent>
 
         <ExtractionTabsContent
           value='plaintext'
-          className='m-0 h-full'
+          className='flex min-h-0 flex-col'
         >
           <TabPlaintext />
         </ExtractionTabsContent>
@@ -260,42 +279,49 @@ export function ExtractionPanel() {
 
         <ExtractionTabsContent
           value='readability-html'
-          className='m-0 h-full'
+          className='flex min-h-0 flex-col'
         >
           <TabReadabilityHtml />
         </ExtractionTabsContent>
 
         <ExtractionTabsContent
           value='markdown'
-          className='m-0 h-full'
+          className='flex min-h-0 flex-col'
         >
           <TabMarkdown />
         </ExtractionTabsContent>
 
         <ExtractionTabsContent
-          value='data'
-          className='m-0 h-full'
+          value='data-table'
+          className='flex min-h-0 min-w-0 flex-col'
         >
           <TabData />
         </ExtractionTabsContent>
 
         <ExtractionTabsContent
+          value='data-json'
+          className='flex min-h-0 flex-col'
+        >
+          <TabDataJson />
+        </ExtractionTabsContent>
+
+        <ExtractionTabsContent
           value='data-schema'
-          className='m-0 h-full'
+          className='flex min-h-0 flex-col'
         >
           <TabDataSchema />
         </ExtractionTabsContent>
 
         <ExtractionTabsContent
           value='script'
-          className='m-0 h-full'
+          className='flex min-h-0 flex-col'
         >
           <TabScript />
         </ExtractionTabsContent>
 
         <ExtractionTabsContent
           value='log'
-          className='m-0 h-full'
+          className='flex min-h-0 flex-col'
         >
           <TabLog />
         </ExtractionTabsContent>

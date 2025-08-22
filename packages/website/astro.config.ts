@@ -57,6 +57,7 @@ export default defineConfig({
             vite: {
               envDir: projectRoot,
               plugins: [
+                // @ts-expect-error
                 tanstackRouter({
                   target: 'react',
                   routesDirectory: './src/routes',
@@ -65,8 +66,11 @@ export default defineConfig({
                   quoteStyle: 'single',
                   autoCodeSplitting: true
                 }),
+                // @ts-expect-error
                 viteMaildev(),
+                // @ts-expect-error
                 tailwindcss(),
+                // @ts-expect-error
                 tsconfigPaths()
               ]
             }

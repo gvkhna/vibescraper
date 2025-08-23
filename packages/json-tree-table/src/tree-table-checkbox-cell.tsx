@@ -6,10 +6,11 @@ export interface TreeTableCheckboxCellProps {
   node: TreeNode
   row: FlatNode
   updateCheckboxValue: (path: string[], value: boolean) => void
+  disabled?: boolean
 }
 
 export function TreeTableCheckboxCell(props: TreeTableCheckboxCellProps) {
-  const {node, row, updateCheckboxValue} = props
+  const {node, row, updateCheckboxValue, disabled = false} = props
 
   let isPrimitive = false
 
@@ -27,11 +28,11 @@ export function TreeTableCheckboxCell(props: TreeTableCheckboxCellProps) {
   return (
     <TableCell className='p-0'>
       <Checkbox
-        disabled={!isPrimitive}
-        className={'disabled:opacity-20'}
+        disabled={disabled || !isPrimitive}
+        className={'disabled:opacity-90'}
         checked={!isPrimitive ? false : node.checkboxValue}
         onCheckedChange={(checked) => {
-          if (checked !== 'indeterminate') {
+          if (checked !== 'indeterminate' && !disabled) {
             updateCheckboxValue(row.path, checked)
           }
         }}

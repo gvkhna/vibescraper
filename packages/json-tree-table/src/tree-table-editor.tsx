@@ -7,6 +7,7 @@ import ChevronRight from 'lucide-react/icons/chevron-right'
 import Plus from 'lucide-react/icons/plus'
 import Minus from 'lucide-react/icons/minus'
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table'
+import {Badge} from '@/components/ui/badge'
 import {Button} from '@/components/ui/button'
 import {
   Select,
@@ -54,6 +55,7 @@ export type TreeNode = {
   description?: string
   options?: string[]
   expanded?: boolean
+  badge?: string
 }
 
 export interface TreeTableEditorProps extends Partial<Pick<HTMLDivElement, 'className'>> {
@@ -66,6 +68,8 @@ export interface TreeTableEditorProps extends Partial<Pick<HTMLDivElement, 'clas
   enableArray?: boolean
   enableCheckboxField?: boolean
   checkboxFieldName?: string
+  disableCheckboxFieldEdit?: boolean
+  enableCheckboxTooltip?: boolean
   enableValueField?: boolean
   disableValueFieldEdit?: boolean
   enableDescriptionTooltip?: boolean
@@ -73,6 +77,7 @@ export interface TreeTableEditorProps extends Partial<Pick<HTMLDivElement, 'clas
   disableEditTypes?: boolean
   disableResize?: boolean
   overhideHeaderKey?: string
+  disableExpansionChevrons?: boolean
 }
 
 export type FlatNode = {
@@ -81,6 +86,7 @@ export type FlatNode = {
   depth: number
   expanded: boolean
   isArrayItem: boolean
+  badge?: string
 }
 
 export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...props}: TreeTableEditorProps) {
@@ -89,6 +95,8 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
   // const enableRequireField = props.enableRequireField ?? false
   const enableCheckboxField = props.enableCheckboxField ?? false
   const checkboxFieldName = props.checkboxFieldName ?? 'Require'
+  const disableCheckboxFieldEdit = props.disableCheckboxFieldEdit ?? false
+  const enableCheckboxTooltip = props.enableCheckboxTooltip ?? true
   const enableValueField = props.enableValueField ?? false
   const disabledEditRootKeys = props.disabledEditRootKeys ?? false
   const enableDescriptionTooltip = props.enableDescriptionTooltip ?? false
@@ -96,6 +104,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
   const disableEditTypes = props.disableEditTypes ?? false
   const disableValueFieldEdit = props.disableValueFieldEdit ?? false
   const disableResize = props.disableResize ?? false
+  const disableExpansionChevrons = props.disableExpansionChevrons ?? false
   // Initialize expanded state to match initial node.expanded values
   const [expanded, setExpanded] = useState<Record<string, boolean>>(() => {
     const initialExpanded: Record<string, boolean> = {}
@@ -192,7 +201,8 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
         path,
         depth,
         expanded: isExpanded,
-        isArrayItem
+        isArrayItem,
+        badge: node.badge
       }
 
       if (isExpanded && (isArray || isObject)) {
@@ -646,7 +656,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                   >
                     <div className='flex items-center justify-between whitespace-nowrap text-nowrap'>
                       <span>Type</span>
-                      {enableValueField && (
+                      {(enableCheckboxField || enableValueField) && (
                         <div
                           className={cn(
                             'absolute right-0 top-0 flex h-full w-1',
@@ -670,43 +680,69 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                   </TableHead>
                   {enableCheckboxField && (
                     <TableHead
-                      className='relative h-8 py-0 hover:underline'
+                      className={cn('relative h-8 py-0', enableCheckboxTooltip ? 'hover:underline' : '')}
                       {...(disableResize
                         ? {}
                         : {
                             style: {width: columnWidths.checkbox}
                           })}
                     >
-                      <Tooltip delayDuration={450}>
-                        <TooltipTrigger asChild>
-                          <div className='flex items-center justify-between whitespace-nowrap text-nowrap'>
-                            <span>{checkboxFieldName}</span>
-                            {enableValueField && (
-                              <div
-                                className={cn(
-                                  'absolute right-0 top-0 flex h-full w-1',
-                                  disableResize ? '' : 'cursor-col-resize'
-                                )}
-                                {...(disableResize
-                                  ? {}
-                                  : {
-                                      onMouseDown: (event) => {
-                                        startResize('checkbox', event)
-                                      }
-                                    })}
-                              >
+                      {enableCheckboxTooltip ? (
+                        <Tooltip delayDuration={450}>
+                          <TooltipTrigger asChild>
+                            <div className='flex items-center justify-between whitespace-nowrap text-nowrap'>
+                              <span>{checkboxFieldName}</span>
+                              {enableValueField && (
                                 <div
-                                  className='relative right-0 top-0 flex h-2/3 w-[1px] items-center
-                                    self-center bg-zinc-700/30 dark:bg-white/40'
-                                ></div>
-                              </div>
-                            )}
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Allow overriding this value in deployments</p>
-                        </TooltipContent>
-                      </Tooltip>
+                                  className={cn(
+                                    'absolute right-0 top-0 flex h-full w-1',
+                                    disableResize ? '' : 'cursor-col-resize'
+                                  )}
+                                  {...(disableResize
+                                    ? {}
+                                    : {
+                                        onMouseDown: (event) => {
+                                          startResize('checkbox', event)
+                                        }
+                                      })}
+                                >
+                                  <div
+                                    className='relative right-0 top-0 flex h-2/3 w-[1px] items-center
+                                      self-center bg-zinc-700/30 dark:bg-white/40'
+                                  ></div>
+                                </div>
+                              )}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Allow overriding this value in deployments</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <div className='flex items-center justify-between whitespace-nowrap text-nowrap'>
+                          <span>{checkboxFieldName}</span>
+                          {enableValueField && (
+                            <div
+                              className={cn(
+                                'absolute right-0 top-0 flex h-full w-1',
+                                disableResize ? '' : 'cursor-col-resize'
+                              )}
+                              {...(disableResize
+                                ? {}
+                                : {
+                                    onMouseDown: (event) => {
+                                      startResize('checkbox', event)
+                                    }
+                                  })}
+                            >
+                              <div
+                                className='relative right-0 top-0 flex h-2/3 w-[1px] items-center self-center
+                                  bg-zinc-700/30 dark:bg-white/40'
+                              ></div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </TableHead>
                   )}
                   {enableValueField && (
@@ -767,7 +803,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                               <div className='mr-2 h-4 w-4'></div>
                             ))}
 
-                          {(node.type === 'Object' || node.type === 'Array') && (
+                          {!disableExpansionChevrons && (node.type === 'Object' || node.type === 'Array') && (
                             <Button
                               variant='ghost'
                               size='icon'
@@ -784,11 +820,18 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                             </Button>
                           )}
                           {disableValueFieldEdit ? (
-                            <>
-                              {row.isArrayItem
-                                ? `Item ${row.path[row.path.length - 1]}`
-                                : (node.title ?? node.name)}
-                            </>
+                            <div className='flex items-center gap-2'>
+                              <span>
+                                {row.isArrayItem
+                                  ? `Item ${row.path[row.path.length - 1]}`
+                                  : (node.title ?? node.name)}
+                              </span>
+                              {row.badge && (
+                                <Badge variant="secondary" className='text-[10px] px-1.5 py-0 h-4'>
+                                  {row.badge}
+                                </Badge>
+                              )}
+                            </div>
                           ) : (
                             <div className='flex-1'>
                               {isEditing ? (
@@ -837,9 +880,18 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                                     !disableValueFieldEdit && 'hover:underline'
                                   )}
                                 >
-                                  {row.isArrayItem
-                                    ? `Item ${row.path[row.path.length - 1]}`
-                                    : (node.title ?? node.name)}
+                                  <div className='flex items-center gap-2'>
+                                    <span>
+                                      {row.isArrayItem
+                                        ? `Item ${row.path[row.path.length - 1]}`
+                                        : (node.title ?? node.name)}
+                                    </span>
+                                    {row.badge && (
+                                      <Badge variant="secondary" className='text-[10px] px-1.5 py-0 h-4'>
+                                        {row.badge}
+                                      </Badge>
+                                    )}
+                                  </div>
                                 </button>
                               )}
                             </div>
@@ -950,6 +1002,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                           node={node}
                           row={row}
                           updateCheckboxValue={updateCheckboxValue}
+                          disabled={disableCheckboxFieldEdit}
                         />
                       )}
                       {enableValueField && (

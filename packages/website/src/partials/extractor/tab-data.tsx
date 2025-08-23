@@ -3,7 +3,7 @@
 import * as React from 'react'
 import {Database, Copy, CheckCircle, AlertCircle} from 'lucide-react'
 import {EmptyStateData} from '@/components/empty-state-data'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {Button} from '@/components/ui/button'
 import {cn} from '@/lib/utils'
 import {JsonTreeTable} from '@vibescraper/json-tree-table'
@@ -11,7 +11,7 @@ import {nowait} from '@/lib/async-utils'
 
 export function TabData() {
   // Get extraction data from project commit cache
-  const cachedData = useProjectStore((state) => state.extractorSlice.projectCommit?.cachedData)
+  const cachedData = useStore((state) => state.extractorSlice.projectCommit?.cachedData)
   const extractionResult = cachedData?.extractionResult
   const extractionStatus = cachedData?.extractionScriptStatus
 

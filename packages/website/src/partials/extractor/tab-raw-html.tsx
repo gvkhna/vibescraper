@@ -4,7 +4,7 @@ import * as React from 'react'
 import {Button} from '@/components/ui/button'
 import {Copy, Code} from 'lucide-react'
 import {nowait} from '@/lib/async-utils'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {EmptyStateData} from '@/components/empty-state-data'
 import {TextViewer} from '@/partials/monaco-editor/text-viewer'
 
@@ -12,7 +12,7 @@ export function TabRawHtml() {
   const [copied, setCopied] = React.useState(false)
 
   // Get cached HTML from project store
-  const cachedData = useProjectStore((state) => state.extractorSlice.projectCommit?.cachedData)
+  const cachedData = useStore((state) => state.extractorSlice.projectCommit?.cachedData)
   const htmlContent = cachedData?.html
 
   const handleCopy = () => {

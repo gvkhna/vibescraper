@@ -31,7 +31,7 @@ import {
   FileJson
 } from 'lucide-react'
 import {PipelineStatus} from './pipeline-status'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {SplitButtonDropdown, type SplitButtonDropdownTab} from '@/components/split-button-dropdown'
 import type {ExtractionPanelTabType, ConfigurationTabType, DataTabType} from '@/store/editor-slice'
 import {TabPreview} from './tab-preview'
@@ -78,17 +78,17 @@ const DATA_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType>[] = [
 
 export function ExtractionPanel() {
   // Get active project ID
-  const projectPublicId = useProjectStore((state) => state.projectSlice.project?.project.publicId)
+  const projectPublicId = useStore((state) => state.projectSlice.project?.project.publicId)
 
   // Get scraping state from the parent extractor page context
   // Note: This could be improved by moving isLoading to the store if needed
 
   // Get activeTab from store, with fallback to 'preview'
-  const activeTab = useProjectStore((state) => state.editorSlice.activeTab)
-  const setActiveTab = useProjectStore((state) => state.editorSlice.setActiveTab)
+  const activeTab = useStore((state) => state.editorSlice.activeTab)
+  const setActiveTab = useStore((state) => state.editorSlice.setActiveTab)
 
   // Subscribe to schema changes for version display
-  // const schemas = useProjectStore((state) =>
+  // const schemas = useStore((state) =>
   //   projectPublicId ? state.extractorSlice.projectSchemas[projectPublicId]?.schemas : null
   // )
 
@@ -101,26 +101,22 @@ export function ExtractionPanel() {
   // }, [schemas])
 
   // Get last selected dropdown tab from store
-  const lastExtractionDropdownTab = useProjectStore((state) => state.editorSlice.lastExtractionDropdownTab)
-  const setLastExtractionDropdownTab = useProjectStore(
-    (state) => state.editorSlice.setLastExtractionDropdownTab
-  )
+  const lastExtractionDropdownTab = useStore((state) => state.editorSlice.lastExtractionDropdownTab)
+  const setLastExtractionDropdownTab = useStore((state) => state.editorSlice.setLastExtractionDropdownTab)
 
   // Get last selected configuration dropdown tab from store
-  const lastConfigurationDropdownTab = useProjectStore(
-    (state) => state.editorSlice.lastConfigurationDropdownTab
-  )
-  const setLastConfigurationDropdownTab = useProjectStore(
+  const lastConfigurationDropdownTab = useStore((state) => state.editorSlice.lastConfigurationDropdownTab)
+  const setLastConfigurationDropdownTab = useStore(
     (state) => state.editorSlice.setLastConfigurationDropdownTab
   )
 
   // Get last selected data dropdown tab from store
-  const lastDataDropdownTab = useProjectStore((state) => state.editorSlice.lastDataDropdownTab)
-  const setLastDataDropdownTab = useProjectStore((state) => state.editorSlice.setLastDataDropdownTab)
+  const lastDataDropdownTab = useStore((state) => state.editorSlice.lastDataDropdownTab)
+  const setLastDataDropdownTab = useStore((state) => state.editorSlice.setLastDataDropdownTab)
 
   // Get panel state from editor slice
-  const rightPanelOpen = useProjectStore((state) => state.editorSlice.rightPanelOpen)
-  const toggleRightPanelOpen = useProjectStore((state) => state.editorSlice.toggleRightPanelOpen)
+  const rightPanelOpen = useStore((state) => state.editorSlice.rightPanelOpen)
+  const toggleRightPanelOpen = useStore((state) => state.editorSlice.toggleRightPanelOpen)
 
   if (!projectPublicId) {
     log('expected project public id not found!')

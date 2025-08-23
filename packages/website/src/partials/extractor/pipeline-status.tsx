@@ -4,7 +4,7 @@ import * as React from 'react'
 import {HoverCard, HoverCardContent, HoverCardTrigger} from '@/components/ui/hover-card'
 import {cn, tw} from '@/lib/utils'
 import {Check, Loader2, X, Circle} from 'lucide-react'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {
   derivePipelineStatus,
   getPipelineStepLabel,
@@ -23,14 +23,16 @@ interface PipelineStatusProps {
 
 export function PipelineStatus({onComplete}: PipelineStatusProps) {
   // Get scraping state from store (whether currently scraping)
-  const isActive = useProjectStore((state) => state.extractorSlice.getScrapingState())
+  const projectPublicId = useStore((state) => state.projectSlice.project?.project.publicId)
+  const projectScrapingState = useStore((state) => state.extractorSlice.projectScrapingState)
+
+  // Derive isActive from the state values
+  const isActive = (projectPublicId && projectScrapingState[projectPublicId]?.isScrapingActive) ?? false
 
   // Get pipeline data from store
-  const cachedData = useProjectStore((state) => state.extractorSlice.projectCommit?.cachedData)
-  const activeSchemaVersion = useProjectStore(
-    (state) => state.extractorSlice.projectCommit?.activeSchemaVersion
-  )
-  const activeExtractorVersion = useProjectStore(
+  const cachedData = useStore((state) => state.extractorSlice.projectCommit?.cachedData)
+  const activeSchemaVersion = useStore((state) => state.extractorSlice.projectCommit?.activeSchemaVersion)
+  const activeExtractorVersion = useStore(
     (state) => state.extractorSlice.projectCommit?.activeExtractorVersion
   )
 

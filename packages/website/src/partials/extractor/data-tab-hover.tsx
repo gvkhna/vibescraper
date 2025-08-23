@@ -4,14 +4,14 @@ import * as React from 'react'
 import {Database, Copy, CheckCircle, AlertCircle} from 'lucide-react'
 import {Button} from '@/components/ui/button'
 import {HoverCard, HoverCardContent, HoverCardTrigger} from '@/components/ui/hover-card'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {ExtractionTabsTrigger} from './extraction-tabs'
 import {nowait} from '@/lib/async-utils'
 
 export function DataTabWithHover() {
   const [copiedToClipboard, setCopiedToClipboard] = React.useState(false)
 
-  const cachedData = useProjectStore((state) => state.extractorSlice.projectCommit?.cachedData)
+  const cachedData = useStore((state) => state.extractorSlice.projectCommit?.cachedData)
   const extractionResult = cachedData?.extractionResult
   const validationStatus = cachedData?.schemaValidationStatus
   const validationErrors = cachedData?.schemaValidationErrors
@@ -42,7 +42,7 @@ export function DataTabWithHover() {
     <>
       <HoverCardTrigger>
         <ExtractionTabsTrigger
-          value='data'
+          value='data-table'
           className='gap-1.5 px-3 py-1.5 text-sm hover:bg-white/5 data-[state=active]:bg-white/10'
         >
           <Database className='h-3.5 w-3.5' />

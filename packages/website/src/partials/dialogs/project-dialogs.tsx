@@ -3,7 +3,7 @@ import {toast} from 'sonner'
 import {DeleteProjectConfirmDialog} from '@/partials/dialogs/delete-project-confirm-dialog'
 import {NewProjectDialog} from '@/partials/dialogs/new-project-dialog'
 import {RenameProjectDialog} from '@/partials/dialogs/rename-project-dialog'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {ProjectNotFoundDialog} from './project-not-found-dialog'
 import {useNavigate} from '@tanstack/react-router'
 import {nowait} from '@/lib/async-utils'
@@ -34,20 +34,20 @@ export function ProjectDialogs() {
   const navigate = useNavigate()
   const [defaultProjectName, setDefaultProjectName] = useState('')
 
-  const project = useProjectStore((state) => state.projectSlice.project)
-  const projectCommit = useProjectStore((state) => state.extractorSlice.projectCommit)
+  const project = useStore((state) => state.projectSlice.project)
+  const projectCommit = useStore((state) => state.extractorSlice.projectCommit)
 
-  // const setProjectPrivate = useProjectStore((state) => state.projectSlice.setProjectPrivate)
-  // const setProjectPublic = useProjectStore((state) => state.projectSlice.setProjectPublic)
+  // const setProjectPrivate = useStore((state) => state.projectSlice.setProjectPrivate)
+  // const setProjectPublic = useStore((state) => state.projectSlice.setProjectPublic)
 
-  const currentProjectDialog = useProjectStore((state) => state.projectSlice.currentProjectDialog)
-  const setCurrentProjectDialog = useProjectStore((state) => state.projectSlice.setCurrentProjectDialog)
+  const currentProjectDialog = useStore((state) => state.projectSlice.currentProjectDialog)
+  const setCurrentProjectDialog = useStore((state) => state.projectSlice.setCurrentProjectDialog)
 
-  const deleteProject = useProjectStore((state) => state.projectSlice.deleteProject)
-  const createProject = useProjectStore((state) => state.projectSlice.createProject)
+  const deleteProject = useStore((state) => state.projectSlice.deleteProject)
+  const createProject = useStore((state) => state.projectSlice.createProject)
 
-  // const deleteFile = useProjectStore((state) => state.projectSlice.deleteFile)
-  // const loadProjectTriggers = useProjectStore((state) => state.projectSlice.loadProjectTriggers)
+  // const deleteFile = useStore((state) => state.projectSlice.deleteFile)
+  // const loadProjectTriggers = useStore((state) => state.projectSlice.loadProjectTriggers)
 
   // Fetch default project name when new-project dialog is about to open
   useEffect(() => {

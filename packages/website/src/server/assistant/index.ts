@@ -17,11 +17,13 @@ import {userCannotProjectAction} from '@/lib/permissions-helper'
 import {createPaginationEntity, DEFAULT_PAGE_SIZE} from '@/store/pagination-entity-state'
 import type {ChatFileVersionBlockType} from '@/partials/assistant-ui/chat-message-schema'
 import extractor from './extractor'
+import models from './models'
 
 const log = debug('app:server:assistant')
 
 const app = new Hono<HonoServer>()
   .route('/', extractor)
+  .route('/', models)
   .post(
     '/deleteChat',
     validator('json', (value) => {

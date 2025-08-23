@@ -1,6 +1,9 @@
 import {db} from '../db/db'
 import {user} from '../db/schema'
 import {eq} from 'drizzle-orm'
+import debug from 'debug'
+
+const log = debug('app:auth-username')
 
 // Reserved usernames that should not be allowed
 const RESERVED_USERNAMES = new Set([
@@ -138,7 +141,7 @@ export async function validateUsername(newUsername: string): Promise<boolean> {
 
     return true
   } catch (error) {
-    console.error('Error checking username uniqueness:', error)
+    log('Error checking username uniqueness:', error)
     return false // Fail safe - reject if we can't check
   }
 }
@@ -222,7 +225,7 @@ export async function isUsernameAvailable(username: string): Promise<{
 
     return {available: true}
   } catch (error) {
-    console.error('Error checking username availability:', error)
+    log('Error checking username availability:', error)
     return {
       available: false,
       reason: 'Unable to check username availability'
@@ -241,7 +244,8 @@ export async function generateUsernameSuggestions(desiredUsername: string): Prom
   const suggestions: string[] = []
 
   // Try the base username first
-  if (await isUsernameAvailable(baseUsername)) {
+  const usernameAvailable = await isUsernameAvailable(baseUsername)
+  if (usernameAvailable.available) {
     suggestions.push(baseUsername)
   }
 

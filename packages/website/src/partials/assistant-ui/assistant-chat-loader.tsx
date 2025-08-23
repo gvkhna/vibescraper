@@ -1,7 +1,7 @@
 'use client'
 
 import debug from 'debug'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {nowait} from '@/lib/async-utils'
 import {AssistantChat} from './assistant-chat'
 import {isLoaded} from '@/store/async-entity-state'
@@ -17,14 +17,14 @@ function LoadingScreen() {
 }
 
 export function AssistantChatLoader() {
-  const project = useProjectStore((state) => state.projectSlice.project?.project)
-  const projectCommit = useProjectStore((state) => state.extractorSlice.projectCommit)
-  const projectChatsState = useProjectStore((state) => state.assistantSlice.projectChatsState)
-  const selectedProjectChat = useProjectStore((state) => state.assistantSlice.selectedProjectChat)
-  const projectChatMessagesState = useProjectStore((state) => state.assistantSlice.projectChatMessagesState)
+  const project = useStore((state) => state.projectSlice.project?.project)
+  const projectCommit = useStore((state) => state.extractorSlice.projectCommit)
+  const projectChatsState = useStore((state) => state.assistantSlice.projectChatsState)
+  const selectedProjectChat = useStore((state) => state.assistantSlice.selectedProjectChat)
+  const projectChatMessagesState = useStore((state) => state.assistantSlice.projectChatMessagesState)
 
-  const loadProjectChatMessages = useProjectStore((state) => state.assistantSlice.loadProjectChatMessages)
-  const loadNewChat = useProjectStore((state) => state.assistantSlice.loadNewChat)
+  const loadProjectChatMessages = useStore((state) => state.assistantSlice.loadProjectChatMessages)
+  const loadNewChat = useStore((state) => state.assistantSlice.loadNewChat)
 
   const projectPublicId = project?.publicId
   if (!projectPublicId) {

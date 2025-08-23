@@ -7,20 +7,20 @@ import {ExtractionPanel} from './extraction-panel'
 // import {Button} from '@/components/ui/button'
 // import {PanelLeftClose, PanelRightClose, PanelBottomClose} from 'lucide-react'
 import {AssistantPanel} from '../assistant-ui/assistant-panel'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 
 interface WorkspaceLayoutProps {
   // Removed isProcessing - now handled by pipeline status component internally
 }
 
-export function WorkspaceLayout({}: WorkspaceLayoutProps) {
+export function WorkspaceLayout() {
   // const [showSchemaPanel, setShowSchemaPanel] = React.useState(true)
   // const [showDataPanel, setShowDataPanel] = React.useState(true)
 
   // Use editor slice for AI panel state
-  const rightPanelOpen = useProjectStore((state) => state.editorSlice.rightPanelOpen)
-  const rightPanelSize = useProjectStore((state) => state.editorSlice.rightPanelSize)
-  const setRightPanelSize = useProjectStore((state) => state.editorSlice.setRightPanelSize)
+  const rightPanelOpen = useStore((state) => state.editorSlice.rightPanelOpen)
+  const rightPanelSize = useStore((state) => state.editorSlice.rightPanelSize)
+  const setRightPanelSize = useStore((state) => state.editorSlice.setRightPanelSize)
 
   return (
     <div className='flex flex-1 flex-col overflow-hidden'>

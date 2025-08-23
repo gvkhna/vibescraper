@@ -5,14 +5,14 @@ import {Button} from '@/components/ui/button'
 import {Copy, FileText} from 'lucide-react'
 import {nowait} from '@/lib/async-utils'
 import {EmptyStateData} from '@/components/empty-state-data'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {TextViewer} from '@/partials/monaco-editor/text-viewer'
 
 export function TabPlaintext() {
   const [copied, setCopied] = React.useState(false)
 
   // Get cached plaintext from project store
-  const cachedData = useProjectStore((state) => state.extractorSlice.projectCommit?.cachedData)
+  const cachedData = useStore((state) => state.extractorSlice.projectCommit?.cachedData)
   const content = cachedData?.text ?? ''
 
   const handleCopy = () => {

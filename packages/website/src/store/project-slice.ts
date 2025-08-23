@@ -1,4 +1,4 @@
-import type {StateSlice} from './use-project-store'
+import type {StateSlice} from './use-store'
 import api from '@/lib/api-client'
 import type {ProjectChatCursor, ProjectChatPublicId, ProjectDTOType, ProjectPublicId} from '@/db/schema'
 import type {

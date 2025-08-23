@@ -2,7 +2,7 @@ import {useEffect} from 'react'
 import debug from 'debug'
 import {differenceInMinutes} from 'date-fns'
 import {PROJECT_COMPONENT_IDEMPOTENCY_RECENT_WINDOW} from '@/store/assistant-slice'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import type {ProjectChatMessagePublicId, ProjectComponentIdempotencyKey} from '@/db/schema'
 import {nowait} from '@/lib/async-utils'
 import {parseCodeBlocksWithMeta} from './remark-meta-code-attrs'
@@ -28,24 +28,24 @@ export function AssistantProjectComponent(props: AssistantProjectComponentProps)
 
   const idempotencyKey = `Project/${messageId}/${partIndex}/${blockIndex}` as ProjectComponentIdempotencyKey
 
-  const chatMessage = useProjectStore((state) => state.assistantSlice.chatMessages[messageId!])
+  const chatMessage = useStore((state) => state.assistantSlice.chatMessages[messageId!])
 
-  const activeProjectVersionBlock = useProjectStore(
+  const activeProjectVersionBlock = useStore(
     (state) => state.assistantSlice.activeProjectVersionBlocks[idempotencyKey]
   )
 
-  // const runAssistantBlocks = useProjectStore((state) => state.assistantProjectSlice.runAssistantBlocks)
-  const projectComponentIdempotencyKeys = useProjectStore(
+  // const runAssistantBlocks = useStore((state) => state.assistantProjectSlice.runAssistantBlocks)
+  const projectComponentIdempotencyKeys = useStore(
     (state) => state.assistantSlice.projectComponentIdempotencyKeys
   )
-  const updateProjectComponentIdempotencyKey = useProjectStore(
+  const updateProjectComponentIdempotencyKey = useStore(
     (state) => state.assistantSlice.updateProjectComponentIdempotencyKey
   )
-  const updateActiveProjectVersionBlockStatus = useProjectStore(
+  const updateActiveProjectVersionBlockStatus = useStore(
     (state) => state.assistantSlice.updateActiveProjectVersionBlockStatus
   )
 
-  const isNewIdempotencyKey = useProjectStore((state) => state.assistantSlice.isNewIdempotencyKey)
+  const isNewIdempotencyKey = useStore((state) => state.assistantSlice.isNewIdempotencyKey)
 
   // useEffect(() => {
   //   log('chat message state update', messageId)

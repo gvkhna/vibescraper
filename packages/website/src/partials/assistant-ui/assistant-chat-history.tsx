@@ -8,7 +8,7 @@ import {
 import {MoreHorizontal, Trash2, MessageSquare, Clock, Plus} from 'lucide-react'
 import {cn} from '@/lib/utils'
 import {formatDistanceToNow} from 'date-fns'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {nowait} from '@/lib/async-utils'
 import debug from 'debug'
 
@@ -19,13 +19,13 @@ interface AssistantChatHistoryProps {
 }
 
 export function AssistantChatHistory({className}: AssistantChatHistoryProps) {
-  const project = useProjectStore((state) => state.projectSlice.project?.project)
-  const projectChatsState = useProjectStore((state) => state.assistantSlice.projectChatsState)
-  const selectedProjectChat = useProjectStore((state) => state.assistantSlice.selectedProjectChat)
-  const selectChat = useProjectStore((state) => state.assistantSlice.selectChat)
-  const newChat = useProjectStore((state) => state.assistantSlice.newChat)
-  const deleteProjectChat = useProjectStore((state) => state.assistantSlice.deleteProjectChat)
-  const setAssistantPanelView = useProjectStore((state) => state.editorSlice.setAssistantPanelView)
+  const project = useStore((state) => state.projectSlice.project?.project)
+  const projectChatsState = useStore((state) => state.assistantSlice.projectChatsState)
+  const selectedProjectChat = useStore((state) => state.assistantSlice.selectedProjectChat)
+  const selectChat = useStore((state) => state.assistantSlice.selectChat)
+  const newChat = useStore((state) => state.assistantSlice.newChat)
+  const deleteProjectChat = useStore((state) => state.assistantSlice.deleteProjectChat)
+  const setAssistantPanelView = useStore((state) => state.editorSlice.setAssistantPanelView)
 
   const projectPublicId = project?.publicId
   if (!projectPublicId) {

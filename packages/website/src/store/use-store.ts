@@ -10,6 +10,7 @@ import {createEditorSlice, type EditorSlice} from './editor-slice'
 import {createProjectSlice, type ProjectSlice} from './project-slice'
 import {createRecentProjectsSlice, type RecentProjectsSlice} from './recent-projects-slice'
 import {createExtractorSlice, type ExtractorSlice} from './extractor-slice'
+import {createModelsSlice, type ModelsSlice} from './models-slice'
 
 // Do not use
 // enableMapSet() prefer to use json objects for clear serialization
@@ -21,6 +22,7 @@ export interface CombinedState {
   projectSlice: ProjectSlice
   recentProjectsSlice: RecentProjectsSlice
   extractorSlice: ExtractorSlice
+  modelsSlice: ModelsSlice
 }
 
 export type StateSlice<T> = StateCreator<
@@ -32,7 +34,7 @@ export type StateSlice<T> = StateCreator<
 
 export const LOCAL_STORAGE_PROJECT_STORE_KEY = 'project-store'
 
-export const useProjectStore = create<CombinedState>()(
+export const useStore = create<CombinedState>()(
   devtools(
     subscribeWithSelector(
       persist(
@@ -43,7 +45,8 @@ export const useProjectStore = create<CombinedState>()(
           recentProjectsSlice: (createRecentProjectsSlice as (...a: unknown[]) => RecentProjectsSlice)(
             ...api
           ),
-          extractorSlice: (createExtractorSlice as (...a: unknown[]) => ExtractorSlice)(...api)
+          extractorSlice: (createExtractorSlice as (...a: unknown[]) => ExtractorSlice)(...api),
+          modelsSlice: (createModelsSlice as (...a: unknown[]) => ModelsSlice)(...api)
         })),
         {
           name: LOCAL_STORAGE_PROJECT_STORE_KEY,
@@ -51,12 +54,13 @@ export const useProjectStore = create<CombinedState>()(
           partialize: (state) => {
             return {
               assistantSlice: {
-                selectedProjectChat: state.assistantSlice.selectedProjectChat
+                selectedProjectChat: state.assistantSlice.selectedProjectChat,
+                chatModels: state.assistantSlice.chatModels
                 // projectComponentIdempotencyKeys: state.assistantSlice.projectComponentIdempotencyKeys
               },
-              projectSlice: {
-                project: state.projectSlice.project
-              },
+              // projectSlice: {
+              //   project: state.projectSlice.project
+              // },
               // save editor config to local storage persist
               editorSlice: {
                 rightPanelSize: state.editorSlice.rightPanelSize,
@@ -66,6 +70,10 @@ export const useProjectStore = create<CombinedState>()(
               },
               recentProjectsSlice: {
                 recentProjects: state.recentProjectsSlice.recentProjects
+              },
+              modelsSlice: {
+                models: state.modelsSlice.models,
+                lastUpdated: state.modelsSlice.lastUpdated
               }
             }
           },
@@ -81,23 +89,7 @@ export const useProjectStore = create<CombinedState>()(
             // our merged state, resulting in unexpected behavior.
             // note: deep merging is only required if values are being persisted
             // otherwise simply pass in the current state
-            return {
-              assistantSlice: typedPersistedState?.assistantSlice
-                ? mergeDeepLeft(typedPersistedState.assistantSlice, currentState.assistantSlice)
-                : currentState.assistantSlice,
-              projectSlice: typedPersistedState?.projectSlice
-                ? mergeDeepLeft(typedPersistedState.projectSlice, currentState.projectSlice)
-                : currentState.projectSlice,
-              editorSlice: typedPersistedState?.editorSlice
-                ? mergeDeepLeft(typedPersistedState.editorSlice, currentState.editorSlice)
-                : currentState.editorSlice,
-              recentProjectsSlice: typedPersistedState?.recentProjectsSlice
-                ? mergeDeepLeft(typedPersistedState.recentProjectsSlice, currentState.recentProjectsSlice)
-                : currentState.recentProjectsSlice,
-              extractorSlice: typedPersistedState?.extractorSlice
-                ? mergeDeepLeft(typedPersistedState.extractorSlice, currentState.extractorSlice)
-                : currentState.extractorSlice
-            }
+            return typedPersistedState ? mergeDeepLeft(typedPersistedState, currentState) : currentState
           }
         }
       )

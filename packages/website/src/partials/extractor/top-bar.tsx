@@ -15,7 +15,8 @@ import {Switch} from '@/components/ui/switch'
 import {Badge} from '@/components/ui/badge'
 import {HoverCard, HoverCardContent, HoverCardTrigger} from '@/components/ui/hover-card'
 import {ScrapeButtonWithHover} from './scrape-button-with-hover'
-import {useProjectStore} from '@/store/use-project-store'
+import {UrlHistoryCombobox} from './url-history-combobox'
+import {useStore} from '@/store/use-store'
 import {useNavigate} from '@tanstack/react-router'
 import {UserAvatar} from '@daveyplate/better-auth-ui'
 import {authReactClient} from '@/lib/auth-react-client'
@@ -53,8 +54,8 @@ export function TopBar({
   cacheInfo
 }: TopBarProps) {
   const navigate = useNavigate()
-  const recentProjects = useProjectStore((state) => state.recentProjectsSlice.recentProjects)
-  const currentProject = useProjectStore((state) => state.projectSlice.project)
+  const recentProjects = useStore((state) => state.recentProjectsSlice.recentProjects)
+  const currentProject = useStore((state) => state.projectSlice.project)
   const session = authReactClient.useSession()
 
   // Live mode state (temporary React state for UI demo)
@@ -71,15 +72,15 @@ export function TopBar({
       </div>
 
       {/* URL Bar and Controls */}
-      {currentUrl && onUrlChange && (
+      {onUrlChange && (
         <>
-          <form onSubmit={saveUrl} className='flex-1 min-w-0 max-w-2xl'>
-            <Input
-              value={currentUrl}
-              onChange={(e) => {
-                onUrlChange(e.target.value)
-              }}
-              className='w-full border-white/20 bg-[#0A0A0B] font-mono text-sm'
+          <form
+            onSubmit={saveUrl}
+            className='min-w-0 max-w-2xl flex-1'
+          >
+            <UrlHistoryCombobox
+              value={currentUrl ?? ''}
+              onChange={onUrlChange}
               placeholder='Enter URL to scrape...'
             />
           </form>
@@ -112,14 +113,11 @@ export function TopBar({
               <Switch
                 checked={isLiveMode}
                 onCheckedChange={setIsLiveMode}
-                className={`
-                  ml-2 h-6 w-11 border-0 transition-all duration-300 
-                  data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-white/20
-                  data-[state=checked]:shadow-[0_0_12px_rgba(34,197,94,0.4)]
-                  [&>span]:h-5 [&>span]:w-5 [&>span]:data-[state=checked]:translate-x-[1.375rem]
-                  [&>span]:data-[state=checked]:bg-white [&>span]:data-[state=unchecked]:bg-white/70
-                  [&>span]:shadow-sm
-                `}
+                className={`ml-2 h-6 w-11 border-0 transition-all duration-300
+                data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-white/20
+                data-[state=checked]:shadow-[0_0_12px_rgba(34,197,94,0.4)] [&>span]:h-5 [&>span]:w-5
+                [&>span]:shadow-sm [&>span]:data-[state=checked]:translate-x-[1.375rem]
+                [&>span]:data-[state=checked]:bg-white [&>span]:data-[state=unchecked]:bg-white/70`}
               />
 
               {/* Live Mode Badge with Hover */}
@@ -127,18 +125,21 @@ export function TopBar({
                 <HoverCardTrigger asChild>
                   <Badge
                     variant='outline'
-                    className={`
-                      cursor-default transition-all duration-300
-                      ${isLiveMode 
-                        ? 'border-green-500/50 bg-green-500/15 text-green-400 hover:bg-green-500/20 shadow-[0_0_8px_rgba(34,197,94,0.3)]' 
-                        : 'border-green-500/20 bg-green-500/5 text-green-400/60 hover:bg-green-500/8 hover:text-green-400/80'
-                      }
-                    `}
+                    className={`cursor-default transition-all duration-300 ${
+                      isLiveMode
+                        ? `border-green-500/50 bg-green-500/15 text-green-400
+                          shadow-[0_0_8px_rgba(34,197,94,0.3)] hover:bg-green-500/20`
+                        : `hover:bg-green-500/8 border-green-500/20 bg-green-500/5 text-green-400/60
+                          hover:text-green-400/80`
+                    } `}
                   >
                     <Zap className='h-3 w-3' />
                     Live Mode
                     {isLiveMode && (
-                      <div className='ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-green-400 shadow-[0_0_6px_rgba(34,197,94,0.8)]' />
+                      <div
+                        className='ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-green-400
+                          shadow-[0_0_6px_rgba(34,197,94,0.8)]'
+                      />
                     )}
                   </Badge>
                 </HoverCardTrigger>
@@ -236,14 +237,16 @@ export function TopBar({
             <DropdownMenuSeparator className='bg-white/10' />
             <DropdownMenuItem
               onClick={() => {
-                nowait(navigate({to: '/projects'}))
+                nowait(navigate({to: '/scrapers'}))
               }}
               className='text-white/90 hover:bg-white/10 focus:bg-white/10'
             >
               View All Scrapers
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={onNewSite}
+              onClick={() => {
+                nowait(navigate({to: '/'}))
+              }}
               className='text-blue-400 hover:bg-white/10 focus:bg-white/10'
             >
               <Plus className='mr-2 h-4 w-4' />

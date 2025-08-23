@@ -2,15 +2,15 @@
 
 import {Globe, AlertTriangle, Loader2} from 'lucide-react'
 import {EmptyStatePreview} from '@/components/empty-state-preview'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {useEffect, useState, useMemo} from 'react'
 import {Alert, AlertDescription} from '@/components/ui/alert'
 import {PUBLIC_VARS} from '@/vars.public'
 import api from '@/lib/api-client'
 
 export function TabPreview() {
-  const projectCommitPublicId = useProjectStore((state) => state.extractorSlice.projectCommit?.publicId)
-  const cachedHtml = useProjectStore((state) => state.extractorSlice.projectCommit?.cachedData?.html)
+  const projectCommitPublicId = useStore((state) => state.extractorSlice.projectCommit?.publicId)
+  const cachedHtml = useStore((state) => state.extractorSlice.projectCommit?.cachedData?.html)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 

@@ -199,6 +199,10 @@ export const projectCommit = pgTable(
     // Cache for development/preview mode
     cachedData: jsonb().$type<ProjectCommitCacheData | null>(),
     cachedAt: timestamp({mode: 'string'}).$type<SQLUTCTimestamp>(),
+    // Recent URLs for URL history
+    recentUrls: jsonb().notNull().default({urls: []}).$type<{
+      urls: string[]
+    }>(),
     ...TIMESTAMPS_SCHEMA
   },
   (table) => [uniqueIndex().on(table.publicId)]

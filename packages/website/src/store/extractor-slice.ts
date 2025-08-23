@@ -1,9 +1,7 @@
-import type {StateSlice} from './use-project-store'
+import type {StateSlice} from './use-store'
 import type {
   ProjectPublicId,
-  ProjectSchemaPublicId,
   ProjectSchemaDTOType,
-  ExtractorPublicId,
   ExtractorDTOType,
   ProjectCommitDTOType,
   ProjectCommitPublicId
@@ -57,26 +55,8 @@ export interface ExtractorSlice {
   // Load all schemas for a project
   loadSchemas: (projectPublicId: ProjectPublicId) => Promise<void>
 
-  // Get a specific schema by ID
-  getSchemaById: (
-    projectPublicId: ProjectPublicId,
-    schemaId: ProjectSchemaPublicId
-  ) => ProjectSchemaDTOType | null
-
-  // Get the currently active schema from project commit
-  getCurrentSchema: (projectPublicId: ProjectPublicId) => ProjectSchemaDTOType | null
-
   // Load all extractors for a project
   loadExtractors: (projectPublicId: ProjectPublicId) => Promise<void>
-
-  // Get a specific extractor by ID
-  getExtractorById: (
-    projectPublicId: ProjectPublicId,
-    extractorId: ExtractorPublicId
-  ) => ExtractorDTOType | null
-
-  // Get the currently active extractor from project commit
-  getCurrentExtractor: (projectPublicId: ProjectPublicId) => ExtractorDTOType | null
 
   // Reload project commit and sync all configuration
   reloadProjectCommit: (projectCommitPublicId: ProjectCommitPublicId) => Promise<void>
@@ -94,8 +74,8 @@ export interface ExtractorSlice {
     error?: string
   }>
 
-  // Get scraping activity state for current project
-  getScrapingState: () => boolean
+  // Clear recent URLs
+  clearRecentUrls: () => Promise<{success: boolean}>
 }
 
 export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
@@ -189,27 +169,6 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
       }
     },
 
-    getSchemaById: (projectPublicId, schemaId) => {
-      const state = get().extractorSlice.projectSchemas[projectPublicId]
-      if (!state) {
-        return null
-      }
-      return state.schemas.find((s) => s.publicId === schemaId)
-    },
-
-    getCurrentSchema: (projectPublicId) => {
-      const state = get().extractorSlice.projectSchemas[projectPublicId]
-      if (!state) {
-        return null
-      }
-      // Get the active schema version from the project commit
-      const projectCommit = get().extractorSlice.projectCommit
-      if (!projectCommit?.activeSchemaVersion) {
-        return null
-      }
-      return state.schemas.find((s) => s.version === projectCommit.activeSchemaVersion) ?? null
-    },
-
     loadExtractors: async (projectPublicId) => {
       const currentState = get().extractorSlice.projectExtractors[projectPublicId]
 
@@ -293,27 +252,6 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
       }
     },
 
-    getExtractorById: (projectPublicId, extractorId) => {
-      const state = get().extractorSlice.projectExtractors[projectPublicId]
-      if (!state) {
-        return null
-      }
-      return state.extractors.find((e) => e.publicId === extractorId) ?? null
-    },
-
-    getCurrentExtractor: (projectPublicId) => {
-      const state = get().extractorSlice.projectExtractors[projectPublicId]
-      if (!state) {
-        return null
-      }
-      // Get the active extractor version from the project commit
-      const projectCommit = get().extractorSlice.projectCommit
-      if (!projectCommit?.activeExtractorVersion) {
-        return null
-      }
-      return state.extractors.find((e) => e.version === projectCommit.activeExtractorVersion) ?? null
-    },
-
     reloadProjectCommit: async (projectCommitPublicId) => {
       // Check if already loading to prevent multiple simultaneous reloads
       if (isLoading(get().extractorSlice.projectCommitAsyncState)) {
@@ -349,6 +287,7 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
         // Update the project commit, active schema, and active extractor in state
         set(
           (draft) => {
+            // @ts-ignore-error
             draft.extractorSlice.projectCommit = commit
             finishLoading(draft.extractorSlice.projectCommitAsyncState)
 
@@ -382,6 +321,7 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
                   Object.assign(schemaState.schemas[existingIndex], activeSchema)
                 } else {
                   // Add new schema
+                  // @ts-ignore-error
                   schemaState.schemas.push(activeSchema)
                   // Keep schemas sorted by version (newest first)
                   schemaState.schemas.sort((a, b) => b.version - a.version)
@@ -614,11 +554,43 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
       }
     },
 
-    getScrapingState: () => {
-      const projectPublicId = get().projectSlice.project?.project.publicId
-      if (!projectPublicId) {
-        return false
+    clearRecentUrls: async () => {
+      const projectCommitPublicId = get().extractorSlice.projectCommit?.publicId
+
+      if (!projectCommitPublicId) {
+        log('No project commit to clear recent URLs')
+        return {success: false}
       }
-      return get().extractorSlice.projectScrapingState[projectPublicId]?.isScrapingActive ?? false
+
+      try {
+        // Clear in backend
+        const response = await api.project.clearRecentUrls.$post({
+          json: {
+            projectCommitPublicId
+          }
+        })
+
+        if (!response.ok) {
+          const body = await response.json()
+          throw new Error(body.message)
+        }
+
+        // Update local state
+        set(
+          (draft) => {
+            if (draft.extractorSlice.projectCommit) {
+              draft.extractorSlice.projectCommit.recentUrls = {urls: []}
+            }
+          },
+          true,
+          'extractor/clearRecentUrls'
+        )
+
+        log('Recent URLs cleared successfully')
+        return {success: true}
+      } catch (e) {
+        log('Error clearing recent URLs:', e)
+        return {success: false}
+      }
     }
   }) as ExtractorSlice

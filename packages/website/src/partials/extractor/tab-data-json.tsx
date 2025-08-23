@@ -3,13 +3,13 @@
 import * as React from 'react'
 import {Database, AlertCircle} from 'lucide-react'
 import {EmptyStateData} from '@/components/empty-state-data'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import ReactJson from '@uiw/react-json-view'
 import {nordTheme} from '@uiw/react-json-view/nord'
 
 export function TabDataJson() {
   // Get extraction data from project commit cache
-  const cachedData = useProjectStore((state) => state.extractorSlice.projectCommit?.cachedData)
+  const cachedData = useStore((state) => state.extractorSlice.projectCommit?.cachedData)
   const extractionResult = cachedData?.extractionResult
   const extractionStatus = cachedData?.extractionScriptStatus
 

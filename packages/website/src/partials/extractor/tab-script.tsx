@@ -4,7 +4,7 @@ import * as React from 'react'
 import {Button} from '@/components/ui/button'
 import {Copy, FileCode2} from 'lucide-react'
 import {nowait} from '@/lib/async-utils'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {EmptyStateData} from '@/components/empty-state-data'
 import {TextViewer} from '@/partials/monaco-editor/text-viewer'
 import debug from 'debug'
@@ -15,19 +15,15 @@ export function TabScript() {
   const [copied, setCopied] = React.useState(false)
 
   // Get project and extractor from store
-  const projectPublicId = useProjectStore((state) => state.projectSlice.project?.project.publicId)
-  const loadExtractors = useProjectStore((state) => state.extractorSlice.loadExtractors)
+  const projectPublicId = useStore((state) => state.projectSlice.project?.project.publicId)
+  const loadExtractors = useStore((state) => state.extractorSlice.loadExtractors)
+  const projectExtractors = useStore((state) => state.extractorSlice.projectExtractors)
 
-  // Subscribe to extractor changes with a shallow comparison to ensure reactivity
-  const extractors = useProjectStore((state) => {
-    if (!projectPublicId) {
-      return null
-    }
-    return state.extractorSlice.projectExtractors[projectPublicId]?.extractors ?? null
-  })
+  // Derive extractors from projectExtractors
+  const extractors = projectPublicId ? projectExtractors[projectPublicId]?.extractors ?? null : null
 
   // Get the active extractor version from project commit
-  const activeExtractorVersion = useProjectStore(
+  const activeExtractorVersion = useStore(
     (state) => state.extractorSlice.projectCommit?.activeExtractorVersion
   )
 

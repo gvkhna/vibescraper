@@ -3,13 +3,15 @@
 import * as React from 'react'
 import {FileText, Terminal, AlertCircle, Info, AlertTriangle} from 'lucide-react'
 import {EmptyStateData} from '@/components/empty-state-data'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import type {CodeExecutionMessage} from '@vibescraper/sandbox'
 import {cn} from '@/lib/utils'
 
 export function TabLog() {
-  const extractionMessages = useProjectStore((state) => state.extractorSlice.projectCommit?.cachedData?.extractionMessages)
-  
+  const extractionMessages = useStore(
+    (state) => state.extractorSlice.projectCommit?.cachedData?.extractionMessages
+  )
+
   // Format timestamp for display
   const formatTimestamp = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString()
@@ -94,46 +96,40 @@ export function TabLog() {
       </div>
 
       {/* Log Messages */}
-      <div className='flex-1 overflow-y-auto p-4 space-y-3'>
+      <div className='flex-1 space-y-3 overflow-y-auto p-4'>
         {extractionMessages.map((message, index) => {
           const style = getMessageStyle(message)
           const Icon = style.icon
-          
+
           return (
             <div
               key={index}
-              className={cn(
-                'rounded-lg border p-3 transition-colors',
-                style.bgColor,
-                style.borderColor
-              )}
+              className={cn('rounded-lg border p-3 transition-colors', style.bgColor, style.borderColor)}
             >
               <div className='flex items-start gap-3'>
-                <Icon className={cn('h-4 w-4 mt-0.5 flex-shrink-0', style.iconColor)} />
-                <div className='flex-1 min-w-0'>
-                  <div className='flex items-center gap-2 mb-1'>
-                    <span className='text-xs font-medium text-white/80 uppercase'>
-                      {message.type}
-                    </span>
+                <Icon className={cn('mt-0.5 h-4 w-4 flex-shrink-0', style.iconColor)} />
+                <div className='min-w-0 flex-1'>
+                  <div className='mb-1 flex items-center gap-2'>
+                    <span className='text-xs font-medium uppercase text-white/80'>{message.type}</span>
                     {'timestamp' in message && (
-                      <span className='text-xs text-white/60'>
-                        {formatTimestamp(message.timestamp)}
-                      </span>
+                      <span className='text-xs text-white/60'>{formatTimestamp(message.timestamp)}</span>
                     )}
                   </div>
-                  <div className='text-sm text-white font-mono whitespace-pre-wrap break-words'>
+                  <div className='whitespace-pre-wrap break-words font-mono text-sm text-white'>
                     {getMessageContent(message)}
                   </div>
-                  {message.type === 'exception' && typeof message.exception === 'object' && message.exception.stack && (
-                    <details className='mt-2'>
-                      <summary className='text-xs text-white/60 cursor-pointer hover:text-white/80'>
-                        Stack trace
-                      </summary>
-                      <pre className='text-xs text-white/60 mt-1 whitespace-pre-wrap'>
-                        {message.exception.stack}
-                      </pre>
-                    </details>
-                  )}
+                  {message.type === 'exception' &&
+                    typeof message.exception === 'object' &&
+                    message.exception.stack && (
+                      <details className='mt-2'>
+                        <summary className='cursor-pointer text-xs text-white/60 hover:text-white/80'>
+                          Stack trace
+                        </summary>
+                        <pre className='mt-1 whitespace-pre-wrap text-xs text-white/60'>
+                          {message.exception.stack}
+                        </pre>
+                      </details>
+                    )}
                 </div>
               </div>
             </div>

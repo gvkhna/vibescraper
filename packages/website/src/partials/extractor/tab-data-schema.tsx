@@ -5,7 +5,7 @@ import {Button} from '@/components/ui/button'
 import {Copy, FileJson2} from 'lucide-react'
 import {nowait} from '@/lib/async-utils'
 import {EmptyStateData} from '@/components/empty-state-data'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {MonacoTextEditor} from '../monaco-editor/monaco-text-editor'
 import debug from 'debug'
 import {TextViewer} from '../monaco-editor/text-viewer'
@@ -16,21 +16,15 @@ export function TabDataSchema() {
   const [copied, setCopied] = React.useState(false)
 
   // Get project and schema from store
-  const projectPublicId = useProjectStore((state) => state.projectSlice.project?.project.publicId)
-  const loadSchemas = useProjectStore((state) => state.extractorSlice.loadSchemas)
+  const projectPublicId = useStore((state) => state.projectSlice.project?.project.publicId)
+  const loadSchemas = useStore((state) => state.extractorSlice.loadSchemas)
+  const projectSchemas = useStore((state) => state.extractorSlice.projectSchemas)
 
-  // Subscribe to schema changes with a shallow comparison to ensure reactivity
-  const schemas = useProjectStore((state) => {
-    if (!projectPublicId) {
-      return null
-    }
-    return state.extractorSlice.projectSchemas[projectPublicId]?.schemas ?? null
-  })
+  // Derive schemas from projectSchemas
+  const schemas = projectPublicId ? projectSchemas[projectPublicId]?.schemas ?? null : null
 
   // Get the active schema version from project commit
-  const activeSchemaVersion = useProjectStore(
-    (state) => state.extractorSlice.projectCommit?.activeSchemaVersion
-  )
+  const activeSchemaVersion = useStore((state) => state.extractorSlice.projectCommit?.activeSchemaVersion)
 
   // Get the active schema from the reactive schemas array
   const activeSchema = React.useMemo(() => {

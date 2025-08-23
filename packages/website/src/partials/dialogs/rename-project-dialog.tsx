@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import {Input} from '@/components/ui/input'
 import {Button} from '@/components/ui/button'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {toast} from 'sonner'
 import {nowait} from '@/lib/async-utils'
 
@@ -19,8 +19,8 @@ export interface RenameProjectDialogProps {
 }
 
 export function RenameProjectDialog(props: PropsWithChildren<RenameProjectDialogProps>) {
-  const currentProject = useProjectStore((state) => state.projectSlice.project)
-  const renameProject = useProjectStore((state) => state.projectSlice.renameProject)
+  const currentProject = useStore((state) => state.projectSlice.project)
+  const renameProject = useStore((state) => state.projectSlice.renameProject)
   const [projectName, setProjectName] = useState(currentProject?.project.name ?? '')
   const {children, open, onOpenChange} = props
 

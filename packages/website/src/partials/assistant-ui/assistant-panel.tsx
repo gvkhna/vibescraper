@@ -5,7 +5,7 @@ import {Button} from '@/components/ui/button'
 import {Sparkles, MessageSquare, X, ChevronLeft} from 'lucide-react'
 import {AssistantChatLoader} from './assistant-chat-loader'
 import {AssistantChatHistory} from './assistant-chat-history'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import debug from 'debug'
 
 const log = debug('app:assistant-panel')
@@ -13,9 +13,9 @@ const log = debug('app:assistant-panel')
 interface AssistantPanelProps {}
 
 export function AssistantPanel() {
-  const project = useProjectStore((state) => state.projectSlice.project?.project)
-  const assistantPanelView = useProjectStore((state) => state.editorSlice.assistantPanelView)
-  const setAssistantPanelView = useProjectStore((state) => state.editorSlice.setAssistantPanelView)
+  const project = useStore((state) => state.projectSlice.project?.project)
+  const assistantPanelView = useStore((state) => state.editorSlice.assistantPanelView)
+  const setAssistantPanelView = useStore((state) => state.editorSlice.setAssistantPanelView)
 
   const projectPublicId = project?.publicId
   if (!projectPublicId) {

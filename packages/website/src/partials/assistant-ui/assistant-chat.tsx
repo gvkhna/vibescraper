@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {
   Conversation,
   ConversationContent,
@@ -37,7 +37,7 @@ import type {
   ProjectChatDTOType,
   ProjectChatMessagePublicId
 } from '@/db/schema'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import debug from 'debug'
 import api from '@/lib/api-client'
 import {
@@ -51,21 +51,6 @@ import {Action, Actions} from '@/components/ai-elements/actions'
 import {Tool, ToolContent, ToolHeader, ToolOutput, ToolInput} from '@/components/ai-elements/tool'
 
 const log = debug('app:assistant-chat')
-
-const models = [
-  {
-    name: 'Small',
-    value: 'small'
-  },
-  {
-    name: 'Medium',
-    value: 'medium'
-  },
-  {
-    name: 'Large',
-    value: 'Large'
-  }
-]
 
 export interface AssistantChatProps {
   projectPublicId: ProjectPublicId
@@ -82,18 +67,26 @@ export function AssistantChat({
   projectChat,
   initialMessageIds
 }: AssistantChatProps) {
-  const chatMessages = useProjectStore((state) => state.assistantSlice.chatMessages)
-  const fetchProjectChatMessage = useProjectStore((state) => state.assistantSlice.fetchProjectChatMessage)
-  const loadProjectChatTitle = useProjectStore((state) => state.assistantSlice.loadProjectChatTitle)
-  const reloadProjectCommit = useProjectStore((state) => state.extractorSlice.reloadProjectCommit)
-  const pendingInitialMessage = useProjectStore(
+  const chatMessages = useStore((state) => state.assistantSlice.chatMessages)
+  const fetchProjectChatMessage = useStore((state) => state.assistantSlice.fetchProjectChatMessage)
+  const loadProjectChatTitle = useStore((state) => state.assistantSlice.loadProjectChatTitle)
+  const reloadProjectCommit = useStore((state) => state.extractorSlice.reloadProjectCommit)
+  const pendingInitialMessage = useStore(
     (state) => state.assistantSlice.pendingInitialMessage[projectPublicId]
   )
 
-  const editorSliceActiveTab = useProjectStore((state) => state.editorSlice.activeTab)
+  const editorSliceActiveTab = useStore((state) => state.editorSlice.activeTab)
+
+  // Models from store with auto-fetch
+  const models = useStore((state) => state.modelsSlice.models)
+  const fetchModels = useStore((state) => state.modelsSlice.fetchModels)
+
+  // Chat-specific model selection
+  const chatModel = useStore((state) => state.assistantSlice.chatModels[selectedChat])
+  const setChatModel = useStore((state) => state.assistantSlice.setChatModel)
+  const model = chatModel ?? 'large'
 
   const [input, setInput] = useState('')
-  const [model, setModel] = useState<string>(models[2].value)
   // const [webSearch, setWebSearch] = useState(false)
 
   const initialMessages = initialMessageIds.map((messageId) => {
@@ -103,6 +96,11 @@ export function AssistantChat({
     }
     return convertChatMessageToUIMessage(message)
   })
+
+  // Auto-fetch models on component mount
+  React.useEffect(() => {
+    nowait(fetchModels())
+  }, [fetchModels])
 
   const chatEndpoint = api.assistant.extractorChat.$url().pathname
 
@@ -458,7 +456,7 @@ export function AssistantChat({
               </PromptInputButton> */}
               <PromptInputModelSelect
                 onValueChange={(value) => {
-                  setModel(value)
+                  setChatModel(selectedChat, value)
                 }}
                 value={model}
               >
@@ -466,12 +464,12 @@ export function AssistantChat({
                   <PromptInputModelSelectValue />
                 </PromptInputModelSelectTrigger>
                 <PromptInputModelSelectContent>
-                  {models.map((model_) => (
+                  {models.map((m) => (
                     <PromptInputModelSelectItem
-                      key={model_.value}
-                      value={model_.value}
+                      key={m.value}
+                      value={m.value}
                     >
-                      {model_.name}
+                      {m.name}
                     </PromptInputModelSelectItem>
                   ))}
                 </PromptInputModelSelectContent>

@@ -1,6 +1,6 @@
 import type {ProjectPublicId} from '@/db/schema'
 import type {ProjectChatPublicId} from '@/db/schema'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import debug from 'debug'
 
 const log = debug('app:assistant-pending-initial-message-await')
@@ -10,7 +10,7 @@ export async function assistantPendingInitialMessageAwait(
   selectedChat: ProjectChatPublicId,
   callback: () => void
 ): Promise<void> {
-  const store = useProjectStore.getState()
+  const store = useStore.getState()
 
   // Check if there's a pending message for this project
   const pendingInitialMessage = store.assistantSlice.pendingInitialMessage[projectPublicId]
@@ -24,7 +24,7 @@ export async function assistantPendingInitialMessageAwait(
   // Set up subscription and clear in one promise
   return new Promise<void>((resolve) => {
     // Subscribe BEFORE clearing to ensure we catch the state transition
-    const unsubscribe = useProjectStore.subscribe(
+    const unsubscribe = useStore.subscribe(
       (state) => state.assistantSlice.pendingInitialMessage[projectPublicId],
       (newPending, prevPending) => {
         log('assistant message await state change prev:', prevPending, newPending)

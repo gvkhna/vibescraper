@@ -4,7 +4,7 @@ import * as React from 'react'
 import {Button} from '@/components/ui/button'
 import {BookOpen, Copy} from 'lucide-react'
 import {EmptyStateData} from '@/components/empty-state-data'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import {nowait} from '@/lib/async-utils'
 import {TextViewer} from '@/partials/monaco-editor/text-viewer'
 
@@ -12,7 +12,7 @@ export function TabReadabilityHtml() {
   const [copied, setCopied] = React.useState(false)
 
   // Get cached readability result from project store
-  const cachedData = useProjectStore((state) => state.extractorSlice.projectCommit?.cachedData)
+  const cachedData = useStore((state) => state.extractorSlice.projectCommit?.cachedData)
   const readabilityResult = cachedData?.readabilityResult
   const readabilityContent = readabilityResult?.content ?? null
 

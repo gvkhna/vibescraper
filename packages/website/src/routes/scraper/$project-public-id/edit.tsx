@@ -2,7 +2,7 @@ import {createFileRoute, useNavigate} from '@tanstack/react-router'
 import {ExtractorPage} from '@/partials/extractor/extractor-page'
 import {z} from 'zod'
 import {useEffect} from 'react'
-import {useProjectStore} from '@/store/use-project-store'
+import {useStore} from '@/store/use-store'
 import type {ProjectChatPublicId, ProjectPublicId} from '@/db/schema'
 import {ProjectDialogs} from '@/partials/dialogs/project-dialogs'
 import {nowait} from '@/lib/async-utils'
@@ -22,7 +22,7 @@ function Page() {
   const {chat: chatId} = Route.useSearch()
   const navigate = useNavigate({from: '/scraper/$project-public-id/edit'})
 
-  const loadProject = useProjectStore((state) => state.projectSlice.loadProject)
+  const loadProject = useStore((state) => state.projectSlice.loadProject)
 
   useEffect(() => {
     // If there was a chatId in the URL, clear it immediately after loading

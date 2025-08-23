@@ -1,4 +1,4 @@
-import type {StateSlice} from './use-project-store'
+import type {StateSlice} from './use-store'
 import type {
   ProjectChatDTOType,
   ProjectChatMessageDTOType,
@@ -64,6 +64,10 @@ export interface AssistantSlice {
 
   activeProjectVersionBlocks: Record<ProjectChatBlockIdempotencyKey, ChatFileVersionBlockType | undefined>
 
+  // Model selection per chat
+  chatModels: Record<ProjectChatPublicId, string | undefined>
+  setChatModel: (chatId: ProjectChatPublicId, model: string) => void
+
   // projectComponentVersionBlocks: Record<
   //   ProjectChatMessagePublicId,
   //   Record<ProjectComponentIdempotencyKey, ProjectVersionBlock | undefined> | undefined
@@ -120,6 +124,7 @@ export const createAssistantSlice: StateSlice<AssistantSlice> = (set, get) =>
     projectChatMessagesState: {},
     projectComponentIdempotencyKeys: {},
     activeProjectVersionBlocks: {},
+    chatModels: {},
     updateActiveProjectVersionBlockStatus: async (chatId, idemKey, status) => {
       set(
         (draft) => {
@@ -664,6 +669,15 @@ export const createAssistantSlice: StateSlice<AssistantSlice> = (set, get) =>
         },
         true,
         'assistant/clearPendingInitialMessage'
+      )
+    },
+    setChatModel(chatId, model) {
+      set(
+        (draft) => {
+          draft.assistantSlice.chatModels[chatId] = model
+        },
+        true,
+        'assistant/setChatModel'
       )
     }
   }) as AssistantSlice

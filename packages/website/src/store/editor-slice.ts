@@ -1,5 +1,5 @@
 // import type {ProjectFileRef} from './project-slice' // TODO: ProjectFileRef doesn't exist
-import type {StateSlice} from './use-project-store'
+import type {StateSlice} from './use-store'
 import type {ProjectPublicId} from '@/db/schema'
 import type {LoadingState} from './async-entity-state'
 import debug from 'debug'

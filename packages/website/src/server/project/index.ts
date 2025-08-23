@@ -203,11 +203,25 @@ const app = new Hono<HonoServer>()
       // Check if URL is changing
       const urlIsChanging = projectCommit.currentEditorUrl !== currentEditorUrl
 
-      // Update the currentEditorUrl and clear cache if URL changed
+      // Update recent URLs if URL is changing and valid
+      let updatedRecentUrls = projectCommit.recentUrls
+      if (urlIsChanging && currentEditorUrl.trim()) {
+        const currentRecentUrls = projectCommit.recentUrls.urls
+        const url = currentEditorUrl.trim()
+        // Remove URL if it exists, add to beginning, deduplicate, limit to 100
+        const filtered = currentRecentUrls.filter((u) => u !== url)
+        const deduped = [...new Set([url, ...filtered])]
+        updatedRecentUrls = {
+          urls: deduped.slice(0, 100)
+        }
+      }
+
+      // Update the currentEditorUrl, recent URLs, and clear cache if URL changed
       const [updatedCommit] = await db
         .update(schema.projectCommit)
         .set({
           currentEditorUrl: currentEditorUrl,
+          recentUrls: updatedRecentUrls,
           // Clear cache if URL is different
           ...(urlIsChanging
             ? {
@@ -272,6 +286,60 @@ const app = new Hono<HonoServer>()
         .set({
           cachedData: null,
           cachedAt: null
+        })
+        .where(sqlEq(schema.projectCommit.id, projectCommit.id))
+
+      return c.json(
+        {
+          result: {
+            success: true
+          }
+        },
+        HttpStatusCode.Ok
+      )
+    }
+  )
+
+  .post(
+    '/clearRecentUrls',
+    validator('json', (value) => {
+      return value as {
+        projectCommitPublicId: schema.ProjectCommitPublicId
+      }
+    }),
+    async (c) => {
+      const {projectCommitPublicId} = c.req.valid('json')
+      const user = c.get('user')
+      const db = c.get('db')
+
+      // Find the project commit
+      const projectCommit = await db.query.projectCommit.findFirst({
+        where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
+      })
+
+      if (!projectCommit) {
+        return c.json({message: 'Project commit not found'}, HttpStatusCode.NotFound)
+      }
+
+      // Find the related project
+      const project = await db.query.project.findFirst({
+        where: (table, {eq}) => eq(table.id, projectCommit.projectId)
+      })
+
+      if (!project) {
+        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+      }
+
+      // Check write permission
+      if (await userCannotProjectAction(db, 'update', user, project.subjectPolicyId)) {
+        return c.json({message: 'Access unauthorized'}, HttpStatusCode.Forbidden)
+      }
+
+      // Clear the recent URLs
+      await db
+        .update(schema.projectCommit)
+        .set({
+          recentUrls: {urls: []}
         })
         .where(sqlEq(schema.projectCommit.id, projectCommit.id))
 

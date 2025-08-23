@@ -42,6 +42,8 @@ export default [
       },
       plugins: {},
       rules: {
+        // '@typescript-eslint/no-deprecated': 'off',
+
         'template-curly-spacing': ['error', 'never'],
         'no-template-curly-in-string': 'error',
 

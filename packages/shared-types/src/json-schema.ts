@@ -1,5 +1,6 @@
 import Ajv, {type ErrorObject} from 'ajv'
 import addFormats from 'ajv-formats'
+import addErrors from 'ajv-errors'
 import type {JsonObject, JsonValue} from 'type-fest'
 
 export interface ValidationResult {
@@ -11,14 +12,17 @@ export interface ValidationResult {
  * Creates a new AJV instance with consistent configuration
  * @returns Configured AJV instance
  */
-function createAjvInstance(): Ajv {
+function createAjvInstance(refSchemas?: JsonObject[]): Ajv {
   const ajv = new Ajv({
     allErrors: true,
     strict: false,
-    validateSchema: true
+    validateSchema: true,
+    $data: true, // Enable $data references for cross-field validation
+    schemas: refSchemas ?? []
   })
 
   addFormats(ajv)
+  addErrors(ajv)
   return ajv
 }
 
@@ -79,9 +83,13 @@ export function compileJsonSchema(schema: JsonObject): ValidationResult {
  * @param data - The data to validate
  * @returns Validation result with error message if invalid
  */
-export function validateDataAgainstSchema(schema: JsonObject, data: JsonValue): ValidationResult {
+export function validateDataAgainstSchema(
+  schema: JsonObject,
+  data: JsonValue,
+  refSchemas?: JsonObject[]
+): ValidationResult {
   try {
-    const ajv = createAjvInstance()
+    const ajv = createAjvInstance(refSchemas)
 
     // Compile the schema
     const validate = ajv.compile(schema)

@@ -276,12 +276,17 @@ export function TopBar({
             align='end'
             className='border-white/10 bg-[#1a1a1b]'
           >
-            <DropdownMenuItem className='text-white/90 hover:bg-white/10 focus:bg-white/10'>
+            <DropdownMenuItem
+              className='text-white/90 hover:bg-white/10 focus:bg-white/10'
+              onClick={() => {
+                nowait(navigate({to: '/settings'}))
+              }}
+            >
               Settings
             </DropdownMenuItem>
-            <DropdownMenuItem className='text-white/90 hover:bg-white/10 focus:bg-white/10'>
+            {/* <DropdownMenuItem className='text-white/90 hover:bg-white/10 focus:bg-white/10'>
               Billing
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuSeparator className='bg-white/10' />
             <DropdownMenuItem className='text-red-400 hover:bg-white/10 focus:bg-white/10'>
               Logout

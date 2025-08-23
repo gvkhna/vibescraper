@@ -118,7 +118,7 @@ async function runExtraction(
     log('Executing script in sandbox, input size:', cleanedHtml.length, 'chars')
     // const inputJson = JSON.stringify({html: cleanedHtml, url})
 
-    const executionResult = await sandbox.executeFunctionBuffered(script, cleanedHtml, false)
+    const executionResult = await sandbox.executeFunctionBuffered(script, [cleanedHtml], false)
     const {messages} = executionResult
 
     log(

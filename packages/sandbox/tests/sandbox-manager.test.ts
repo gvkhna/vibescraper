@@ -35,9 +35,8 @@ describe('SandboxManager', () => {
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
       // console.log('[TEST]', ...args)
     })
-
-    // Give it a moment to initialize
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    // Wait for sandbox to be ready before running tests
+    await sandboxManager.waitForReady()
   })
 
   beforeEach(() => {

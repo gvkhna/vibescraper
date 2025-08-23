@@ -19,6 +19,7 @@ export default [
       'packages/**/dist/**/*',
       'tmp/**/*',
       '**/*tmp*',
+      '**/*test*',
 
       // Auto-generated
       '**/_*',

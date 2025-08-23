@@ -6,7 +6,6 @@ import {db} from '../db/db'
 import {dirname as pathDirname} from 'node:path'
 import {nowait} from '@/lib/async-utils'
 import debug from 'debug'
-import process from 'node:process'
 import {PRIVATE_VARS} from '@/vars.private'
 import type {Runner} from 'graphile-worker'
 import {addJob, startWorker} from '@/task-queue/graphile.config'
@@ -27,9 +26,9 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = pathDirname(__filename)
 const __cwd = globalThis.process.cwd()
 
-const sandboxWorker = debug('app:sandbox:worker')
+const sandboxWorkerLogger = debug('app:sandbox:worker')
 
-const sandboxManager = new SandboxManager(PRIVATE_VARS.TMP_DIR, sandboxWorker)
+const sandboxManager = new SandboxManager(PRIVATE_VARS.TMP_DIR, sandboxWorkerLogger, PUBLIC_VARS.NODE_ENV)
 
 export function selectTableColumns<T extends object>(table: T, columnNames: (keyof T)[]) {
   return columnNames.reduce<Partial<T>>((acc, columnName) => {

@@ -26,7 +26,7 @@ export interface NewJobMessage {
   jobId: string
   code: string
   testing: boolean
-  functionInput?: string // If provided, execute code as function with this input
+  functionInput?: unknown[] // If provided, execute code as function with these inputs as arguments
 }
 
 export interface JobStatusMessage {
@@ -134,7 +134,7 @@ export function isMessage(obj: unknown): obj is SandboxMessage {
       return (
         typeof data.code === 'string' &&
         typeof data.testing === 'boolean' &&
-        (!data.functionInput || typeof data.functionInput === 'string')
+        (!data.functionInput || Array.isArray(data.functionInput))
       )
 
     case 'job-status':
@@ -349,9 +349,9 @@ async function handleNewJob({jobId, code, testing, functionInput}: NewJobMessage
 
         // Check if module has a default export that's a function
         if (typeof module.default === 'function') {
-          // Call the function with the input
-          const input = ${JSON.stringify(functionInput)};
-          const result = await module.default(input);
+          // Call the function with the inputs spread as arguments
+          const inputs = ${JSON.stringify(functionInput)};
+          const result = await module.default(...inputs);
 
           // Send the result back
           globalThis.__SEND_RESULT__(result)
@@ -600,7 +600,7 @@ function sendMessage(message: SandboxMessage) {
 }
 
 // Helper functions for large payload handling
-async function readLargePayload(filePath: string): Promise<string> {
+async function readLargePayload(filePath: string): Promise<unknown[]> {
   const ipcDir = globalThis.Deno.env.get('IPC_DIR')
   if (!ipcDir) {
     console.log('[worker] ERROR: IPC_DIR environment variable not set')
@@ -613,9 +613,12 @@ async function readLargePayload(filePath: string): Promise<string> {
   try {
     const content = await fs.readFile(fullPath, 'utf8')
     console.log('[worker] Successfully read file, content length:', content.length)
+    // Parse the JSON to get the array of inputs
+    const inputArray = JSON.parse(content) as unknown[]
+    console.log('[worker] Parsed input array, length:', inputArray.length)
     // await fs.unlink(fullPath) // Cleanup after reading
     // console.log('[worker] Cleaned up file:', fullPath)
-    return content
+    return inputArray
   } catch (error) {
     console.log('[worker] Error reading large payload file:', error)
     throw error

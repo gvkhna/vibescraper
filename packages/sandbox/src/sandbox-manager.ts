@@ -119,6 +119,7 @@ export class SandboxManager extends EventTarget {
   private activeJobs = new Set<string>()
   private log: Logger
   private denoPath: string | null = null
+  private shouldCleanup: boolean
 
   // IPC constants
   private readonly LARGE_PAYLOAD_THRESHOLD = 8 * 1024 // 8KB
@@ -126,12 +127,18 @@ export class SandboxManager extends EventTarget {
   constructor(
     tmpDir_: string,
     logger?: Logger,
+    // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+    nodeEnv: string = 'development',
     private readonly sandboxWorkerScriptRaw: string = SandboxWorkerScriptRaw,
     private readonly workerRuntimeSetupRaw: string = WorkerRuntimeSetupRaw,
     private readonly workerRuntimeTestingSetupRaw: string = WorkerRuntimeTestingSetupRaw,
     private readonly workerRuntimeNoTestsSetupRaw: string = WorkerRuntimeNoTestsSetupRaw
   ) {
     super()
+
+    // Set cleanup flag based on environment
+    this.shouldCleanup = nodeEnv !== 'development'
+
     // Default to console.log if no logger provided
     this.log =
       logger ??
@@ -139,6 +146,8 @@ export class SandboxManager extends EventTarget {
         // eslint-disable-next-line no-console
         console.log('[SandboxManager]', ...args)
       })
+
+    this.log(`Initializing with NODE_ENV=${nodeEnv}, cleanup=${this.shouldCleanup ? 'enabled' : 'disabled'}`)
     // this.startSandbox()
 
     this.tmpDir = path.resolve(tmpDir_, 'sandbox')
@@ -166,6 +175,23 @@ export class SandboxManager extends EventTarget {
 
     nowait(this.startSandbox(), this.log)
     // this.setupCleanupInterval()
+  }
+
+  // Public method to ensure sandbox is ready
+  public async waitForReady(): Promise<void> {
+    // Wait up to 10 seconds for child process to be ready
+    const maxWaitTime = 10000
+    const startTime = Date.now()
+
+    while (!this.child?.stdin) {
+      if (Date.now() - startTime > maxWaitTime) {
+        throw new Error('Sandbox failed to start within 10 seconds')
+      }
+      this.log('Waiting for sandbox child process to be ready...')
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+
+    this.log('Sandbox is ready')
   }
 
   private checkDenoAvailability(): void {
@@ -358,14 +384,23 @@ export class SandboxManager extends EventTarget {
     const text = data
     const lines = text.split('\n')
 
+    this.log(`handleSandboxOutput: received ${lines.length} lines, total length: ${text.length}`)
+
     for (const line of lines) {
+      if (line.trim() === '') {
+        continue
+      }
+
       try {
         const message = decodeMessage(line)
         if (!message) {
+          if (line.trim()) {
+            this.log('handleSandboxOutput: failed to decode line:', line.substring(0, 100))
+          }
           continue
         }
 
-        this.log('message received', message)
+        this.log('handleSandboxOutput: decoded message type:', message.type, 'jobId:', message.jobId || 'N/A')
 
         // Existing message handling logic...
         switch (message.type) {
@@ -408,21 +443,27 @@ export class SandboxManager extends EventTarget {
             const largeResult = this.pendingLargeResults.get(msg.jobId)
 
             if (largeResult) {
-              // Read the large result from file and enhance the message
+              // For large results, DON'T dispatch the empty result
+              // Instead, read the file and dispatch the enhanced result
+              this.log('Large result detected for job:', msg.jobId, 'Reading from:', largeResult.filePath)
               this.readLargeResult(largeResult.filePath)
                 .then((actualResult) => {
+                  this.log('Successfully read large result, length:', actualResult.length)
                   const enhancedMessage: JobResultMessage = {
                     ...msg,
                     result: actualResult
                   }
                   this.pendingLargeResults.delete(msg.jobId) // Cleanup
+                  this.log('Dispatching enhanced job-result with large payload')
                   this.addJobResult(enhancedMessage)
                 })
                 .catch((e: unknown) => {
                   this.log('Error reading large result file:', e)
                   this.pendingLargeResults.delete(msg.jobId) // Cleanup on error
-                  this.addJobResult(msg) // Use original message with empty result
+                  // On error, dispatch empty result so generator doesn't hang
+                  this.addJobResult(msg)
                 })
+              // DON'T dispatch anything here - wait for async read
             } else {
               // Normal small result processing
               this.addJobResult(msg)
@@ -445,7 +486,14 @@ export class SandboxManager extends EventTarget {
   private async readLargeResult(filePath: string): Promise<string> {
     const fullPath = path.join(this.ipcDir, filePath)
     const content = await fs.readFile(fullPath, 'utf8')
-    await fs.unlink(fullPath) // Cleanup after reading
+
+    // Clean up the file after reading if in production mode
+    if (this.shouldCleanup) {
+      await fs.unlink(fullPath).catch(() => {
+        this.log(`[cleanup] Failed to remove large result file: ${filePath}`)
+      })
+    }
+
     return content
   }
 
@@ -513,15 +561,23 @@ export class SandboxManager extends EventTarget {
 
   // Add cleanup method
   private async cleanupJob(jobId: string) {
-    const jobDir = path.join(this.tmpDir, jobId)
+    if (!this.shouldCleanup) {
+      this.log(`[cleanup] Skipping cleanup for job ${jobId} (development mode)`)
+      return
+    }
+
+    const jobDir = path.join(this.sandboxDir, jobId)
     try {
+      // Clean up the job directory
       await fs.rm(jobDir, {recursive: true, force: true})
 
-      // Also cleanup any pending large payload files for this job
-      // this.pendingLargeResults.delete(jobId)
-      // await this.cleanupIpcFilesForJob(jobId)
+      // Clean up any IPC files for this job (input/output files)
+      await this.cleanupIpcFilesForJob(jobId)
 
+      // Clean up in-memory references
+      this.pendingLargeResults.delete(jobId)
       this.jobs.delete(jobId)
+
       this.log(`[cleanup] Cleared job ${jobId}`)
     } catch (err) {
       this.log(`[cleanup] Failed for ${jobId}:`, err)
@@ -530,6 +586,10 @@ export class SandboxManager extends EventTarget {
 
   // Cleanup IPC files for a specific job
   private async cleanupIpcFilesForJob(jobId: string) {
+    if (!this.shouldCleanup) {
+      return
+    }
+
     try {
       const files = await fs.readdir(this.ipcDir)
       const jobFiles = files.filter((f) => f.includes(`.${jobId}.`))
@@ -546,6 +606,11 @@ export class SandboxManager extends EventTarget {
 
   // Cleanup all orphaned IPC files (called on sandbox restart)
   private async cleanupOrphanedIpcFiles() {
+    if (!this.shouldCleanup) {
+      this.log('[cleanup] Skipping orphaned IPC file cleanup (development mode)')
+      return
+    }
+
     try {
       const files = await fs.readdir(this.ipcDir)
       for (const file of files) {
@@ -609,7 +674,7 @@ export class SandboxManager extends EventTarget {
   async *executeCode(
     code: string,
     testing = false,
-    functionInput?: string
+    functionInput?: unknown[]
   ): AsyncGenerator<CodeExecutionMessage, void, void> {
     const jobId = simpleId()
     const job: SandboxWorkerJob = {
@@ -628,17 +693,22 @@ export class SandboxManager extends EventTarget {
     // Check if we need to use file-based IPC for large inputs
     let messageToSend: NewJobMessage | LargePayloadMessage
 
-    if (functionInput && functionInput.length >= this.LARGE_PAYLOAD_THRESHOLD) {
+    // Calculate size of stringified input for threshold check
+    const stringifiedInput = functionInput ? JSON.stringify(functionInput) : null
+    const inputSize = stringifiedInput ? stringifiedInput.length : 0
+
+    if (stringifiedInput && inputSize >= this.LARGE_PAYLOAD_THRESHOLD) {
       // Large input - write to file and send wrapper message
       const timestamp = Date.now()
       const fileName = `${timestamp}.${jobId}.input.json`
       const filePath = path.join(this.ipcDir, fileName)
 
-      this.log('Large input detected, writing to file:', fileName, 'size:', functionInput.length)
+      this.log('Large input detected, writing to file:', fileName, 'size:', inputSize)
 
       // Ensure IPC directory exists before writing
       await mkdir(this.ipcDir, {recursive: true})
-      await writeFile(filePath, functionInput, 'utf8')
+      // Write the JSON array directly to the file
+      await writeFile(filePath, stringifiedInput, 'utf8')
 
       // Send wrapper message via stdin
       messageToSend = {
@@ -660,12 +730,22 @@ export class SandboxManager extends EventTarget {
 
       // First send the wrapper to indicate large payload coming
       const wrapperEncoded = encodeMessage(messageToSend)
-      this.child?.stdin?.write(wrapperEncoded)
+      this.log(
+        'Sending large payload wrapper, child exists:',
+        !!this.child,
+        'stdin exists:',
+        !!this.child?.stdin
+      )
+      if (!this.child?.stdin) {
+        this.log('ERROR: Cannot send message - child process or stdin not available')
+        throw new Error('Sandbox child process not ready')
+      }
+      this.child.stdin.write(wrapperEncoded)
 
       // Then send the job message
       const jobEncoded = encodeMessage(jobMessage)
       this.log('Large payload: sent wrapper and job messages')
-      this.child?.stdin?.write(jobEncoded)
+      this.child.stdin.write(jobEncoded)
     } else {
       // Small input - use existing direct approach
       const startMessage: NewJobMessage = {
@@ -677,8 +757,20 @@ export class SandboxManager extends EventTarget {
       }
 
       const encodedMessage = encodeMessage(startMessage)
-      this.log('Small payload: sent direct message, size:', functionInput?.length ?? 0)
-      this.child?.stdin?.write(encodedMessage)
+      this.log(
+        'Small payload: sending direct message, size:',
+        inputSize,
+        'child exists:',
+        !!this.child,
+        'stdin exists:',
+        !!this.child?.stdin
+      )
+      if (!this.child?.stdin) {
+        this.log('ERROR: Cannot send message - child process or stdin not available')
+        throw new Error('Sandbox child process not ready')
+      }
+      this.child.stdin.write(encodedMessage)
+      this.log('Small payload: message sent successfully')
     }
 
     const abortController = new AbortController()
@@ -753,6 +845,7 @@ export class SandboxManager extends EventTarget {
             break
           }
           case 'job-result': {
+            this.log('Listener received job-result, result length:', msg.result.length || 0)
             const resultNotification: CodeExecutionResultMessage = {
               codeExecutionId: jobId,
               messageId: simpleId(),
@@ -828,6 +921,9 @@ export class SandboxManager extends EventTarget {
 
     abortController.signal.addEventListener('abort', cleanup)
 
+    // Track if we've seen an exception (which means no result will come)
+    let hasSeenException = false
+
     try {
       while (true) {
         while (queue.length > 0) {
@@ -835,9 +931,34 @@ export class SandboxManager extends EventTarget {
           this.log('yielding msg', msg)
           yield msg
 
-          if (msg.type === 'status' && ['completed', 'failed', 'timeout'].includes(msg.status)) {
-            this.log('msg received completed or complete')
-            return
+          // Track exceptions
+          if (msg.type === 'exception') {
+            hasSeenException = true
+          }
+
+          // Exit condition depends on whether we're executing a function or just code
+          if (functionInput) {
+            // For function execution, exit only when we get the result
+            // The completed status will come before the result, so we just wait for result
+            if (msg.type === 'result' && msg.result) {
+              this.log('Function execution complete with result')
+              return
+            }
+            // Also exit on completed status if we've seen an exception (no result will come)
+            // Or on failed/timeout status
+            if (msg.type === 'status' && ['completed', 'failed', 'timeout'].includes(msg.status)) {
+              if (hasSeenException || msg.status !== 'completed') {
+                this.log('Function execution ended:', msg.status, 'hasException:', hasSeenException)
+                return
+              }
+              // If completed but no exception, keep waiting for result
+            }
+          } else {
+            // For regular code execution, exit on completion status
+            if (msg.type === 'status' && ['completed', 'failed', 'timeout'].includes(msg.status)) {
+              this.log('Code execution complete')
+              return
+            }
           }
         }
 
@@ -864,7 +985,7 @@ export class SandboxManager extends EventTarget {
 
   async executeFunctionBuffered(
     code: string,
-    input: string,
+    input: unknown[],
     testing = false
   ): Promise<{result?: unknown; messages: CodeExecutionMessage[]}> {
     const all: CodeExecutionMessage[] = []

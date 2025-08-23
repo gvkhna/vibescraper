@@ -31,9 +31,8 @@ describe('SandboxManager Import Transformation Tests', () => {
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
       console.log('[TRANSFORM TEST]', ...args)
     })
-
-    // Give it time to initialize
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    // Wait for sandbox to be ready before running tests
+    await sandboxManager.waitForReady()
   })
 
   afterAll(async () => {

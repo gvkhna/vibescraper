@@ -31,9 +31,8 @@ describe('SandboxManager Function Execution Test', () => {
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
       console.log('[FUNCTION TEST]', ...args)
     })
-
-    // Give it time to initialize
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    // Wait for sandbox to be ready before running tests
+    await sandboxManager.waitForReady()
   })
 
   afterAll(async () => {
@@ -91,7 +90,7 @@ describe('SandboxManager Function Execution Test', () => {
       url: 'https://test.com/page'
     }
 
-    const executionResult = await sandboxManager?.executeFunctionBuffered(code, JSON.stringify(inputData), false)
+    const executionResult = await sandboxManager?.executeFunctionBuffered(code, [JSON.stringify(inputData)], false)
 
     expect(executionResult).toBeDefined()
     expect('result' in executionResult!).toBe(true)
@@ -131,7 +130,7 @@ describe('SandboxManager Function Execution Test', () => {
     `
 
     const inputData = {returnNull: true}
-    const executionResult = await sandboxManager?.executeFunctionBuffered(code, JSON.stringify(inputData), false)
+    const executionResult = await sandboxManager?.executeFunctionBuffered(code, [JSON.stringify(inputData)], false)
 
     expect(executionResult).toBeDefined()
     expect('result' in executionResult!).toBe(true)
@@ -166,7 +165,7 @@ describe('SandboxManager Function Execution Test', () => {
     `
 
     const inputData = {test: 'complex object test'}
-    const executionResult = await sandboxManager?.executeFunctionBuffered(code, JSON.stringify(inputData), false)
+    const executionResult = await sandboxManager?.executeFunctionBuffered(code, [JSON.stringify(inputData)], false)
 
     expect(executionResult).toBeDefined()
     expect('result' in executionResult!).toBe(true)

@@ -122,7 +122,7 @@ export class SandboxManager extends EventTarget {
   private shouldCleanup: boolean
 
   // IPC constants
-  private readonly LARGE_PAYLOAD_THRESHOLD = 8 * 1024 // 8KB
+  private readonly LARGE_PAYLOAD_THRESHOLD = 256
 
   constructor(
     tmpDir_: string,

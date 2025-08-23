@@ -187,7 +187,7 @@ export function isMessage(obj: unknown): obj is SandboxMessage {
 const __cwd = globalThis.process.cwd()
 
 const JOB_TIMEOUT_MS = 30_000 // 30 seconds timeout for sandbox execution
-const LARGE_PAYLOAD_THRESHOLD = 8 * 1024 // 8KB - must match sandbox manager
+const LARGE_PAYLOAD_THRESHOLD = 256 // 512 bytes - must match sandbox manager
 // const SANDBOX_DIR = path.join(__cwd, 'sandbox-tmp')
 
 // globalThis.process.on('unhandledRejection', (err) => {

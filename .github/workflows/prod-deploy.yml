@@ -72,7 +72,6 @@ jobs:
           NODE_ENV: ${{ vars.NODE_ENV }}
           TMP_DIR: ${{ vars.TMP_DIR }}
         run: |
-          printenv | sort
           bun run build
           bun run deploy:website
         working-directory: ${{ env.BUILD_PATH }}
@@ -188,39 +187,67 @@ jobs:
     needs: build_publish
     environment: production
     if: success()
+    env:
+      DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+      DOKPLOY_APPLICATION_ID: ${{ secrets.DOKPLOY_APPLICATION_ID }}
+      DOKPLOY_API_HOSTNAME: ${{ secrets.DOKPLOY_API_HOSTNAME }}
+      PUBLIC_HOSTNAME: ${{ vars.PUBLIC_HOSTNAME }}
     steps:
       - name: Trigger redeploy via Dokploy API
-        if: ${{ secrets.DOKPLOY_API_HOSTNAME != '' }}
+        if: ${{ env.DOKPLOY_API_HOSTNAME != '' }}
         run: |
-          echo "Triggering container redeploy via Dokploy..."
-          curl --fail -sS -X POST \
+          # Mask sensitive values
+          echo "::add-mask::$DOKPLOY_API_HOSTNAME"
+          echo "::add-mask::$DOKPLOY_APPLICATION_ID"
+          echo "::add-mask::$DOKPLOY_API_KEY"
+          
+          echo "Triggering container redeploy..."
+          
+          # Use set +e to prevent immediate exit on error
+          set +e
+          
+          # Capture curl exit code without showing any output or errors
+          curl --fail --silent -X POST \
             -H 'accept: application/json' \
             -H 'Content-Type: application/json' \
             -H "x-api-key: $DOKPLOY_API_KEY" \
             -d '{"applicationId": "'"$DOKPLOY_APPLICATION_ID"'"}' \
-            "$DOKPLOY_API_HOSTNAME/application.redeploy"
-        env:
-          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
-          DOKPLOY_APPLICATION_ID: ${{ secrets.DOKPLOY_APPLICATION_ID }}
-          DOKPLOY_API_HOSTNAME: ${{ secrets.DOKPLOY_API_HOSTNAME }}
+            "$DOKPLOY_API_HOSTNAME/application.redeploy" \
+            > /dev/null 2>&1
+          
+          CURL_EXIT_CODE=$?
+          set -e
+          
+          if [ $CURL_EXIT_CODE -eq 0 ]; then
+            echo "✓ Deployment triggered successfully"
+          else
+            echo "✗ Failed to trigger deployment (error code: $CURL_EXIT_CODE)"
+            # Don't show curl error details, just the exit code
+            exit 1
+          fi
 
       - name: Wait for container health
-        if: ${{ secrets.DOKPLOY_API_HOSTNAME != '' }}
+        if: ${{ env.DOKPLOY_API_HOSTNAME != '' }}
         run: |
-          echo "Waiting for container to become healthy..."
+          echo "Waiting for deployment to complete..."
           timeout=300  # maximum wait time in seconds
           interval=10  # interval between health checks
           elapsed=0
+          
           while [ $elapsed -lt $timeout ]; do
-            if curl -fsS "${PUBLIC_HOSTNAME}/health" >/dev/null; then
-              echo "Container is healthy!"
+            if curl -fsS "${PUBLIC_HOSTNAME}/health" >/dev/null 2>&1; then
+              echo "✓ Deployment completed successfully"
               exit 0
             fi
-            echo "Still waiting for container health..."
+            
+            # Show progress without revealing details
+            if [ $((elapsed % 30)) -eq 0 ] && [ $elapsed -gt 0 ]; then
+              echo "  Still waiting... (${elapsed}s elapsed)"
+            fi
+            
             sleep $interval
             elapsed=$((elapsed + interval))
           done
-          echo "Container did not become healthy within ${timeout} seconds."
+          
+          echo "✗ Deployment health check timed out after ${timeout} seconds"
           exit 1
-        env:
-          PUBLIC_HOSTNAME: ${{ vars.PUBLIC_HOSTNAME }}

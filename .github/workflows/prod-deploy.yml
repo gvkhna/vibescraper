@@ -22,6 +22,7 @@ jobs:
   build_publish:
     name: Build, Deploy & Migrate
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -65,11 +66,11 @@ jobs:
 
       - name: Build website with Turbo
         env:
-          DEBUG_COLORS: ${{ env.DEBUG_COLORS }}
-          DEBUG_HIDE_DATE: ${{ env.DEBUG_HIDE_DATE }}
-          DEBUG: ${{ env.DEBUG }}
-          NODE_ENV: ${{ env.NODE_ENV }}
-          TMP_DIR: ${{ env.TMP_DIR }}
+          DEBUG_COLORS: ${{ vars.DEBUG_COLORS }}
+          DEBUG_HIDE_DATE: ${{ vars.DEBUG_HIDE_DATE }}
+          DEBUG: ${{ vars.DEBUG }}
+          NODE_ENV: ${{ vars.NODE_ENV }}
+          TMP_DIR: ${{ vars.TMP_DIR }}
         run: |
           printenv | sort
           bun run build
@@ -182,7 +183,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Trigger redeploy via Dokploy API
-        if: env.DOKPLOY_API_HOSTNAME != ''
+        if: secrets.DOKPLOY_API_HOSTNAME != ''
         run: |
           echo "Triggering container redeploy via Dokploy..."
           curl --fail -sS -X POST \
@@ -192,12 +193,12 @@ jobs:
             -d '{"applicationId": "'"$DOKPLOY_APPLICATION_ID"'"}' \
             "$DOKPLOY_API_HOSTNAME/application.redeploy"
         env:
-          DOKPLOY_API_KEY: ${{ env.DOKPLOY_API_KEY }}
-          DOKPLOY_APPLICATION_ID: ${{ env.DOKPLOY_APPLICATION_ID }}
-          DOKPLOY_API_HOSTNAME: ${{ env.DOKPLOY_API_HOSTNAME }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_APPLICATION_ID: ${{ secrets.DOKPLOY_APPLICATION_ID }}
+          DOKPLOY_API_HOSTNAME: ${{ secrets.DOKPLOY_API_HOSTNAME }}
 
       - name: Wait for container health
-        if: env.DOKPLOY_API_HOSTNAME != ''
+        if: secrets.DOKPLOY_API_HOSTNAME != ''
         run: |
           echo "Waiting for container to become healthy..."
           timeout=300  # maximum wait time in seconds
@@ -215,4 +216,4 @@ jobs:
           echo "Container did not become healthy within ${timeout} seconds."
           exit 1
         env:
-          PUBLIC_HOSTNAME: ${{ env.PUBLIC_HOSTNAME }}
+          PUBLIC_HOSTNAME: ${{ vars.PUBLIC_HOSTNAME }}

@@ -45,6 +45,7 @@ import {TabPlaintext} from './tab-plaintext'
 import {TabData} from './tab-data'
 import {TabDataJson} from './tab-data-json'
 import {TabDataSchema} from './tab-data-schema'
+import {TabSchemaJson} from './tab-schema-json'
 import {TabScript} from './tab-script'
 import {TabLog} from './tab-log'
 import debug from 'debug'
@@ -65,7 +66,8 @@ const CONTENT_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType>[] = 
 
 // Define which tabs belong in the configuration dropdown (schema/script/log)
 const CONFIGURATION_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType>[] = [
-  {value: 'data-schema', label: 'Schema', icon: FileJson2},
+  {value: 'data-schema', label: 'Data Schema', icon: FileJson2},
+  {value: 'schema-json', label: 'Schema JSON', icon: FileJson},
   {value: 'script', label: 'Script', icon: Braces},
   {value: 'log', label: 'Log', icon: FileText}
 ]
@@ -306,6 +308,13 @@ export function ExtractionPanel() {
           className='flex min-h-0 flex-col'
         >
           <TabDataSchema />
+        </ExtractionTabsContent>
+
+        <ExtractionTabsContent
+          value='schema-json'
+          className='flex min-h-0 flex-col'
+        >
+          <TabSchemaJson />
         </ExtractionTabsContent>
 
         <ExtractionTabsContent

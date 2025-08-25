@@ -47,7 +47,6 @@ describe('SandboxManager Function Execution Test', () => {
     }
   })
 
-
   it('should execute a function with input and return parsed result', async () => {
     if (!denoAvailable) {
       return
@@ -90,11 +89,15 @@ describe('SandboxManager Function Execution Test', () => {
       url: 'https://test.com/page'
     }
 
-    const executionResult = await sandboxManager?.executeFunctionBuffered(code, [JSON.stringify(inputData)], false)
+    const executionResult = await sandboxManager?.executeFunctionBuffered(
+      code,
+      [JSON.stringify(inputData)],
+      false
+    )
 
     expect(executionResult).toBeDefined()
     expect('result' in executionResult!).toBe(true)
-    
+
     const result = executionResult!.result as {
       title: string
       url: string
@@ -119,18 +122,22 @@ describe('SandboxManager Function Execution Test', () => {
     const code = `
       export default function(input) {
         const data = JSON.parse(input)
-        
+
         // Deliberately return null
         if (data.returnNull) {
           return null
         }
-        
+
         return { processed: true, input: data }
       }
     `
 
     const inputData = {returnNull: true}
-    const executionResult = await sandboxManager?.executeFunctionBuffered(code, [JSON.stringify(inputData)], false)
+    const executionResult = await sandboxManager?.executeFunctionBuffered(
+      code,
+      [JSON.stringify(inputData)],
+      false
+    )
 
     expect(executionResult).toBeDefined()
     expect('result' in executionResult!).toBe(true)
@@ -145,7 +152,7 @@ describe('SandboxManager Function Execution Test', () => {
     const code = `
       export default function(input) {
         const data = JSON.parse(input)
-        
+
         return {
           input: data,
           meta: {
@@ -165,11 +172,15 @@ describe('SandboxManager Function Execution Test', () => {
     `
 
     const inputData = {test: 'complex object test'}
-    const executionResult = await sandboxManager?.executeFunctionBuffered(code, [JSON.stringify(inputData)], false)
+    const executionResult = await sandboxManager?.executeFunctionBuffered(
+      code,
+      [JSON.stringify(inputData)],
+      false
+    )
 
     expect(executionResult).toBeDefined()
     expect('result' in executionResult!).toBe(true)
-    
+
     const result = executionResult!.result as {
       input: {test: string}
       meta: {

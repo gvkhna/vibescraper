@@ -448,7 +448,7 @@ export async function scrapeProcess({
             headers: {
               'User-Agent':
                 projectCommit.settingsJson.crawler.userAgent ??
-                'Mozilla/5.0 (compatible; Vibescraper/1.0; +https://vibescraper.com)'
+                'Mozilla/5.0 (compatible; Vibescraper/1.0; +https://aivibescraper.com)'
             },
             signal: AbortSignal.timeout(projectCommit.settingsJson.crawler.requestTimeout || 30000)
           })

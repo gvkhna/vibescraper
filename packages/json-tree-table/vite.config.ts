@@ -29,7 +29,7 @@ export default defineConfig({
   resolve: {
     alias: {
       'lucide-react/icons': fileURLToPath(
-        new URL('./node_modules/lucide-react/dist/esm/icons', import.meta.url)
+        new URL('../../node_modules/lucide-react/dist/esm/icons', import.meta.url)
       )
     }
   },
@@ -41,14 +41,14 @@ export default defineConfig({
     rollupOptions: {
       external: [
         'react',
-        'react-dom', 
+        'react-dom',
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
         'lucide-react',
         'lucide-react/icons/*',
         '@radix-ui/react-checkbox',
         '@radix-ui/react-dialog',
-        '@radix-ui/react-popover', 
+        '@radix-ui/react-popover',
         '@radix-ui/react-scroll-area',
         '@radix-ui/react-select',
         '@radix-ui/react-slot',

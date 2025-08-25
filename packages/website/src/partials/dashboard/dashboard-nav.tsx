@@ -48,7 +48,7 @@ export function DashboardNav() {
             size='sm'
             variant='ghost'
             className='gap-2 text-white/70 hover:bg-white/10 hover:text-white'
-            onClick={() => globalThis.window.open('https://docs.example.com', '_blank')}
+            onClick={() => globalThis.window.open('https://docs.aivibescraper.com', '_blank')}
             aria-label='Open Documentation'
           >
             <BookOpen className='h-4 w-4' />

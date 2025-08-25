@@ -205,8 +205,8 @@ function parseLooseHTML(html: string): string | null {
       xml: {
         decodeEntities: true,
         xmlMode: true,
-        lowerCaseAttributeNames: false,
-        selfClosingTags: false
+        lowerCaseAttributeNames: false
+        // selfClosingTags: false
       }
     })
     return $.html()

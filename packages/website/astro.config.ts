@@ -47,7 +47,6 @@ export default defineConfig({
   adapter: node({
     mode: 'standalone'
   }),
-
   integrations: [
     {
       name: 'setup vite env',
@@ -56,6 +55,9 @@ export default defineConfig({
           options.updateConfig({
             vite: {
               envDir: projectRoot,
+              ssr: {
+                external: ['@vibescraper/html-processor']
+              },
               plugins: [
                 // @ts-expect-error
                 tanstackRouter({

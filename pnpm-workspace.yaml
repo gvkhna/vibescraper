@@ -1,10 +1,21 @@
-overrides:
-  "@vibescraper/website>@types/node": "npm:@types/web@latest"
-  "@vibescraper/website>@types/node-legacy": "npm:@types/node@latest"
-  "@vibescraper/website>@typescript/lib-dom": "npm:@types/web@latest"
-
 packages:
   - packages/*
+
+forceLegacyDeploy: true
+resolvePeersFromWorkspaceRoot: true
+strictPeerDependencies: false
+
+# Support multiple architectures for Docker builds and cross-platform deployments
+supportedArchitectures:
+  os:
+    - linux
+    - current
+  cpu:
+    - x64
+    - arm64
+  libc:
+    - glibc
+    - musl
 
 onlyBuiltDependencies:
   - "@dashevo/protobufjs"
@@ -15,3 +26,13 @@ onlyBuiltDependencies:
   - microtime
   - protobufjs
   - sharp
+
+# Ignore missing canvas peer dependency from jsdom
+peerDependencyRules:
+  ignoreMissing:
+    - canvas
+
+overrides:
+  "@vibescraper/website>@types/node": npm:@types/web@latest
+  "@vibescraper/website>@types/node-legacy": npm:@types/node@latest
+  "@vibescraper/website>@typescript/lib-dom": npm:@types/web@latest

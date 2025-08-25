@@ -14,7 +14,15 @@ export default defineConfig({
       formats: ['es']
     },
     rollupOptions: {
-      external: [/^node:/]
+      external: [
+        /^node:/,
+        'canvas',
+        'jsdom',
+        'cheerio',
+        'node-html-markdown',
+        'domelementtype',
+        'domhandler'
+      ]
     },
     target: 'esnext',
     sourcemap: true,

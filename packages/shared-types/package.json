@@ -19,22 +19,12 @@
     "test": "vitest",
     "test:run": "vitest run"
   },
-  "devDependencies": {
-    "@types/debug": "^4.1.12",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
-  },
+  "devDependencies": {},
   "dependencies": {
     "ajv": "^8.17.1",
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^3.0.1",
-    "core-js": "^3.45.0",
-    "debug": "^4.4.1",
-    "type-fest": "^4.41.0",
-    "vite-plugin-dts": "^4.5.4",
-    "zod": "^4.0.17"
+    "core-js": "^3.45.1"
   },
-  "peerDependencies": {
-    "vite": ">=6"
-  }
+  "peerDependencies": {}
 }

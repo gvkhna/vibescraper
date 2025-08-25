@@ -242,3 +242,33 @@ export const Dark: Story = {
     )
   ]
 }
+
+// Test malformed schemas to ensure component doesn't crash
+const malformedSchema = {
+  type: 'array',
+  items: {type: 'string'}
+} as any
+
+export const InvalidSchema: Story = {
+  args: {
+    data: malformedSchema,
+    className: 'bg-white'
+  }
+}
+
+export const InvalidSchemaDark: Story = {
+  args: {
+    data: malformedSchema,
+    className: 'bg-gray-900'
+  },
+  parameters: {
+    backgrounds: {default: 'dark'}
+  },
+  decorators: [
+    (Story) => (
+      <div className='dark'>
+        <Story />
+      </div>
+    )
+  ]
+}

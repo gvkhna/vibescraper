@@ -1,6 +1,5 @@
 # build output
 dist*
-.github
 # generated types
 .astro
 .tanstack

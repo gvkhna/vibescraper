@@ -65,11 +65,11 @@ jobs:
 
       - name: Build website with Turbo
         env:
-          DEBUG_COLORS: ${{ vars.DEBUG_COLORS }}
-          DEBUG_HIDE_DATE: ${{ vars.DEBUG_HIDE_DATE }}
-          DEBUG: ${{ vars.DEBUG }}
-          NODE_ENV: ${{ vars.NODE_ENV }}
-          TMP_DIR: ${{ vars.TMP_DIR }}
+          DEBUG_COLORS: ${{ env.DEBUG_COLORS }}
+          DEBUG_HIDE_DATE: ${{ env.DEBUG_HIDE_DATE }}
+          DEBUG: ${{ env.DEBUG }}
+          NODE_ENV: ${{ env.NODE_ENV }}
+          TMP_DIR: ${{ env.TMP_DIR }}
         run: |
           printenv | sort
           bun run build
@@ -78,7 +78,7 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-        
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -102,11 +102,11 @@ jobs:
           NETWORK_NAME="vibescraper-test-network"
           PORT="4321"
           HEALTH_URL="http://localhost:${PORT}/health"
-          
+
           # Create network
           echo "Creating test network..."
           docker network create "$NETWORK_NAME"
-          
+
           # Start PostgreSQL
           echo "Starting PostgreSQL..."
           docker run -d \
@@ -117,7 +117,7 @@ jobs:
             -e POSTGRES_PASSWORD="testpass" \
             -e POSTGRES_DB="testdb" \
             postgres:16-alpine
-          
+
           # Wait for PostgreSQL
           echo "Waiting for PostgreSQL..."
           for i in {1..30}; do
@@ -127,7 +127,7 @@ jobs:
             fi
             sleep 1
           done
-          
+
           # Start app container
           echo "Starting app container..."
           docker run -d \
@@ -136,15 +136,15 @@ jobs:
             -p "${PORT}:${PORT}" \
             --env-file .env.example \
             "$IMAGE_NAME"
-          
+
           # Wait and test health endpoint
           echo "Testing health endpoint..."
           sleep 5
-          
+
           for i in {1..10}; do
             HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" 2>/dev/null || echo "000")
             echo "Attempt $i/10: HTTP $HTTP_CODE"
-            
+
             if [ "$HTTP_CODE" = "200" ]; then
               echo "Smoke test PASSED"
               exit 0
@@ -153,10 +153,10 @@ jobs:
               docker logs "$CONTAINER_NAME" --tail 50
               exit 1
             fi
-            
+
             sleep 3
           done
-          
+
           echo "Smoke test FAILED - Health endpoint not responding"
           docker logs "$CONTAINER_NAME" --tail 50
           exit 1
@@ -182,7 +182,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Trigger redeploy via Dokploy API
-        if: ${{ secrets.DOKPLOY_API_HOSTNAME != '' }}
+        if: env.DOKPLOY_API_HOSTNAME != ''
         run: |
           echo "Triggering container redeploy via Dokploy..."
           curl --fail -sS -X POST \
@@ -192,12 +192,12 @@ jobs:
             -d '{"applicationId": "'"$DOKPLOY_APPLICATION_ID"'"}' \
             "$DOKPLOY_API_HOSTNAME/application.redeploy"
         env:
-          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
-          DOKPLOY_APPLICATION_ID: ${{ secrets.DOKPLOY_APPLICATION_ID }}
-          DOKPLOY_API_HOSTNAME: ${{ secrets.DOKPLOY_API_HOSTNAME }}
+          DOKPLOY_API_KEY: ${{ env.DOKPLOY_API_KEY }}
+          DOKPLOY_APPLICATION_ID: ${{ env.DOKPLOY_APPLICATION_ID }}
+          DOKPLOY_API_HOSTNAME: ${{ env.DOKPLOY_API_HOSTNAME }}
 
       - name: Wait for container health
-        if: ${{ secrets.DOKPLOY_API_HOSTNAME != '' }}
+        if: env.DOKPLOY_API_HOSTNAME != ''
         run: |
           echo "Waiting for container to become healthy..."
           timeout=300  # maximum wait time in seconds
@@ -215,4 +215,4 @@ jobs:
           echo "Container did not become healthy within ${timeout} seconds."
           exit 1
         env:
-          PUBLIC_HOSTNAME: ${{ vars.PUBLIC_HOSTNAME }}
+          PUBLIC_HOSTNAME: ${{ env.PUBLIC_HOSTNAME }}

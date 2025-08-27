@@ -1,17 +1,19 @@
 import {AuthUIProvider} from '@daveyplate/better-auth-ui'
 import {authReactClient} from '@/lib/auth-react-client'
 import {type ReactNode} from 'react'
-import {useNavigate} from '@tanstack/react-router'
+import {useNavigate, useRouter} from '@tanstack/react-router'
 import {Link} from '@/components/link'
 import {nowait} from '@/lib/async-utils'
 import {apiFetchClient} from '@/lib/api-fetch-client'
 import api from '@/lib/api-client'
+import {PUBLIC_VARS} from '@/vars.public'
 import debug from 'debug'
 
 const log = debug('app:auth-setup')
 
 export function BetterAuthUIProvider({children}: {children: ReactNode}) {
   const navigate = useNavigate()
+  const router = useRouter()
 
   return (
     <AuthUIProvider
@@ -19,8 +21,13 @@ export function BetterAuthUIProvider({children}: {children: ReactNode}) {
       navigate={(path) => {
         nowait(navigate({to: path}))
       }}
+      replace={(path) => {
+        nowait(navigate({to: path, replace: true}))
+      }}
+      onSessionChange={() => router.invalidate()}
       magicLink={true}
       Link={Link}
+      basePath='/'
       viewPaths={{
         SIGN_IN: 'signin',
         SIGN_OUT: 'signout',
@@ -28,14 +35,19 @@ export function BetterAuthUIProvider({children}: {children: ReactNode}) {
         FORGOT_PASSWORD: 'forgot-password',
         RESET_PASSWORD: 'reset-password',
         MAGIC_LINK: 'magic-link'
-        // SETTINGS: 'settings'
+      }}
+      account={{
+        basePath: '/app',
+        viewPaths: {
+          SETTINGS: 'settings'
+        }
       }}
       social={{
-        providers: ['google', 'github']
+        providers: [
+          ...(typeof PUBLIC_VARS.PUBLIC_GOOGLE_CLIENT_ID === 'string' ? ['google'] : []),
+          ...(typeof PUBLIC_VARS.PUBLIC_GITHUB_CLIENT_ID === 'string' ? ['github'] : [])
+        ]
       }}
-      // settings={{
-      //   url: '/app/settings'
-      // }}
       avatar={{
         size: 256,
         extension: 'webp',

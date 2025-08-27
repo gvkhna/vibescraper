@@ -7,18 +7,13 @@ import * as schema from '../db/schema'
 import {createAuthMiddleware} from 'better-auth/plugins'
 import {sendEmail} from './email'
 import {organization, username, magicLink, admin} from 'better-auth/plugins'
-import {eq as sqlEq} from 'drizzle-orm'
 import debug from 'debug'
 import {STRINGS} from '@/strings'
 import {validateUsername} from './auth-username'
 
 const log = debug('app:auth')
 
-// import {} from // STRIPE_SECRET_KEY
-// ;('@/strings')
-// import {stripeRequest} from './stripe-client'
 export const auth = betterAuth({
-  // plugins: [oneTap()],
   appName: STRINGS.BRAND_NAME,
   baseURL: PUBLIC_VARS.PUBLIC_HOSTNAME,
   secret: PRIVATE_VARS.BETTER_AUTH_SECRET,
@@ -48,16 +43,22 @@ export const auth = betterAuth({
     admin()
   ],
   account: {
-    accountLinking: {
-      enabled: true,
-      trustedProviders: ['google', 'github']
-    }
+    ...(typeof PRIVATE_VARS.GITHUB_CLIENT_SECRET === 'string' ||
+    typeof PRIVATE_VARS.GOOGLE_CLIENT_SECRET === 'string'
+      ? {
+          accountLinking: {
+            enabled: true,
+            trustedProviders: [
+              ...(typeof PRIVATE_VARS.GOOGLE_CLIENT_SECRET === 'string' ? ['google'] : []),
+              ...(typeof PRIVATE_VARS.GITHUB_CLIENT_SECRET === 'string' ? ['github'] : [])
+            ]
+          }
+        }
+      : {})
   },
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
-      // console.log('auth after hook path', ctx.path)
       const newSession = ctx.context.newSession
-      // console.log('new session', newSession)
       try {
         // setup user actor
         if (newSession) {
@@ -78,15 +79,6 @@ export const auth = betterAuth({
       } catch (error) {
         log('Failed to create user actor:', error)
       }
-
-      // setup stripe customer if does not exist
-      // try {
-      //   if (newSession) {
-      //     await createUserCustomerId(newSession.user.id as schema.UserId)
-      //   }
-      // } catch (error) {
-      //   log('Failed to create Stripe customer:', error)
-      // }
     })
   },
   emailAndPassword: {
@@ -112,24 +104,26 @@ export const auth = betterAuth({
     }
   },
   socialProviders: {
-    // ...(PUBLIC_VARS.PUBLIC_GITHUB_CLIENT_ID && PRIVATE_VARS.GITHUB_CLIENT_SECRET
-    //   ? {
-    //       github: {
-    //         enabled: true,
-    //         clientId: PUBLIC_VARS.PUBLIC_GITHUB_CLIENT_ID,
-    //         clientSecret: PRIVATE_VARS.GITHUB_CLIENT_SECRET
-    //       }
-    //     }
-    //   : {}),
-    // ...(PUBLIC_VARS.PUBLIC_GOOGLE_CLIENT_ID && PRIVATE_VARS.GOOGLE_CLIENT_SECRET
-    //   ? {
-    //       google: {
-    //         enabled: true,
-    //         clientId: PUBLIC_VARS.PUBLIC_GOOGLE_CLIENT_ID,
-    //         clientSecret: PRIVATE_VARS.GOOGLE_CLIENT_SECRET
-    //       }
-    //     }
-    //   : {})
+    ...(typeof PUBLIC_VARS.PUBLIC_GITHUB_CLIENT_ID === 'string' &&
+    typeof PRIVATE_VARS.GITHUB_CLIENT_SECRET === 'string'
+      ? {
+          github: {
+            enabled: true,
+            clientId: PUBLIC_VARS.PUBLIC_GITHUB_CLIENT_ID,
+            clientSecret: PRIVATE_VARS.GITHUB_CLIENT_SECRET
+          }
+        }
+      : {}),
+    ...(typeof PUBLIC_VARS.PUBLIC_GOOGLE_CLIENT_ID === 'string' &&
+    typeof PRIVATE_VARS.GOOGLE_CLIENT_SECRET === 'string'
+      ? {
+          google: {
+            enabled: true,
+            clientId: PUBLIC_VARS.PUBLIC_GOOGLE_CLIENT_ID,
+            clientSecret: PRIVATE_VARS.GOOGLE_CLIENT_SECRET
+          }
+        }
+      : {})
   },
   user: {
     changeEmail: {

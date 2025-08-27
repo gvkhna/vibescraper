@@ -4,18 +4,19 @@ import {AuthView} from '@daveyplate/better-auth-ui'
 
 interface AuthPageTemplateProps {
   pathname: string
+  redirectTo?: string
 }
 
 const authConfig = {
   signin: {
     title: 'Welcome to Vibescraper',
     subtitle: 'Sign in to continue to your dashboard.',
-    redirectTo: '/app/'
+    redirectTo: '/'
   },
   signup: {
     title: 'Create your account',
     subtitle: 'Join Vibescraper to start vibe scraping.',
-    redirectTo: '/app/'
+    redirectTo: '/'
   },
   signout: {
     title: 'Sign out',
@@ -25,21 +26,21 @@ const authConfig = {
   forgot: {
     title: 'Forgot password',
     subtitle: 'Enter your email to receive a reset link.',
-    redirectTo: '/app/signin'
+    redirectTo: '/signin'
   },
   reset: {
     title: 'Reset password',
     subtitle: 'Enter your new password below.',
-    redirectTo: '/app/signin'
+    redirectTo: '/signin'
   },
   magic: {
     title: 'Magic link sign in',
     subtitle: 'Check your email for the magic link.',
-    redirectTo: '/app/'
+    redirectTo: '/'
   }
 }
 
-export function AuthPageTemplate({pathname}: AuthPageTemplateProps) {
+export function AuthPageTemplate({pathname, redirectTo}: AuthPageTemplateProps) {
   const config = authConfig[pathname as keyof typeof authConfig]
 
   return (
@@ -47,7 +48,7 @@ export function AuthPageTemplate({pathname}: AuthPageTemplateProps) {
       <div className='w-full max-w-sm'>
         <AuthView
           pathname={pathname}
-          redirectTo={config.redirectTo}
+          redirectTo={redirectTo || config.redirectTo}
           cardHeader={
             <div className='text-center'>
               <h1 className='mb-2 text-2xl font-bold text-white'>{config.title}</h1>

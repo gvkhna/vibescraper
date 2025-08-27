@@ -1,19 +1,18 @@
 ---
 import app from '@/server/index'
-// export const prerender = false
 const response = await app.request('/api')
 
 let healthStatus = {message: 'Server is not healthy'}
 
 if (response.ok) {
   healthStatus = await response.json()
-  //   // If the API responds with OK, update the health message accordingly.
+  // If the API responds with OK, update the health message accordingly.
 } else {
-  //   // Otherwise, you could choose to parse the error response
+  // Otherwise, you could choose to parse the error response
   // healthStatus = await response.json()
 }
 
-// // Set the Astro page's status code to match the API response.
+// Set the Astro page's status code to match the API response.
 Astro.response.status = response.status
 ---
 

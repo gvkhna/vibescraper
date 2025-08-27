@@ -9,8 +9,7 @@ import {
   UpdateAvatarCard,
   UpdateUsernameCard,
   ProvidersCard,
-  UpdateNameCard,
-  AuthUIProvider
+  UpdateNameCard
 } from '@daveyplate/better-auth-ui'
 import {Button} from '@/components/ui/button'
 import {ArrowLeft} from 'lucide-react'
@@ -18,7 +17,7 @@ import {useNavigate} from '@tanstack/react-router'
 import {nowait} from '@/lib/async-utils'
 import {useState, useEffect} from 'react'
 
-export const Route = createFileRoute('/settings/')({
+export const Route = createFileRoute('/app/settings/')({
   component: RouteComponent
 })
 

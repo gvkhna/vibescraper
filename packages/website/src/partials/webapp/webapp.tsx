@@ -3,7 +3,7 @@ import {SWRConfig} from 'swr'
 import {ThemeProvider} from 'next-themes'
 import {Toaster} from '@/components/ui/sonner'
 import {ErrorBoundary} from 'react-error-boundary'
-import {EnvProvider, type EnvContextValue} from '@/partials/app/env-context'
+import {EnvProvider, type EnvContextValue} from './env-context'
 import {RouterProvider, createRouter} from '@tanstack/react-router'
 
 // Import the generated route tree
@@ -15,7 +15,7 @@ import {NotFoundPage} from './not-found-page'
 const router = createRouter({
   routeTree: routeTree,
   defaultPreload: 'intent',
-  basepath: '/app',
+  basepath: '/',
   defaultErrorComponent: (props) => <ErrorPage {...props} />,
   defaultNotFoundComponent: (props) => <NotFoundPage {...props} />,
   defaultOnCatch(error, errorInfo) {
@@ -32,9 +32,9 @@ declare module '@tanstack/react-router' {
   }
 }
 
-export interface AppProps extends EnvContextValue {}
+export interface WebappProps extends EnvContextValue {}
 
-export function App(props: PropsWithChildren<AppProps>) {
+export function Webapp(props: PropsWithChildren<WebappProps>) {
   return (
     <StrictMode>
       <EnvProvider publicAppHostname={props.publicAppHostname}>

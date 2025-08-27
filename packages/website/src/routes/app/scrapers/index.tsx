@@ -65,7 +65,7 @@ export function AllScrapersPage() {
                   onClick={() => {
                     nowait(
                       navigate({
-                        to: '/scraper/$project-public-id/edit',
+                        to: '/app/scraper/$project-public-id/edit',
                         params: {'project-public-id': project.publicId}
                       })
                     )
@@ -127,7 +127,7 @@ export function AllScrapersPage() {
             {projects.length === 0 && (
               <div className='flex flex-col items-center justify-center py-12 text-center'>
                 <FolderOpen className='text-muted-foreground mb-4 h-12 w-12' />
-                <h3 className='mb-2 text-lg font-semibold'>No scrapers yet</h3>
+                <h3 className='text-primary mb-2 text-lg font-semibold'>No scrapers yet</h3>
                 <p className='text-muted-foreground mb-6'>Get started by creating your first web scraper</p>
                 <Button
                   onClick={() => {
@@ -147,6 +147,6 @@ export function AllScrapersPage() {
   )
 }
 
-export const Route = createFileRoute('/scrapers/')({
+export const Route = createFileRoute('/app/scrapers/')({
   component: AllScrapersPage
 })

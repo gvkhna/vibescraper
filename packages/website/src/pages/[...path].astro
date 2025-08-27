@@ -1,6 +1,6 @@
 ---
 import AppLayout from '@/layouts/app-layout.astro'
-import {App} from '@/partials/app/app'
+import {Webapp} from '@/partials/webapp/webapp'
 import {PUBLIC_VARS} from '@/vars.public'
 
 // Want to handle this client side in the tanstack router
@@ -14,7 +14,7 @@ import {PUBLIC_VARS} from '@/vars.public'
   desc='Web scraping and data extraction platform with AI-powered tools'
   ogimageUrl={`${PUBLIC_VARS.PUBLIC_HOSTNAME}/ogimage.jpg`}
 >
-  <App
+  <Webapp
     client:only='react'
     publicAppHostname={PUBLIC_VARS.PUBLIC_HOSTNAME}
   />

@@ -1,8 +1,8 @@
-import {BetterAuthUIProvider} from '@/partials/app/better-auth-ui-provider'
-import {NotFoundPage} from '@/partials/app/not-found-page'
+import {BetterAuthUIProvider} from '@/partials/webapp/better-auth-ui-provider'
+import {NotFoundPage} from '@/partials/webapp/not-found-page'
 import {createRootRoute, Link, Outlet, redirect} from '@tanstack/react-router'
 import {TanStackRouterDevtools} from '@tanstack/react-router-devtools'
-import {ErrorPage} from '@/partials/app/error-page'
+import {ErrorPage} from '@/partials/webapp/error-page'
 import {PUBLIC_VARS} from '@/vars.public'
 
 export const Route = createRootRoute({
@@ -13,7 +13,6 @@ export const Route = createRootRoute({
       <BetterAuthUIProvider>
         <Outlet />
       </BetterAuthUIProvider>
-      {/* <TanStackRouterDevtools /> */}
       {/* {PUBLIC_VARS.DEV && <TanStackRouterDevtools />} */}
     </>
   )

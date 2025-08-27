@@ -14,28 +14,38 @@ import {STRINGS} from '../strings'
       <div class='mb-16 flex items-center justify-between text-sm'>
         <span>Vibescraper</span>
         <div class='space-x-6'>
-          <a href='/detail' class='underline'>Get Started</a>
-          <a href='/dashboard' class='underline'>Dashboard</a>
+          <a
+            href='/signup'
+            class='underline'
+            >Sign Up</a
+          >
+          <a
+            href='/signin'
+            class='underline'
+            >Sign In</a
+          >
         </div>
       </div>
 
       {/* Title */}
-      <h1 class='mb-4 text-2xl font-bold text-white'>Vibescraper</h1>
+      {/* <h1 class='mb-4 text-2xl font-bold text-white'>Vibescraper</h1> */}
       <p class='mb-12 text-5xl font-bold text-white'>Vibe scraping is here.</p>
-      
+
       <p class='mb-12 text-base leading-relaxed'>
         Use an AI coding agent to build scrapers that automatically adapt to website
         changes. Define your schema once, and let the AI handle the rest.
       </p>
 
       {/* Image */}
-      <div class='mb-16'>
+      {
+        /* <div class='mb-16'>
         <img
           src='https://placehold.co/900x450/0A0A0B/3B82F6?text=Vibescraper&font=roboto-mono'
           alt='Vibescraper Interface'
           class='w-full'
         />
-      </div>
+      </div> */
+      }
 
       {/* Build your scraper */}
       <h2 class='mb-6 text-2xl font-bold text-white'>## Build your scraper</h2>
@@ -43,8 +53,9 @@ import {STRINGS} from '../strings'
         Tell the AI agent what data you need. It understands your intent and builds a
         scraper that extracts exactly what you're looking for, in the schema you define.
       </p>
-      
-      <pre class='mb-6 overflow-x-auto bg-[#151517] p-4 text-sm'>{`{
+
+      <pre
+        class='mb-6 overflow-x-auto bg-[#151517] p-4 text-sm'>{`{
   "product_name": "string",
   "price": "number",
   "availability": "boolean",
@@ -53,17 +64,19 @@ import {STRINGS} from '../strings'
 }`}</pre>
 
       <p class='mb-16 text-base leading-relaxed'>
-        The AI agent automatically navigates pages, handles pagination, and extracts
-        data according to your schema. No more brittle CSS selectors or XPath queries.
+        The AI agent automatically navigates pages, handles pagination, and extracts data
+        according to your schema. No more brittle CSS selectors or XPath queries.
       </p>
 
       {/* Automatically respond to changes */}
-      <h2 class='mb-6 text-2xl font-bold text-white'>## Automatically respond to changes</h2>
+      <h2 class='mb-6 text-2xl font-bold text-white'>
+        ## Automatically respond to changes
+      </h2>
       <p class='mb-6 text-base leading-relaxed'>
         When websites change their layout or structure, traditional scrapers break.
         Vibescraper's AI agent automatically adapts to these changes.
       </p>
-      
+
       <ul class='mb-16 space-y-2 text-base'>
         <li>* Periodic QA checks ensure data quality</li>
         <li>* Monitor pages over time with version history</li>
@@ -74,10 +87,10 @@ import {STRINGS} from '../strings'
       {/* Query your data */}
       <h2 class='mb-6 text-2xl font-bold text-white'>## Query your data</h2>
       <p class='mb-6 text-base leading-relaxed'>
-        Access your scraped data through multiple interfaces designed for different
-        use cases.
+        Access your scraped data through multiple interfaces designed for different use
+        cases.
       </p>
-      
+
       <ul class='mb-16 space-y-2 text-base'>
         <li>* SQL analysis for complex queries</li>
         <li>* Tell the AI agent to analyze data for you</li>
@@ -86,11 +99,12 @@ import {STRINGS} from '../strings'
       </ul>
 
       {/* Pricing */}
-      <h2 class='mb-8 text-2xl font-bold text-white'>## Pricing</h2>
-      <div class='mb-16'>
-        <div class='grid grid-cols-3 gap-8 mb-6 text-base'>
+      {/* <h2 class='mb-8 text-2xl font-bold text-white'>## Pricing</h2> */}
+      {
+        /* <div class='mb-16'>
+        <div class='mb-6 grid grid-cols-3 gap-8 text-base'>
           <div>
-            <p class='font-bold text-white mb-2'>Free</p>
+            <p class='mb-2 font-bold text-white'>Free</p>
             <p class='mb-4'>$0/month</p>
             <ul class='space-y-1 text-sm'>
               <li>1 site</li>
@@ -99,7 +113,7 @@ import {STRINGS} from '../strings'
             </ul>
           </div>
           <div>
-            <p class='font-bold text-white mb-2'>Pro</p>
+            <p class='mb-2 font-bold text-white'>Pro</p>
             <p class='mb-4'>$49/month</p>
             <ul class='space-y-1 text-sm'>
               <li>Unlimited sites</li>
@@ -108,7 +122,7 @@ import {STRINGS} from '../strings'
             </ul>
           </div>
           <div>
-            <p class='font-bold text-white mb-2'>Scale</p>
+            <p class='mb-2 font-bold text-white'>Scale</p>
             <p class='mb-4'>Custom</p>
             <ul class='space-y-1 text-sm'>
               <li>Custom limits</li>
@@ -117,20 +131,25 @@ import {STRINGS} from '../strings'
             </ul>
           </div>
         </div>
-        
+
         <p class='text-base'>Pricing scales with your usage.</p>
-      </div>
+      </div> */
+      }
 
       {/* Footer */}
       <div class='border-t border-white/10 pt-8'>
         <div class='mb-4 space-x-6 text-sm'>
-          <a href='/detail' class='underline'>Get Started</a>
+          <a
+            href='/signup'
+            class='underline'
+            >Sign Up</a
+          >
           <span class='text-white/30'>|</span>
-          <a href='#' class='underline'>Documentation</a>
-          <span class='text-white/30'>|</span>
-          <a href='#' class='underline'>API</a>
-          <span class='text-white/30'>|</span>
-          <a href='#' class='underline'>Contact</a>
+          <a
+            href='/signin'
+            class='underline'
+            >Sign In</a
+          >
         </div>
         <p class='text-sm text-white/50'>© 2024 Vibescraper</p>
       </div>

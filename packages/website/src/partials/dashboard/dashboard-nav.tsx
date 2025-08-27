@@ -13,8 +13,8 @@ import {
 import {Bell, BookOpen, ChevronDown, KeyRound} from 'lucide-react'
 import {ApiKeysDialog} from '@/components/api-keys-dialog'
 import {cn} from '@/lib/utils'
-import {UserAvatar} from '@daveyplate/better-auth-ui'
 import {authReactClient} from '@/lib/auth-react-client'
+import {BetterAuthUserButton} from '@/partials/webapp/better-auth-user-button'
 
 export function DashboardNav() {
   const [apiKeysOpen, setApiKeysOpen] = React.useState(false)
@@ -55,7 +55,7 @@ export function DashboardNav() {
             <span className='hidden sm:inline'>Docs</span>
           </Button>
           <Notifications />
-          <UserMenu />
+          <BetterAuthUserButton />
         </div>
       </div>
       <ApiKeysDialog
@@ -134,47 +134,6 @@ function Notifications() {
             </div>
           </div>
         </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
-
-function UserMenu() {
-  const session = authReactClient.useSession()
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant='ghost'
-          className='gap-2 p-1 hover:bg-white/10 md:px-3'
-          aria-label='User menu'
-        >
-          <UserAvatar
-            user={session.data?.user}
-            className='h-7 w-7'
-            classNames={{
-              fallback: 'bg-white/10 text-white/70 text-xs'
-            }}
-          />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className='w-56 border-white/10 bg-[#1a1a1b]'
-        align='end'
-      >
-        <DropdownMenuLabel className='text-white/70'>Account</DropdownMenuLabel>
-        <DropdownMenuSeparator className='bg-white/10' />
-        <DropdownMenuItem className='cursor-pointer text-white/90 hover:bg-white/10 focus:bg-white/10'>
-          Settings
-        </DropdownMenuItem>
-        <DropdownMenuItem className='cursor-pointer text-white/90 hover:bg-white/10 focus:bg-white/10'>
-          Billing
-        </DropdownMenuItem>
-        <DropdownMenuSeparator className='bg-white/10' />
-        <DropdownMenuItem className='cursor-pointer text-red-400 hover:bg-white/10 focus:bg-white/10'>
-          Logout
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

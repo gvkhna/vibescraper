@@ -14,8 +14,8 @@ import {Bell, BookOpen, ChevronDown, KeyRound} from 'lucide-react'
 import {ApiKeysDialog} from '@/components/api-keys-dialog'
 import {Input} from '@/components/ui/input'
 import {cn} from '@/lib/utils'
-import {UserAvatar} from '@daveyplate/better-auth-ui'
 import {authReactClient} from '@/lib/auth-react-client'
+import {BetterAuthUserButton} from '@/partials/app/better-auth-user-button'
 
 export function TopNav() {
   const [apiKeysOpen, setApiKeysOpen] = React.useState(false)
@@ -51,7 +51,7 @@ export function TopNav() {
             <span className='hidden sm:inline'>Docs</span>
           </Button>
           <Notifications />
-          <UserMenu />
+          <BetterAuthUserButton />
         </div>
       </div>
       <ApiKeysDialog
@@ -138,41 +138,6 @@ function Notifications() {
             </div>
           </div>
         </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
-
-function UserMenu() {
-  const session = authReactClient.useSession()
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant='ghost'
-          className='gap-2 hover:bg-white/10'
-          aria-label='User menu'
-        >
-          <UserAvatar
-            user={session.data?.user}
-            className='h-7 w-7'
-            classNames={{
-              fallback: 'bg-white/10 text-white/70 text-xs'
-            }}
-          />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className='w-56'
-        align='end'
-      >
-        <DropdownMenuLabel>Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className='cursor-pointer'>Settings</DropdownMenuItem>
-        <DropdownMenuItem className='cursor-pointer'>Billing</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className='cursor-pointer text-red-400'>Logout</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

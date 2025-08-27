@@ -12,7 +12,7 @@ const searchSchema = z.object({
   chat: z.string().optional()
 })
 
-export const Route = createFileRoute('/scraper/$project-public-id/edit')({
+export const Route = createFileRoute('/app/scraper/$project-public-id/edit')({
   validateSearch: searchSchema,
   component: Page
 })
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/scraper/$project-public-id/edit')({
 function Page() {
   const {['project-public-id']: projectPublicId} = Route.useParams()
   const {chat: chatId} = Route.useSearch()
-  const navigate = useNavigate({from: '/scraper/$project-public-id/edit'})
+  const navigate = useNavigate({from: '/app/scraper/$project-public-id/edit'})
 
   const loadProject = useStore((state) => state.projectSlice.loadProject)
 

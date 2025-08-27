@@ -69,7 +69,7 @@ export function prepareContext(
   systemPrompt: string | null | undefined,
   history: ChatMessagePersistanceType[],
   maxTokens = 4000
-): ModelMessage[] | undefined {
+): ModelMessage[] {
   // Start token count with the system message
   const systemTokens = systemPrompt ? estimateTokens(systemPrompt) : 0
   let budget = maxTokens - systemTokens

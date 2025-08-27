@@ -172,7 +172,7 @@ export function ProjectDialogs() {
           if (result.success && result.projectPublicId) {
             toast.success(`Scraper "${projectName}" created successfully`)
             await navigate({
-              to: '/scraper/$project-public-id/edit',
+              to: '/app/scraper/$project-public-id/edit',
               params: {'project-public-id': result.projectPublicId}
             })
           } else {

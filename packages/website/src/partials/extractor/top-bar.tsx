@@ -18,9 +18,9 @@ import {ScrapeButtonWithHover} from './scrape-button-with-hover'
 import {UrlHistoryCombobox} from './url-history-combobox'
 import {useStore} from '@/store/use-store'
 import {useNavigate} from '@tanstack/react-router'
-import {UserAvatar} from '@daveyplate/better-auth-ui'
 import {authReactClient} from '@/lib/auth-react-client'
 import {nowait} from '@/lib/async-utils'
+import {BetterAuthUserButton} from '@/partials/webapp/better-auth-user-button'
 
 export interface TopBarProps {
   onNewSite: () => void
@@ -76,7 +76,7 @@ export function TopBar({
         <>
           <form
             onSubmit={saveUrl}
-            className='min-w-0 max-w-2xl flex-1'
+            className='max-w-2xl min-w-0 flex-1'
           >
             <UrlHistoryCombobox
               value={currentUrl ?? ''}
@@ -114,10 +114,10 @@ export function TopBar({
                 checked={isLiveMode}
                 onCheckedChange={setIsLiveMode}
                 className={`ml-2 h-6 w-11 border-0 transition-all duration-300
-                data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-white/20
-                data-[state=checked]:shadow-[0_0_12px_rgba(34,197,94,0.4)] [&>span]:h-5 [&>span]:w-5
-                [&>span]:shadow-sm [&>span]:data-[state=checked]:translate-x-[1.375rem]
-                [&>span]:data-[state=checked]:bg-white [&>span]:data-[state=unchecked]:bg-white/70`}
+                data-[state=checked]:bg-green-500 data-[state=checked]:shadow-[0_0_12px_rgba(34,197,94,0.4)]
+                data-[state=unchecked]:bg-white/20 [&>span]:h-5 [&>span]:w-5 [&>span]:shadow-sm
+                [&>span]:data-[state=checked]:translate-x-[1.375rem] [&>span]:data-[state=checked]:bg-white
+                [&>span]:data-[state=unchecked]:bg-white/70`}
               />
 
               {/* Live Mode Badge with Hover */}
@@ -129,7 +129,7 @@ export function TopBar({
                       isLiveMode
                         ? `border-green-500/50 bg-green-500/15 text-green-400
                           shadow-[0_0_8px_rgba(34,197,94,0.3)] hover:bg-green-500/20`
-                        : `hover:bg-green-500/8 border-green-500/20 bg-green-500/5 text-green-400/60
+                        : `border-green-500/20 bg-green-500/5 text-green-400/60 hover:bg-green-500/8
                           hover:text-green-400/80`
                     } `}
                   >
@@ -218,7 +218,7 @@ export function TopBar({
                     if (currentProject?.project.publicId !== project.publicId) {
                       nowait(
                         navigate({
-                          to: '/scraper/$project-public-id/edit',
+                          to: '/app/scraper/$project-public-id/edit',
                           params: {'project-public-id': project.publicId}
                         })
                       )
@@ -237,7 +237,7 @@ export function TopBar({
             <DropdownMenuSeparator className='bg-white/10' />
             <DropdownMenuItem
               onClick={() => {
-                nowait(navigate({to: '/scrapers'}))
+                nowait(navigate({to: '/app/scrapers'}))
               }}
               className='text-white/90 hover:bg-white/10 focus:bg-white/10'
             >
@@ -256,43 +256,7 @@ export function TopBar({
         </DropdownMenu>
 
         {/* User Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant='ghost'
-              size='sm'
-              className='hover:bg-white/10'
-            >
-              <UserAvatar
-                user={session.data?.user}
-                className='h-6 w-6'
-                classNames={{
-                  fallback: 'bg-white/10 text-xs text-white/70'
-                }}
-              />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align='end'
-            className='border-white/10 bg-[#1a1a1b]'
-          >
-            <DropdownMenuItem
-              className='text-white/90 hover:bg-white/10 focus:bg-white/10'
-              onClick={() => {
-                nowait(navigate({to: '/settings'}))
-              }}
-            >
-              Settings
-            </DropdownMenuItem>
-            {/* <DropdownMenuItem className='text-white/90 hover:bg-white/10 focus:bg-white/10'>
-              Billing
-            </DropdownMenuItem> */}
-            <DropdownMenuSeparator className='bg-white/10' />
-            <DropdownMenuItem className='text-red-400 hover:bg-white/10 focus:bg-white/10'>
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <BetterAuthUserButton />
       </div>
     </div>
   )

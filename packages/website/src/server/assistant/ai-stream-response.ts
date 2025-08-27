@@ -79,9 +79,19 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
       //     })
       // },
       onChunk: ({chunk}) => {
-        logAI('[CHUNK]', JSON.stringify(chunk))
-        // const chunkType = chunk.type
-        // switch (chunkType) {
+        const chunkType = chunk.type
+        switch (chunkType) {
+          case 'reasoning-delta': {
+            break
+          }
+          case 'text-delta': {
+            break
+          }
+          default: {
+            logAI('[CHUNK]', JSON.stringify(chunk))
+            break
+          }
+        }
         //   case 'tool-call': {
         //     type part = typeof chunk
         //     // Tool execution completed

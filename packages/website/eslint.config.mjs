@@ -17,6 +17,7 @@ export default [
       'src/**/_*.tmp.ts',
       'src/**/_*.tmp.tsx',
       'src/components/ai-elements/**',
+      'src/components/animate-ui/**',
       'src/components/ui/**'
     ]
   },

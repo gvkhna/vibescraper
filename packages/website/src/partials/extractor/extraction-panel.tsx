@@ -24,7 +24,7 @@ import {
   BrushCleaning,
   FileType2,
   FileCode2,
-  Braces,
+  SquareFunction,
   Copy,
   CheckCircle,
   AlertCircle,
@@ -46,7 +46,7 @@ import {TabData} from './tab-data'
 import {TabDataJson} from './tab-data-json'
 import {TabDataSchema} from './tab-data-schema'
 import {TabSchemaJson} from './tab-schema-json'
-import {TabScript} from './tab-script'
+import {TabExtractionScript} from './tab-extraction-script'
 import {TabLog} from './tab-log'
 import debug from 'debug'
 
@@ -64,11 +64,11 @@ const CONTENT_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType>[] = 
   {value: 'markdown', label: 'Markdown', icon: FileType2}
 ]
 
-// Define which tabs belong in the configuration dropdown (schema/script/log)
+// Define which tabs belong in the configuration dropdown (schema/extraction-script/log)
 const CONFIGURATION_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType>[] = [
   {value: 'data-schema', label: 'Data Schema', icon: FileJson2},
   {value: 'schema-json', label: 'Schema JSON', icon: FileJson},
-  {value: 'script', label: 'Script', icon: Braces},
+  {value: 'extraction-script', label: 'Extraction Script', icon: SquareFunction},
   {value: 'log', label: 'Log', icon: FileText}
 ]
 
@@ -318,10 +318,10 @@ export function ExtractionPanel() {
         </ExtractionTabsContent>
 
         <ExtractionTabsContent
-          value='script'
+          value='extraction-script'
           className='flex min-h-0 flex-col'
         >
-          <TabScript />
+          <TabExtractionScript />
         </ExtractionTabsContent>
 
         <ExtractionTabsContent

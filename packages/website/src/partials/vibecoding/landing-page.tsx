@@ -16,6 +16,7 @@ import {authReactClient} from '@/lib/auth-react-client'
 import {Button} from '@/components/ui/button'
 import {BetterAuthUserButton} from '@/partials/webapp/better-auth-user-button'
 import {BetterAuthModal} from '@/partials/webapp/better-auth-modal'
+import {GitHubStarsButton} from '@/components/animate-ui/buttons/github-stars'
 
 export function VibecodingLandingPage() {
   const [input, setInput] = useState('')
@@ -86,6 +87,13 @@ export function VibecodingLandingPage() {
           <div className='flex items-center gap-3'>
             <Sparkles className='h-6 w-6 text-blue-500' />
             <span className='text-lg font-bold text-white'>Vibescraper</span>
+          </div>
+          <div>
+            <GitHubStarsButton
+              username='gvkhna'
+              repo='vibescraper'
+              className='h-8 px-2 py-1'
+            />
           </div>
           <div className='flex items-center gap-6'>
             {!session.isPending && (

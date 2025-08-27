@@ -9,9 +9,9 @@ import {EmptyStateData} from '@/components/empty-state-data'
 import {TextViewer} from '@/partials/monaco-editor/text-viewer'
 import debug from 'debug'
 
-const log = debug('app:tab-script')
+const log = debug('app:tab-extraction-script')
 
-export function TabScript() {
+export function TabExtractionScript() {
   const [copied, setCopied] = React.useState(false)
 
   // Get project and extractor from store

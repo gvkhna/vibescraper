@@ -253,39 +253,39 @@ const tools = {
       // hasExceptions: z.boolean().optional(),
       logs: z.array(ExecLog).default([]).nullish()
     })
-  },
+  }
 
   /* ── Minimal settings (kept intentionally small for now) ──────────────── */
 
-  settings_get: {
-    description: 'Read current scraper settings',
-    inputSchema: z.object({}),
-    outputSchema: z.object({
-      success: z.boolean(),
-      defaultRunFormat: HtmlFormat.default('cleaned'),
-      cleaningDefaults: z.object({
-        stripScripts: z.boolean(),
-        stripStyles: z.boolean()
-      })
-    })
-  },
+  // settingsGet: {
+  //   description: 'Read current scraper settings',
+  //   inputSchema: z.object({}),
+  //   outputSchema: z.object({
+  //     success: z.boolean(),
+  //     defaultRunFormat: HtmlFormat.default('cleaned'),
+  //     cleaningDefaults: z.object({
+  //       stripScripts: z.boolean(),
+  //       stripStyles: z.boolean()
+  //     })
+  //   })
+  // },
 
-  settings_update: {
-    description: 'Update minimal scraper settings (kept intentionally small)',
-    inputSchema: z.object({
-      defaultRunFormat: HtmlFormat.optional(),
-      cleaningDefaults: z
-        .object({
-          stripScripts: z.boolean().optional(),
-          stripStyles: z.boolean().optional()
-        })
-        .optional()
-    }),
-    outputSchema: z.object({
-      success: z.boolean(),
-      error: z.string().optional()
-    })
-  }
+  // settingsUpdate: {
+  //   description: 'Update minimal scraper settings (kept intentionally small)',
+  //   inputSchema: z.object({
+  //     defaultRunFormat: HtmlFormat.optional(),
+  //     cleaningDefaults: z
+  //       .object({
+  //         stripScripts: z.boolean().optional(),
+  //         stripStyles: z.boolean().optional()
+  //       })
+  //       .optional()
+  //   }),
+  //   outputSchema: z.object({
+  //     success: z.boolean(),
+  //     error: z.string().optional()
+  //   })
+  // }
 } satisfies ToolSet
 
 export default tools

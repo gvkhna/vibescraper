@@ -288,6 +288,27 @@ export class SandboxManager extends EventTarget {
     // Use the detected Deno path or fallback to 'deno'
     const denoCommand = this.denoPath ?? 'deno'
 
+    // Define local/private network ranges to deny for both network and import access
+    const localNetworkRanges = [
+      '127.0.0.0/8', // Loopback (127.0.0.1, etc.)
+      '10.0.0.0/8', // Private Class A (10.x.x.x)
+      '172.16.0.0/12', // Private Class B (172.16-31.x.x)
+      '192.168.0.0/16', // Private Class C (192.168.x.x)
+      '169.254.0.0/16', // Link-local (APIPA)
+      '224.0.0.0/4', // Multicast
+      '240.0.0.0/4', // Reserved
+      '0.0.0.0/8', // Local all
+      '[::1]', // IPv6 loopback
+      '[fe80::]', // IPv6 link-local
+      '[fc00::]', // IPv6 private/unique local
+      '[ff00::]', // IPv6 multicast
+      'localhost' // Cover localhost hostname
+    ]
+
+    // Debug: log the generated network restrictions
+    const denyNetArg = localNetworkRanges.join(',')
+    this.log('Generated --deny-net argument:', denyNetArg)
+
     this.child = spawn(
       denoCommand,
       [
@@ -295,9 +316,11 @@ export class SandboxManager extends EventTarget {
         `--allow-read=${this.tmpDir},${this.denoDir},${this.sandboxDir},${this.ipcDir}`,
         `--allow-write=${this.sandboxDir},${this.denoDir},${this.ipcDir}`,
         '--allow-net',
+        `--deny-net=${denyNetArg}`,
+        '--allow-import',
+        `--deny-import=${denyNetArg}`,
         '--unstable-worker-options',
         '--no-prompt',
-        '--allow-import',
         '--allow-env',
         `--v8-flags=--max-heap-size=256,--max-old-space-size=256`,
         // '--inspect=127.0.0.1:9229',

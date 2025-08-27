@@ -1,4 +1,3 @@
-// import type {ProjectFileRef} from './project-slice' // TODO: ProjectFileRef doesn't exist
 import type {StateSlice} from './use-store'
 import type {ProjectPublicId} from '@/db/schema'
 import type {LoadingState} from './async-entity-state'
@@ -23,11 +22,11 @@ export type ExtractionPanelTabType =
   | 'data-json'
   | 'data-schema'
   | 'schema-json'
-  | 'script'
+  | 'extraction-script'
   | 'log'
 
 // New type for the configuration dropdown (schema/script/log)
-export type ConfigurationTabType = 'data-schema' | 'schema-json' | 'script' | 'log'
+export type ConfigurationTabType = 'data-schema' | 'schema-json' | 'extraction-script' | 'log'
 
 // New type for the data dropdown (data table/json)
 export type DataTabType = 'data-table' | 'data-json'
@@ -57,7 +56,7 @@ export interface EditorSlice {
   lastExtractionDropdownTab: Record<ProjectPublicId, ExtractionPanelTabType | undefined | null>
   setLastExtractionDropdownTab: (tab: ExtractionPanelTabType) => void
 
-  // Store the last selected configuration dropdown tab (schema/script/log)
+  // Store the last selected configuration dropdown tab (schema/extraction-script/log)
   lastConfigurationDropdownTab: Record<ProjectPublicId, ConfigurationTabType | undefined | null>
   setLastConfigurationDropdownTab: (tab: ConfigurationTabType) => void
 

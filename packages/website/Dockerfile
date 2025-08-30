@@ -1,9 +1,6 @@
 # Stage 1: Get Deno binary
 FROM denoland/deno:bin AS deno
 
-# Stage 2: Get wget binary from busybox (static binary)
-FROM busybox:latest AS wget
-
 # Stage 3: Final runtime image
 FROM oven/bun:latest
 
@@ -19,7 +16,7 @@ LABEL org.opencontainers.image.authors="Gaurav Khanna <gaurav@gvkhna.com>"
 COPY --from=deno /deno /usr/local/bin/deno
 
 # Copy wget binary from busybox (statically linked)
-COPY --from=wget /bin/wget /usr/bin/wget
+# COPY --from=wget /bin/wget /usr/bin/wget
 
 WORKDIR /dist
 
@@ -38,8 +35,8 @@ ENV NODE_ENV=production
 # --timeout=10s: Wait max 10 seconds for response
 # --start-period=40s: Give container 40 seconds to start before marking unhealthy
 # --retries=3: Mark unhealthy after 3 consecutive failures
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:4321/health || exit 1
+# HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+#   CMD wget --no-verbose --tries=1 --spider http://localhost:4321/health || exit 1
 
 # Run the application directly from /dist
 CMD ["bun", "dist/server/entry.mjs"]

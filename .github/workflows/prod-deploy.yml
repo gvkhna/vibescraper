@@ -38,7 +38,9 @@ jobs:
           platforms: linux/amd64
           load: true
           tags: vibescraper:latest
-          cache-from: type=gha,scope=prod
+          cache-from: |
+            type=gha,scope=prod
+            type=registry,ref=ghcr.io/${{ github.repository }}:latest
           cache-to: type=gha,mode=max,scope=prod
 
       # Install pnpm and bun for integration tests
@@ -53,10 +55,6 @@ jobs:
           node-version: 'lts/*'
           cache: 'pnpm'
 
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
       - name: Install dependencies for tests
         run: pnpm install --filter=@vibescraper/server-test --frozen-lockfile
 
@@ -67,8 +65,8 @@ jobs:
           DEBUG: ''
           DOCKER_IMAGE: vibescraper:latest
         run: |
-          cd packages/server-test
-          bun run test
+          cd packages/server-test;
+          pnpm run test
 
       # Login to container registry
       - name: Log in to GitHub Container Registry
@@ -89,7 +87,9 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ github.sha }}
-          cache-from: type=gha,scope=prod
+          cache-from: |
+            type=gha,scope=prod
+            type=registry,ref=ghcr.io/${{ github.repository }}:latest
           cache-to: type=gha,mode=max,scope=prod
 
   deploy_production:

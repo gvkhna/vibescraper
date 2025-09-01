@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "description": "Integration tests for the Vibescraper website",
   "scripts": {
-    "test": "vitest --run",
+    "test": "vitest run",
     "test:ci": "CI=true vitest run",
     "typecheck": "bun tsc --noEmit"
   },

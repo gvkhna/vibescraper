@@ -17,7 +17,7 @@ const logFactory: LogFunctionFactory = (scope) => {
 const preset: GraphileConfig.Preset = {
   extends: [WorkerPreset],
   worker: {
-    connectionString: PRIVATE_VARS.DATABASE_URL,
+    connectionString: PRIVATE_VARS.DATABASE_POOL_URL ?? PRIVATE_VARS.DATABASE_URL,
     taskDirectory: '',
     maxPoolSize: 10,
     pollInterval: 2000,

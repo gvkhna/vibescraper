@@ -1,0 +1,18 @@
+{
+  "name": "@vibescraper/website-tests",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Integration tests for the Vibescraper website",
+  "scripts": {
+    "test": "vitest --run",
+    "test:ci": "CI=true vitest run",
+    "typecheck": "bun tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "testcontainers": "^11.5.1",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

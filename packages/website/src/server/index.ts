@@ -164,12 +164,12 @@ let workerRunner: Runner | null = null
 // let isShuttingDown = false
 
 async function initializeWorker() {
-  try {
-    workerRunner = await startWorker()
-    log('Worker started in server process')
-  } catch (error) {
-    log('Failed to start worker:', error)
-  }
+  // try {
+  workerRunner = await startWorker()
+  log('Worker started in server process')
+  // } catch (error) {
+  //   log('Failed to start worker:', error)
+  // }
 }
 
 async function stopWorker() {

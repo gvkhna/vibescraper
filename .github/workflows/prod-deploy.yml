@@ -36,7 +36,6 @@ jobs:
           context: .
           file: ./packages/website/Dockerfile
           target: build
-          platforms: linux/amd64
           load: true
           tags: vibescraper:test
           cache-from: type=gha,scope=prod
@@ -48,7 +47,6 @@ jobs:
         with:
           context: .
           file: ./packages/website/Dockerfile
-          platforms: linux/amd64
           load: true
           tags: vibescraper:latest
           cache-from: type=gha,scope=prod
@@ -58,10 +56,12 @@ jobs:
       - name: Run integration tests
         run: |
           # Run tests inside the build stage container
-          docker run \
+          docker run --rm \
             -e CI=true \
             -e DEBUG='*' \
             -e DOCKER_IMAGE=vibescraper:latest \
+            -v $PWD:$PWD -w $PWD \
+            -v /var/run/docker.sock:/var/run/docker.sock \
             vibescraper:test \
             sh -c "cd packages/server-test && pnpm run test"
 

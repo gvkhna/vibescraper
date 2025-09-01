@@ -1,5 +1,5 @@
 {
-  "name": "@vibescraper/website-tests",
+  "name": "@vibescraper/server-test",
   "private": true,
   "type": "module",
   "version": "1.0.0",

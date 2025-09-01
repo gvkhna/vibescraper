@@ -58,7 +58,7 @@ jobs:
           bun-version: latest
 
       - name: Install dependencies for tests
-        run: pnpm install --filter=@vibescraper/website-tests --frozen-lockfile
+        run: pnpm install --filter=@vibescraper/server-test --frozen-lockfile
 
       # Run integration tests against the production image
       - name: Run integration tests
@@ -67,7 +67,7 @@ jobs:
           DEBUG: ''
           DOCKER_IMAGE: vibescraper:latest
         run: |
-          cd packages/website-tests
+          cd packages/server-test
           bun run test
 
       # Login to container registry

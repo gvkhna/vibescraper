@@ -16,7 +16,7 @@
     "clean": "bun turbo run clean",
     "dev:website": "bun turbo run dev --filter=@vibescraper/website",
     "deploy:website": "pnpm --filter-prod @vibescraper/website --prod deploy dist",
-    "test:integration": "bun turbo run test --filter=@vibescraper/website-tests",
+    "test:integration": "bun turbo run test --filter=@vibescraper/server-test",
     "pnpm-upgrade-version": "pnpm uninstall corepack;pnpm install -D corepack;corepack prepare pnpm@latest --activate;corepack use pnpm@latest"
   },
   "dependencies": {

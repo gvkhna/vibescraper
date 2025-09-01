@@ -60,7 +60,7 @@ jobs:
             -e CI=true \
             -e DEBUG='*' \
             -e DOCKER_IMAGE=vibescraper:latest \
-            -v $PWD:$PWD -w $PWD \
+            -v $PWD:$PWD \
             -v /var/run/docker.sock:/var/run/docker.sock \
             vibescraper:test \
             sh -c "cd packages/server-test && pnpm run test"

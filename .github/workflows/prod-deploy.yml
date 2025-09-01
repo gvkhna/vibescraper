@@ -29,7 +29,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Build production image (single arch for testing)
+      # Build only up to the 'build' stage for testing
+      - name: Build test environment
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./packages/website/Dockerfile
+          target: build
+          platforms: linux/amd64
+          load: true
+          tags: vibescraper:test
+          cache-from: type=gha,scope=prod
+          cache-to: type=gha,mode=max,scope=prod
+
+      # Build the full production image
       - name: Build production image for testing
         uses: docker/build-push-action@v6
         with:
@@ -41,30 +54,16 @@ jobs:
           cache-from: type=gha,scope=prod
           cache-to: type=gha,mode=max,scope=prod
 
-      # Install pnpm and bun for integration tests
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-          cache: 'pnpm'
-
-      - name: Install dependencies for tests
-        run: pnpm install --filter=@vibescraper/server-test --frozen-lockfile
-
-      # Run integration tests against the production image
+      # Run integration tests using the build stage container
       - name: Run integration tests
-        env:
-          CI: true
-          DEBUG: ''
-          DOCKER_IMAGE: vibescraper:latest
         run: |
-          cd packages/server-test;
-          pnpm run test
+          # Run tests inside the build stage container
+          docker run \
+            -e CI=true \
+            -e DEBUG='*' \
+            -e DOCKER_IMAGE=vibescraper:latest \
+            vibescraper:test \
+            sh -c "cd packages/server-test && pnpm run test"
 
       # Login to container registry
       - name: Log in to GitHub Container Registry

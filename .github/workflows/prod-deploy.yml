@@ -38,8 +38,6 @@ jobs:
           platforms: linux/amd64
           load: true
           tags: vibescraper:latest
-          cache-from: type=gha,scope=prod
-          cache-to: type=gha,mode=max,scope=prod
 
       # Install pnpm and bun for integration tests
       - name: Install pnpm
@@ -85,8 +83,6 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ github.sha }}
-          cache-from: type=gha,scope=prod
-          cache-to: type=gha,mode=max,scope=prod
 
   deploy_production:
     name: Deploy to Production

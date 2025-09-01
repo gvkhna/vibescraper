@@ -3,6 +3,6 @@
   "compilerOptions": {
     "types": ["vitest/globals", "node"]
   },
-  "include": ["test-container.ts"],
+  "include": ["container.test.ts"],
   "exclude": ["node_modules", "dist"]
 }

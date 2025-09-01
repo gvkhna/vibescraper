@@ -5,7 +5,6 @@ import {EmptyStatePreview} from '@/components/empty-state-preview'
 import {useStore} from '@/store/use-store'
 import {useEffect, useState, useMemo} from 'react'
 import {Alert, AlertDescription} from '@/components/ui/alert'
-import {PUBLIC_VARS} from '@/vars.public'
 import api from '@/lib/api-client'
 
 export function TabPreview() {

@@ -6,14 +6,15 @@ import {Link} from '@/components/link'
 import {nowait} from '@/lib/async-utils'
 import {apiFetchClient} from '@/lib/api-fetch-client'
 import api from '@/lib/api-client'
-import {PUBLIC_VARS} from '@/vars.public'
 import debug from 'debug'
+import {useEnvContext} from './env-context'
 
 const log = debug('app:auth-setup')
 
 export function BetterAuthUIProvider({children}: {children: ReactNode}) {
   const navigate = useNavigate()
   const router = useRouter()
+  const {publicEnv} = useEnvContext()
 
   return (
     <AuthUIProvider
@@ -44,8 +45,8 @@ export function BetterAuthUIProvider({children}: {children: ReactNode}) {
       }}
       social={{
         providers: [
-          ...(typeof PUBLIC_VARS.PUBLIC_GOOGLE_CLIENT_ID === 'string' ? ['google'] : []),
-          ...(typeof PUBLIC_VARS.PUBLIC_GITHUB_CLIENT_ID === 'string' ? ['github'] : [])
+          ...(typeof publicEnv.PUBLIC_GOOGLE_CLIENT_ID === 'string' ? ['google'] : []),
+          ...(typeof publicEnv.PUBLIC_GITHUB_CLIENT_ID === 'string' ? ['github'] : [])
         ]
       }}
       avatar={{

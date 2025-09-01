@@ -5,7 +5,6 @@ import {AlertCircle} from 'lucide-react'
 import {Button} from '@/components/ui/button'
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
 import {Link} from '@/components/link'
-import {PUBLIC_VARS} from '@/vars.public'
 import {useEffect, useState} from 'react'
 import {LOCAL_STORAGE_PROJECT_STORE_KEY} from '@/store/use-store'
 

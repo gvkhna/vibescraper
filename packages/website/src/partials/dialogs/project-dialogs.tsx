@@ -1,4 +1,3 @@
-import {PUBLIC_VARS} from '@/vars.public'
 import {toast} from 'sonner'
 import {DeleteProjectConfirmDialog} from '@/partials/dialogs/delete-project-confirm-dialog'
 import {NewProjectDialog} from '@/partials/dialogs/new-project-dialog'

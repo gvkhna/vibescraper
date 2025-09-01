@@ -1,16 +1,17 @@
+import type {PUBLIC_VARS} from '@/vars.public'
 import {createContext, type PropsWithChildren, useContext, type FC, useMemo} from 'react'
 
 // Define the shape of the environment variables your context will contain
-export interface EnvContextValue {
-  publicAppHostname: string | null | undefined
+export type EnvContextValue = {
+  publicEnv: typeof PUBLIC_VARS
 }
 
 // Create the context with a default undefined value to force checks
 export const EnvContext = createContext<EnvContextValue | null>(null)
 
 // Provide the context value to the subtree
-export const EnvProvider: FC<PropsWithChildren<EnvContextValue>> = ({publicAppHostname, children}) => {
-  const value = useMemo<EnvContextValue>(() => ({publicAppHostname}), [publicAppHostname])
+export const EnvProvider: FC<PropsWithChildren<EnvContextValue>> = ({publicEnv, children}) => {
+  const value = useMemo<EnvContextValue>(() => ({publicEnv}), [publicEnv])
   return <EnvContext.Provider value={value}>{children}</EnvContext.Provider>
 }
 

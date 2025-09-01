@@ -26,8 +26,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Buildx for testing
         uses: docker/setup-buildx-action@v3
+        id: buildx-test
 
       # Build production image (single arch for testing)
       - name: Build production image for testing
@@ -38,6 +39,7 @@ jobs:
           platforms: linux/amd64
           load: true
           tags: vibescraper:latest
+          builder: ${{ steps.buildx-test.outputs.name }}
 
       # Install pnpm and bun for integration tests
       - name: Install pnpm
@@ -72,6 +74,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Set up fresh Docker Buildx for multi-arch build
+      - name: Set up Docker Buildx for multi-arch
+        uses: docker/setup-buildx-action@v3
+        id: buildx-multiarch
+        with:
+          cleanup: true
+
       # Build and push production image (multi-arch)
       - name: Build and push production image
         uses: docker/build-push-action@v6
@@ -83,6 +92,8 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ github.sha }}
+          builder: ${{ steps.buildx-multiarch.outputs.name }}
+          no-cache: true
 
   deploy_production:
     name: Deploy to Production

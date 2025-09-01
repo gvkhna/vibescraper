@@ -29,13 +29,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build production image (multi-arch)
+      - name: Build testing image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./packages/website/Dockerfile
-          platforms: linux/amd64,linux/arm64
-          tags: vibescraper:current
+          target: build
+          load: true
+          tags: vibescraper:build
           cache-from: |
             type=gha,scope=prod
             type=registry,ref=ghcr.io/${{ github.repository }}:latest
@@ -46,20 +47,8 @@ jobs:
         with:
           context: .
           file: ./packages/website/Dockerfile
-          tags: vibescraper:test
-          cache-from: |
-            type=gha,scope=prod
-            type=registry,ref=ghcr.io/${{ github.repository }}:latest
-          cache-to: type=gha,mode=max,scope=prod
-
-      - name: Load testing image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./packages/website/Dockerfile
-          target: build
           load: true
-          tags: vibescraper:build
+          tags: vibescraper:test
           cache-from: |
             type=gha,scope=prod
             type=registry,ref=ghcr.io/${{ github.repository }}:latest

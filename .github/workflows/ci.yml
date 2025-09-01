@@ -36,8 +36,18 @@ jobs:
           context: .
           file: ./packages/website/Dockerfile
           platforms: linux/amd64,linux/arm64
-          load: true
-          tags: vibescraper:latest
+          tags: vibescraper:current
+          cache-from: |
+            type=gha,scope=prod
+            type=registry,ref=ghcr.io/${{ github.repository }}:latest
+          cache-to: type=gha,mode=max,scope=prod
+
+      - name: Build production image for testing
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./packages/website/Dockerfile
+          tags: vibescraper:test
           cache-from: |
             type=gha,scope=prod
             type=registry,ref=ghcr.io/${{ github.repository }}:latest
@@ -63,7 +73,7 @@ jobs:
           docker run \
             -e CI=true \
             -e DEBUG='*' \
-            -e DOCKER_IMAGE=vibescraper:latest \
+            -e DOCKER_IMAGE=vibescraper:test \
             -v $PWD:$PWD \
             -v /var/run/docker.sock:/var/run/docker.sock \
             vibescraper:build \

@@ -97,14 +97,14 @@ Current URL: ${currentURL}`}
             <Link href='/'>Go Home</Link>
           </Button>
           <a
-            className='inline-flex h-10 items-center justify-start whitespace-nowrap rounded-md border
-              border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-900 underline-offset-4
+            className='inline-flex h-10 items-center justify-start rounded-md border border-slate-200 bg-white
+              px-4 py-2 text-sm font-medium whitespace-nowrap text-slate-900 underline-offset-4
               ring-offset-white transition-colors hover:bg-slate-100 hover:text-slate-900 hover:underline
-              focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-slate-950
-              focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-50
+              focus-visible:ring-0 focus-visible:ring-slate-950 focus-visible:ring-offset-0
+              focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50
               dark:border-slate-800 dark:bg-slate-950 dark:text-slate-50 dark:ring-offset-slate-950
               dark:hover:bg-slate-800 dark:hover:text-slate-50 dark:focus-visible:ring-slate-300'
-            href={`${PUBLIC_VARS.PUBLIC_HOSTNAME}/support`}
+            href={'/support'}
             target='_blank'
             rel='noreferrer'
           >

@@ -9,7 +9,7 @@ const envSchema = z
   .object({
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     PUBLIC_DEBUG: z.string().optional(),
-    PUBLIC_HOSTNAME: z.string(),
+    PUBLIC_HOSTNAME: z.string().optional(),
     PUBLIC_GITHUB_CLIENT_ID: z.string().optional(),
     PUBLIC_GOOGLE_CLIENT_ID: z.string().optional()
   })

@@ -29,7 +29,21 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Build only up to the 'build' stage for testing
+      # Build the full production image
+      - name: Build production image for testing
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./packages/website/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          load: true
+          tags: vibescraper:latest
+          cache-from: |
+            type=gha,scope=prod
+            type=registry,ref=ghcr.io/${{ github.repository }}:latest
+          cache-to: type=gha,mode=max,scope=prod
+
+      # Tag build stage
       - name: Build test environment
         uses: docker/build-push-action@v6
         with:
@@ -37,32 +51,22 @@ jobs:
           file: ./packages/website/Dockerfile
           target: build
           load: true
-          tags: vibescraper:test
-          cache-from: type=gha,scope=prod
-          cache-to: type=gha,mode=max,scope=prod
-
-      # Build the full production image
-      - name: Build production image for testing
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./packages/website/Dockerfile
-          load: true
-          tags: vibescraper:latest
-          cache-from: type=gha,scope=prod
+          tags: vibescraper:build
+          cache-from: |
+            type=gha,scope=prod
+            type=registry,ref=ghcr.io/${{ github.repository }}:latest
           cache-to: type=gha,mode=max,scope=prod
 
       # Run integration tests using the build stage container
       - name: Run integration tests
         run: |
-          # Run tests inside the build stage container
-          docker run --rm \
+          docker run \
             -e CI=true \
             -e DEBUG='*' \
             -e DOCKER_IMAGE=vibescraper:latest \
             -v $PWD:$PWD \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            vibescraper:test \
+            vibescraper:build \
             sh -c "cd packages/server-test && pnpm run test"
 
       # Login to container registry
@@ -73,7 +77,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build and push production image (multi-arch)
+      # Publish production image (multi-arch)
       - name: Build and push production image
         uses: docker/build-push-action@v6
         with:
@@ -84,8 +88,11 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ github.sha }}
-          cache-from: type=gha,scope=prod
-          cache-to: type=gha,mode=max,scope=prod
+          cache-from: |
+            type=gha,scope=prod
+            type=registry,ref=ghcr.io/${{ github.repository }}:latest
+          cache-to: |
+            type=gha,mode=max,scope=prod
 
   deploy_production:
     name: Deploy to Production

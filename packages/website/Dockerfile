@@ -3,21 +3,18 @@ FROM node:lts AS build
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y rsync && rm -rf /var/lib/apt/lists/*
 RUN corepack enable && npm install -g bun
 
 # Copy lockfiles for dependency fetching
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Fetch all dependencies with cache
-RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-  pnpm fetch --frozen-lockfile
+RUN pnpm fetch --frozen-lockfile
 
 COPY . .
 
 # Install dependencies offline (already fetched)
-RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-  pnpm install --recursive --offline --frozen-lockfile
+RUN pnpm install --recursive --offline --frozen-lockfile
 
 # Build the application
 RUN bun run build && \

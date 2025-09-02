@@ -1,11 +1,12 @@
-import type {Context, MiddlewareHandler} from 'hono'
-import {getFilePath, getFilePathWithoutDefaultDocument} from 'hono/utils/filepath'
+import type {Context, MiddlewareHandler, Hono} from 'hono'
+// import {getFilePath, getFilePathWithoutDefaultDocument} from 'hono/utils/filepath'
 import {createReadStream, lstatSync} from 'node:fs'
 import type {ReadStream, Stats} from 'node:fs'
-import {HttpStatusCode} from '@/lib/http-status-codes'
+// import {HttpStatusCode} from '@/lib/http-status-codes'
 import debug from 'debug'
-import type {HonoServer} from '..'
+// import type {HonoServer} from '..'
 import {getContentDisposition, getMimeType, isCompressibleContentType} from './mime-utils'
+import type {FileMetadata, ServeOptions} from './storage-service'
 
 const log = debug('app:server:serve-static')
 
@@ -18,10 +19,14 @@ const createStreamBody = (stream: ReadStream) => {
       stream.on('end', () => {
         controller.close()
       })
+      stream.on('error', (error) => {
+        log('Stream error:', error)
+        controller.error(error)
+      })
     },
 
     cancel() {
-      stream.close()
+      stream.destroy()
     }
   })
   return body
@@ -47,32 +52,17 @@ const getStats = (path: string) => {
   7.Send file stream or buffer
   */
 export function serveStatic(
-  c: Context<HonoServer>,
+  c: Context,
   filePath: string,
-  {
-    download,
-    inline,
-    filename,
-    mimeType,
-    filesize,
-    uploadedAt,
-    hash
-  }: {
-    download: boolean
-    inline: boolean
-    filename: string
-    mimeType: string
-    filesize: bigint
-    uploadedAt: Date
-    hash: string
-  }
+  {filename, mimeType, filesize, lastModified, hash}: Partial<FileMetadata>,
+  {download, inline, cacheControl}: ServeOptions
 ) {
   log('serve static resp')
 
   // ---- 1. Get file stats ----
   const stats = getStats(filePath)
   if (!stats) {
-    return c.json({error: 'File not found'}, HttpStatusCode.NotFound)
+    return c.json({error: 'File not found'}, 404)
   }
 
   // ---- 2. Check for precompressed variant ----
@@ -130,8 +120,13 @@ export function serveStatic(
   const ifNoneMatch = c.req.header('if-none-match')
   if (ifNoneMatch && ifNoneMatch.replace(/"/g, '') === etag) {
     c.header('ETag', `"${etag}"`)
-    c.header('Cache-Control', 'public, max-age=31536000, immutable')
-    c.header('Last-Modified', uploadedAt.toUTCString())
+    if (cacheControl) {
+      c.header('Cache-Control', cacheControl)
+    }
+    if (lastModified instanceof Date) {
+      c.header('Last-Modified', lastModified.toUTCString())
+    }
+
     // if (contentEncoding) {
     //   c.header('Content-Encoding', contentEncoding)
     // }
@@ -140,7 +135,7 @@ export function serveStatic(
   }
 
   // ---- 4. Set main headers ----
-  const resolvedMimeType = mimeType || 'application/octet-stream'
+  const resolvedMimeType = mimeType ?? 'application/octet-stream'
   c.header('Content-Type', resolvedMimeType)
   if (download || inline) {
     const dispositionHeader = getContentDisposition({
@@ -154,8 +149,12 @@ export function serveStatic(
     }
   }
   c.header('ETag', `"${etag}"`)
-  c.header('Cache-Control', 'public, max-age=31536000, immutable')
-  c.header('Last-Modified', uploadedAt.toUTCString())
+  if (cacheControl) {
+    c.header('Cache-Control', cacheControl)
+  }
+  if (lastModified instanceof Date) {
+    c.header('Last-Modified', lastModified.toUTCString())
+  }
   c.header('Accept-Ranges', 'bytes')
   // if (contentEncoding) {
   //   c.header('Content-Encoding', contentEncoding)
@@ -168,7 +167,7 @@ export function serveStatic(
   const size = stats.size
   if (c.req.method === 'HEAD' || c.req.method === 'OPTIONS') {
     c.header('Content-Length', size.toString())
-    return c.body(null, HttpStatusCode.Ok)
+    return c.body(null, 200)
   }
 
   // ---- 6. Range requests ----
@@ -190,10 +189,10 @@ export function serveStatic(
     c.header('Content-Length', chunksize.toString())
     c.header('Content-Range', `bytes ${start}-${end}/${stats.size}`)
 
-    return c.body(createStreamBody(stream), HttpStatusCode.PartialContent)
+    return c.body(createStreamBody(stream), 206)
   }
 
   // ---- 7. Normal full-file response ----
   c.header('Content-Length', size.toString())
-  return c.body(createStreamBody(createReadStream(filePath)), HttpStatusCode.Ok)
+  return c.body(createStreamBody(createReadStream(filePath)), 200)
 }

@@ -1,4 +1,4 @@
-import {pgTable, text, integer, bigint, uniqueIndex, timestamp, jsonb, boolean} from 'drizzle-orm/pg-core'
+import {pgTable, text, integer, uniqueIndex, jsonb} from 'drizzle-orm/pg-core'
 import {ulid, type ULID} from 'ulid'
 import {TIMESTAMPS_SCHEMA, type BrandedType, type SQLUTCTimestamp, type StrictOmit} from './common'
 import {type ProjectId, project} from './project'

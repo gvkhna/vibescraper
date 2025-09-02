@@ -1,16 +1,16 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": [".env"],
+  "globalEnv": ["DOCKER_HOST", "TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "TESTCONTAINERS_RYUK_DISABLED"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
-    "dev": {
-      "cache": false,
-      "persistent": true
+    "astro:check": {
+      "outputs": []
     },
-    "dev#@vibescraper/website": {
+    "dev": {
       "cache": false,
       "persistent": true,
       "dependsOn": ["^build"]
@@ -24,6 +24,10 @@
       "outputs": []
     },
     "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "test:integration": {
       "dependsOn": ["^build"],
       "outputs": []
     },

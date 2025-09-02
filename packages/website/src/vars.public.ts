@@ -36,18 +36,3 @@ export const PUBLIC_VARS = resolveEnvironment(envSchema)
 
 log(`Env - PROD(${PUBLIC_VARS.PROD}) SECURE(${PUBLIC_VARS.PUBLIC_HTTPS_PROTO})`)
 log(`Env - Hostname(${PUBLIC_VARS.PUBLIC_HOSTNAME})`)
-
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-if (globalThis.window && globalThis.window.localStorage && PUBLIC_VARS.PUBLIC_DEBUG) {
-  globalThis.window.localStorage.setItem('debug', PUBLIC_VARS.PUBLIC_DEBUG)
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-if (globalThis.window && globalThis.window.localStorage) {
-  const debugVal = globalThis.window.localStorage.getItem('debug')
-  if (debugVal) {
-    debug.enable(debugVal)
-    // eslint-disable-next-line no-console
-    debug.log = console.info.bind(console)
-  }
-}

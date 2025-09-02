@@ -25,8 +25,6 @@ const logger = new DefaultLogger({writer: new AppDebugLogWriter()})
 const sqlNeonPool = new Pool({connectionString: PRIVATE_VARS.DATABASE_POOL_URL ?? PRIVATE_VARS.DATABASE_URL})
 const dbNeon = drizzleNeon({client: sqlNeonPool, schema, logger, casing: 'camelCase'})
 
-// const dbNeon = drizzleNeon({connection: PRIVATE_VARS.DATABASE_URL, schema, logger, casing: 'camelCase'})
-
 /**
  * Universal batch function that works with both batch-enabled databases (Neon, LibSQL, D1)
  * and regular PostgreSQL by falling back to Promise.all
@@ -60,70 +58,32 @@ export const db: typeof dbNeon = (() => {
     return dbNeon
   } else {
     const postgresClient = postgres(PRIVATE_VARS.DATABASE_URL, {
-      // Connection events
-      // connect: (connection: any) => {
-      //   console.log('Successfully connected to database')
-      //   log(`Connection ID: ${connection.pid}`)
-      // },
-
-      // connect_error: (error: any, connection: any) => {
-      //   console.log('DATABASE CONNECTION ERROR:')
-      //   console.log(`Error Type: ${error.name}`)
-      //   console.log(`Message: ${error.message}`)
-      //   console.log(`Code: ${error.code || 'N/A'}`)
-
-      //   if (error.message.includes('ECONNREFUSED')) {
-      //     console.log('\nDATABASE NOT RUNNING')
-      //     console.log('-> Did you forget to start your database?')
-      //     console.log('-> Make sure Postgres is running on the expected host and port\n')
-      //   } else if (error.message.includes('timeout')) {
-      //     console.log('\nDATABASE CONNECTION TIMEOUT')
-      //     console.log('-> Database is unreachable or too slow to respond')
-      //     console.log('-> Check network connectivity and database status\n')
-      //   } else if (error.message.includes('authentication')) {
-      //     console.log('\nDATABASE AUTHENTICATION ERROR')
-      //     console.log('-> Check your username and password in DATABASE_URL')
-      //     console.log('-> Verify you have correct permissions\n')
-      //   }
-      // },
-
-      // error: (err: any, connection: any) => {
-      //   console.log('Error during database operation:')
-      //   console.log(`Connection ID: ${connection.pid}`)
-      //   console.log(`Error Message: ${err.message}`)
-      //   console.log(`Error Details: ${JSON.stringify(err, null, 2)}`)
-      // },
-
       // Log notices from the database server
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onnotice: (notice: any) => {
+      onnotice: (notice) => {
         log('Database Notice:')
         log(`Severity: ${notice.severity}`)
         log(`Code: ${notice.code}`)
         log(`Message: ${notice.message}`)
-        log(`Detail: ${notice.detail ?? 'N/A'}`)
-        log(`Hint: ${notice.hint ?? 'N/A'}`)
-        log(`Position: ${notice.position ?? 'N/A'}`)
-        log(`Where: ${notice.where ?? 'N/A'}`)
-        log(`File: ${notice.file ?? 'N/A'}`)
-        log(`Line: ${notice.line ?? 'N/A'}`)
-        log(`Routine: ${notice.routine ?? 'N/A'}`)
+        log(`Detail: ${notice.detail}`)
+        log(`Hint: ${notice.hint}`)
+        log(`Position: ${notice.position}`)
+        log(`Where: ${notice.where}`)
+        log(`File: ${notice.file}`)
+        log(`Line: ${notice.line}`)
+        log(`Routine: ${notice.routine}`)
       },
 
       // Log protocol parameters
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onparameter: (key: any, value: any) => {
+      onparameter: (key, value) => {
         log(`Database Parameter: ${key} = ${value}`)
       },
 
       // Debug queries - log everything about query execution
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      debug: (connection: any, query: any, params: any, types: any) => {
-        dbLog('\n🔍 DEBUG: Query Execution')
-        dbLog(`Connection ID: ${connection}`)
+      debug: (connection, query, params, types) => {
+        dbLog(`\nDEBUG: Query Execution [${connection}]`)
         dbLog(`Query: ${query}`)
-        dbLog(`Parameters: ${JSON.stringify(params)}`)
-        dbLog(`Parameter Types: ${JSON.stringify(types)}`)
+        dbLog(`Parameters: ${params}`)
+        dbLog(`Parameter Types: ${types}`)
       },
 
       onclose: (connId) => {
@@ -170,8 +130,8 @@ export const db: typeof dbNeon = (() => {
           console.log('-> Did you forget to start your database?')
           // eslint-disable-next-line no-console
           console.log('-> Make sure Postgres is running on the expected host and port\n')
-          // eslint-disable-next-line no-restricted-globals
-          process.exit(1)
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+          ;(globalThis as any).process.exit(1)
         })
     }
 

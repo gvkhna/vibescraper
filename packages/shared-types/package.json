@@ -16,8 +16,7 @@
     "typecheck": "bun tsc --noEmit",
     "lint": "bun eslint --config ../../eslint.config.mjs .",
     "clean": "rm -rf dist",
-    "test": "vitest",
-    "test:run": "vitest run"
+    "test": "vitest --run"
   },
   "devDependencies": {},
   "dependencies": {

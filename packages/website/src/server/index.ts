@@ -1,9 +1,9 @@
 import {Hono, type Context} from 'hono'
 import {auth} from '../lib/auth'
-import {fileURLToPath} from 'node:url'
+// import {fileURLToPath} from 'node:url'
 import * as schema from '@/db/schema'
 import {db} from '../db/db'
-import {dirname as pathDirname} from 'node:path'
+// import {dirname as pathDirname} from 'node:path'
 import {nowait} from '@/lib/async-utils'
 import debug from 'debug'
 import {PRIVATE_VARS} from '@/vars.private'
@@ -19,16 +19,37 @@ import storage from './storage'
 import whoami from './whoami'
 import {PUBLIC_VARS} from '@/vars.public'
 import {SandboxManager} from '@vibescraper/sandbox'
+import {StorageService} from '@vibescraper/storage-service'
 
 const log = debug('app:server:index')
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = pathDirname(__filename)
-const __cwd = globalThis.process.cwd()
+// const __filename = fileURLToPath(import.meta.url)
+// const __dirname = pathDirname(__filename)
+// const __cwd = globalThis.process.cwd()
 
 const sandboxWorkerLogger = debug('app:sandbox:worker')
 
 const sandboxManager = new SandboxManager(PRIVATE_VARS.TMP_DIR, sandboxWorkerLogger, PUBLIC_VARS.NODE_ENV)
+
+const storageService = new StorageService(
+  PRIVATE_VARS.STORAGE_PROVIDER === 'bucket'
+    ? {
+        STORAGE_PROVIDER: 'bucket',
+        STORAGE_BUCKET_NAME: PRIVATE_VARS.STORAGE_BUCKET_NAME ?? '',
+        STORAGE_ENDPOINT: PRIVATE_VARS.STORAGE_ENDPOINT ?? '',
+        STORAGE_REGION: PRIVATE_VARS.STORAGE_REGION,
+        STORAGE_ACCESS_KEY_ID: PRIVATE_VARS.STORAGE_ACCESS_KEY_ID,
+        STORAGE_CACHE_CONTROL_HEADER: PRIVATE_VARS.STORAGE_CACHE_CONTROL_HEADER,
+        STORAGE_FORCE_PATH_STYLE: PRIVATE_VARS.STORAGE_FORCE_PATH_STYLE,
+        STORAGE_SECRET_ACCESS_KEY: PRIVATE_VARS.STORAGE_SECRET_ACCESS_KEY
+      }
+    : {
+        STORAGE_PROVIDER: 'filesystem',
+        STORAGE_BASE_PATH: PRIVATE_VARS.STORAGE_BASE_PATH ?? `${PRIVATE_VARS.TMP_DIR}/storage`,
+        STORAGE_CACHE_CONTROL_HEADER: PRIVATE_VARS.STORAGE_CACHE_CONTROL_HEADER
+      },
+  debug('app:storage-service')
+)
 
 export function selectTableColumns<T extends object>(table: T, columnNames: (keyof T)[]) {
   return columnNames.reduce<Partial<T>>((acc, columnName) => {
@@ -49,6 +70,7 @@ export type HonoServer = {
     user: (Omit<typeof auth.$Infer.Session.user, 'id'> & {id: schema.UserId}) | null
     session: typeof auth.$Infer.Session.session | null
     sandbox: typeof sandboxManager | null
+    storageService: StorageService
   }
 }
 
@@ -63,6 +85,7 @@ app.use('*', async (c, next) => {
   const session = await auth.api.getSession({headers: c.req.raw.headers})
   c.set('db', db)
   c.set('sandbox', sandboxManager)
+  c.set('storageService', storageService)
 
   if (!session) {
     c.set('user', null)

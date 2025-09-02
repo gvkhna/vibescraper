@@ -1,5 +1,5 @@
 {
-  "name": "@vibescraper/json-tree-table",
+  "name": "@vibescraper/storage-service",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -14,14 +14,11 @@
     "build": "vite build",
     "dev": "vite build --watch",
     "typecheck": "bun tsc --noEmit",
-    "storybook:build": "bun ./node_modules/storybook/dist/bin/index.js build",
-    "storybook": "bun ./node_modules/storybook/dist/bin/index.js dev -p 6006",
-    "clean": "rm -rf dist"
+    "test": "vitest --run"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@types/node": "npm:@types/web@latest",
-    "@typescript/lib-dom": "npm:@types/web@latest"
+    "@types/node": "^24.3.0",
+    "@smithy/types": "^4.3.2"
   },
   "peerDependencies": {}
 }

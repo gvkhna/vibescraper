@@ -1,7 +1,7 @@
 import {Hono} from 'hono'
 import {type HonoServer} from '.'
 import {HttpStatusCode} from '@/lib/http-status-codes'
-import {storageBlobEndpoint, storageDeleteBlob, storagePutFile} from './storage'
+import {storageBlobEndpoint, storageDeleteEntry} from './storage'
 import sharp from 'sharp'
 import * as schema from '@/db/schema'
 import {eq as sqlEq, and as sqlAnd} from 'drizzle-orm'
@@ -16,6 +16,7 @@ const app = new Hono<HonoServer>().post('/uploadAvatar', async (c) => {
   const user = c.get('user')
 
   if (!user) {
+    log('invalid user permissions')
     return c.json({error: 'Unable to authenticate user'}, HttpStatusCode.Forbidden)
   }
 
@@ -32,7 +33,8 @@ const app = new Hono<HonoServer>().post('/uploadAvatar', async (c) => {
     if (file.size > MAX_AVATAR_SIZE) {
       return c.json({error: 'Image too large'}, HttpStatusCode.BadRequest)
     }
-  } catch {
+  } catch (err) {
+    log('invalid form data: ', err)
     return c.json({error: 'Invalid form data'}, HttpStatusCode.BadRequest)
   }
 
@@ -51,14 +53,15 @@ const app = new Hono<HonoServer>().post('/uploadAvatar', async (c) => {
     } else {
       return c.json({error: 'Unable to find user'}, HttpStatusCode.Forbidden)
     }
-  } catch {
+  } catch (err) {
+    log('initial database error: ', err)
     return c.json({error: 'Database error'}, HttpStatusCode.BadRequest)
   }
 
   // 3. Sharp transformation (fail on bad image)
-  let webpBuffer: BinarySource
+  let webpBuffer: Uint8Array
   try {
-    const imageBuffer = await file.arrayBuffer()
+    const imageBuffer = await file.bytes()
     webpBuffer = await sharp(imageBuffer)
       .resize({
         width: 512,
@@ -70,17 +73,37 @@ const app = new Hono<HonoServer>().post('/uploadAvatar', async (c) => {
       .webp({quality: 90})
       .toBuffer()
   } catch (err) {
+    log('invalid image file: ', err)
     return c.json({error: 'Invalid or unsupported image file'}, HttpStatusCode.BadRequest)
   }
 
   // 4. Store processed image
-  let newAvatarStorage: {id: schema.StorageId; publicId: schema.StoragePublicId}
+  let newAvatarStorage: {id: schema.StorageId; publicId: schema.StoragePublicId} | null = null
   try {
-    // TODO: setup testing for storage apis
-    const webpFile = new File([webpBuffer as never], 'avatar.webp', {type: 'image/webp'})
-    newAvatarStorage = await storagePutFile(db, webpFile)
+    const result = await c.get('storageService').storeBytesMetadata(webpBuffer, {
+      filename: 'avatar.webp',
+      mimeType: 'image/webp'
+    })
+    if (result.success) {
+      const [storageEntry] = await db
+        .insert(schema.storage)
+        .values({
+          key: result.data.key as schema.StorageKey,
+          filename: result.data.filename,
+          filesize: result.data.filesize,
+          mimeType: result.data.mimeType,
+          sha256hash: result.data.hash
+        })
+        .returning()
+      newAvatarStorage = {id: storageEntry.id, publicId: storageEntry.publicId}
+    }
   } catch (err) {
+    log('storage error', err)
     return c.json({error: 'Failed to store avatar image'}, HttpStatusCode.BadRequest)
+  }
+
+  if (!newAvatarStorage) {
+    return c.json({error: 'Failed to get avatar image entry'}, HttpStatusCode.BadRequest)
   }
 
   // 5. Delete old avatar if present (non-fatal if fails)
@@ -90,7 +113,7 @@ const app = new Hono<HonoServer>().post('/uploadAvatar', async (c) => {
         where: (table, {eq}) => eq(table.id, userAvatarStorageId)
       })
       if (currentAvatar) {
-        await storageDeleteBlob(db, currentAvatar)
+        await storageDeleteEntry(c, currentAvatar)
       }
     } catch (err) {
       // Log, but don't block new upload on dangling reference
@@ -105,13 +128,11 @@ const app = new Hono<HonoServer>().post('/uploadAvatar', async (c) => {
       .set({avatarStorageId: newAvatarStorage.id})
       .where(sqlEq(schema.user.id, user.id))
   } catch (err) {
+    log('failed to update user record: ', err)
     return c.json({error: 'Failed to update user record'}, HttpStatusCode.BadRequest)
   }
 
   // 7. Build URL and respond
-  // log('request url', c.req.url)
-  // const requestUrl = new URL(c.req.url)
-
   const newAvatarUrlString = storageBlobEndpoint(newAvatarStorage.publicId)
   return c.json({data: {url: newAvatarUrlString}}, HttpStatusCode.Ok)
 })

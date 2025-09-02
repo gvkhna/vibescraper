@@ -725,7 +725,7 @@ export function getContentDisposition({
   download
 }: {
   mimeType: string
-  filename: string
+  filename: string | null | undefined
   inline: boolean
   download: boolean
 }): string | null {

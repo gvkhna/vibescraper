@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import {defineConfig} from 'drizzle-kit'
 
-const processEnv = process.env as Record<string, string>
+const processEnv = (globalThis as any).process.env as Record<string, string>
 
 console.log('drizzle.config.ts - database url: ', processEnv.DATABASE_URL)
 

@@ -18,4 +18,36 @@ import {PUBLIC_VARS} from '@/vars.public'
     client:only='react'
     publicEnv={PUBLIC_VARS}
   />
+  <debug-logger
+    data-public-debug={PUBLIC_VARS.PUBLIC_DEBUG}
+    class='hidden'
+  ></debug-logger>
+  <script>
+    import debug from 'debug'
+    class DebugLogger extends HTMLElement {
+      constructor() {
+        super()
+      }
+
+      connectedCallback() {
+        if (
+          globalThis.window &&
+          globalThis.window.localStorage &&
+          this.dataset.publicDebug
+        ) {
+          globalThis.window.localStorage.setItem('debug', this.dataset.publicDebug)
+        }
+
+        if (globalThis.window && globalThis.window.localStorage) {
+          const debugVal = globalThis.window.localStorage.getItem('debug')
+          if (debugVal) {
+            debug.enable(debugVal)
+            debug.log = console.info.bind(console)
+          }
+        }
+      }
+    }
+
+    customElements.define('debug-logger', DebugLogger)
+  </script>
 </AppLayout>

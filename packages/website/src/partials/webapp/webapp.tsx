@@ -5,6 +5,7 @@ import {Toaster} from '@/components/ui/sonner'
 import {ErrorBoundary} from 'react-error-boundary'
 import {EnvProvider, type EnvContextValue} from './env-context'
 import {RouterProvider, createRouter} from '@tanstack/react-router'
+// import debug from 'debug'
 
 // Import the generated route tree
 import {routeTree} from '@/routeTree.gen.ts'
@@ -37,7 +38,7 @@ export interface WebappProps extends EnvContextValue {}
 export function Webapp(props: PropsWithChildren<WebappProps>) {
   return (
     <StrictMode>
-      <EnvProvider publicAppHostname={props.publicAppHostname}>
+      <EnvProvider publicEnv={props.publicEnv}>
         <SWRConfig
           value={{
             // Do not revalidate when window gains focus

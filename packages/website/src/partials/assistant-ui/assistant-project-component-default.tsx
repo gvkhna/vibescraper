@@ -6,6 +6,7 @@ export function AssistantProjectComponentDefault(props: AssistantProjectComponen
   return (
     <ChatFileProjectVersionBlock
       versionBlock={{
+        type: 'extractor',
         version: 1,
         changes: [],
         overallStatus: 'error'

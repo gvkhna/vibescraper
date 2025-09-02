@@ -39,25 +39,7 @@ export default defineConfig({
       formats: ['es']
     },
     rollupOptions: {
-      external: [
-        'react',
-        'react-dom',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        'lucide-react',
-        'lucide-react/icons/*',
-        '@radix-ui/react-checkbox',
-        '@radix-ui/react-dialog',
-        '@radix-ui/react-popover',
-        '@radix-ui/react-scroll-area',
-        '@radix-ui/react-select',
-        '@radix-ui/react-slot',
-        '@radix-ui/react-tooltip',
-        'class-variance-authority',
-        'clsx',
-        'tailwind-merge',
-        'type-fest'
-      ],
+      external: [/^node:.*/, /node_modules/],
       output: {
         preserveModules: true,
         preserveModulesRoot: 'src',

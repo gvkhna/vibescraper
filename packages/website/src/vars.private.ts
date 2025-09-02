@@ -47,12 +47,15 @@ const envSchema = z.object({
   AI_OPENAI_COMPATIBLE_API_KEY: z.string().optional(),
   AI_OPENAI_COMPATIBLE_NAME: z.string().optional(),
 
-  AWS_ACCESS_KEY_ID: z.string().optional(),
-  AWS_BUCKET_NAME: z.string().optional(),
-  AWS_FORCE_PATH_STYLE: z.string().optional(),
-  AWS_REGION: z.string().optional(),
-  AWS_S3_ENDPOINT: z.string().optional(),
-  AWS_SECRET_ACCESS_KEY: z.string().optional(),
+  STORAGE_BASE_PATH: z.string().optional(),
+  STORAGE_PROVIDER: z.string().optional(),
+  STORAGE_BUCKET_NAME: z.string().optional(),
+  STORAGE_REGION: z.string().optional(),
+  STORAGE_ENDPOINT: z.string().optional(),
+  STORAGE_ACCESS_KEY_ID: z.string().optional(),
+  STORAGE_SECRET_ACCESS_KEY: z.string().optional(),
+  STORAGE_FORCE_PATH_STYLE: z.string().optional(),
+  STORAGE_CACHE_CONTROL_HEADER: z.string().optional(),
 
   BETTER_AUTH_SECRET: z.string().min(1),
   ENCRYPT_SECRET_KEY: z.string().min(1),
@@ -74,7 +77,6 @@ const envSchema = z.object({
   SMTP_SEND_AS_EMAIL: z.string().min(1),
   SMTP_USERNAME: z.string().min(1),
 
-  STORAGE_PROVIDER: z.string().optional(),
   TMP_DIR: z.string().min(1)
 })
 

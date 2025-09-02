@@ -17,8 +17,10 @@ COPY . .
 RUN pnpm install --recursive --offline --frozen-lockfile
 
 # Build the application
-RUN bun run build && \
-  bun run deploy:website
+RUN bun run typecheck && \
+  bun turbo run astro:check --filter=@vibescraper/website && \
+  bun run build && \
+  pnpm --filter-prod @vibescraper/website --prod deploy dist
 
 # ============================================
 # Production Runtime

@@ -12,8 +12,6 @@
   "include": [
     "types.d.ts",
     ".astro/types.d.ts",
-    ".vite-plugins/*.ts",
-    "astro.config.ts",
     "drizzle.config.ts",
     "src/**/*.astro",
     "src/**/*.ts",

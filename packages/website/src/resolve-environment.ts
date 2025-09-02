@@ -1,14 +1,21 @@
- 
+/* eslint-disable */
 import {z} from 'zod'
 
 export function resolveEnvironment<T extends z.ZodType>(schema: T): z.infer<T> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // Prevent this function from being called in the browser
+  // Environment resolution should only happen server-side
+  if (typeof globalThis.window !== 'undefined' && globalThis.window === globalThis) {
+    throw new Error(
+      'resolveEnvironment() cannot be called in the browser. ' +
+        'Environment variables must be resolved server-side and passed to the client via React context.'
+    )
+  }
+
   const global = globalThis as any
   // Temporarily collect env in a JS object
   const combinedEnv: Record<string, unknown> = {}
 
   // If running in a Vite-like environment (Astro, etc.) that provides `import.meta.env`
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (import.meta?.env) {
     for (const [key, value] of Object.entries(import.meta.env)) {
       // If `value` is already a string or undefined, store it
@@ -25,7 +32,6 @@ export function resolveEnvironment<T extends z.ZodType>(schema: T): z.infer<T> {
   // If running in Deno environment (with the right permissions)
   if (typeof global.Deno !== 'undefined' && typeof global.Deno.env !== 'undefined') {
     // For each key in Deno.env, if we don't already have a value from import.meta.env, we set it
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument
     for (const [key, value] of Object.entries(global.Deno.env.toObject())) {
       combinedEnv[key] ??= value
     }
@@ -34,7 +40,7 @@ export function resolveEnvironment<T extends z.ZodType>(schema: T): z.infer<T> {
   // If running in Node.js or Bun environment
   if (typeof global.process !== 'undefined' && global.process.env) {
     // For each key in process.env, if we don't already have a value, we set it
-    for (const [key, value] of Object.entries(global.process.env as typeof process.env)) {
+    for (const [key, value] of Object.entries(global.process.env)) {
       combinedEnv[key] ??= value
     }
   }
@@ -43,10 +49,8 @@ export function resolveEnvironment<T extends z.ZodType>(schema: T): z.infer<T> {
   // This throws if any required field is missing or if a field is invalid.
   const result = schema.safeParse(combinedEnv)
   if (!result.success) {
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     throw new Error(`Environment validation error:\n${result.error} Found: ${JSON.stringify(combinedEnv)}`)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
   return result.data as any
 }

@@ -1,4 +1,4 @@
-import {pgTable, text, bigint, uniqueIndex, varchar} from 'drizzle-orm/pg-core'
+import {pgTable, text, bigint, uniqueIndex, varchar, numeric} from 'drizzle-orm/pg-core'
 import {ulid, type ULID} from 'ulid'
 import {TIMESTAMPS_SCHEMA, type BrandedType} from './common'
 
@@ -19,7 +19,7 @@ export const storage = pgTable(
       .$type<StoragePublicId>(),
     key: text().notNull().$type<StorageKey>(),
     filename: text().notNull(),
-    filesize: bigint({mode: 'bigint'}).notNull(),
+    filesize: bigint({mode: 'number'}).notNull(),
     sha256hash: varchar({length: 64}).notNull(), // Lowercase hex
     mimeType: text().notNull(),
     ...TIMESTAMPS_SCHEMA

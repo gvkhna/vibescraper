@@ -44,7 +44,7 @@
 // Use Uint8Array and modern web APIs instead of Buffer
 // <reference path="node_modules/@types/node-legacy/buffer.d.ts" />
 
-/// <reference path="node_modules/@types/node-legacy/child_process.d.ts" />
+// <reference path="node_modules/@types/node-legacy/child_process.d.ts" />
 
 // <reference path="node_modules/@types/node-legacy/cluster.d.ts" />
 
@@ -70,8 +70,8 @@
 // Use EventTarget from DOM or explicit imports for EventEmitter
 // <reference path="node_modules/@types/node-legacy/events.d.ts" />
 
-/// <reference path="node_modules/@types/node-legacy/fs.d.ts" />
-/// <reference path="node_modules/@types/node-legacy/fs/promises.d.ts" />
+// <reference path="node_modules/@types/node-legacy/fs.d.ts" />
+// <reference path="node_modules/@types/node-legacy/fs/promises.d.ts" />
 
 // Use fetch API and modern web standards instead
 // <reference path="node_modules/@types/node-legacy/http.d.ts" />
@@ -86,14 +86,14 @@
 
 // TCP sockets not needed for web-first development
 // <reference path="node_modules/@types/node-legacy/net.d.ts" />
-/// <reference path="node_modules/@types/node-legacy/os.d.ts" />
-/// <reference path="node_modules/@types/node-legacy/path.d.ts" />
+// <reference path="node_modules/@types/node-legacy/os.d.ts" />
+// <reference path="node_modules/@types/node-legacy/path.d.ts" />
 
 // Use Performance API from web standards
 // <reference path="node_modules/@types/node-legacy/perf_hooks.d.ts" />
 
 // Process should be explicitly imported, not global
-/// <reference path="node_modules/@types/node-legacy/process.d.ts" />
+// <reference path="node_modules/@types/node-legacy/process.d.ts" />
 
 // Deprecated, use URL API instead
 // <reference path="node_modules/@types/node-legacy/punycode.d.ts" />
@@ -140,7 +140,7 @@
 // <reference path="node_modules/@types/node-legacy/tty.d.ts" />
 
 // Use URL and URLSearchParams from web standards
-/// <reference path="node_modules/@types/node-legacy/url.d.ts" />
+// <reference path="node_modules/@types/node-legacy/url.d.ts" />
 
 // Most util functions have web standard equivalents
 // <reference path="node_modules/@types/node-legacy/util.d.ts" />

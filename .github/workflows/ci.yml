@@ -65,12 +65,32 @@ jobs:
             vibescraper:build \
             pnpm run test
 
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            name=${{ github.repository }}
+            name=ghcr.io/${{ github.repository }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=edge,branch=main
+            type=sha
+          flavor: |
+            latest=true
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Publish production image (multi-arch)
         uses: docker/build-push-action@v6
@@ -79,9 +99,8 @@ jobs:
           file: ./packages/website/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
             type=gha,scope=prod
             type=registry,ref=ghcr.io/${{ github.repository }}:latest

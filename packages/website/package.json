@@ -2,7 +2,6 @@
   "name": "@vibescraper/website",
   "type": "module",
   "scripts": {
-    "astro:check": "bun astro check --minimumSeverity error",
     "build": "bun --env-file=../../.env astro build",
     "clean": "rm -rf dist .astro",
     "db:generate": "bun --env-file=../../.env ./node_modules/drizzle-kit/bin.cjs generate",
@@ -20,7 +19,7 @@
     "test:vitest": "bun --env-file=../../.env vitest --run",
     "test:coverage": "bun --env-file=../../.env vitest run --coverage",
     "typecheck:full": "bun tsc --noEmit --pretty --noErrorTruncation",
-    "typecheck": "bun tsc --noEmit",
+    "typecheck": "bun astro check --minimumSeverity error && bun tsc --noEmit",
     "worker": "bun src/worker/standalone.ts"
   },
   "browserslist": [

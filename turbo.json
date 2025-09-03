@@ -7,9 +7,6 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
-    "astro:check": {
-      "outputs": []
-    },
     "dev": {
       "cache": false,
       "persistent": true,

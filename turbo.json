@@ -27,10 +27,6 @@
       "dependsOn": ["^build"],
       "outputs": []
     },
-    "test:integration": {
-      "dependsOn": ["^build"],
-      "outputs": []
-    },
     "clean": {
       "cache": false
     }

@@ -29,7 +29,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build testing image
+      - name: Build complete development environment image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -42,7 +42,7 @@ jobs:
             type=registry,ref=ghcr.io/${{ github.repository }}:latest
           cache-to: type=gha,mode=max,scope=prod
 
-      - name: Load production image for testing
+      - name: Build production runtime dist stage for testing
         uses: docker/build-push-action@v6
         with:
           context: .

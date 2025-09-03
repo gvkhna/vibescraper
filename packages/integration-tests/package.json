@@ -4,8 +4,7 @@
   "type": "module",
   "description": "Integration tests for the Vibescraper website",
   "scripts": {
-    "test:integration": "vitest run",
-    "test:ci": "CI=true vitest run",
+    "test": "vitest --run",
     "typecheck": "bun tsc --noEmit"
   },
   "devDependencies": {

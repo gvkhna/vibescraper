@@ -8,7 +8,6 @@ dist*
 .tanstack
 .turbo
 .claude
-routeTree.gen.ts
 *.log
 *.tsbuildinfo
 

@@ -1,11 +1,7 @@
 'use client'
 
 import {Fragment, useRef, useState, useEffect} from 'react'
-// import {ChevronDown, ChevronRight, Plus, Minus} from 'lucide-react'
-import ChevronDown from 'lucide-react/icons/chevron-down'
-import ChevronRight from 'lucide-react/icons/chevron-right'
-import Plus from 'lucide-react/icons/plus'
-import Minus from 'lucide-react/icons/minus'
+import {ChevronDown, ChevronRight, Plus, Minus} from 'lucide-react'
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table'
 import {Badge} from '@/components/ui/badge'
 import {Button} from '@/components/ui/button'
@@ -624,11 +620,11 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                           style: {width: columnWidths.key}
                         })}
                   >
-                    <div className='flex items-center justify-between whitespace-nowrap text-nowrap'>
+                    <div className='flex items-center justify-between text-nowrap whitespace-nowrap'>
                       <span>{props.overhideHeaderKey ?? 'Key'}</span>
                       <div
                         className={cn(
-                          'absolute right-0 top-0 flex h-full w-1',
+                          'absolute top-0 right-0 flex h-full w-1',
                           disableResize ? '' : 'cursor-col-resize'
                         )}
                         {...(disableResize
@@ -640,7 +636,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                             })}
                       >
                         <div
-                          className='relative right-0 top-0 flex h-2/3 w-[1px] items-center self-center
+                          className='relative top-0 right-0 flex h-2/3 w-[1px] items-center self-center
                             bg-zinc-700/30 dark:bg-white/40'
                         ></div>
                       </div>
@@ -654,12 +650,12 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                           style: {width: columnWidths.type}
                         })}
                   >
-                    <div className='flex items-center justify-between whitespace-nowrap text-nowrap'>
+                    <div className='flex items-center justify-between text-nowrap whitespace-nowrap'>
                       <span>Type</span>
                       {(enableCheckboxField || enableValueField) && (
                         <div
                           className={cn(
-                            'absolute right-0 top-0 flex h-full w-1',
+                            'absolute top-0 right-0 flex h-full w-1',
                             disableResize ? '' : 'cursor-col-resize'
                           )}
                           {...(disableResize
@@ -671,7 +667,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                               })}
                         >
                           <div
-                            className='relative right-0 top-0 flex h-2/3 w-[1px] items-center self-center
+                            className='relative top-0 right-0 flex h-2/3 w-[1px] items-center self-center
                               bg-zinc-700/30 dark:bg-white/40'
                           ></div>
                         </div>
@@ -690,12 +686,12 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                       {enableCheckboxTooltip ? (
                         <Tooltip delayDuration={450}>
                           <TooltipTrigger asChild>
-                            <div className='flex items-center justify-between whitespace-nowrap text-nowrap'>
+                            <div className='flex items-center justify-between text-nowrap whitespace-nowrap'>
                               <span>{checkboxFieldName}</span>
                               {enableValueField && (
                                 <div
                                   className={cn(
-                                    'absolute right-0 top-0 flex h-full w-1',
+                                    'absolute top-0 right-0 flex h-full w-1',
                                     disableResize ? '' : 'cursor-col-resize'
                                   )}
                                   {...(disableResize
@@ -707,7 +703,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                                       })}
                                 >
                                   <div
-                                    className='relative right-0 top-0 flex h-2/3 w-[1px] items-center
+                                    className='relative top-0 right-0 flex h-2/3 w-[1px] items-center
                                       self-center bg-zinc-700/30 dark:bg-white/40'
                                   ></div>
                                 </div>
@@ -719,12 +715,12 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                           </TooltipContent>
                         </Tooltip>
                       ) : (
-                        <div className='flex items-center justify-between whitespace-nowrap text-nowrap'>
+                        <div className='flex items-center justify-between text-nowrap whitespace-nowrap'>
                           <span>{checkboxFieldName}</span>
                           {enableValueField && (
                             <div
                               className={cn(
-                                'absolute right-0 top-0 flex h-full w-1',
+                                'absolute top-0 right-0 flex h-full w-1',
                                 disableResize ? '' : 'cursor-col-resize'
                               )}
                               {...(disableResize
@@ -736,7 +732,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                                   })}
                             >
                               <div
-                                className='relative right-0 top-0 flex h-2/3 w-[1px] items-center self-center
+                                className='relative top-0 right-0 flex h-2/3 w-[1px] items-center self-center
                                   bg-zinc-700/30 dark:bg-white/40'
                               ></div>
                             </div>
@@ -754,7 +750,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                             style: {width: columnWidths.value}
                           })}
                     >
-                      <div className='flex items-center justify-between whitespace-nowrap text-nowrap'>
+                      <div className='flex items-center justify-between text-nowrap whitespace-nowrap'>
                         <span>Value</span>
                       </div>
                     </TableHead>
@@ -827,7 +823,10 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                                   : (node.title ?? node.name)}
                               </span>
                               {row.badge && (
-                                <Badge variant="secondary" className='text-[10px] px-1.5 py-0 h-4'>
+                                <Badge
+                                  variant='secondary'
+                                  className='h-4 px-1.5 py-0 text-[10px]'
+                                >
                                   {row.badge}
                                 </Badge>
                               )}
@@ -887,7 +886,10 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                                         : (node.title ?? node.name)}
                                     </span>
                                     {row.badge && (
-                                      <Badge variant="secondary" className='text-[10px] px-1.5 py-0 h-4'>
+                                      <Badge
+                                        variant='secondary'
+                                        className='h-4 px-1.5 py-0 text-[10px]'
+                                      >
                                         {row.badge}
                                       </Badge>
                                     )}
@@ -944,7 +946,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                           : {
                               style: {width: columnWidths.type}
                             })}
-                        className='text-primary text-nowrap px-4 py-1'
+                        className='text-primary px-4 py-1 text-nowrap'
                       >
                         {disableEditTypes ? (
                           <>{nodeTypes[node.type]}</>

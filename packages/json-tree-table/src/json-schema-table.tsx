@@ -1,3 +1,4 @@
+/* eslint-disable no-undefined */
 import * as React from 'react'
 import type {JsonObject} from 'type-fest'
 import {TreeTableEditor} from './tree-table-editor'
@@ -27,6 +28,7 @@ export interface SimpleObjectSchema {
   type: 'object'
   properties: Record<string, PropertySchema>
   required?: string[]
+  'x-primary-key'?: string
 }
 
 export interface JsonSchemaTableProps {
@@ -39,20 +41,18 @@ import type {TreeNode, TreeNodeType} from './tree-table-editor'
 // Helper to convert JSON Schema directly to TreeNode array
 function jsonSchemaToSchemaTable(schema: SimpleObjectSchema): TreeNode[] {
   const result: TreeNode[] = []
-  
+
   // Check if there's a primary key defined
-  const primaryKey = typeof (schema as any)['x-primary-key'] === 'string' 
-    ? (schema as any)['x-primary-key'] 
-    : null
+  const primaryKey = typeof schema['x-primary-key'] === 'string' ? schema['x-primary-key'] : null
 
   for (const [key, propSchema] of Object.entries(schema.properties)) {
     const type = Array.isArray(propSchema.type) ? propSchema.type[0] : propSchema.type
-    
+
     // Map JSON Schema types to TreeNode types
     let nodeType: TreeNodeType
     let nodeValue: string | boolean | number | null
     let children: TreeNode[] | null = null
-    
+
     switch (type) {
       case 'string':
         nodeType = 'String'
@@ -88,10 +88,10 @@ function jsonSchemaToSchemaTable(schema: SimpleObjectSchema): TreeNode[] {
         nodeType = 'Null'
         nodeValue = null
     }
-    
+
     // Check if this property is required
-    const isRequired = schema.required?.includes(key) || false
-    
+    const isRequired = schema.required?.includes(key) ?? false
+
     result.push({
       name: key,
       type: nodeType,

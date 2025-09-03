@@ -49,9 +49,3 @@ bun run build            # Build all packages
 bun run lint             # Lint codebase
 bun run typecheck        # TypeScript check
 ```
-
-## Testing
-
-```sh
-./scripts/build-local.sh && ./scripts/test-local.sh  # Run smoke test
-```

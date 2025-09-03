@@ -81,9 +81,25 @@ export default defineConfig({
       }
     },
     react({
-      // experimentalDisableStreaming: true,
+      experimentalDisableStreaming: true,
       babel: {
-        plugins: [['babel-plugin-react-compiler']]
+        plugins: [
+          [
+            'babel-plugin-react-compiler',
+            {
+              // compilationMode: 'annotation',
+              target: '19',
+              // panicThreshold: 'none',
+              logger: {
+                logEvent(filename: string, event) {
+                  if (event.kind === 'CompileSuccess') {
+                    console.log('Compiled:', filename)
+                  }
+                }
+              }
+            }
+          ]
+        ]
       }
     }),
     mdx()

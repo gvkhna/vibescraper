@@ -2,6 +2,15 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
+    "baseUrl": ".",
+    "libReplacement": false,
+    "incremental": true,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "lib": ["ESNext", "DOM"],
     "types": ["node"],
     "allowImportingTsExtensions": true

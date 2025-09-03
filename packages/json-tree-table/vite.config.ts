@@ -2,7 +2,7 @@ import {defineConfig} from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import {resolve, dirname} from 'node:path'
+import {resolve, dirname, isAbsolute} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import dts from 'vite-plugin-dts'
 
@@ -13,36 +13,52 @@ export default defineConfig({
   plugins: [
     react({
       babel: {
-        plugins: [['babel-plugin-react-compiler']]
+        plugins: [
+          [
+            'babel-plugin-react-compiler',
+            {
+              target: '19'
+            }
+          ]
+        ]
       }
     }),
     tailwindcss(),
-    tsconfigPaths({
-      // Explicitly point to your monorepo tsconfig(s)
-      projects: [resolve(__dirname, './tsconfig.json')]
-    }),
+    // tsconfigPaths({
+    //   projects: [resolve(__dirname, './tsconfig.json')]
+    // }),
     dts({
-      insertTypesEntry: true,
       exclude: ['**/*.stories.*', '**/*.test.*']
     })
   ],
-  resolve: {
-    alias: {
-      'lucide-react/icons': fileURLToPath(
-        new URL('../../node_modules/lucide-react/dist/esm/icons', import.meta.url)
-      )
-    }
-  },
+  // resolve: {
+  //   alias: {
+  //     'lucide-react/icons': fileURLToPath(
+  //       new URL('../../node_modules/lucide-react/dist/esm/icons', import.meta.url)
+  //     )
+  //   }
+  // },
   build: {
+    target: 'esnext',
+    sourcemap: true,
+    minify: false,
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       formats: ['es']
     },
     rollupOptions: {
-      external: [/^node:.*/, /node_modules/],
+      external: (id, importer, isResolved) => {
+        // Keep relative imports in src bundled
+        if (id.startsWith('.') || isAbsolute(id)) {
+          return false
+        }
+
+        // Otherwise externalize (like 'react', 'react-dom', etc.)
+        return true
+      },
       output: {
         preserveModules: true,
-        preserveModulesRoot: 'src',
+        preserveModulesRoot: '.',
         entryFileNames: '[name].js'
       }
     }

@@ -1,8 +1,5 @@
 {
-  "compilerOptions": {
-    "noEmit": true,
-    "noUnusedLocals": false
-  },
+  "compilerOptions": {},
   "exclude": ["node_modules", "**/dist", "**/build", "**/.turbo"],
   "extends": "./tsconfig.base.json"
 }

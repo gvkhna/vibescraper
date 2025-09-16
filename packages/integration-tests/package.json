@@ -4,7 +4,7 @@
   "description": "Integration tests for the Vibescraper website",
   "type": "module",
   "scripts": {
-    "clean": "rm -rf dist .turbo",
+    "clean": "rimraf dist .turbo node_modules/.cache *.tsbuildinfo",
     "test": "vitest --run",
     "typecheck": "bun tsc --noEmit"
   },

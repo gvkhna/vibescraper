@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "vite build",
-    "clean": "rm -rf dist .turbo",
+    "clean": "rimraf dist .turbo node_modules/.cache node_modules/.vite-temp *.tsbuildinfo",
     "dev": "vite build --watch",
     "run:html-cleaner": "bun run src/html-cleaner-run.ts",
     "run:html-format": "bun run src/html-format-run.ts",

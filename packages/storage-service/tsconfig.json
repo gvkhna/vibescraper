@@ -1,18 +1,10 @@
 {
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
     "baseUrl": ".",
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true,
-    "incremental": true,
-    "lib": ["ESNext", "DOM"],
-    "libReplacement": false,
-    "noEmit": true,
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["node"]
+    "types": ["node", "web"]
   },
   "exclude": ["node_modules", "dist"],
   "extends": "../../tsconfig.base.json",

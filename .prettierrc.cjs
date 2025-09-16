@@ -81,6 +81,7 @@ module.exports = {
           'engines',
           'os',
           'cpu',
+          'browserslist',
 
           // Scripts
           'scripts',
@@ -93,21 +94,7 @@ module.exports = {
           'optionalDependencies',
           'bundleDependencies',
           'overrides',
-          'resolutions',
-
-          // Config / tool-specific
-          'config',
-          'publishConfig',
-          'eslintConfig',
-          'prettier',
-          'stylelint',
-          'jest',
-          'babel',
-          'tsconfig',
-          'ava',
-          'release',
-          'husky',
-          'lint-staged'
+          'resolutions'
         ]
       }
     },

@@ -1,9 +1,12 @@
 {
   "name": "@vibescraper/website",
   "type": "module",
+  "browserslist": [
+    "defaults and fully supports es6-module, not op_mini all"
+  ],
   "scripts": {
     "build": "bun --env-file=../../.env astro build",
-    "clean": "rm -rf dist .astro .turbo",
+    "clean": "rimraf dist .astro .turbo node_modules/.cache node_modules/.vite-temp *.tsbuildinfo",
     "db:generate": "bun --env-file=../../.env ./node_modules/drizzle-kit/bin.cjs generate",
     "db:migrate": "bun --env-file=../../.env ./node_modules/drizzle-kit/bin.cjs migrate",
     "db:seed": "bun --env-file=../../.env src/db/seed.ts",
@@ -163,10 +166,6 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/shell-quote": "^1.7.5",
     "@types/unist": "^3.0.3",
-    "@typescript/lib-dom": "npm:@types/web@latest",
     "maildev": "^2.2.1"
-  },
-  "browserslist": [
-    "defaults and fully supports es6-module, not op_mini all"
-  ]
+  }
 }

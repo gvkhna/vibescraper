@@ -12,14 +12,14 @@
   },
   "scripts": {
     "build": "vite build",
-    "clean": "rm -rf dist .turbo",
+    "clean": "rimraf dist .turbo node_modules/.cache node_modules/.vite-temp *.tsbuildinfo",
     "dev": "vite build --watch",
     "test": "vitest --run",
     "typecheck": "bun tsc --noEmit"
   },
   "devDependencies": {
     "@types/deno": "^2.3.0",
-    "@types/node": "^24.3.0"
+    "@types/node": "^24.5.0"
   },
   "peerDependencies": {}
 }

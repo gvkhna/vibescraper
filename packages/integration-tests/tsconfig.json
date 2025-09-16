@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
     "types": ["vitest/globals", "node"]
   },
   "exclude": ["node_modules", "dist"],

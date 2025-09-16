@@ -1,8 +1,8 @@
 {
   "name": "@vibescraper/integration-tests",
   "private": true,
-  "type": "module",
   "description": "Integration tests for the Vibescraper website",
+  "type": "module",
   "scripts": {
     "clean": "rm -rf dist .turbo",
     "test": "vitest --run",

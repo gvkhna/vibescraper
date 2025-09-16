@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "allowJs": true,
     "allowImportingTsExtensions": true,
+    "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": true,
     "allowUnusedLabels": true,
@@ -12,6 +12,8 @@
     "forceConsistentCasingInFileNames": true,
     "incremental": false,
     "isolatedModules": true,
+    "lib": ["ESNext"],
+    "libReplacement": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
@@ -28,7 +30,6 @@
     "strict": true,
     "strictNullChecks": true,
     "target": "ESNext",
-    "verbatimModuleSyntax": true,
-    "lib": ["ESNext"]
+    "verbatimModuleSyntax": true
   }
 }

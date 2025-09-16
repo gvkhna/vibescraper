@@ -14,17 +14,14 @@
     "preview": "bun --env-file=../../.env astro preview",
     "start": "bun --env-file=../../.env dist/server/entry.mjs",
     "storage:reset": "find storage -mindepth 1 ! -name '.keep' -exec rm -rf {} +",
-    "storybook:build": "bun ./node_modules/storybook/dist/bin/index.js build",
     "storybook": "bun ./node_modules/storybook/dist/bin/index.js dev -p 6006",
-    "test:vitest": "bun --env-file=../../.env vitest --run",
+    "storybook:build": "bun ./node_modules/storybook/dist/bin/index.js build",
     "test:coverage": "bun --env-file=../../.env vitest run --coverage",
-    "typecheck:full": "bun tsc --noEmit --pretty --noErrorTruncation",
+    "test:vitest": "bun --env-file=../../.env vitest --run",
     "typecheck": "bun astro check --minimumSeverity error && bun tsc --noEmit",
+    "typecheck:full": "bun tsc --noEmit --pretty --noErrorTruncation",
     "worker": "bun src/worker/standalone.ts"
   },
-  "browserslist": [
-    "defaults and fully supports es6-module, not op_mini all"
-  ],
   "dependencies": {
     "@ai-sdk/amazon-bedrock": "^3.0.16",
     "@ai-sdk/anthropic": "^2.0.15",
@@ -160,13 +157,16 @@
     "@types/leaflet": "^1.9.20",
     "@types/lodash-es": "^4.17.12",
     "@types/mjml": "^4.7.4",
-    "@typescript/lib-dom": "npm:@types/web@latest",
     "@types/node": "npm:@types/web@latest",
     "@types/nodemailer": "^7.0.1",
     "@types/ramda": "^0.31.1",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/shell-quote": "^1.7.5",
     "@types/unist": "^3.0.3",
+    "@typescript/lib-dom": "npm:@types/web@latest",
     "maildev": "^2.2.1"
-  }
+  },
+  "browserslist": [
+    "defaults and fully supports es6-module, not op_mini all"
+  ]
 }

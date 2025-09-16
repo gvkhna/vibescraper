@@ -7,16 +7,15 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "clean": {
+      "cache": false
+    },
     "dev": {
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "persistent": true
     },
     "lint": {
-      "dependsOn": ["^build"],
-      "outputs": []
-    },
-    "typecheck": {
       "dependsOn": ["^build"],
       "outputs": []
     },
@@ -24,8 +23,9 @@
       "dependsOn": ["^build"],
       "outputs": []
     },
-    "clean": {
-      "cache": false
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": []
     }
   }
 }

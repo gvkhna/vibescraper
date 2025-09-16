@@ -18,12 +18,11 @@
     "test": "vitest --run",
     "typecheck": "bun tsc --noEmit"
   },
-  "devDependencies": {},
   "dependencies": {
     "ajv": "^8.17.1",
     "ajv-errors": "^3.0.0",
-    "ajv-formats": "^3.0.1",
-    "core-js": "^3.45.1"
+    "ajv-formats": "^3.0.1"
   },
+  "devDependencies": {},
   "peerDependencies": {}
 }

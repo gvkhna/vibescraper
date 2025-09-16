@@ -1,8 +1,8 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "types": ["vitest/globals", "node"]
   },
-  "include": ["container.test.ts"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
+  "extends": "../../tsconfig.base.json",
+  "include": ["container.test.ts"]
 }

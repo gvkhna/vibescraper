@@ -7,12 +7,10 @@ minimumReleaseAge: 1440
 onlyBuiltDependencies:
   - "@dashevo/protobufjs"
   - "@tailwindcss/oxide"
-  - core-js
   - cpu-features
   - esbuild
   - fsevents
   - microtime
-  - msw
   - protobufjs
   - sharp
   - ssh2

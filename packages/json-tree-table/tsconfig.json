@@ -1,19 +1,18 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "jsx": "preserve",
     "baseUrl": ".",
-    "libReplacement": true,
-    "incremental": true,
     "composite": true,
     "declaration": true,
     "declarationMap": true,
+    "incremental": true,
+    "jsx": "preserve",
+    "lib": ["DOM", "ESNext"],
     "paths": {
       "@/*": ["src/*"]
     },
-    "lib": ["DOM", "ESNext"],
     "types": []
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
-  "exclude": ["dist", "node_modules", "src/**/_*.ts", "src/**/_*.tsx", "src/**/*tmp*.ts", "src/**/*tmp*.tsx"]
+  "exclude": ["dist", "node_modules", "src/**/_*.ts", "src/**/_*.tsx", "src/**/*tmp*.ts", "src/**/*tmp*.tsx"],
+  "extends": "../../tsconfig.base.json",
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"]
 }

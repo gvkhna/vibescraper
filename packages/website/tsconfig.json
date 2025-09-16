@@ -4,7 +4,6 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "noErrorTruncation": true,
-    "libReplacement": true,
     "paths": {
       "@/*": ["src/*"]
     },

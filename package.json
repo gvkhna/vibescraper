@@ -1,22 +1,22 @@
 {
   "name": "vibescraper",
-  "type": "module",
   "version": "1.0.0",
+  "type": "module",
   "engines": {
+    "bun": "please-use-pnpm",
     "npm": "please-use-pnpm",
-    "yarn": "please-use-pnpm",
-    "bun": "please-use-pnpm"
+    "yarn": "please-use-pnpm"
   },
   "scripts": {
     "build": "bun turbo run build",
     "clean": "bun turbo run clean",
-    "dev:all": "bun turbo run dev",
     "dev": "bun turbo run dev --filter=@vibescraper/website",
+    "dev:all": "bun turbo run dev",
     "lint": "bun turbo run lint",
     "pnpm:nuke": "pnpm -r exec rm -rf node_modules && rm -f pnpm-lock.yaml",
     "pnpm:upgrade-version": "pnpm uninstall corepack;pnpm install -D corepack;corepack prepare pnpm@latest --activate;corepack use pnpm@latest",
-    "test:integration": "bun turbo run test --filter=@vibescraper/integration-tests",
     "test": "bun turbo run test",
+    "test:integration": "bun turbo run test --filter=@vibescraper/integration-tests",
     "typecheck": "bun turbo run typecheck"
   },
   "dependencies": {
@@ -79,6 +79,8 @@
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-classnames": "^0.8.3",
     "prettier-plugin-merge": "^0.8.0",
+    "prettier-plugin-packagejson": "^2.5.19",
+    "prettier-plugin-sort-json": "^4.1.1",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "storybook": "^9.1.6",
     "tailwindcss": "^4.1.13",

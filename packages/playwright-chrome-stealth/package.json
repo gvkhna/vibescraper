@@ -15,8 +15,8 @@
     "dist"
   ],
   "scripts": {
-    "typecheck": "bun tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "typecheck": "bun tsc --noEmit"
   },
   "dependencies": {
     "debug": "^4.4.1",

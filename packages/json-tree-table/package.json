@@ -14,14 +14,14 @@
     "build": "vite build",
     "clean": "rm -rf dist .turbo",
     "dev": "vite build --watch",
-    "storybook:build": "bun ./node_modules/storybook/dist/bin/index.js build",
     "storybook": "bun ./node_modules/storybook/dist/bin/index.js dev -p 6006",
+    "storybook:build": "bun ./node_modules/storybook/dist/bin/index.js build",
     "typecheck": "bun tsc --noEmit"
   },
   "dependencies": {},
   "devDependencies": {
-    "@typescript/lib-dom": "npm:@types/web@latest",
-    "@types/node": "npm:@types/web@latest"
+    "@types/node": "npm:@types/web@latest",
+    "@typescript/lib-dom": "npm:@types/web@latest"
   },
   "peerDependencies": {}
 }

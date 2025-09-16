@@ -4,30 +4,12 @@ import {SandboxManager} from '../src/sandbox-manager'
 import process from 'node:process'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import {execSync} from 'node:child_process'
-
-// Check if Deno is available before running tests
-function isDenoAvailable(): boolean {
-  try {
-    execSync('deno --version', {encoding: 'utf8'})
-    return true
-  } catch {
-    return false
-  }
-}
 
 describe('SandboxManager', () => {
   let sandboxManager: SandboxManager
   const testTmpDir = path.join(process.cwd(), 'tmp')
-  const denoAvailable = isDenoAvailable()
 
   beforeAll(async () => {
-    if (!denoAvailable) {
-      console.warn('⚠️  Deno is not installed. Skipping SandboxManager tests.')
-      console.warn('   Install Deno from https://deno.land/ to run these tests.')
-      return
-    }
-
     // Ensure tmp directory exists
     await fs.mkdir(testTmpDir, {recursive: true})
 
@@ -39,24 +21,12 @@ describe('SandboxManager', () => {
     await sandboxManager.waitForReady()
   })
 
-  beforeEach(() => {
-    if (!denoAvailable) {
-      // Skip the test if Deno is not available
-      expect(true).toBe(true)
-    }
-  })
-
   afterAll(() => {
     // Clean up if needed
     // The sandbox manager will clean up its own files
   })
 
   it('should execute simple console.log code', async () => {
-    if (!denoAvailable) {
-      console.log('Skipping test: Deno not available')
-      return
-    }
-
     const code = `console.log('Hello from sandbox!')`
     const messages = await sandboxManager.executeCodeBuffered(code, false)
 
@@ -78,10 +48,6 @@ describe('SandboxManager', () => {
   }, 10000) // 10 second timeout
 
   it('should execute code with multiple console logs', async () => {
-    if (!denoAvailable) {
-      return
-    }
-
     const code = `
       console.log('First message')
       console.log('Second message')
@@ -100,9 +66,6 @@ describe('SandboxManager', () => {
   }, 10000)
 
   it('should handle async code execution', async () => {
-    if (!denoAvailable) {
-      return
-    }
     const code = `
       console.log('Starting async operation')
       await new Promise(resolve => setTimeout(resolve, 100))
@@ -122,9 +85,6 @@ describe('SandboxManager', () => {
   }, 10000)
 
   it('should handle errors in code execution', async () => {
-    if (!denoAvailable) {
-      return
-    }
     const code = `
       console.log('Before error')
       throw new Error('Test error')
@@ -150,9 +110,6 @@ describe('SandboxManager', () => {
   }, 10000)
 
   it('should execute test code when testing flag is true', async () => {
-    if (!denoAvailable) {
-      return
-    }
     const code = `
       test('simple test', () => {
         expect(1 + 1).toBe(2)
@@ -179,9 +136,6 @@ describe('SandboxManager', () => {
   }, 15000)
 
   it('should handle different console methods', async () => {
-    if (!denoAvailable) {
-      return
-    }
     const code = `
       console.log('log message')
       console.info('info message')

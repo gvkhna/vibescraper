@@ -4,29 +4,12 @@ import {SandboxManager} from '../src/sandbox-manager'
 import process from 'node:process'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import {execSync} from 'node:child_process'
-
-// Check if Deno is available before running tests
-function isDenoAvailable(): boolean {
-  try {
-    execSync('deno --version', {encoding: 'utf8'})
-    return true
-  } catch {
-    return false
-  }
-}
 
 describe('SandboxManager Logging Tests', () => {
   let sandboxManager: SandboxManager | undefined
   const testTmpDir = path.join(process.cwd(), 'tmp')
-  const denoAvailable = isDenoAvailable()
 
   beforeAll(async () => {
-    if (!denoAvailable) {
-      console.warn('⚠️  Deno is not installed. Skipping sandbox logging tests.')
-      return
-    }
-
     await fs.mkdir(testTmpDir, {recursive: true})
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
       console.log('[LOGGING TEST]', ...args)
@@ -48,10 +31,6 @@ describe('SandboxManager Logging Tests', () => {
   })
 
   it('should capture all console log types (log, error, warn, info, debug)', async () => {
-    if (!denoAvailable) {
-      return
-    }
-
     const code = `
       export default function(input) {
         console.log('This is a console.log message')
@@ -88,10 +67,6 @@ describe('SandboxManager Logging Tests', () => {
   }, 15000)
 
   it('should preserve exact line numbers in syntax errors as if running at CLI', async () => {
-    if (!denoAvailable) {
-      return
-    }
-
     // Code with deliberate syntax error on line 7
     const code = `
 export default function(input) {
@@ -127,10 +102,6 @@ export default function(input) {
   }, 15000)
 
   it('should preserve exact line numbers in runtime errors with stack trace', async () => {
-    if (!denoAvailable) {
-      return
-    }
-
     // Code that will throw a runtime error on a specific line
     const code = `
 export default function(input) {
@@ -171,10 +142,6 @@ export default function(input) {
   }, 15000)
 
   it('should handle successful execution with logging mixed in', async () => {
-    if (!denoAvailable) {
-      return
-    }
-
     // Code that successfully executes but has various log statements throughout
     const code = `
 export default function(input) {

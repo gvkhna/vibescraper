@@ -4,29 +4,12 @@ import {SandboxManager} from '../src/sandbox-manager'
 import process from 'node:process'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import {execSync} from 'node:child_process'
-
-// Check if Deno is available before running tests
-function isDenoAvailable(): boolean {
-  try {
-    execSync('deno --version', {encoding: 'utf8'})
-    return true
-  } catch {
-    return false
-  }
-}
 
 describe('SandboxManager Import Transformation Tests', () => {
   let sandboxManager: SandboxManager | undefined
   const testTmpDir = path.join(process.cwd(), 'tmp')
-  const denoAvailable = isDenoAvailable()
 
   beforeAll(async () => {
-    if (!denoAvailable) {
-      console.warn('⚠️  Deno is not installed. Skipping sandbox transform tests.')
-      return
-    }
-
     await fs.mkdir(testTmpDir, {recursive: true})
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
       console.log('[TRANSFORM TEST]', ...args)
@@ -49,10 +32,6 @@ describe('SandboxManager Import Transformation Tests', () => {
 
   describe('Node Built-in Module Transformations', () => {
     it('should transform bare node module imports to node: prefix', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         import path from 'path'
         import fs from 'fs'
@@ -75,10 +54,6 @@ describe('SandboxManager Import Transformation Tests', () => {
     }, 15000)
 
     it('should handle node module imports with /promises suffix', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         import fs from 'fs/promises'
 
@@ -94,10 +69,6 @@ describe('SandboxManager Import Transformation Tests', () => {
     }, 10000)
 
     it('should not double-prefix already prefixed node: imports', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         import path from 'node:path'
         import fs from 'node:fs'
@@ -139,10 +110,6 @@ describe('SandboxManager Import Transformation Tests', () => {
     // }, 20000)
 
     it('should handle scoped npm packages', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         import dayjs from 'dayjs'
 
@@ -161,10 +128,6 @@ describe('SandboxManager Import Transformation Tests', () => {
     }, 20000)
 
     it('should not double-prefix already prefixed npm: imports', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         import {ulid} from 'npm:ulid'
 
@@ -182,10 +145,6 @@ describe('SandboxManager Import Transformation Tests', () => {
 
   describe('Mixed Import Transformations', () => {
     it('should handle multiple import types in the same file', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         import path from 'path'
         import {ulid} from 'ulid'
@@ -210,10 +169,6 @@ describe('SandboxManager Import Transformation Tests', () => {
     }, 20000)
 
     it('should handle dynamic imports', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         async function testDynamic() {
           const path = await import('path')
@@ -261,10 +216,6 @@ describe('SandboxManager Import Transformation Tests', () => {
 
   describe('Line Number Preservation', () => {
     it('should preserve line numbers in error messages after transformation', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         import path from 'path'
         import {ulid} from 'ulid'
@@ -317,10 +268,6 @@ describe('SandboxManager Import Transformation Tests', () => {
 
   describe('JSR Package Support', () => {
     it('should not transform jsr: prefixed imports', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         import {assertEquals} from 'jsr:@std/assert'
 
@@ -364,10 +311,6 @@ describe('SandboxManager Import Transformation Tests', () => {
     // }, 10000)
 
     it('should handle export statements correctly', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         import path from 'path'
         export {path}
@@ -386,10 +329,6 @@ describe('SandboxManager Import Transformation Tests', () => {
     }, 10000)
 
     it('should handle multi-line imports', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         import {
           join,

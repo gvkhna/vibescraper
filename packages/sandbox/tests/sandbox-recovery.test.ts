@@ -4,29 +4,12 @@ import {SandboxManager} from '../src/sandbox-manager'
 import process from 'node:process'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import {execSync} from 'node:child_process'
-
-// Check if Deno is available before running tests
-function isDenoAvailable(): boolean {
-  try {
-    execSync('deno --version', {encoding: 'utf8'})
-    return true
-  } catch {
-    return false
-  }
-}
 
 describe('SandboxManager Crash Recovery Tests', () => {
   let sandboxManager: SandboxManager | undefined
   const testTmpDir = path.join(process.cwd(), 'tmp')
-  const denoAvailable = isDenoAvailable()
 
   beforeEach(async () => {
-    if (!denoAvailable) {
-      console.warn('⚠️  Deno is not installed. Skipping sandbox recovery tests.')
-      return
-    }
-
     await fs.mkdir(testTmpDir, {recursive: true})
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
       console.log('[RECOVERY TEST]', ...args)
@@ -50,10 +33,6 @@ describe('SandboxManager Crash Recovery Tests', () => {
   })
 
   it('should recover after timeout and allow subsequent executions', async () => {
-    if (!denoAvailable) {
-      return
-    }
-
     // First, cause a timeout with an infinite loop
     const infiniteLoopCode = `
       console.log('STARTING_INFINITE_LOOP')
@@ -104,10 +83,6 @@ describe('SandboxManager Crash Recovery Tests', () => {
   }, 45000) // 45 second timeout for the entire test
 
   it('should recover after memory exhaustion and allow subsequent executions', async () => {
-    if (!denoAvailable) {
-      return
-    }
-
     // First, try to exhaust memory
     const memoryExhaustCode = `
       console.log('STARTING_MEMORY_EXHAUSTION')
@@ -172,10 +147,6 @@ describe('SandboxManager Crash Recovery Tests', () => {
   }, 45000) // 45 second timeout for the entire test
 
   it('should handle uncaught exceptions and allow recovery', async () => {
-    if (!denoAvailable) {
-      return
-    }
-
     // First, cause an uncaught exception
     const exceptionCode = `
       console.log('BEFORE_EXCEPTION')

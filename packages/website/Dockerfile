@@ -6,6 +6,9 @@ FROM node:lts AS build
 
 WORKDIR /app
 
+# Copy Deno binary for integration tests
+COPY --from=deno /deno /usr/local/bin/deno
+
 RUN corepack enable && npm install -g bun
 
 # Copy lockfiles for dependency fetching
@@ -37,13 +40,12 @@ ARG VERSION
 # OCI Image Annotations
 LABEL "org.opencontainers.image.title"="Vibescraper"
 LABEL "org.opencontainers.image.description"="Modern web scraping and data extraction platform with AI-powered tools"
-LABEL "org.opencontainers.image.authors"="Gaurav Khanna <gvkhna@users.noreply.github.com>"
+LABEL "org.opencontainers.image.authors"="Gaurav Khanna <gaurav@gvkhna.com>"
 LABEL "org.opencontainers.image.url"="https://aivibescraper.com"
 LABEL "org.opencontainers.image.source"="https://github.com/gvkhna/vibescraper"
 LABEL "org.opencontainers.image.documentation"="https://docs.aivibescraper.com"
 LABEL "org.opencontainers.image.vendor"="Vibescraper"
-LABEL "org.opencontainers.image.licenses"="MIT"
-LABEL "org.opencontainers.image.base.name"="docker.io/oven/bun:latest"
+LABEL "org.opencontainers.image.licenses"="FSL-1.1-MIT"
 LABEL "org.opencontainers.image.ref.name"="vibescraper"
 
 # Install curl for health checks

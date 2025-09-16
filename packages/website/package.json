@@ -20,7 +20,7 @@
     "storybook": "bun ./node_modules/storybook/dist/bin/index.js dev -p 6006",
     "storybook:build": "bun ./node_modules/storybook/dist/bin/index.js build",
     "test:coverage": "bun --env-file=../../.env vitest run --coverage",
-    "test:vitest": "bun --env-file=../../.env vitest --run",
+    "test:vitest": "bun --env-file=../../.env vitest run",
     "typecheck": "bun astro check --minimumSeverity error && bun tsc --noEmit",
     "typecheck:full": "bun tsc --noEmit --pretty --noErrorTruncation",
     "worker": "bun src/worker/standalone.ts"

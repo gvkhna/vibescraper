@@ -4,29 +4,12 @@ import {SandboxManager} from '../src/sandbox-manager'
 import process from 'node:process'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import {execSync} from 'node:child_process'
-
-// Check if Deno is available before running tests
-function isDenoAvailable(): boolean {
-  try {
-    execSync('deno --version', {encoding: 'utf8'})
-    return true
-  } catch {
-    return false
-  }
-}
 
 describe('SandboxManager Cheerio Test', () => {
   let sandboxManager: SandboxManager | undefined
   const testTmpDir = path.join(process.cwd(), 'tmp')
-  const denoAvailable = isDenoAvailable()
 
   beforeAll(async () => {
-    if (!denoAvailable) {
-      console.warn('⚠️  Deno is not installed. Skipping sandbox cheerio test.')
-      return
-    }
-
     await fs.mkdir(testTmpDir, {recursive: true})
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
       console.log('[CHEERIO TEST]', ...args)
@@ -48,10 +31,6 @@ describe('SandboxManager Cheerio Test', () => {
   })
 
   it('should import and use cheerio successfully', async () => {
-    if (!denoAvailable) {
-      return
-    }
-
     const code = `
       import * as cheerio from 'cheerio'
 

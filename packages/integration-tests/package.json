@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "clean": "rimraf dist .turbo node_modules/.cache *.tsbuildinfo",
-    "test": "vitest --run",
+    "test": "vitest run",
     "typecheck": "bun tsc --noEmit"
   },
   "devDependencies": {

@@ -4,29 +4,12 @@ import {SandboxManager} from '../src/sandbox-manager'
 import process from 'node:process'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import {execSync} from 'node:child_process'
-
-// Check if Deno is available before running tests
-function isDenoAvailable(): boolean {
-  try {
-    execSync('deno --version', {encoding: 'utf8'})
-    return true
-  } catch {
-    return false
-  }
-}
 
 describe('SandboxManager Large Payload Test', () => {
   let sandboxManager: SandboxManager | undefined
   const testTmpDir = path.join(process.cwd(), 'tmp')
-  const denoAvailable = isDenoAvailable()
 
   beforeAll(async () => {
-    if (!denoAvailable) {
-      console.warn('⚠️  Deno is not installed. Skipping sandbox large payload test.')
-      return
-    }
-
     await fs.mkdir(testTmpDir, {recursive: true})
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
       console.log('[LARGE PAYLOAD TEST]', ...args)
@@ -45,11 +28,6 @@ describe('SandboxManager Large Payload Test', () => {
   })
 
   it('should handle large payloads with multiple arguments', async () => {
-    if (!denoAvailable || !sandboxManager) {
-      console.log('Skipping test - Deno not available or sandbox not initialized')
-      return
-    }
-
     // Create test data: one large string to trigger file IPC, plus other args
     const largeString = 'x'.repeat(10000) // 10KB - exceeds 8KB threshold
     const secondArg = {test: 'object', value: 42}
@@ -75,7 +53,7 @@ describe('SandboxManager Large Payload Test', () => {
       }
     `
 
-    const executionResult = await sandboxManager.executeFunctionBuffered(
+    const executionResult = await sandboxManager!.executeFunctionBuffered(
       code,
       [largeString, secondArg, thirdArg],
       false

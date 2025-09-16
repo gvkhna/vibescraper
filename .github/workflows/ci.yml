@@ -54,7 +54,7 @@ jobs:
             type=registry,ref=ghcr.io/${{ github.repository }}:latest
           cache-to: type=gha,mode=max,scope=prod
 
-      - name: Run integration tests
+      - name: Run unit and integration tests
         run: |
           docker run \
             -e CI=true \

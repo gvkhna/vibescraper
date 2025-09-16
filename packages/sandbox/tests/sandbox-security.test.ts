@@ -4,29 +4,11 @@ import {SandboxManager} from '../src/sandbox-manager'
 import process from 'node:process'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import {execSync} from 'node:child_process'
-
-// Check if Deno is available before running tests
-function isDenoAvailable(): boolean {
-  try {
-    execSync('deno --version', {encoding: 'utf8'})
-    return true
-  } catch {
-    return false
-  }
-}
 
 describe('SandboxManager Security & Environment Tests', () => {
   let sandboxManager: SandboxManager
   const testTmpDir = path.join(process.cwd(), 'tmp')
-  const denoAvailable = isDenoAvailable()
-
   beforeAll(async () => {
-    if (!denoAvailable) {
-      console.warn('⚠️  Deno is not installed. Skipping sandbox security tests.')
-      return
-    }
-
     await fs.mkdir(testTmpDir, {recursive: true})
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
       console.log('[SECURITY TEST]', ...args)
@@ -41,10 +23,6 @@ describe('SandboxManager Security & Environment Tests', () => {
 
   describe('Security - File System Access', () => {
     it('should NOT allow reading system files like /etc/passwd', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         try {
           const fs = await import('node:fs/promises')
@@ -67,10 +45,6 @@ describe('SandboxManager Security & Environment Tests', () => {
     }, 15000)
 
     it('should NOT allow executing system commands via child_process', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         try {
           const {exec} = await import('node:child_process')
@@ -97,10 +71,6 @@ describe('SandboxManager Security & Environment Tests', () => {
     }, 15000)
 
     it('should allow reading/writing files in sandbox directory only', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         const url = new URL('.', location.href)
         const cwd = decodeURIComponent(url.pathname)
@@ -133,10 +103,6 @@ describe('SandboxManager Security & Environment Tests', () => {
 
   describe('Module Imports', () => {
     it('should support importing Node built-in modules with node: prefix', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         const path = await import('node:path')
         const crypto = await import('node:crypto')
@@ -156,10 +122,6 @@ describe('SandboxManager Security & Environment Tests', () => {
     }, 15000)
 
     it('should support importing npm packages with npm: prefix', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         try {
           const ulid = await import('npm:ulid')
@@ -180,10 +142,6 @@ describe('SandboxManager Security & Environment Tests', () => {
     }, 20000)
 
     it('should support importing jsr packages with jsr: prefix', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         try {
           const stdUlid = await import('jsr:@std/ulid')
@@ -205,10 +163,6 @@ describe('SandboxManager Security & Environment Tests', () => {
 
   describe('Environment & Globals', () => {
     it('should have process.env available', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         console.log('PROCESS_ENV_EXISTS:', typeof process.env === 'object')
         console.log('PROCESS_ENV_NODE_ENV:', process.env.NODE_ENV || 'not set')
@@ -244,10 +198,6 @@ describe('SandboxManager Security & Environment Tests', () => {
     // }, 10000)
 
     it('should have exit() and terminate() functions', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         console.log('EXIT_FUNCTION:', typeof exit === 'function')
         console.log('TERMINATE_FUNCTION:', typeof terminate === 'function')
@@ -263,10 +213,6 @@ describe('SandboxManager Security & Environment Tests', () => {
     }, 10000)
 
     it('should have Deno.env available with limited access', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         console.log('DENO_ENV_EXISTS:', typeof Deno?.env === 'object')
         console.log('DENO_ENV_GET:', typeof Deno?.env?.get === 'function')
@@ -282,10 +228,6 @@ describe('SandboxManager Security & Environment Tests', () => {
     }, 10000)
 
     it('should have location.href pointing to worker file', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         console.log('LOCATION_EXISTS:', typeof location === 'object')
         console.log('LOCATION_HREF_EXISTS:', typeof location.href === 'string')
@@ -305,10 +247,6 @@ describe('SandboxManager Security & Environment Tests', () => {
 
   describe('Console Methods', () => {
     it('should support all console methods', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         // Test various console methods
         console.log('LOG_TEST')
@@ -360,10 +298,6 @@ describe('SandboxManager Security & Environment Tests', () => {
 
   describe('Memory & Resource Limits', () => {
     it('should handle memory allocation within limits', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         try {
           // Allocate 10MB (should be fine)
@@ -391,10 +325,6 @@ describe('SandboxManager Security & Environment Tests', () => {
 
   describe('Network Access', () => {
     it('should allow fetch requests to external URLs', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         try {
           const response = await fetch('https://httpbin.org/get')
@@ -419,10 +349,6 @@ describe('SandboxManager Security & Environment Tests', () => {
 
   describe('Process & Worker Control', () => {
     it('should handle process.cwd() correctly', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         const cwd = process.cwd()
         console.log('CWD_EXISTS:', typeof cwd === 'string')
@@ -439,10 +365,6 @@ describe('SandboxManager Security & Environment Tests', () => {
     }, 10000)
 
     it('should handle process.hrtime correctly', async () => {
-      if (!denoAvailable) {
-        return
-      }
-
       const code = `
         const start = process.hrtime()
         console.log('HRTIME_IS_ARRAY:', Array.isArray(start))

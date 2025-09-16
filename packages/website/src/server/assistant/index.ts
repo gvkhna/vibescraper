@@ -139,6 +139,55 @@ const app = new Hono<HonoServer>()
     }
   )
   .post(
+    '/syncChatMessages',
+    validator('json', (value) => {
+      return value as {
+        projectChatPublicId: schema.ProjectChatPublicId
+        projectChatMessagePublicIds: schema.ProjectChatMessagePublicId[]
+      }
+    }),
+    async (c) => {
+      const {projectChatPublicId, projectChatMessagePublicIds} = c.req.valid('json')
+
+      const user = c.get('user')
+      const session = c.get('session')
+      const db = c.get('db')
+
+      const projectChat = await db.query.projectChat.findFirst({
+        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectChatPublicId)
+      })
+
+      if (!projectChat) {
+        return c.json({message: 'Project chat not found'}, HttpStatusCode.NotFound)
+      }
+
+      const projectId = projectChat.projectId
+
+      const project = await db.query.project.findFirst({
+        where: (table, {eq: tableEq}) => tableEq(table.id, projectId)
+      })
+
+      if (!project) {
+        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+      }
+
+      if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
+        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+      }
+
+      const projectChatMessages = await db.query.projectChatMessage.findMany({
+        where: (table, {eq, inArray, and}) =>
+          and(eq(table.projectChatId, projectChat.id), inArray(table.publicId, projectChatMessagePublicIds))
+      })
+
+      const result: schema.ProjectChatMessageDTOType[] = projectChatMessages.map(
+        ({id: _, projectChatId: __, usage: ___, ...rest}) => rest
+      )
+
+      return c.json({result}, HttpStatusCode.Ok)
+    }
+  )
+  .post(
     '/fetchChatMessage',
     validator('json', (value) => {
       return value as {

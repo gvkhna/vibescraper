@@ -86,8 +86,10 @@ export function prepareContext(
     if (tok > budget) {
       break
     }
-    contextWindow.push(convertChatMessageToUIMessage(msg))
-    budget -= tok
+    if (msg.status === 'done') {
+      contextWindow.push(convertChatMessageToUIMessage(msg))
+      budget -= tok
+    }
   }
 
   // window now is newest-first, reverse back to oldest→newest

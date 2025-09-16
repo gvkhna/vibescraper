@@ -12,13 +12,14 @@
   },
   "scripts": {
     "build": "vite build",
+    "clean": "rm -rf dist .turbo",
     "dev": "vite build --watch",
-    "typecheck": "bun tsc --noEmit",
-    "test": "vitest --run",
+    "run:html-cleaner": "bun run src/html-cleaner-run.ts",
     "run:html-format": "bun run src/html-format-run.ts",
     "run:html-markdown": "bun run src/html-markdown-run.ts",
     "run:html-readability": "bun run src/html-readability-run.ts",
-    "run:html-cleaner": "bun run src/html-cleaner-run.ts"
+    "test": "vitest --run",
+    "typecheck": "bun tsc --noEmit"
   },
   "dependencies": {
     "cheerio": "1.0.0-rc.12",

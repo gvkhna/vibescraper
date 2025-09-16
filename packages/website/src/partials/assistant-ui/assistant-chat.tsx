@@ -1,13 +1,14 @@
 'use client'
 
-import React, {useEffect, useState} from 'react'
+import React, {Fragment, useEffect, useState} from 'react'
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton
 } from '@/components/ai-elements/conversation'
-import {Message, MessageContent} from '@/components/ai-elements/message'
 import {toast} from 'sonner'
+import {Action, Actions} from '@/components/ai-elements/actions'
+import {CopyIcon, GlobeIcon, RefreshCcwIcon} from 'lucide-react'
 import {
   PromptInput,
   PromptInputButton,
@@ -19,17 +20,14 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar,
-  PromptInputTools
+  PromptInputTools,
+  type PromptInputMessage
 } from '@/components/ai-elements/prompt-input'
 import {useChat} from '@ai-sdk/react'
-import {Response} from '@/components/ai-elements/response'
-import {CopyIcon, GlobeIcon, RefreshCcwIcon} from 'lucide-react'
-import {Source, Sources, SourcesContent, SourcesTrigger} from '@/components/ai-elements/source'
-import {Reasoning, ReasoningContent, ReasoningTrigger} from '@/components/ai-elements/reasoning'
 import {Loader} from '@/components/ai-elements/loader'
 import {nowait} from '@/lib/async-utils'
 import {assistantPendingInitialMessageAwait} from './assistant-pending-initial-message-await'
-import {DefaultChatTransport, isToolUIPart} from 'ai'
+import {DefaultChatTransport} from 'ai'
 import type {
   ProjectPublicId,
   ProjectCommitPublicId,
@@ -40,15 +38,9 @@ import type {
 import {useStore} from '@/store/use-store'
 import debug from 'debug'
 import api from '@/lib/api-client'
-import {
-  convertChatMessageToUIMessage,
-  isDataKey,
-  isToolKey,
-  type SLUIMessage,
-  type SLUIMessageChunk
-} from './chat-message-schema'
-import {Action, Actions} from '@/components/ai-elements/actions'
-import {Tool, ToolContent, ToolHeader, ToolOutput, ToolInput} from '@/components/ai-elements/tool'
+import {convertChatMessageToUIMessage, type VSUIMessage} from './chat-message-schema'
+import {Message, MessageContent} from '@/components/ai-elements/message'
+import {AssistantChatMessagePart} from './assistant-chat-message-part'
 
 const log = debug('app:assistant-chat')
 
@@ -69,6 +61,7 @@ export function AssistantChat({
 }: AssistantChatProps) {
   const chatMessages = useStore((state) => state.assistantSlice.chatMessages)
   const fetchProjectChatMessage = useStore((state) => state.assistantSlice.fetchProjectChatMessage)
+  const syncProjectChatMessages = useStore((state) => state.assistantSlice.syncProjectChatMessages)
   const loadProjectChatTitle = useStore((state) => state.assistantSlice.loadProjectChatTitle)
   const reloadProjectCommit = useStore((state) => state.extractorSlice.reloadProjectCommit)
   const pendingInitialMessage = useStore(
@@ -84,7 +77,7 @@ export function AssistantChat({
   // Chat-specific model selection
   const chatModel = useStore((state) => state.assistantSlice.chatModels[selectedChat])
   const setChatModel = useStore((state) => state.assistantSlice.setChatModel)
-  const model = chatModel ?? 'large'
+  const model = chatModel ?? 'medium'
 
   const [input, setInput] = useState('')
   // const [webSearch, setWebSearch] = useState(false)
@@ -97,8 +90,10 @@ export function AssistantChat({
     return convertChatMessageToUIMessage(message)
   })
 
+  log('initial messages', initialMessages)
+
   // Auto-fetch models on component mount
-  React.useEffect(() => {
+  useEffect(() => {
     nowait(fetchModels())
   }, [fetchModels])
 
@@ -114,7 +109,7 @@ export function AssistantChat({
     stop,
     setMessages,
     addToolResult
-  } = useChat<SLUIMessage>({
+  } = useChat<VSUIMessage>({
     id: selectedChat,
     transport: new DefaultChatTransport({
       api: chatEndpoint,
@@ -146,16 +141,41 @@ export function AssistantChat({
       //   })
       // }
     },
-    // onError(err) {
-    //   log('onError', err)
-    //   // toast.error(err.message)
-    //   // clearError()
-    // },
     onFinish(opts) {
       log('onFinish', opts)
+
+      const chatMessageIds = opts.messages.map((m) => m.id) as ProjectChatMessagePublicId[]
+      if (opts.message.metadata?.replyMessageId) {
+        chatMessageIds.push(opts.message.metadata.replyMessageId as ProjectChatMessagePublicId)
+      }
+      nowait(syncProjectChatMessages(selectedChat, chatMessageIds))
+
+      if (opts.isError && opts.message.role === 'assistant') {
+        const lastMessage = opts.message
+        const updatedMessages: VSUIMessage[] = [
+          ...opts.messages.slice(0, -1),
+          {
+            ...lastMessage,
+            metadata: {
+              error: true
+            },
+            parts: [
+              ...lastMessage.parts,
+              {
+                type: 'text',
+                text: 'There was an unexpected error. Please try again.'
+              }
+            ]
+          }
+        ]
+
+        setMessages(updatedMessages)
+        clearError()
+      }
+
       if (opts.message.id) {
         // Fetch the message which will trigger schema sync if needed
-        nowait(fetchProjectChatMessage(selectedChat, opts.message.id as ProjectChatMessagePublicId))
+        // nowait(fetchProjectChatMessage(selectedChat, opts.message.id as ProjectChatMessagePublicId))
 
         // Check if message contains any write tool calls that completed successfully
         const hasWriteToolCall = opts.message.parts.some((part) => {
@@ -172,7 +192,6 @@ export function AssistantChat({
 
         if (hasWriteToolCall) {
           log('Detected write tool call in message, reloading project commit...')
-          // Use queueMicrotask to avoid updating state during render
           queueMicrotask(() => {
             reloadProjectCommit(projectCommitPublicId).catch((err: unknown) => {
               log('Error reloading project commit after write tool call:', err)
@@ -191,56 +210,33 @@ export function AssistantChat({
   }, [status])
 
   // useEffect(() => {
-  //   log('messages: ', messages)
+  //   if (chatError) {
+  //     log('error', chatError)
+  //     // Get the last message
+  //     const lastMessage = messages[messages.length - 1]
 
-  //   // Update tool call states in the store
-  //   messages.forEach(message => {
-  //     updateToolCallsFromMessage(message)
-  //   })
-  // }, [messages])
+  //     // Check if last message is an error message
+  //     if (lastMessage.role === 'assistant' && lastMessage.metadata?.error === true) {
+  //       // Update the last message to show error
+  //       const updatedMessages: VSUIMessage[] = [
+  //         ...messages.slice(0, -1),
+  //         {
+  //           ...lastMessage,
+  //           parts: [
+  //             ...lastMessage.parts,
+  //             {
+  //               type: 'text',
+  //               text: 'There was an unexpected error. Please try again.'
+  //             }
+  //           ]
+  //         }
+  //       ]
 
-  // Monitor for schema update completions
-  // useEffect(() => {
-  //   const cleanup = monitorSchemaUpdates(messages, (filename, version) => {
-  //     log('Schema update completed:', filename, version)
-  //     // TODO: Trigger backend sync to reload schema
-  //     // For now, just log that we detected the completion
-  //     log('Would trigger schema reload for:', projectPublicId, filename, version)
-  //   })
-
-  //   return cleanup
-  // }, [messages, projectPublicId])
-
-  useEffect(() => {
-    if (chatError) {
-      // log('error', error)
-      // Get the last message
-      const lastMessage = messages[messages.length - 1]
-
-      // Check if last message is an empty assistant message
-      if (lastMessage.role === 'assistant' && lastMessage.parts.length === 0) {
-        // Update the last message to show error
-        const updatedMessages: SLUIMessage[] = [
-          ...messages.slice(0, -1),
-          {
-            ...lastMessage,
-            metadata: {
-              error: true
-            },
-            parts: [
-              {
-                type: 'text',
-                text: 'There was an unexpected error. Please try again.'
-              }
-            ]
-          }
-        ]
-
-        setMessages(updatedMessages)
-        clearError()
-      }
-    }
-  }, [messages, setMessages, clearError, chatError])
+  //       setMessages(updatedMessages)
+  //       clearError()
+  //     }
+  //   }
+  // }, [messages, setMessages, clearError, chatError, regenerate])
 
   // Handle automatic initial message submission when chat is first loaded with a pending message
   useEffect(() => {
@@ -252,24 +248,42 @@ export function AssistantChat({
         assistantPendingInitialMessageAwait(projectPublicId, selectedChat, () => {
           // This callback is guaranteed to be called only once by the await function
           log('Sending initial message after state confirmation', initialMessageIds)
-          nowait(sendMessage({messageId: initialMessageIds[0], files: []}))
+          const initialMessage = chatMessages[initialMessageIds[0]]
+          if (initialMessage) {
+            const message = convertChatMessageToUIMessage(initialMessage)
+            nowait(sendMessage({messageId: initialMessageIds[0], ...message}))
+          }
         })
       )
     }
-  }, [initialMessageIds, pendingInitialMessage, projectPublicId, selectedChat, sendMessage, status])
+  }, [
+    chatMessages,
+    initialMessageIds,
+    pendingInitialMessage,
+    projectPublicId,
+    selectedChat,
+    sendMessage,
+    status
+  ])
 
   const handleSubmitMessage = async (prompt: string) => {
     log('handling subsequent message submit')
-    if (status !== 'ready') {
-      return
-    }
-    if (input.trim()) {
-      setInput('')
-      await sendMessage({text: prompt})
+    if (status === 'streaming') {
+      nowait(stop())
+    } else if (status === 'error') {
+      clearError()
+    } else if (status === 'submitted') {
+      // loading do nothing
+    } else {
+      // ready
+      if (input.trim()) {
+        setInput('')
+        await sendMessage({text: prompt})
+      }
     }
   }
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (message: PromptInputMessage, e: React.FormEvent) => {
     e.preventDefault()
     nowait(handleSubmitMessage(input))
     return false
@@ -281,152 +295,64 @@ export function AssistantChat({
         <Conversation className='h-full'>
           <ConversationContent>
             {messages.map((message, messageIndex) => (
-              <div key={message.id}>
-                {/* {message.role === 'assistant' && (
-                  <Sources>
-                    {message.parts.map((part, i) => {
-                      switch (part.type) {
-                        case 'source-url':
-                          return (
-                            <>
-                              <SourcesTrigger
-                                count={message.parts.filter((part_) => part_.type === 'source-url').length}
-                              />
-                              <SourcesContent key={`${message.id}-${i}`}>
-                                <Source
-                                  key={`${message.id}-${i}`}
-                                  href={part.url}
-                                  title={part.url}
-                                />
-                              </SourcesContent>
-                            </>
-                          )
-                        default: {
-                          return <></>
-                        }
-                      }
-                    })}
-                  </Sources>
-                )} */}
-                <Message
-                  from={message.role}
-                  key={message.id}
-                >
-                  {/* <div> */}
-                  <MessageContent data-error={message.metadata?.error}>
-                    {/* Use aggregator for tool calls in assistant messages */}
-                    {/* {message.role === 'assistant' && (
-                      <ToolCallAggregator
-                        message={message}
-                        messageIndex={messageIndex}
-                        chatId={selectedChat}
-                      />
-                    )} */}
-
-                    {/* Render non-tool parts */}
-                    {message.parts.map((part, i) => {
-                      const type = part.type
-                      switch (true) {
-                        case isDataKey(type): {
-                          if (type === 'data-error') {
-                            return <Response key={`${message.id}-${i}`}>{part.data}</Response>
-                          }
-                          return null
-                        }
-                        case isToolKey(type): {
-                          if (isToolUIPart(part)) {
-                            return (
-                              <Tool
-                                defaultOpen={false}
-                                key={`${message.id}-${i}`}
-                              >
-                                <ToolHeader
-                                  type={type}
-                                  state={part.state}
-                                />
-                                <ToolContent>
-                                  <ToolInput input={part.input} />
-                                  <ToolOutput
-                                    output={<Response>{JSON.stringify(part.output)}</Response>}
-                                    errorText={part.errorText}
-                                  />
-                                </ToolContent>
-                              </Tool>
-                            )
-                          }
-                          // const tool = part
-                          // const toolType = part.type
-
-                          // if (
-                          //   type === 'tool-ping' ||
-                          //   type === 'tool-schemaGet' ||
-                          //   type === 'tool-schemaSet' ||
-                          //   type === 'tool-scriptGet' ||
-                          //   type === 'tool-scriptSet'
-                          // ) {
-                          //   // console.log('tool', type, part.toolCallId, part.state)
-
-                          // }
-
-                          return null
-                        }
-                        case type === 'file': {
-                          return null
-                        }
-                        case type === 'dynamic-tool': {
-                          return null
-                        }
-                        case type === 'source-url': {
-                          return null
-                        }
-                        case type === 'source-document': {
-                          return null
-                        }
-                        case type === 'step-start': {
-                          return null
-                        }
-                        case type === 'text':
-                          return <Response key={`${message.id}-${i}`}>{part.text}</Response>
-                        case type === 'reasoning':
-                          return (
-                            <Reasoning
-                              key={`${message.id}-${i}`}
-                              className='w-full'
-                              isStreaming={status === 'streaming'}
-                            >
-                              <ReasoningTrigger />
-                              <ReasoningContent>{part.text}</ReasoningContent>
-                            </Reasoning>
-                          )
-                        default: {
-                          const _exhaustive: never = type
-                          return null
-                        }
-                      }
-                    })}
-                    {/* {message.role === 'assistant' && messageIndex === messages.length - 1 && (
-                      <Actions className='mt-2'>
-                        <Action
-                          onClick={() => {
-                            nowait(regenerate())
-                          }}
-                          label='Retry'
-                        >
-                          <RefreshCcwIcon className='size-3' />
-                        </Action>
-                        <Action
-                          onClick={() => {
-                            nowait(globalThis.navigator.clipboard.writeText(part.text))
-                          }}
-                          label='Copy'
-                        >
-                          <CopyIcon className='size-3' />
-                        </Action>
-                      </Actions>
-                    )} */}
-                  </MessageContent>
-                </Message>
-              </div>
+              <Fragment key={message.id}>
+                {message.role === 'user' && (
+                  <Message from={message.role}>
+                    <MessageContent>
+                      {message.parts
+                        .filter((m) => m.type === 'text')
+                        .map((part, i) => (
+                          <div key={`${message.id}-${i}`}>{part.text}</div>
+                        ))}
+                    </MessageContent>
+                  </Message>
+                )}
+                {message.role === 'assistant' && (
+                  <Message
+                    from={message.role}
+                    className='flex-col items-start gap-0'
+                  >
+                    <MessageContent
+                      data-error={message.metadata?.error}
+                      className='is-assistant data-[error=true]:text-foreground data-[error=true]:!bg-red-400'
+                    >
+                      {message.parts.map((part, i) => (
+                        <AssistantChatMessagePart
+                          key={`${message.id}-${part.type}-${i}`}
+                          message={message}
+                          part={part}
+                          index={i}
+                          status={status}
+                        />
+                      ))}
+                    </MessageContent>
+                    <Actions className='mt-2'>
+                      <Action
+                        onClick={() => {
+                          nowait(regenerate({messageId: message.id}))
+                          toast('Regenerating message...')
+                        }}
+                        label='Regenerate'
+                      >
+                        <RefreshCcwIcon className='size-3' />
+                      </Action>
+                      <Action
+                        onClick={() => {
+                          const messageText = message.parts
+                            .filter((m) => m.type === 'text')
+                            .map((part, i) => part.text)
+                            .join('\n')
+                          nowait(globalThis.navigator.clipboard.writeText(messageText))
+                          toast('Message Copied')
+                        }}
+                        label='Copy'
+                      >
+                        <CopyIcon className='size-3' />
+                      </Action>
+                    </Actions>
+                  </Message>
+                )}
+              </Fragment>
             ))}
             {status === 'submitted' && <Loader />}
           </ConversationContent>
@@ -476,7 +402,7 @@ export function AssistantChat({
               </PromptInputModelSelect>
             </PromptInputTools>
             <PromptInputSubmit
-              disabled={!input}
+              disabled={!input && !status}
               status={status}
             />
           </PromptInputToolbar>

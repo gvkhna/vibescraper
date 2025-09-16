@@ -12,9 +12,10 @@
   },
   "scripts": {
     "build": "vite build",
+    "clean": "rm -rf dist .turbo",
     "dev": "vite build --watch",
-    "typecheck": "bun tsc --noEmit",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "typecheck": "bun tsc --noEmit"
   },
   "devDependencies": {
     "@types/deno": "^2.3.0",

@@ -6,9 +6,10 @@ import {
   PromptInput,
   PromptInputSubmit,
   PromptInputTextarea,
-  PromptInputToolbar
+  PromptInputToolbar,
+  type PromptInputMessage
 } from '@/components/ai-elements/prompt-input'
-import {Sparkles, User} from 'lucide-react'
+import {Sparkles, User, AlertTriangle} from 'lucide-react'
 import {nowait} from '@/lib/async-utils'
 import api from '@/lib/api-client'
 import {toast} from 'sonner'
@@ -17,6 +18,7 @@ import {Button} from '@/components/ui/button'
 import {BetterAuthUserButton} from '@/partials/webapp/better-auth-user-button'
 import {BetterAuthModal} from '@/partials/webapp/better-auth-modal'
 import {GitHubStarsButton} from '@/components/animate-ui/buttons/github-stars'
+import {Badge} from '@/components/ui/badge'
 
 export function VibecodingLandingPage() {
   const [input, setInput] = useState('')
@@ -70,7 +72,7 @@ export function VibecodingLandingPage() {
     }
   }
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (msg: PromptInputMessage, e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isLoading) {
       return
@@ -146,10 +148,27 @@ export function VibecodingLandingPage() {
       {/* Main Content */}
       <div className='flex min-h-[calc(100vh-80px)] items-center justify-center px-4'>
         <div className='w-full max-w-2xl'>
+          {/* Beta Badge */}
+          <div className='mb-6 flex justify-center'>
+            <Badge
+              variant='outline'
+              className='border-amber-500/50 bg-amber-500/15 px-3 py-1 text-amber-400
+                shadow-[0_0_12px_rgba(251,191,36,0.3)] transition-all duration-300 hover:bg-amber-500/20
+                hover:shadow-[0_0_16px_rgba(251,191,36,0.4)]'
+            >
+              <AlertTriangle className='mr-1.5 h-3.5 w-3.5' />
+              Early Beta - Things may be unstable
+              <div
+                className='ml-2 h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400
+                  shadow-[0_0_6px_rgba(251,191,36,0.8)]'
+              />
+            </Badge>
+          </div>
+
           {/* Logo/Brand */}
           <div className='mb-8 text-center'>
-            <h1 className='mb-4 text-3xl font-bold text-white'>Start scraping any website</h1>
-            <p className='text-lg text-white/80'>Use natural language to extract data from any website</p>
+            <h1 className='mb-4 text-3xl font-bold text-white'>Claude code for scraping</h1>
+            <p className='text-lg text-white/80'>Create an easily accessible API from most websites</p>
           </div>
 
           {/* Prompt Input */}

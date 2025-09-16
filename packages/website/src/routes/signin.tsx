@@ -19,7 +19,7 @@ function SignInPage() {
   return (
     <AuthPageTemplate
       pathname='signin'
-      redirectTo={redirect || '/'}
+      redirectTo={redirect ?? '/'}
     />
   )
 }

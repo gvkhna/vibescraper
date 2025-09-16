@@ -1,6 +1,10 @@
-import type {ProjectChatMessageDTOType, projectChatMessage} from '@/db/schema'
+import {
+  projectChatMessage,
+  type ProjectChatMessageDTOType,
+  type ProjectChatMessagePublicId
+} from '@/db/schema'
 import type {StrictOmit} from '@/db/schema/common'
-import {type InferUIMessageChunk, type InferUITools, type UIMessage, type UIMessageChunk} from 'ai'
+import type {InferUIMessageChunk, InferUITools, UIMessage, UIMessageChunk} from 'ai'
 import debug from 'debug'
 import z from 'zod'
 import tools from '@/assistant-ai/tools'
@@ -8,10 +12,11 @@ import tools from '@/assistant-ai/tools'
 const log = debug('app:chat-message-schema')
 
 const metadataSchema = z.object({
-  error: z.boolean()
+  error: z.boolean(),
+  replyMessageId: z.string().nullish()
 })
 
-type SLMetadata = z.infer<typeof metadataSchema>
+type VSMetadata = z.infer<typeof metadataSchema>
 
 const dataPartSchema = z.object({
   // error: z.string().optional()
@@ -19,15 +24,15 @@ const dataPartSchema = z.object({
   // anotherDataPart: z.object({})
 })
 
-type SLDataPart = z.infer<typeof dataPartSchema>
+type VSDataPart = z.infer<typeof dataPartSchema>
 
-type SLTools = InferUITools<typeof tools>
+type VSTools = InferUITools<typeof tools>
 
-export type SLUIMessage = UIMessage<SLMetadata, SLDataPart, SLTools>
-export type SLUIMessageChunk = InferUIMessageChunk<SLUIMessage>
+export type VSUIMessage = UIMessage<VSMetadata, VSDataPart, VSTools>
+export type VSUIMessageChunk = InferUIMessageChunk<VSUIMessage>
 
 export type ChatMessagePersistanceType = typeof projectChatMessage.$inferSelect
-export type ChatMessageSchemaType = StrictOmit<SLUIMessage, 'id' | 'role'>
+export type ChatMessageSchemaType = StrictOmit<VSUIMessage, 'id' | 'role'>
 
 export type ChatFileVersionBlockFileStatus =
   | 'pending'
@@ -63,9 +68,9 @@ export function isToolKey(value: string): value is `tool-${string}` {
   return value.startsWith('tool-')
 }
 
-type SLToolParts = Extract<SLUIMessageChunk, {type: `tool-${string}`}>
+type SLToolParts = Extract<VSUIMessageChunk, {type: `tool-${string}`}>
 
-function isToolPart(part: SLUIMessageChunk): part is SLToolParts {
+function isToolPart(part: VSUIMessageChunk): part is SLToolParts {
   return part.type.startsWith('tool-')
 }
 
@@ -75,7 +80,7 @@ export function isDataKey(value: string): value is `data-${string}` {
 
 export function convertChatMessageToUIMessage(
   chatMessage: Pick<ProjectChatMessageDTOType, 'publicId' | 'role' | 'content'>
-): SLUIMessage {
+): VSUIMessage {
   return {
     metadata: chatMessage.content.metadata,
     id: chatMessage.publicId,
@@ -84,7 +89,7 @@ export function convertChatMessageToUIMessage(
   }
 }
 
-export function convertUIMessageToChatMessage(uiMessage: SLUIMessage): ChatMessageSchemaType {
+export function convertUIMessageToChatMessage(uiMessage: VSUIMessage): ChatMessageSchemaType {
   const {id: _, role: __, ...msg} = uiMessage
   return msg
 }

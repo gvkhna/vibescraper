@@ -72,16 +72,15 @@ const tools = {
 
   schemaGet: {
     description: 'Read the current data validation schema',
-    inputSchema: z.object({}).nullish(),
+    inputSchema: z.object(),
     outputSchema: z.object({
       success: z.boolean(),
       schema: JsonSchema.nullish(),
       version: z.number().nullish(),
       message: z.string().nullish(),
+      // warning: z.string().nullish(),
       error: z.string().nullish()
-      // updatedAt: z.iso.datetime().nullish()
-      // Helpful hint to the model about expected top-level keys, if available
-      // shapeHint: z.array(z.string()).optional()
+      // warn: z.string().nullish() // fine
     })
   },
 
@@ -90,12 +89,11 @@ const tools = {
     inputSchema: z.object({
       schema: JsonSchema.describe('Complete JSON Schema object to enforce on extraction results'),
       message: z.string().optional().describe('Commit message for this version')
-      // correlationId: Uuid.optional()
     }),
     outputSchema: z.object({
       success: z.boolean(),
       version: z.number().nullish(),
-      // correlationId: z.string().optional(),
+      // warning: z.string().nullish(),
       error: z.string().nullish()
     })
   },
@@ -104,7 +102,7 @@ const tools = {
 
   scriptGet: {
     description: 'Read the current extraction script',
-    inputSchema: z.object({}).nullish(),
+    inputSchema: z.object(),
     outputSchema: z.object({
       success: z.boolean(),
       script: z.string().nullish(),
@@ -170,11 +168,9 @@ const tools = {
 
   htmlGet: {
     description: 'Read cached HTML or derived representations from the last fetch',
-    inputSchema: z
-      .object({
-        format: HtmlFormat.default('cleaned')
-      })
-      .nullish(),
+    inputSchema: z.object({
+      format: HtmlFormat.default('cleaned')
+    }),
     outputSchema: z.object({
       success: z.boolean(),
       format: HtmlFormat.nullish(),
@@ -191,22 +187,23 @@ const tools = {
   runScrape: {
     description:
       'Run the scrape pipeline: fetch, process, execute extraction script, and validate against the schema',
-    inputSchema: z
-      .object({
-        // mode: RunMode.default('cached'),
-        // runOn: HtmlFormat.default('cleaned').describe('Which representation to pass to the extraction script')
-        // correlationId: Uuid.optional(),
-        // Optional override for cleaning rules (kept small so tool remains simple)
-        // cleaning: z
-        //   .object({
-        //     allowTags: z.array(z.string()).optional(),
-        //     denyTags: z.array(z.string()).optional(),
-        //     allowAttrs: z.array(z.string()).optional(),
-        //     denyAttrs: z.array(z.string()).optional()
-        //   })
-        //   .optional()
-      })
-      .nullish(),
+    inputSchema: z.object(),
+    // inputSchema: z
+    //   .object({
+    // mode: RunMode.default('cached'),
+    // runOn: HtmlFormat.default('cleaned').describe('Which representation to pass to the extraction script')
+    // correlationId: Uuid.optional(),
+    // Optional override for cleaning rules (kept small so tool remains simple)
+    // cleaning: z
+    //   .object({
+    //     allowTags: z.array(z.string()).optional(),
+    //     denyTags: z.array(z.string()).optional(),
+    //     allowAttrs: z.array(z.string()).optional(),
+    //     denyAttrs: z.array(z.string()).optional()
+    //   })
+    //   .optional()
+    // })
+    // .nullish(),
     outputSchema: z.object({
       success: z.boolean(),
       url: z.string().nullish(),
@@ -225,7 +222,7 @@ const tools = {
 
   resultsGet: {
     description: 'Read extracted data and validation summary from the last run',
-    inputSchema: z.object({}).nullish(),
+    inputSchema: z.object(),
     outputSchema: z.object({
       success: z.boolean(),
       extractionStatus: ExecutionStatus.nullish(),
@@ -242,11 +239,12 @@ const tools = {
 
   logsGet: {
     description: 'Read script execution logs and exceptions from the last run',
-    inputSchema: z
-      .object({
-        // includeStatus: z.boolean().default(false)
-      })
-      .nullish(),
+    inputSchema: z.object(),
+    // inputSchema: z
+    //   .object({
+    //     // includeStatus: z.boolean().default(false)
+    //   })
+    //   .nullish(),
     outputSchema: z.object({
       success: z.boolean(),
       error: z.string().nullish(),

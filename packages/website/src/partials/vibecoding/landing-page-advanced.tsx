@@ -63,7 +63,7 @@ export function VibecodingLandingPageAdvanced() {
 
         {/* Prompt Input with Tools */}
         <PromptInput
-          onSubmit={(e) => {
+          onSubmit={(msg, e) => {
             nowait(handleSubmit(e))
           }}
           className='relative'

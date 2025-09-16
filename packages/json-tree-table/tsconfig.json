@@ -3,7 +3,7 @@
   "compilerOptions": {
     "jsx": "preserve",
     "baseUrl": ".",
-    "libReplacement": false,
+    "libReplacement": true,
     "incremental": true,
     "composite": true,
     "declaration": true,

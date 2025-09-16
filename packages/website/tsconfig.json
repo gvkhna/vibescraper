@@ -3,7 +3,8 @@
   "compilerOptions": {
     "jsx": "preserve",
     "baseUrl": ".",
-    "libReplacement": false,
+    "noErrorTruncation": true,
+    "libReplacement": true,
     "paths": {
       "@/*": ["src/*"]
     },

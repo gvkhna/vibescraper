@@ -1,7 +1,11 @@
 'use client'
 
-import {Fragment, useRef, useState, useEffect} from 'react'
-import {ChevronDown, ChevronRight, Plus, Minus} from 'lucide-react'
+import React from 'react'
+import {ChevronDown} from './components/icons/chevron-down'
+import {ChevronRight} from './components/icons/chevron-right'
+import {Plus} from './components/icons/plus'
+import {Minus} from './components/icons/minus'
+// import {ChevronDown, ChevronRight, Plus, Minus} from 'lucide-react'
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table'
 import {Badge} from '@/components/ui/badge'
 import {Button} from '@/components/ui/button'
@@ -102,7 +106,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
   const disableResize = props.disableResize ?? false
   const disableExpansionChevrons = props.disableExpansionChevrons ?? false
   // Initialize expanded state to match initial node.expanded values
-  const [expanded, setExpanded] = useState<Record<string, boolean>>(() => {
+  const [expanded, setExpanded] = React.useState<Record<string, boolean>>(() => {
     const initialExpanded: Record<string, boolean> = {}
 
     const collectExpandedNodes = (nodes: TreeNode[], parentPath: string[] = []) => {
@@ -123,13 +127,13 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
     collectExpandedNodes(schemaData)
     return initialExpanded
   })
-  const [hoveredRow, setHoveredRow] = useState<string | null>(null)
-  const [editingKey, setEditingKey] = useState<string | null>(null)
-  const [editingKeyValue, setEditingKeyValue] = useState<string>('')
-  const [columnWidths, setColumnWidths] = useState({key: 150, type: 100, checkbox: 10, value: 300})
-  const [openValueSelector, setOpenValueSelector] = useState<string | null>(null)
-  const tableRef = useRef<HTMLDivElement>(null)
-  const resizingRef = useRef<{
+  const [hoveredRow, setHoveredRow] = React.useState<string | null>(null)
+  const [editingKey, setEditingKey] = React.useState<string | null>(null)
+  const [editingKeyValue, setEditingKeyValue] = React.useState<string>('')
+  const [columnWidths, setColumnWidths] = React.useState({key: 150, type: 100, checkbox: 10, value: 300})
+  const [openValueSelector, setOpenValueSelector] = React.useState<string | null>(null)
+  const tableRef = React.useRef<HTMLDivElement>(null)
+  const resizingRef = React.useRef<{
     active: boolean
     column: keyof typeof columnWidths | null
     startX: number
@@ -142,7 +146,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
   })
 
   // Update expanded state when schemaData changes
-  useEffect(() => {
+  React.useEffect(() => {
     const newExpanded: Record<string, boolean> = {}
 
     const collectExpandedNodes = (nodes: TreeNode[], parentPath: string[] = []) => {
@@ -983,7 +987,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                               <SelectGroup>
                                 {Object.keys(nodeTypes).map((key, index) => {
                                   if (key === 'Array' && !enableArray) {
-                                    return <Fragment key={key} />
+                                    return <React.Fragment key={key} />
                                   }
                                   return (
                                     <SelectItem

@@ -8,7 +8,7 @@ import {streamSSE} from 'hono/streaming'
 import {streamText as aiStreamText, JsonToSseTransformStream, type LanguageModel, type ToolSet} from 'ai'
 import {
   convertUIMessageToChatMessage,
-  type SLUIMessage,
+  type VSUIMessage,
   type ChatMessagePersistanceType
 } from '@/partials/assistant-ui/chat-message-schema'
 import {PUBLIC_VARS} from '@/vars.public'
@@ -25,10 +25,19 @@ export interface AIStreamArgs {
   conversationHistory: ChatMessagePersistanceType[]
   assistantMessage: typeof schema.projectChatMessage.$inferSelect
   tools?: ToolSet
+  userMessagePublicId?: schema.ProjectChatMessagePublicId
 }
 
 export function aiStreamResponse(args: AIStreamArgs): Response {
-  const {model, conversationHistory, systemPrompt, requestContext: c, assistantMessage, tools} = args
+  const {
+    model,
+    conversationHistory,
+    systemPrompt,
+    requestContext: c,
+    assistantMessage,
+    tools,
+    userMessagePublicId
+  } = args
   const db = c.get('db')
 
   const stopSignalController = new AbortController()
@@ -55,13 +64,18 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
   try {
     const result = aiStreamText({
       model,
-      maxOutputTokens: 10000,
+      maxOutputTokens: 2000,
       tools: tools,
       stopWhen: ({steps}) => {
-        if (steps.length > 10) {
+        if (steps.length > 5) {
           return true
         }
         return false
+      },
+      providerOptions: {
+        openai: {
+          reasoningSummary: 'auto'
+        }
       },
       // toolChoice: 'required',
       // tools: makeTools(db, project, projectCommitPublicId as schema.ProjectCommitPublicId),
@@ -207,7 +221,7 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
           errorMessage = String(error)
         }
 
-        logAI('[Error]', error, 'type: ', errorType, errorMessage)
+        logAI('[Stream onError]', error, 'type: ', errorType, errorMessage)
 
         // Update shared state
         state.errored = true
@@ -244,7 +258,7 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
       },
       onStepFinish: async (step) => {
         logAI(
-          '[Step]',
+          '[Stream onStepFinish]',
           step.finishReason,
           `${step.usage.totalTokens} tokens`,
           `${step.toolCalls.length} tools`
@@ -270,7 +284,7 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
       onFinish: async (full) => {
         // Skip if error already occurred
         if (state.errored) {
-          logAI('[Complete] Skipping onFinish due to error state')
+          logAI('[Stream onFinish] Skipping onFinish due to error state')
           return
         }
 
@@ -283,7 +297,7 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
         state.durationMs = Date.now() - sqlTimestampToDate(assistantMessage.createdAt).getTime()
 
         logAI(
-          '[Complete]',
+          '[Stream onFinish]',
           full.finishReason,
           `${state.totalTokens} tokens`,
           `(${state.cachedInputTokens} cached)`,
@@ -303,7 +317,7 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
     c.header('Cache-Control', 'no-cache')
     c.header('Connection', 'keep-alive')
 
-    const dataStream = result.toUIMessageStream<SLUIMessage>({
+    const dataStream = result.toUIMessageStream<VSUIMessage>({
       generateMessageId: () => {
         return assistantMessage.publicId
       },
@@ -317,13 +331,10 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
 
         // Store content for potential merging
         const newMessage = convertUIMessageToChatMessage(event.responseMessage)
-        if (content.metadata) {
-          content.metadata = {
-            ...content.metadata,
-            ...newMessage.metadata
-          }
-        } else {
-          content.metadata = newMessage.metadata
+
+        content.metadata = {
+          error: content.metadata?.error ?? newMessage.metadata?.error ?? false,
+          replyMessageId: userMessagePublicId
         }
 
         content.parts.push(...newMessage.parts)
@@ -343,7 +354,7 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
       onError: (error) => {
         // Prevent duplicate finalization
         if (state.finalized) {
-          logAI('[UI Stream onError] Already finalized, skipping')
+          logAI('[UIStream onError] Already finalized, skipping')
           return 'There was an unexpected error. Please try again.'
         }
 
@@ -356,7 +367,7 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
           errorMessage = error.message
           // Also log the stack trace in development
           if (PUBLIC_VARS.DEV && error.stack) {
-            logAI('ERROR Stack:', error.stack)
+            logAI('[UIStream onError]', error.stack)
           }
         } else if (typeof error === 'object' && error !== null) {
           // Handle objects that aren't Error instances
@@ -364,7 +375,7 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
         } else {
           errorMessage = String(error)
         }
-        logAI('ERROR:', errorMessage)
+        logAI('[UIStream onError] errorMessage: ', errorMessage)
 
         if (state.errorMessage) {
           state.errorMessage = `${state.errorMessage}\n${errorMessage}`
@@ -373,7 +384,8 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
         }
 
         content.metadata = {
-          error: true
+          error: true,
+          replyMessageId: userMessagePublicId
         }
         content.parts.push({
           type: 'text',
@@ -399,7 +411,7 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
       stream.pipe(dataStream.pipeThrough(new JsonToSseTransformStream()).pipeThrough(new TextEncoderStream()))
     )
   } catch (e) {
-    log('ai stream text threw error', e)
+    log('ai stream response text threw error', e)
     return c.json({message: 'Some unknown streaming error'}, HttpStatusCode.BadRequest)
   }
 }

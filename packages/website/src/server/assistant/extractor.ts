@@ -9,7 +9,7 @@ import {HttpStatusCode} from '@/lib/http-status-codes'
 import {userCannotProjectAction} from '@/lib/permissions-helper'
 import {
   convertUIMessageToChatMessage,
-  type SLUIMessage,
+  type VSUIMessage,
   type ChatMessagePersistanceType
 } from '@/partials/assistant-ui/chat-message-schema'
 import {getModelBySize, type ModelSize} from '@/assistant-ai'
@@ -27,7 +27,7 @@ const app = new Hono<HonoServer>().post(
   validator('json', (value, c) => {
     const endpointSchema = z.object({
       editorSliceActiveTab: z.string().optional(),
-      messages: z.array(z.custom<SLUIMessage>()),
+      messages: z.array(z.custom<VSUIMessage>()),
       model: z.string().optional(),
       projectChatPublicId: z.custom<schema.ProjectChatPublicId>((val) => {
         return typeof val === 'string'
@@ -85,7 +85,7 @@ const app = new Hono<HonoServer>().post(
       return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
     }
 
-    let message: SLUIMessage | null = null
+    let message: VSUIMessage | null = null
     if (messages.length === 1) {
       message = messages[0]
     } else {
@@ -115,6 +115,7 @@ const app = new Hono<HonoServer>().post(
 
     // Check if we received a pending chat message from the create project
     let pendingChatMessage: typeof schema.projectChatMessage.$inferSelect | null | undefined = null
+
     log('message', message)
     if (message.id && message.role === 'user' && message.parts.length === 0) {
       // We need to look up this message from the database
@@ -126,11 +127,14 @@ const app = new Hono<HonoServer>().post(
 
     // Variables for message handling
     let userMessageIndex: number
+    let userMessagePublicId: schema.ProjectChatMessagePublicId | null = null
     let llmConversationMessages: ChatMessagePersistanceType[] = []
 
     if (pendingChatMessage) {
       // This is the initial message from project creation
       userMessageIndex = 0 // First message in the chat
+
+      userMessagePublicId = pendingChatMessage.publicId
 
       // Create the conversation for LLM with just this single message
       llmConversationMessages = [pendingChatMessage]
@@ -142,13 +146,18 @@ const app = new Hono<HonoServer>().post(
         .where(sqlEq(schema.projectChatMessage.projectChatId, projectChat.id))
       userMessageIndex = typeof maxIdx === 'number' ? maxIdx + 1 : 0
 
-      await db.insert(schema.projectChatMessage).values({
-        projectChatId: projectChat.id,
-        role: 'user',
-        index: userMessageIndex,
-        content: convertUIMessageToChatMessage(message),
-        status: 'done'
-      })
+      const [userMessage] = await db
+        .insert(schema.projectChatMessage)
+        .values({
+          projectChatId: projectChat.id,
+          role: 'user',
+          index: userMessageIndex,
+          content: convertUIMessageToChatMessage(message),
+          status: 'done'
+        })
+        .returning()
+
+      userMessagePublicId = userMessage.publicId
 
       // Get previous messages for context
       const previousMessages = await db
@@ -206,7 +215,8 @@ const app = new Hono<HonoServer>().post(
       model: currentModel,
       conversationHistory: llmConversationMessages,
       assistantMessage,
-      tools: tools
+      tools: tools,
+      userMessagePublicId
     })
   }
 )

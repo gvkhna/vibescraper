@@ -1,5 +1,5 @@
 /* eslint-disable no-undefined */
-import * as React from 'react'
+import React from 'react'
 import type {JsonValue} from 'type-fest'
 import {TreeTableEditor} from './tree-table-editor'
 import {jsonObjectToSchemaTable} from './json-object-to-schema-table'

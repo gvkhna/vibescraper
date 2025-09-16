@@ -31,13 +31,6 @@ export default defineConfig({
       exclude: ['**/*.stories.*', '**/*.test.*']
     })
   ],
-  // resolve: {
-  //   alias: {
-  //     'lucide-react/icons': fileURLToPath(
-  //       new URL('../../node_modules/lucide-react/dist/esm/icons', import.meta.url)
-  //     )
-  //   }
-  // },
   build: {
     target: 'esnext',
     sourcemap: true,

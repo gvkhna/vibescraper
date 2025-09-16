@@ -4,6 +4,7 @@
   "type": "module",
   "description": "Integration tests for the Vibescraper website",
   "scripts": {
+    "clean": "rm -rf dist .turbo",
     "test": "vitest --run",
     "typecheck": "bun tsc --noEmit"
   },

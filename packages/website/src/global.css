@@ -3,6 +3,7 @@
 @plugin '@tailwindcss/typography';
 @source '../node_modules/@daveyplate/better-auth-ui';
 @source '../node_modules/@vibescraper/json-tree-table';
+@source "../node_modules/streamdown/dist/index.js";
 
 @custom-variant dark (&:is(.dark *));
 

@@ -12,11 +12,11 @@
   },
   "scripts": {
     "build": "vite build",
+    "clean": "rm -rf dist .turbo",
     "dev": "vite build --watch",
-    "typecheck": "bun tsc --noEmit",
     "lint": "bun eslint --config ../../eslint.config.mjs .",
-    "clean": "rm -rf dist",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "typecheck": "bun tsc --noEmit"
   },
   "devDependencies": {},
   "dependencies": {

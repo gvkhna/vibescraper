@@ -107,6 +107,11 @@ export interface AssistantSlice {
   newChat: (projectPublicId: ProjectPublicId) => void
   selectChat: (projectPublicId: ProjectPublicId, chatId: ProjectChatPublicId) => void
 
+  syncProjectChatMessages: (
+    chatId: ProjectChatPublicId,
+    chatMessageIds: ProjectChatMessagePublicId[]
+  ) => Promise<void>
+
   fetchProjectChatMessage: (
     chatId: ProjectChatPublicId,
     chatMessageId: ProjectChatMessagePublicId
@@ -199,6 +204,49 @@ export const createAssistantSlice: StateSlice<AssistantSlice> = (set, get) =>
         },
         true,
         'assistant/updateActiveProjectVersionBlock'
+      )
+    },
+    syncProjectChatMessages: async (chatId, chatMessageIds) => {
+      const chatMessages = get().assistantSlice.chatMessages
+      const newMessageIds: ProjectChatMessagePublicId[] = []
+
+      chatMessageIds.forEach((id) => {
+        if (!chatMessages[id]) {
+          newMessageIds.push(id)
+        }
+      })
+
+      log('newmessageids: ', newMessageIds)
+
+      await asyncRetry(
+        async () => {
+          const resp = await api.assistant.syncChatMessages.$post({
+            json: {
+              projectChatPublicId: chatId,
+              projectChatMessagePublicIds: newMessageIds
+            }
+          })
+          if (resp.ok) {
+            const body = await resp.json()
+            log('sync chat messages response', body)
+            set(
+              (draft) => {
+                body.result.forEach((message) => {
+                  Object.assign(draft.assistantSlice.chatMessages, {
+                    [message.publicId]: message
+                  })
+                })
+              },
+              true,
+              'assistant/syncProjectChatMessage'
+            )
+          } else {
+            const body = await resp.json()
+            log('error ', body)
+            throw new Error(body.message)
+          }
+        },
+        {retries: 1, minDelay: 500}
       )
     },
     fetchProjectChatMessage: async (chatId, chatMessageId) => {

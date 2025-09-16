@@ -2,23 +2,20 @@ packages:
   - packages/*
 
 forceLegacyDeploy: true
+minimumReleaseAge: 1440
 
 onlyBuiltDependencies:
-  - '@dashevo/protobufjs'
-  - '@tailwindcss/oxide'
+  - "@dashevo/protobufjs"
+  - "@tailwindcss/oxide"
   - core-js
   - cpu-features
   - esbuild
   - fsevents
   - microtime
+  - msw
   - protobufjs
   - sharp
   - ssh2
-
-overrides:
-  '@vibescraper/website>@types/node': npm:@types/web@latest
-  '@vibescraper/website>@types/node-legacy': npm:@types/node@latest
-  '@vibescraper/website>@typescript/lib-dom': npm:@types/web@latest
 
 peerDependencyRules:
   ignoreMissing:

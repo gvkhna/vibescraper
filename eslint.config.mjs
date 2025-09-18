@@ -1,4 +1,5 @@
 import eslint from '@eslint/js';
+import {defineConfig} from 'eslint/config';
 import tseslint from 'typescript-eslint';
 // import astroPlugin from 'eslint-plugin-astro';
 // import astroParser from 'astro-eslint-parser';
@@ -9,11 +10,12 @@ import reactCompiler from 'eslint-plugin-react-compiler';
 import stylistic from '@stylistic/eslint-plugin';
 import globals from 'globals';
 
-export default [
+export default defineConfig([
   {
     ignores: [
       // Configs & root files
       'eslint.config.mjs',
+      'vite.config.ts',
       // Build artifacts
       'dist*/**/*',
       'packages/**/dist/**/*',
@@ -30,7 +32,7 @@ export default [
       '**/*.mjs'
     ]
   },
-  ...tseslint.config(
+  ...defineConfig(
     eslint.configs.recommended,
     tseslint.configs.strictTypeChecked,
     tseslint.configs.stylisticTypeChecked,
@@ -58,6 +60,7 @@ export default [
         '@typescript-eslint/prefer-for-of': 'off',
         '@typescript-eslint/consistent-indexed-object-style': 'off',
         '@typescript-eslint/array-type': 'off',
+        '@typescript-eslint/no-inferrable-types': 'warn',
 
         // warn about undefined usage
         'no-undefined': 'warn',
@@ -252,7 +255,7 @@ export default [
           },
           {
             name: 'process',
-            message: 'Do not use process global. Use environment variables through import.meta.env.'
+            message: "Do not use process global. Use import process from 'node:process' instead."
           },
           {
             name: 'Buffer',
@@ -381,4 +384,4 @@ export default [
       'react-compiler/react-compiler': 'error'
     }
   }
-];
+]);

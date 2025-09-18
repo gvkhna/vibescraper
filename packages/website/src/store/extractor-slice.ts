@@ -52,6 +52,11 @@ export interface ExtractorSlice {
   // Per-project scraping activity state
   projectScrapingState: Record<ProjectPublicId, ProjectScrapingState | undefined>
 
+  // Scraping mode (UI-level control)
+  scrapeMode: 'scrape' | 'crawlAndScrape'
+  setScrapeMode: (mode: 'scrape' | 'crawlAndScrape') => void
+  toggleScrapeMode: () => void
+
   // Load all schemas for a project
   loadSchemas: (projectPublicId: ProjectPublicId) => Promise<void>
 
@@ -85,7 +90,27 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
     projectSchemas: {},
     projectExtractors: {},
     projectScrapingState: {},
+    scrapeMode: 'scrape',
 
+    setScrapeMode: (mode) => {
+      set(
+        (draft) => {
+          draft.extractorSlice.scrapeMode = mode
+        },
+        true,
+        'extractor/setScrapeMode'
+      )
+    },
+    toggleScrapeMode: () => {
+      set(
+        (draft) => {
+          draft.extractorSlice.scrapeMode =
+            draft.extractorSlice.scrapeMode === 'scrape' ? 'crawlAndScrape' : 'scrape'
+        },
+        true,
+        'extractor/toggleScrapeMode'
+      )
+    },
     loadSchemas: async (projectPublicId) => {
       const currentState = get().extractorSlice.projectSchemas[projectPublicId]
 

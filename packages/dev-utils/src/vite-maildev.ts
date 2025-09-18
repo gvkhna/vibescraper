@@ -128,7 +128,7 @@ function registerCleanupHandlers(): void {
 
 /* ───────── Vite plugin ───────── */
 
-export default function viteMaildev(): Plugin {
+export function viteMaildev(): Plugin {
   return {
     name: 'vite-maildev',
     apply: 'serve',

@@ -64,10 +64,10 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
   try {
     const result = aiStreamText({
       model,
-      maxOutputTokens: 2000,
+      maxOutputTokens: 10000,
       tools: tools,
       stopWhen: ({steps}) => {
-        if (steps.length > 5) {
+        if (steps.length > 8) {
           return true
         }
         return false

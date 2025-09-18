@@ -9,7 +9,7 @@ import node from '@astrojs/node'
 import react from '@astrojs/react'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
-import viteMaildev from './.vite-plugins/vite-maildev'
+import {viteMaildev} from '@vibescraper/dev-utils'
 import {tanstackRouter} from '@tanstack/router-plugin/vite'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -59,7 +59,6 @@ export default defineConfig({
                 external: ['@vibescraper/html-processor']
               },
               plugins: [
-                // @ts-expect-error
                 tanstackRouter({
                   target: 'react',
                   routesDirectory: './src/routes',
@@ -68,13 +67,10 @@ export default defineConfig({
                   quoteStyle: 'single',
                   autoCodeSplitting: true
                 }),
-                // @ts-expect-error
                 viteMaildev(),
-                // @ts-expect-error
                 tailwindcss(),
-                // @ts-expect-error
                 tsconfigPaths()
-              ]
+              ] as any
             }
           })
         }
@@ -91,7 +87,7 @@ export default defineConfig({
               target: '19',
               // panicThreshold: 'none',
               logger: {
-                logEvent(filename: string, event) {
+                logEvent(filename: string, event: any) {
                   if (event.kind === 'CompileSuccess') {
                     console.log('Compiled:', filename)
                   }

@@ -552,7 +552,7 @@ const app = new Hono<HonoServer>()
       })
 
       // Convert to DTOs (remove id and projectId)
-      const schemaDTOs: schema.ProjectSchemaDTOType[] = schemas.map(s => {
+      const schemaDTOs: schema.ProjectSchemaDTOType[] = schemas.map((s) => {
         const {id: _schemaId, projectId: _schemaProjectId, ...dto} = s
         return dto
       })
@@ -893,7 +893,7 @@ const app = new Hono<HonoServer>()
       })
 
       // Convert to DTOs
-      const schemaDTOs: schema.ProjectSchemaDTOType[] = schemas.map(s => {
+      const schemaDTOs: schema.ProjectSchemaDTOType[] = schemas.map((s) => {
         const {id: _schemaId, projectId: _schemaProjectId, ...dto} = s
         return dto
       })
@@ -935,10 +935,7 @@ const app = new Hono<HonoServer>()
       // Get the specific schema version
       const schemaData = await db.query.projectSchema.findFirst({
         where: (table, {eq: tableEq, and: tableAnd}) =>
-          tableAnd(
-            tableEq(table.projectId, project.id),
-            tableEq(table.publicId, schemaPublicId)
-          )
+          tableAnd(tableEq(table.projectId, project.id), tableEq(table.publicId, schemaPublicId))
       })
 
       if (!schemaData) {
@@ -947,7 +944,7 @@ const app = new Hono<HonoServer>()
 
       // Return the DTO (omitting id and projectId)
       const {id: _, projectId: _p, ...schemaDTO} = schemaData
-      
+
       return c.json(
         {
           schema: schemaDTO as schema.ProjectSchemaDTOType
@@ -985,10 +982,7 @@ const app = new Hono<HonoServer>()
       // Get the specific schema version
       const schemaData = await db.query.projectSchema.findFirst({
         where: (table, {eq: tableEq, and: tableAnd}) =>
-          tableAnd(
-            tableEq(table.projectId, project.id),
-            tableEq(table.version, version)
-          )
+          tableAnd(tableEq(table.projectId, project.id), tableEq(table.version, version))
       })
 
       if (!schemaData) {
@@ -997,7 +991,7 @@ const app = new Hono<HonoServer>()
 
       // Return the DTO (omitting id and projectId)
       const {id: _, projectId: _p, ...schemaDTO} = schemaData
-      
+
       return c.json(
         {
           schema: schemaDTO as schema.ProjectSchemaDTOType
@@ -1038,7 +1032,7 @@ const app = new Hono<HonoServer>()
       })
 
       // Convert to DTOs
-      const extractorDTOs: schema.ExtractorDTOType[] = extractors.map(e => {
+      const extractorDTOs: schema.ExtractorDTOType[] = extractors.map((e) => {
         const {id: _extractorId, projectId: _extractorProjectId, ...dto} = e
         return dto
       })

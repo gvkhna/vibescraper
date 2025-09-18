@@ -1,5 +1,5 @@
 {
-  "name": "@vibescraper/json-tree-table",
+  "name": "@vibescraper/dev-utils",
   "type": "module",
   "main": "./dist/src/index.js",
   "module": "./dist/src/index.js",
@@ -14,13 +14,11 @@
     "build": "vite build",
     "clean": "rimraf dist .turbo node_modules/.cache node_modules/.vite-temp *.tsbuildinfo",
     "dev": "vite build --watch",
-    "storybook": "bun ./node_modules/storybook/dist/bin/index.js dev -p 6006",
-    "storybook:build": "bun ./node_modules/storybook/dist/bin/index.js build",
-    "typecheck": "bun tsc --noEmit && bun eslint --quiet --config ./eslint.config.mjs ."
+    "typecheck": "bun tsc --noEmit && bun eslint --quiet ."
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "npm:@types/web@latest"
+    "@types/node": "24.5.1"
   },
   "peerDependencies": {}
 }

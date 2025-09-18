@@ -21,7 +21,7 @@
     "storybook:build": "bun ./node_modules/storybook/dist/bin/index.js build",
     "test:coverage": "bun --env-file=../../.env vitest run --coverage",
     "test:vitest": "bun --env-file=../../.env vitest run",
-    "typecheck": "bun astro check --minimumSeverity error && bun tsc --noEmit",
+    "typecheck": "bun astro check --minimumSeverity error && bun tsc --noEmit && bun eslint --quiet --config ./eslint.config.mjs .",
     "typecheck:full": "bun tsc --noEmit --pretty --noErrorTruncation",
     "worker": "bun src/worker/standalone.ts"
   },
@@ -130,9 +130,7 @@
     "react-syntax-highlighter": "^15.6.6",
     "react-use-measure": "^2.1.7",
     "recharts": "3.2.1",
-    "rehype-katex": "^7.0.1",
     "remark-gfm": "^4.0.1",
-    "remark-math": "^6.0.0",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
     "safe-stable-stringify": "^2.5.0",
@@ -166,6 +164,7 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/shell-quote": "^1.7.5",
     "@types/unist": "^3.0.3",
+    "@vibescraper/dev-utils": "workspace:*",
     "maildev": "^2.2.1"
   }
 }

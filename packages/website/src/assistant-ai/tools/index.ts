@@ -6,7 +6,6 @@ import z, {success} from 'zod'
    Shared types
    ────────────────────────────────────────────────────────────────────────── */
 
-const Uuid = z.string().length(6).describe('Correlation ID used to tie together a run or write')
 const ISODate = z.iso.datetime()
 const NonEmpty = z.string().min(1)
 

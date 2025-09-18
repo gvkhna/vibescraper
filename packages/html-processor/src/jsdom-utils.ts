@@ -115,8 +115,9 @@ export class JSDOMWrapper {
   /**
    * Execute script in the context
    */
-  executeScript(script: string): any {
-    return (this.window as any).eval(script)
+  executeScript(script: string) {
+    throw new Error('Unimplemented function')
+    // return eval(script)
   }
 
   /**
@@ -133,12 +134,13 @@ export class JSDOMWrapper {
    * Trigger event on element
    */
   triggerEvent(selector: string, eventType: string, eventInit?: EventInit): void {
-    const element = this.querySelector(selector)
-    if (element) {
-      const Event = (this.window as any).Event
-      const event = new Event(eventType, eventInit)
-      element.dispatchEvent(event)
-    }
+    throw new Error('Unimplemented function')
+    // const element = this.querySelector(selector)
+    // if (element) {
+    //   const Event = (this.window as any).Event
+    //   const event = new Event(eventType, eventInit)
+    //   element.dispatchEvent(event)
+    // }
   }
 
   /**
@@ -213,18 +215,25 @@ export function createJSDOM(html: string, options?: ConstructorParameters<typeof
 /**
  * Parse HTML with JSDOM and return cleaned HTML
  */
-export function parseWithJSDOM(html: string, options?: {removeScripts?: boolean; removestyles?: boolean}): string {
+export function parseWithJSDOM(
+  html: string,
+  options?: {removeScripts?: boolean; removestyles?: boolean}
+): string {
   const dom = new JSDOM(html)
   const document = dom.window.document
 
   if (options?.removeScripts) {
     const scripts = document.querySelectorAll('script')
-    scripts.forEach((script) => script.remove())
+    scripts.forEach((script) => {
+      script.remove()
+    })
   }
 
   if (options?.removestyles) {
     const styles = document.querySelectorAll('style')
-    styles.forEach((style) => style.remove())
+    styles.forEach((style) => {
+      style.remove()
+    })
   }
 
   const result = dom.serialize()
@@ -237,7 +246,7 @@ export function parseWithJSDOM(html: string, options?: {removeScripts?: boolean;
  */
 export function extractTextWithJSDOM(html: string): string {
   const dom = new JSDOM(html)
-  const text = dom.window.document.body?.textContent || ''
+  const text = dom.window.document.body.textContent || ''
   dom.window.close()
   return text.trim()
 }
@@ -283,7 +292,8 @@ export async function executeInContext(
     resources: options?.resources
   })
 
-  const result = await (dom.window as any).eval(script)
-  dom.window.close()
-  return result
+  throw new Error('Unimplemented function')
+  // const result = await eval(script)
+  // dom.window.close()
+  // return result
 }

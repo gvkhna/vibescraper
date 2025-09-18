@@ -567,7 +567,7 @@ export function makeExtractionTools(
           let html: string | null = null
 
           // Return the requested format
-          switch (input?.format) {
+          switch (input.format) {
             case 'raw':
               html = cachedData.html ?? null
               break
@@ -590,7 +590,7 @@ export function makeExtractionTools(
 
           return {
             success: true,
-            format: input?.format,
+            format: input.format,
             content: html,
             url: cachedData.url,
             statusCode: cachedData.statusCode,

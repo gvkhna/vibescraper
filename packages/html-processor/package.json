@@ -19,7 +19,7 @@
     "run:html-markdown": "bun run src/html-markdown-run.ts",
     "run:html-readability": "bun run src/html-readability-run.ts",
     "test": "vitest run",
-    "typecheck": "bun tsc --noEmit"
+    "typecheck": "bun tsc --noEmit && bun eslint --quiet ."
   },
   "dependencies": {
     "cheerio": "1.0.0-rc.12",

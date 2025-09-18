@@ -8,6 +8,7 @@ import {readFileSync, writeFileSync} from 'node:fs'
 import {resolve, dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {htmlFormat} from './html-format'
+import process from 'node:process'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

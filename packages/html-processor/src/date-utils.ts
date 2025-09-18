@@ -78,11 +78,11 @@ export function parseDateWithTimezone(
   }
 
   // Try regex patterns
-  for (const format of dateFormats) {
-    if (format instanceof RegExp) {
-      const match = cleanDate.match(format)
+  for (const fmt of dateFormats) {
+    if (fmt instanceof RegExp) {
+      const match = cleanDate.match(fmt)
       if (match) {
-        if (format.source.includes('(\\d{4})-(\\d{1,2})-(\\d{1,2})')) {
+        if (fmt.source.includes('(\\d{4})-(\\d{1,2})-(\\d{1,2})')) {
           // YYYY-MM-DD format
           ;[, parsedYear, parsedMonth, parsedDay] = match.map(Number)
         } else {
@@ -105,7 +105,7 @@ export function parseDateWithTimezone(
   let minutes = defaultTime.minutes
 
   if (timeText) {
-    const timeMatch = timeText.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(A\.?M\.?|P\.?M\.?)?/i)
+    const timeMatch = /(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(A\.?M\.?|P\.?M\.?)?/i.exec(timeText)
     if (timeMatch) {
       const [, hourStr, minuteStr, , meridian] = timeMatch
       hours = parseInt(hourStr, 10)
@@ -227,7 +227,7 @@ export function isDaylightSavingTime(date: Date, timezone: string): boolean {
 export function formatInTimezone(
   utcDate: Date,
   timezone: string = TIMEZONES.PST,
-  formatString: string = 'yyyy-MM-dd HH:mm:ss zzz'
+  formatString = 'yyyy-MM-dd HH:mm:ss zzz'
 ): string {
   return formatTz(utcDate, formatString, {timeZone: timezone})
 }
@@ -274,7 +274,7 @@ export function cleanTimeText(text: string): string {
 /**
  * Validate that a date is reasonable (not too far in past/future)
  */
-export function isReasonableDate(date: Date, yearsBack: number = 5, yearsForward: number = 10): boolean {
+export function isReasonableDate(date: Date, yearsBack = 5, yearsForward = 10): boolean {
   const now = new Date()
   const minDate = new Date(now.getFullYear() - yearsBack, 0, 1)
   const maxDate = new Date(now.getFullYear() + yearsForward, 11, 31)
@@ -301,20 +301,21 @@ export function parseRelativeDate(text: string, timezone: string = TIMEZONES.PST
     case 'yesterday':
       targetDate = new Date(now.getTime() - 24 * 60 * 60 * 1000)
       break
-    default:
+    default: {
       // Check for "in X days" pattern
-      const inDaysMatch = lower.match(/in (\d+) days?/)
+      const inDaysMatch = /in (\d+) days?/.exec(lower)
       if (inDaysMatch) {
         const days = parseInt(inDaysMatch[1], 10)
         targetDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000)
       }
 
       // Check for "X days ago" pattern
-      const agoMatch = lower.match(/(\d+) days? ago/)
+      const agoMatch = /(\d+) days? ago/.exec(lower)
       if (agoMatch) {
         const days = parseInt(agoMatch[1], 10)
         targetDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000)
       }
+    }
   }
 
   if (targetDate) {
@@ -330,17 +331,19 @@ export function parseRelativeDate(text: string, timezone: string = TIMEZONES.PST
 export function humanizeDate(date: Date, options?: {includeTime?: boolean; timezone?: string}): string {
   const {includeTime = false, timezone = TIMEZONES.PST} = options || {}
 
-  const formatString = includeTime ? 'MMMM d, yyyy \'at\' h:mm a zzz' : 'MMMM d, yyyy'
+  const formatString = includeTime ? "MMMM d, yyyy 'at' h:mm a zzz" : 'MMMM d, yyyy'
   return formatTz(date, formatString, {timeZone: timezone})
 }
 
 /**
  * Debug helper to log date information
  */
-export function debugDate(parsedDate: ParsedDate, label: string = 'Date'): void {
+export function debugDate(parsedDate: ParsedDate, label = 'Date'): void {
   const zonedDate = toTimezone(parsedDate.utcDate, parsedDate.timezone)
   console.log(`🕐 ${label}:`)
-  console.log(`  Original: "${parsedDate.originalText}"${parsedDate.timeText ? ` at "${parsedDate.timeText}"` : ''}`)
+  console.log(
+    `  Original: "${parsedDate.originalText}"${parsedDate.timeText ? ` at "${parsedDate.timeText}"` : ''}`
+  )
   console.log(`  UTC: ${parsedDate.utcDate.toISOString()}`)
   console.log(
     `  Local: ${formatInTimezone(parsedDate.utcDate, parsedDate.timezone)} ${
@@ -348,5 +351,7 @@ export function debugDate(parsedDate: ParsedDate, label: string = 'Date'): void 
     }`
   )
   console.log(`  Timezone: ${parsedDate.timezone}`)
-  console.log(`  Human: ${humanizeDate(parsedDate.utcDate, {includeTime: true, timezone: parsedDate.timezone})}`)
+  console.log(
+    `  Human: ${humanizeDate(parsedDate.utcDate, {includeTime: true, timezone: parsedDate.timezone})}`
+  )
 }

@@ -15,7 +15,7 @@
     "clean": "rimraf dist .turbo node_modules/.cache node_modules/.vite-temp *.tsbuildinfo",
     "dev": "vite build --watch",
     "test": "vitest run",
-    "typecheck": "bun tsc --noEmit"
+    "typecheck": "bun tsc --noEmit && bun eslint --quiet ."
   },
   "devDependencies": {
     "@smithy/types": "^4.5.0",

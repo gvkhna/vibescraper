@@ -59,9 +59,9 @@ const CONTENT_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType>[] = 
   {value: 'raw-html', label: 'Raw HTML', icon: Code},
   {value: 'formatted-html', label: 'Formatted HTML', icon: FileCode2},
   {value: 'cleaned-html', label: 'Cleaned HTML', icon: BrushCleaning},
-  {value: 'plaintext', label: 'Plaintext', icon: FileText},
-  {value: 'readability-html', label: 'Readability HTML', icon: BookOpen},
-  {value: 'markdown', label: 'Markdown', icon: FileType2}
+  {value: 'plaintext', label: 'Plaintext', icon: FileText}
+  // {value: 'readability-html', label: 'Readability HTML', icon: BookOpen},
+  // {value: 'markdown', label: 'Markdown', icon: FileType2}
 ]
 
 // Define which tabs belong in the configuration dropdown (schema/extraction-script/log)

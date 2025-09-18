@@ -45,9 +45,6 @@ export function ProjectDialogs() {
   const deleteProject = useStore((state) => state.projectSlice.deleteProject)
   const createProject = useStore((state) => state.projectSlice.createProject)
 
-  // const deleteFile = useStore((state) => state.projectSlice.deleteFile)
-  // const loadProjectTriggers = useStore((state) => state.projectSlice.loadProjectTriggers)
-
   // Fetch default project name when new-project dialog is about to open
   useEffect(() => {
     if (currentProjectDialog.type === 'new-project' && !defaultProjectName) {
@@ -122,7 +119,9 @@ export function ProjectDialogs() {
         }
         open={currentProjectDialog.type === 'confirm-delete-project'}
         onOpenChange={(open) => {
-          if (!open) {
+          if (open) {
+            setCurrentProjectDialog('confirm-delete-project', null)
+          } else {
             setCurrentProjectDialog(null, null)
           }
         }}
@@ -134,6 +133,7 @@ export function ProjectDialogs() {
 
           if (result.success) {
             toast.success('Project has been successfully deleted.')
+            setCurrentProjectDialog(null, null)
             await navigate({to: '/'})
           } else {
             toast.error('Failed to delete project. Please try again.')

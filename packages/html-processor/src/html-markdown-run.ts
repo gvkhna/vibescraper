@@ -10,6 +10,7 @@ import {readdir, readFile, writeFile} from 'node:fs/promises'
 import {resolve, dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {htmlMarkdown} from './html-markdown'
+import process from 'node:process'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

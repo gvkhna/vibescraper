@@ -6,6 +6,7 @@ import { GenericContainer, type StartedTestContainer, Wait } from 'testcontainer
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { type BucketStorageConfig, StorageService } from '../src/storage-service'
+import { streamToBytes } from '../src/stream-utils'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -326,10 +327,6 @@ describe('storageService - Bucket (MinIO)', () => {
 
   it('should work with streamToBytes utility', async () => {
     expect.assertions(6)
-
-    // Import the utility
-    // eslint-disable-next-line no-restricted-syntax
-    const { streamToBytes } = await import('../src/stream-utils')
 
     // Read the test image file
     const imagePath = path.join(__dirname, '..', 'fixtures', 'image.jpg')

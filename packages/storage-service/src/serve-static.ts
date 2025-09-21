@@ -55,8 +55,8 @@ const getStats = (path: string) => {
 export function serveStatic(
   c: Context,
   filePath: string,
-  { filename, mimeType, filesize, lastModified, hash }: Partial<FileMetadata>,
-  { download, inline, cacheControl }: ServeOptions
+  { filename, mimeType, filesize, lastModified, hash, encoding }: Partial<FileMetadata>,
+  { download, inline, cacheControl, enc }: ServeOptions
 ): Response {
   log('serve static resp')
 

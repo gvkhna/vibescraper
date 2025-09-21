@@ -1,0 +1,1 @@
+ALTER TABLE "storage" ADD COLUMN "encoding" text;

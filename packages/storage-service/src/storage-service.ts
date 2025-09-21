@@ -126,6 +126,8 @@ export interface ServeOptions {
   inline: boolean
   /** Cache Control header */
   cacheControl?: string
+  /** encoding */
+  enc?: string
 }
 
 /** Main storage service class that handles both filesystem and bucket storage */
@@ -698,10 +700,16 @@ export class StorageService {
   ): Promise<Response> {
     const storagePath = this.keyToPath(key)
 
-    const { download: queryDownload, inline: queryInline, filename: queryFilename } = c.req.query()
+    const {
+      download: queryDownload,
+      inline: queryInline,
+      filename: queryFilename,
+      enc: queryEnc
+    } = c.req.query()
 
     const download = options?.download ?? !(queryDownload === '0' || queryDownload === 'false')
     const inline = options?.inline ?? !(queryInline === '0' || queryInline === 'false')
+    const decompress = options?.enc ?? !(queryEnc === '0' || queryEnc === 'false')
 
     const filename =
       typeof metadata?.filename === 'string' && metadata.filename
@@ -713,7 +721,16 @@ export class StorageService {
     const mimeType = metadata?.mimeType
     const hash = metadata?.hash
     const lastModified = metadata?.lastModified
-    const encoding = metadata?.encoding
+    const encoding =
+      metadata?.encoding === 'br' || metadata?.encoding === 'gzip'
+        ? metadata.encoding
+        : options?.enc === 'br' || options?.enc === 'gzip'
+          ? options.enc
+          : queryEnc === 'br' || queryEnc === 'gzip'
+            ? queryEnc
+            : typeof queryEnc === 'string' && !(queryEnc === '0' || queryEnc === 'false')
+              ? 'br'
+              : null
 
     if (this.config.STORAGE_PROVIDER === 'bucket') {
       const result = await this.stream(key, encoding)

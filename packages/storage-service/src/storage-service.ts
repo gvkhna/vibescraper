@@ -15,6 +15,12 @@ import { fileURLToPath } from 'node:url'
 import { hashBytes } from './hash-bytes'
 import { serveStatic } from './serve-static'
 import { serveStream } from './serve-stream'
+import {
+  brotliCompressBytes,
+  brotliCompressBytesSync,
+  gzipCompressBytes,
+  gzipCompressBytesSync
+} from './zlib-utils'
 
 export type Logger = (...args: unknown[]) => void
 
@@ -103,6 +109,7 @@ export interface FileMetadata {
   hash: string
   /** Upload timestamp */
   lastModified: Date
+  encoding: null | 'gzip' | 'br'
 }
 
 /** Options for serving stored bytes via HTTP These can be derived from FileMetadata or provided separately */
@@ -193,13 +200,13 @@ export class StorageService {
     return null
   }
 
-  public keyToPath(key: string): string {
+  private keyToPath(key: string): string {
     // aa/xx/yy/full-uuid
     return pathJoin(key.slice(0, 2), key.slice(2, 4), key.slice(4, 6), key)
   }
 
   /** Generate a new storage key and its path */
-  public generateKey(): { key: string; path: string } {
+  private generateKey(): { key: string; path: string } {
     // Remove dashes and lowercase
     const uuid = globalThis.crypto.randomUUID().replace(/-/g, '').toLowerCase()
     return {
@@ -209,8 +216,9 @@ export class StorageService {
   }
 
   /** Store bytes and return a storage key */
-  public async store(
-    bytes: Uint8Array
+  private async store(
+    bytes: Uint8Array,
+    compress: boolean | 'gzip' | 'br' = false
     // options?: StoreFileOptions
   ): Promise<StorageResult<string>> {
     // Validate input
@@ -250,17 +258,25 @@ export class StorageService {
         return err(StorageErrorCode.FAILED, 'S3 client not initialized')
       }
 
+      let saveBytes: Uint8Array | null = null
+      if (compress === true || compress === 'br') {
+        saveBytes = await brotliCompressBytes(bytes)
+      } else if (compress === 'gzip') {
+        saveBytes = await gzipCompressBytes(bytes)
+      } else {
+        saveBytes = bytes
+      }
       const command = new PutObjectCommand({
         Bucket: this.config.STORAGE_BUCKET_NAME,
         Key: path,
-        Body: bytes,
+        Body: saveBytes,
         // ContentType: contentType,
         CacheControl: this.config.STORAGE_CACHE_CONTROL_HEADER
       })
 
       try {
         await this.s3Client.send(command)
-        this.log(`Storage: Stored ${bytes.length} bytes -> ${key} (S3)`)
+        this.log(`Storage: Stored ${saveBytes.length} bytes -> ${key} (S3)`)
         return ok(key)
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error)
@@ -270,9 +286,17 @@ export class StorageService {
     } else if (this.basePath) {
       const filePath = pathJoin(this.basePath, path)
       try {
+        let saveBytes: Uint8Array | null = null
+        if (compress === true || compress === 'br') {
+          saveBytes = brotliCompressBytesSync(bytes)
+        } else if (compress === 'gzip') {
+          saveBytes = gzipCompressBytesSync(bytes)
+        } else {
+          saveBytes = bytes
+        }
         fs.mkdirSync(pathDirname(filePath), { recursive: true })
-        fs.writeFileSync(filePath, bytes)
-        this.log(`Storage: Stored ${bytes.length} bytes -> ${key}`)
+        fs.writeFileSync(filePath, saveBytes)
+        this.log(`Storage: Stored ${saveBytes.length} bytes -> ${key}`)
         return ok(key)
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error)
@@ -286,10 +310,11 @@ export class StorageService {
 
   public async storeBytesMetadata(
     bytes: Uint8Array,
-    meta?: Pick<Partial<FileMetadata>, 'filename' | 'mimeType'>
+    meta: Pick<Partial<FileMetadata>, 'filename' | 'mimeType'>,
+    compress: boolean | 'br' | 'gzip' = false
   ): Promise<StorageResult<FileMetadata>> {
     try {
-      const storeResult = await this.store(bytes)
+      const storeResult = await this.store(bytes, compress)
       if (!storeResult.success) {
         return err(storeResult.error, storeResult.message)
       }
@@ -297,11 +322,12 @@ export class StorageService {
       // Generate metadata that matches what's needed for both DB storage and serving
       const metadata: FileMetadata = {
         key: storeResult.data,
-        filename: meta?.filename ?? 'attachment',
+        filename: meta.filename ?? 'attachment',
         filesize: bytes.length,
-        mimeType: meta?.mimeType ?? 'application/octet-stream',
+        mimeType: meta.mimeType ?? 'application/octet-stream',
         hash: hashBytes(bytes),
-        lastModified: new Date()
+        lastModified: new Date(),
+        encoding: compress === true ? 'br' : compress === false ? null : compress
       }
 
       this.log(`Storage: Stored file "${metadata.filename}" (${metadata.filesize} bytes) -> ${metadata.key}`)
@@ -317,7 +343,10 @@ export class StorageService {
    * Store a File object (from multipart upload) with metadata extraction This is a convenience method that
    * handles the complete upload workflow
    */
-  public async storeFile(file: File): Promise<StorageResult<FileMetadata>> {
+  public async storeFile(
+    file: File,
+    compress: boolean | 'br' | 'gzip' = false
+  ): Promise<StorageResult<FileMetadata>> {
     // Validate input is actually a File
     if (!(file instanceof File)) {
       this.log('Storage: Invalid input - not a File object')
@@ -330,7 +359,7 @@ export class StorageService {
       const bytes = new Uint8Array(buffer)
 
       // Store the bytes
-      const storeResult = await this.store(bytes)
+      const storeResult = await this.store(bytes, compress)
       if (!storeResult.success) {
         return err(storeResult.error, storeResult.message)
       }
@@ -342,7 +371,8 @@ export class StorageService {
         filesize: file.size,
         mimeType: file.type || 'application/octet-stream',
         hash: hashBytes(bytes),
-        lastModified: file.lastModified ? new Date(file.lastModified) : new Date()
+        lastModified: file.lastModified ? new Date(file.lastModified) : new Date(),
+        encoding: compress === true ? 'br' : compress === false ? null : compress
       }
 
       this.log(`Storage: Stored file "${metadata.filename}" (${metadata.filesize} bytes) -> ${metadata.key}`)
@@ -355,7 +385,10 @@ export class StorageService {
   }
 
   /** Retrieve bytes using a storage key */
-  public async retrieve(key: string): Promise<StorageResult<Uint8Array>> {
+  public async retrieve(
+    key: string,
+    decompress: boolean | 'br' | 'gzip' = false
+  ): Promise<StorageResult<Uint8Array>> {
     const storagePath = this.keyToPath(key)
 
     if (this.config.STORAGE_PROVIDER === 'bucket') {
@@ -418,7 +451,10 @@ export class StorageService {
   }
 
   /** Stream bytes using a storage key */
-  public async stream(key: string): Promise<StorageResult<ReadableStream<Uint8Array>>> {
+  public async stream(
+    key: string,
+    decompress: boolean | 'gzip' | 'br' = false
+  ): Promise<StorageResult<ReadableStream<Uint8Array>>> {
     const storagePath = this.keyToPath(key)
 
     if (this.config.STORAGE_PROVIDER === 'bucket') {

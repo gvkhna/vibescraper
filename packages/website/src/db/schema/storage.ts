@@ -23,6 +23,7 @@ export const storage = pgTable(
     filesize: bigint({ mode: 'number' }).notNull(),
     sha256hash: varchar({ length: 64 }).notNull(), // Lowercase hex
     mimeType: text().notNull(),
+    encoding: text().$type<'br' | 'gzip' | null>(),
     ...TIMESTAMPS_SCHEMA
   },
   (table) => [uniqueIndex().on(table.publicId)]

@@ -51,14 +51,14 @@ export const plugin = {
   }
 } as const satisfies Rule.RuleModule
 
-export const eslintZustandSet = {
+export const eslintZustandImmerSliceSet = {
   rules: {
-    'eslint-zustand/set': 'error'
+    'eslint-zustand/immer-slice-set': 'error'
   },
   plugins: {
     'eslint-zustand': {
       rules: {
-        set: plugin
+        'immer-slice-set': plugin
       }
     }
   }

@@ -156,14 +156,14 @@ export const plugin = {
   }
 } as const satisfies Rule.RuleModule
 
-export const eslintZustandSelectors = {
+export const eslintZustandScopedSelectors = {
   rules: {
-    'eslint-zustand/selectors': 'error'
+    'eslint-zustand/scoped-selectors': 'error'
   },
   plugins: {
     'eslint-zustand': {
       rules: {
-        selectors: plugin
+        'scoped-selectors': plugin
       }
     }
   }

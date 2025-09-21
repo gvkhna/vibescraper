@@ -1,6 +1,8 @@
-import { eslintHonoHttpStatusCode } from '@vibescraper/dev-utils';
-import { eslintZustandSelectors } from '@vibescraper/dev-utils';
-import { eslintZustandSet } from '@vibescraper/dev-utils';
+import {
+  eslintHonoHttpStatusCode,
+  eslintZustandImmerSliceSet,
+  eslintZustandScopedSelectors
+} from '@vibescraper/dev-utils';
 import { defineConfig } from 'eslint/config';
 
 import rootConfig from '../../eslint.config.mjs';
@@ -26,10 +28,10 @@ export default defineConfig([
   },
   {
     files: ['src/store/**/*.{js,ts}'],
-    ...eslintZustandSet
+    ...eslintZustandImmerSliceSet
   },
   {
     files: ['src/**/*.{tsx,jsx}'],
-    ...eslintZustandSelectors
+    ...eslintZustandScopedSelectors
   }
 ]);

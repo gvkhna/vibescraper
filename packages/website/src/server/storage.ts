@@ -52,7 +52,8 @@ const app = new Hono<HonoServer>()
           filename: fileMetadata.data.filename,
           filesize: fileMetadata.data.filesize,
           mimeType: fileMetadata.data.mimeType,
-          sha256hash: fileMetadata.data.hash
+          sha256hash: fileMetadata.data.hash,
+          encoding: fileMetadata.data.encoding
         })
         .returning()
 
@@ -104,7 +105,8 @@ const app = new Hono<HonoServer>()
       filesize: storageEntry.filesize,
       mimeType: storageEntry.mimeType,
       hash: storageEntry.sha256hash,
-      lastModified: sqlTimestampToDate(storageEntry.createdAt)
+      lastModified: sqlTimestampToDate(storageEntry.createdAt),
+      encoding: storageEntry.encoding
     })
   })
 

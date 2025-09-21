@@ -18,8 +18,14 @@ import { serveStream } from './serve-stream'
 import {
   brotliCompressBytes,
   brotliCompressBytesSync,
+  brotliDecompressBytes,
+  brotliDecompressBytesSync,
+  brotliDecompressStream,
   gzipCompressBytes,
-  gzipCompressBytesSync
+  gzipCompressBytesSync,
+  gzipDecompressBytes,
+  gzipDecompressBytesSync,
+  gzipDecompressStream
 } from './zlib-utils'
 
 export type Logger = (...args: unknown[]) => void
@@ -387,7 +393,7 @@ export class StorageService {
   /** Retrieve bytes using a storage key */
   public async retrieve(
     key: string,
-    decompress: boolean | 'br' | 'gzip' = false
+    decompress: boolean | null | 'br' | 'gzip' = false
   ): Promise<StorageResult<Uint8Array>> {
     const storagePath = this.keyToPath(key)
 
@@ -408,8 +414,16 @@ export class StorageService {
           return err(StorageErrorCode.FAILED, 'No body in S3 response')
         }
         const bytes = await response.Body.transformToByteArray()
-        this.log(`Storage: Retrieved ${bytes.length} bytes <- ${key} (S3)`)
-        return ok(bytes)
+        let returnBytes: Uint8Array | null = null
+        if (decompress === true || decompress === 'br') {
+          returnBytes = await brotliDecompressBytes(bytes)
+        } else if (decompress === 'gzip') {
+          returnBytes = await gzipDecompressBytes(bytes)
+        } else {
+          returnBytes = bytes
+        }
+        this.log(`Storage: Retrieved ${returnBytes.length} bytes <- ${key} (S3)`)
+        return ok(returnBytes)
       } catch (error) {
         // Check for S3 NotFound using instanceof and status code
         if (error instanceof S3ServiceException && error.$response?.statusCode === 404) {
@@ -426,8 +440,16 @@ export class StorageService {
       try {
         const buffer = fs.readFileSync(filePath)
         const bytes = new Uint8Array(buffer)
-        this.log(`Storage: Retrieved ${bytes.length} bytes <- ${key}`)
-        return ok(bytes)
+        let returnBytes: Uint8Array | null = null
+        if (decompress === true || decompress === 'br') {
+          returnBytes = brotliDecompressBytesSync(bytes)
+        } else if (decompress === 'gzip') {
+          returnBytes = gzipDecompressBytesSync(bytes)
+        } else {
+          returnBytes = bytes
+        }
+        this.log(`Storage: Retrieved ${returnBytes.length} bytes <- ${key}`)
+        return ok(returnBytes)
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error)
 
@@ -443,90 +465,6 @@ export class StorageService {
           return err(StorageErrorCode.NOT_FOUND, `File not found: ${key}`)
         }
         this.log(`Storage: Failed to retrieve ${key} - ${message}`)
-        return err(StorageErrorCode.FAILED, message)
-      }
-    }
-
-    return err(StorageErrorCode.FAILED, 'Storage provider not configured')
-  }
-
-  /** Stream bytes using a storage key */
-  public async stream(
-    key: string,
-    decompress: boolean | 'gzip' | 'br' = false
-  ): Promise<StorageResult<ReadableStream<Uint8Array>>> {
-    const storagePath = this.keyToPath(key)
-
-    if (this.config.STORAGE_PROVIDER === 'bucket') {
-      if (!this.s3Client) {
-        return err(StorageErrorCode.FAILED, 'S3 client not initialized')
-      }
-
-      const command = new GetObjectCommand({
-        Bucket: this.config.STORAGE_BUCKET_NAME,
-        Key: storagePath
-      })
-
-      try {
-        const response = await this.s3Client.send(command)
-        if (!response.Body) {
-          return err(StorageErrorCode.FAILED, 'No body in S3 response')
-        }
-        this.log(`Storage: Created stream <- ${key} (S3)`)
-        let returnStream: ReadableStream | null = null
-        if (decompress === true || decompress === 'br') {
-
-        } else if (decompress === 'gzip') {
-          returnStream =
-        } else {
-          returnStream = response.Body.transformToWebStream()
-        }
-        return ok(returnStream)
-      } catch (error) {
-        // Check for S3 NotFound using instanceof and status code
-        if (error instanceof S3ServiceException && error.$response?.statusCode === 404) {
-          this.log(`Storage: File not found for stream - ${key} (S3)`)
-          return err(StorageErrorCode.NOT_FOUND, `File not found: ${key}`)
-        }
-        const message = error instanceof Error ? error.message : String(error)
-        this.log(`Storage: Failed to create stream for ${key} (S3) - ${message}`)
-        return err(StorageErrorCode.FAILED, message)
-      }
-    } else if (this.basePath) {
-      const filePath = pathJoin(this.basePath, storagePath)
-
-      try {
-        const buffer = fs.readFileSync(filePath)
-        const bytes = new Uint8Array(buffer)
-        let offset = 0
-        // const stream = bytesToStream(bytes)
-        const stream = new ReadableStream<typeof bytes>({
-          pull(controller) {
-            // Send the whole buffer as a single chunk
-            if (offset < bytes.length) {
-              controller.enqueue(bytes)
-              offset = bytes.length
-            }
-            controller.close()
-          }
-        })
-        this.log(`Storage: Created stream for ${bytes.length} bytes <- ${key}`)
-        return ok(stream)
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error)
-
-        // Check for filesystem not found using error code
-        if (
-          typeof error === 'object' &&
-          error &&
-          'code' in error &&
-          typeof error.code === 'string' &&
-          error.code === 'ENOENT'
-        ) {
-          this.log(`Storage: File not found for stream - ${key}`)
-          return err(StorageErrorCode.NOT_FOUND, `File not found: ${key}`)
-        }
-        this.log(`Storage: Failed to create stream for ${key} - ${message}`)
         return err(StorageErrorCode.FAILED, message)
       }
     }
@@ -644,6 +582,98 @@ export class StorageService {
   //   // throw new Error('Not implemented')
   // }
 
+  /** Stream bytes using a storage key */
+  public async stream(
+    key: string,
+    decompress: boolean | null | 'gzip' | 'br' = false
+  ): Promise<StorageResult<ReadableStream<Uint8Array>>> {
+    const storagePath = this.keyToPath(key)
+
+    if (this.config.STORAGE_PROVIDER === 'bucket') {
+      if (!this.s3Client) {
+        return err(StorageErrorCode.FAILED, 'S3 client not initialized')
+      }
+
+      const command = new GetObjectCommand({
+        Bucket: this.config.STORAGE_BUCKET_NAME,
+        Key: storagePath
+      })
+
+      try {
+        const response = await this.s3Client.send(command)
+        if (!response.Body) {
+          return err(StorageErrorCode.FAILED, 'No body in S3 response')
+        }
+        this.log(`Storage: Created stream <- ${key} (S3)`)
+        let returnStream: ReadableStream | null = null
+        if (decompress === true || decompress === 'br') {
+          returnStream = brotliDecompressStream(response.Body.transformToWebStream())
+        } else if (decompress === 'gzip') {
+          returnStream = gzipDecompressStream(response.Body.transformToWebStream())
+        } else {
+          returnStream = response.Body.transformToWebStream()
+        }
+        return ok(returnStream)
+      } catch (error) {
+        // Check for S3 NotFound using instanceof and status code
+        if (error instanceof S3ServiceException && error.$response?.statusCode === 404) {
+          this.log(`Storage: File not found for stream - ${key} (S3)`)
+          return err(StorageErrorCode.NOT_FOUND, `File not found: ${key}`)
+        }
+        const message = error instanceof Error ? error.message : String(error)
+        this.log(`Storage: Failed to create stream for ${key} (S3) - ${message}`)
+        return err(StorageErrorCode.FAILED, message)
+      }
+    } else if (this.basePath) {
+      const filePath = pathJoin(this.basePath, storagePath)
+
+      try {
+        const buffer = fs.readFileSync(filePath)
+        const bytes = new Uint8Array(buffer)
+        let offset = 0
+        // const stream = bytesToStream(bytes)
+        const stream = new ReadableStream<typeof bytes>({
+          pull(controller) {
+            // Send the whole buffer as a single chunk
+            if (offset < bytes.length) {
+              controller.enqueue(bytes)
+              offset = bytes.length
+            }
+            controller.close()
+          }
+        })
+        let returnStream: ReadableStream | null = null
+        if (decompress === true || decompress === 'br') {
+          returnStream = brotliDecompressStream(stream)
+        } else if (decompress === 'gzip') {
+          returnStream = gzipDecompressStream(stream)
+        } else {
+          returnStream = stream
+        }
+        this.log(`Storage: Created stream for ${bytes.length} bytes <- ${key}`)
+        return ok(returnStream)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
+
+        // Check for filesystem not found using error code
+        if (
+          typeof error === 'object' &&
+          error &&
+          'code' in error &&
+          typeof error.code === 'string' &&
+          error.code === 'ENOENT'
+        ) {
+          this.log(`Storage: File not found for stream - ${key}`)
+          return err(StorageErrorCode.NOT_FOUND, `File not found: ${key}`)
+        }
+        this.log(`Storage: Failed to create stream for ${key} - ${message}`)
+        return err(StorageErrorCode.FAILED, message)
+      }
+    }
+
+    return err(StorageErrorCode.FAILED, 'Storage provider not configured')
+  }
+
   /**
    * Serve stored bytes as HTTP response with FileMetadata Convenience overload that accepts FileMetadata
    * directly
@@ -654,7 +684,8 @@ export class StorageService {
       filesize: metadata.filesize,
       mimeType: metadata.mimeType,
       hash: metadata.hash,
-      lastModified: metadata.lastModified
+      lastModified: metadata.lastModified,
+      encoding: metadata.encoding
     })
   }
 
@@ -682,9 +713,10 @@ export class StorageService {
     const mimeType = metadata?.mimeType
     const hash = metadata?.hash
     const lastModified = metadata?.lastModified
+    const encoding = metadata?.encoding
 
     if (this.config.STORAGE_PROVIDER === 'bucket') {
-      const result = await this.stream(key)
+      const result = await this.stream(key, encoding)
       if (result.success) {
         return serveStream(
           c,
@@ -694,7 +726,8 @@ export class StorageService {
             filesize,
             mimeType,
             lastModified,
-            hash
+            hash,
+            encoding
           },
           {
             download,
@@ -730,7 +763,8 @@ export class StorageService {
             filesize,
             mimeType,
             lastModified,
-            hash
+            hash,
+            encoding
           },
           {
             download,

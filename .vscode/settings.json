@@ -75,6 +75,11 @@
     "*.css": "tailwindcss",
     "*.fixture": "raw"
   },
+  "files.readonlyFromPermissions": true,
+  "files.readonlyInclude": {
+    "**/*.fixture": true,
+    "**/routeTree.gen.ts": true
+  },
   "jupyter.kernels.excludePythonEnvironments": [
     "/usr/bin/python3",
     "/usr/bin/python",

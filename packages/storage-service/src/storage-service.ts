@@ -206,8 +206,8 @@ export class StorageService {
     return null
   }
 
-  private keyToPath(key: string): string {
-    // aa/xx/yy/full-uuid
+  public keyToPath(key: string): string {
+    // aa/xx/yy/rest-of-full-uuid
     return pathJoin(key.slice(0, 2), key.slice(2, 4), key.slice(4, 6), key)
   }
 
@@ -222,7 +222,7 @@ export class StorageService {
   }
 
   /** Store bytes and return a storage key */
-  private async store(
+  public async store(
     bytes: Uint8Array,
     compress: boolean | 'gzip' | 'br' = false
     // options?: StoreFileOptions

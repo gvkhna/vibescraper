@@ -1,4 +1,4 @@
-import { Readable } from 'node:stream'
+import { Duplex, Readable } from 'node:stream'
 import {
   brotliCompress,
   brotliCompressSync,
@@ -168,16 +168,40 @@ export function gzipDecompressBytes(input: Uint8Array): Promise<Uint8Array> {
   })
 }
 
+class BrotliTransformStream implements TransformStream {
+  public readonly readable: ReadableStream
+  public readonly writable: WritableStream
+  constructor(options?: BrotliOptions) {
+    const decompress = createBrotliDecompress(options)
+
+    this.readable = new ReadableStream({
+      start(controller) {
+        decompress.on('data', (chunk) => {
+          controller.enqueue(chunk)
+        })
+        decompress.on('end', () => {
+          controller.close()
+        })
+      }
+    })
+
+    this.writable = new WritableStream({
+      write(uint8Array) {
+        decompress.push(uint8Array)
+      }
+    })
+  }
+}
+
 /**
  * Streaming Brotli decompression.
  * Accepts a Web ReadableStream<Uint8Array> and returns a Web ReadableStream<Uint8Array>.
  */
-export function brotliDecompressStream(
-  input: ReadableStream,
+export function brotliDecompressStream<T>(
+  input: ReadableStream<T>,
   options?: BrotliOptions
 ): ReadableStream<Uint8Array> {
-  const brotliDecompress = createBrotliDecompress(options)
-  return input.pipeThrough(brotliDecompress)
+  return input.pipeThrough(new BrotliTransformStream(options))
   // const nodeIn = Readable.fromWeb(input)
   // const transformed = nodeIn.pipe(createBrotliDecompress(options))
   // return Readable.toWeb(transformed) as unknown as ReadableStream<Uint8Array>
@@ -194,4 +218,30 @@ export function gzipDecompressStream(
   const nodeIn = Readable.fromWeb(input as unknown as ReadableStream)
   const transformed = nodeIn.pipe(createGunzip(options))
   return Readable.toWeb(transformed) as unknown as ReadableStream<Uint8Array>
+}
+
+/**
+ * A Web Streams-compatible transform (readable + writable) for Brotli decompression.
+ *
+ * Usage: webReadable.pipeThrough(new BrotliDecompressTransform())
+ */
+export class BrotliDecompressTransform implements ReadableWritablePair<Uint8Array, Uint8Array> {
+  public readonly readable: ReadableStream<Uint8Array>
+  public readonly writable: WritableStream<Uint8Array>
+
+  // Keep a reference if callers need to interact or destroy manually
+  private readonly node: import('node:stream').Duplex
+
+  constructor(options?: BrotliOptions) {
+    const z = createBrotliDecompress(options)
+    const pair = Duplex.toWeb(z)
+    this.readable = pair.readable as unknown as ReadableStream<Uint8Array>
+    this.writable = pair.writable as unknown as WritableStream<Uint8Array>
+    this.node = z
+  }
+
+  /** Optional helper to destroy the underlying node stream */
+  destroy(error?: Error) {
+    this.node.destroy(error)
+  }
 }

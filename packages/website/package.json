@@ -41,6 +41,7 @@
     "@ai-sdk/provider": "^2.0.0",
     "@ai-sdk/react": "^2.0.39",
     "@ai-sdk/togetherai": "^1.0.15",
+    "@astrojs/check": "^0.9.4",
     "@astrojs/mdx": "^4.3.5",
     "@astrojs/node": "^9.4.3",
     "@astrojs/react": "^4.3.1",

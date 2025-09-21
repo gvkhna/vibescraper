@@ -5,8 +5,10 @@ import * as cheerio from 'cheerio'
  *
  * @async
  * @param {string} [html] - Optional HTML string of the page. If omitted, only the base URL is returned.
- * @param {string} [url="https://news.ycombinator.com/"] - The base URL of the page being parsed.
- * @returns {Promise<string[]|null>} A promise that resolves to an array of JSON data (URLs), or null/empty if none.
+ * @param {string} [url="https://news.ycombinator.com/"] - The base URL of the page being parsed. Default is
+ *   `"https://news.ycombinator.com/"`
+ * @returns {Promise<string[] | null>} A promise that resolves to an array of JSON data (URLs), or null/empty
+ *   if none.
  */
 export default async function parseNextUrls(html, url = 'https://news.ycombinator.com/') {
   // If no HTML is passed, just return the base queue starter

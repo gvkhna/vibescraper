@@ -6,6 +6,7 @@ import type { TreeNode, TreeNodeType } from './tree-table-editor'
 
 /**
  * Converts a standard JSON object into a TreeNode array for the table editor
+ *
  * @param json The input JSON object to convert
  * @param expandLevel The level to auto-expand nodes (0 = none, 1 = first level, etc)
  * @param enumOptions Optional map of field names to their enum options
@@ -34,6 +35,7 @@ export function jsonObjectToSchemaTable(
 
 /**
  * Creates a TreeNode based on the type of the value
+ *
  * @param name The name (key) of the node
  * @param value The value to analyze
  * @param enumOptions Optional array of enum options if this is an enum field
@@ -144,9 +146,7 @@ function createTreeNode(
   }
 }
 
-/**
- * Helper function to determine the type name for a value
- */
+/** Helper function to determine the type name for a value */
 function getTypeForValue(value: any): TreeNodeType {
   if (value === null || value === undefined) {
     return 'String'
@@ -170,9 +170,7 @@ function getTypeForValue(value: any): TreeNodeType {
   }
 }
 
-/**
- * Check if a string is likely a date string
- */
+/** Check if a string is likely a date string */
 function isDateString(value: string): boolean {
   // Simple check for ISO date format or common date formats
   const dateRegex = /^\d{4}-\d{2}-\d{2}|^\d{2}\/\d{2}\/\d{4}/

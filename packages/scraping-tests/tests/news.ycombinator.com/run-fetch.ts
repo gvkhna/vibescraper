@@ -4,15 +4,15 @@
 /**
  * Fetches the first 5 pages of Hacker News and writes raw HTML fixtures.
  *
- * Usage:
- *   bun run tests/news.ycombinator.com/run-fetch.ts
+ * Usage: bun run tests/news.ycombinator.com/run-fetch.ts
  *
  * Output files in fixtures/ (timestamp first for natural sort):
- *   - <unix_ts>-page-1.raw.fixture
- *   - <unix_ts>-page-2.raw.fixture
- *   - <unix_ts>-page-3.raw.fixture
- *   - <unix_ts>-page-4.raw.fixture
- *   - <unix_ts>-page-5.raw.fixture
+ *
+ * - <unix_ts>-page-1.raw.fixture
+ * - <unix_ts>-page-2.raw.fixture
+ * - <unix_ts>-page-3.raw.fixture
+ * - <unix_ts>-page-4.raw.fixture
+ * - <unix_ts>-page-5.raw.fixture
  */
 
 import { htmlCleaner, htmlFormat } from '@vibescraper/html-processor'

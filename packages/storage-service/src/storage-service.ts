@@ -18,104 +18,63 @@ import { serveStream } from './serve-stream'
 
 export type Logger = (...args: unknown[]) => void
 
-/**
- * Error codes for storage operations
- */
+/** Error codes for storage operations */
 export enum StorageErrorCode {
   NOT_FOUND = 'NOT_FOUND',
   FAILED = 'FAILED'
 }
 
-/**
- * Storage operation result
- */
+/** Storage operation result */
 export type StorageResult<T> =
   | { success: true; data: T }
   | { success: false; error: StorageErrorCode; message: string }
 
-/**
- * Helper to create success result
- */
+/** Helper to create success result */
 function ok<T>(data: T): StorageResult<T> {
   return { success: true, data }
 }
 
-/**
- * Helper to create error result
- */
+/** Helper to create error result */
 function err<T>(error: StorageErrorCode, message: string): StorageResult<T> {
   return { success: false, error, message }
 }
 
-/**
- * Configuration for filesystem storage backend
- */
+/** Configuration for filesystem storage backend */
 export interface FilesystemStorageConfig {
   STORAGE_PROVIDER: 'filesystem'
-  /**
-   * Base directory path where files will be stored
-   * Should be an absolute path
-   */
+  /** Base directory path where files will be stored Should be an absolute path */
   STORAGE_BASE_PATH: string | URL
-  /**
-   * Optional public URL prefix for serving files
-   * e.g., "https://cdn.example.com" or R2 public bucket URL
-   */
+  /** Optional public URL prefix for serving files e.g., "https://cdn.example.com" or R2 public bucket URL */
   // STORAGE_PUBLIC_URL_PREFIX?: string
-  /**
-   * Default cache control header for uploaded objects
-   */
+  /** Default cache control header for uploaded objects */
   STORAGE_CACHE_CONTROL_HEADER?: string
 }
 
-/**
- * Configuration for S3/bucket storage backend
- */
+/** Configuration for S3/bucket storage backend */
 export interface BucketStorageConfig {
   STORAGE_PROVIDER: 'bucket'
-  /**
-   * S3 bucket name
-   */
+  /** S3 bucket name */
   STORAGE_BUCKET_NAME: string
-  /**
-   * S3 region (e.g., 'us-east-1', 'auto' for R2)
-   */
+  /** S3 region (e.g., 'us-east-1', 'auto' for R2) */
   STORAGE_REGION?: string
-  /**
-   * S3 endpoint URL (for S3-compatible services like R2, MinIO)
-   */
+  /** S3 endpoint URL (for S3-compatible services like R2, MinIO) */
   STORAGE_ENDPOINT: string
-  /**
-   * AWS access key ID
-   */
+  /** AWS access key ID */
   STORAGE_ACCESS_KEY_ID?: string
-  /**
-   * AWS secret access key
-   */
+  /** AWS secret access key */
   STORAGE_SECRET_ACCESS_KEY?: string
-  /**
-   * Use path-style addressing (for S3-compatible services)
-   */
+  /** Use path-style addressing (for S3-compatible services) */
   STORAGE_FORCE_PATH_STYLE?: boolean | string
-  /**
-   * Optional public URL prefix for serving files
-   * e.g., "https://cdn.example.com" or R2 public bucket URL
-   */
+  /** Optional public URL prefix for serving files e.g., "https://cdn.example.com" or R2 public bucket URL */
   // STORAGE_PUBLIC_URL_PREFIX?: string
-  /**
-   * Default cache control header for uploaded objects
-   */
+  /** Default cache control header for uploaded objects */
   STORAGE_CACHE_CONTROL_HEADER?: string
 }
 
-/**
- * Union type for storage configuration
- */
+/** Union type for storage configuration */
 export type StorageConfig = FilesystemStorageConfig | BucketStorageConfig
 
-/**
- * Options for retrieving a file
- */
+/** Options for retrieving a file */
 // export interface GetFileOptions {
 //   /**
 //    * Whether to return as stream instead of buffer
@@ -130,59 +89,33 @@ export type StorageConfig = FilesystemStorageConfig | BucketStorageConfig
 //   }
 // }
 
-/**
- * Metadata about stored file
- * This interface aligns with ServeOptions for consistency
- */
+/** Metadata about stored file This interface aligns with ServeOptions for consistency */
 export interface FileMetadata {
-  /**
-   * Storage key for the file
-   */
+  /** Storage key for the file */
   key: string
-  /**
-   * Original filename
-   */
+  /** Original filename */
   filename: string
-  /**
-   * File size in bytes
-   */
+  /** File size in bytes */
   filesize: number
-  /**
-   * MIME type
-   */
+  /** MIME type */
   mimeType: string
-  /**
-   * SHA256 hash of file content
-   */
+  /** SHA256 hash of file content */
   hash: string
-  /**
-   * Upload timestamp
-   */
+  /** Upload timestamp */
   lastModified: Date
 }
 
-/**
- * Options for serving stored bytes via HTTP
- * These can be derived from FileMetadata or provided separately
- */
+/** Options for serving stored bytes via HTTP These can be derived from FileMetadata or provided separately */
 export interface ServeOptions {
-  /**
-   * Force download with Content-Disposition header
-   */
+  /** Force download with Content-Disposition header */
   download: boolean
-  /**
-   * Force inline display
-   */
+  /** Force inline display */
   inline: boolean
-  /**
-   * Cache Control header
-   */
+  /** Cache Control header */
   cacheControl?: string
 }
 
-/**
- * Main storage service class that handles both filesystem and bucket storage
- */
+/** Main storage service class that handles both filesystem and bucket storage */
 export class StorageService {
   private config: StorageConfig
   private s3Client?: S3Client
@@ -195,9 +128,7 @@ export class StorageService {
     this.initialize()
   }
 
-  /**
-   * Initialize the storage service based on configuration
-   */
+  /** Initialize the storage service based on configuration */
   private initialize(): void {
     // Implementation will set up S3 client if using bucket storage
     // and ensure filesystem directories exist if using filesystem
@@ -249,16 +180,12 @@ export class StorageService {
     }
   }
 
-  /**
-   * Get the storage type
-   */
+  /** Get the storage type */
   public getStorageType(): StorageConfig['STORAGE_PROVIDER'] {
     return this.config.STORAGE_PROVIDER
   }
 
-  /**
-   * Get the base path (for filesystem) or bucket name (for S3)
-   */
+  /** Get the base path (for filesystem) or bucket name (for S3) */
   public getStorageLocation() {
     if (this.config.STORAGE_PROVIDER === 'filesystem') {
       return this.basePath
@@ -271,9 +198,7 @@ export class StorageService {
     return pathJoin(key.slice(0, 2), key.slice(2, 4), key.slice(4, 6), key)
   }
 
-  /**
-   * Generate a new storage key and its path
-   */
+  /** Generate a new storage key and its path */
   public generateKey(): { key: string; path: string } {
     // Remove dashes and lowercase
     const uuid = globalThis.crypto.randomUUID().replace(/-/g, '').toLowerCase()
@@ -283,9 +208,7 @@ export class StorageService {
     }
   }
 
-  /**
-   * Store bytes and return a storage key
-   */
+  /** Store bytes and return a storage key */
   public async store(
     bytes: Uint8Array
     // options?: StoreFileOptions
@@ -391,8 +314,8 @@ export class StorageService {
   }
 
   /**
-   * Store a File object (from multipart upload) with metadata extraction
-   * This is a convenience method that handles the complete upload workflow
+   * Store a File object (from multipart upload) with metadata extraction This is a convenience method that
+   * handles the complete upload workflow
    */
   public async storeFile(file: File): Promise<StorageResult<FileMetadata>> {
     // Validate input is actually a File
@@ -431,9 +354,7 @@ export class StorageService {
     }
   }
 
-  /**
-   * Retrieve bytes using a storage key
-   */
+  /** Retrieve bytes using a storage key */
   public async retrieve(key: string): Promise<StorageResult<Uint8Array>> {
     const storagePath = this.keyToPath(key)
 
@@ -496,9 +417,7 @@ export class StorageService {
     return err(StorageErrorCode.FAILED, 'Storage provider not configured')
   }
 
-  /**
-   * Stream bytes using a storage key
-   */
+  /** Stream bytes using a storage key */
   public async stream(key: string): Promise<StorageResult<ReadableStream<Uint8Array>>> {
     const storagePath = this.keyToPath(key)
 
@@ -571,25 +490,19 @@ export class StorageService {
     return err(StorageErrorCode.FAILED, 'Storage provider not configured')
   }
 
-  /**
-   * Get file information without retrieving content
-   */
+  /** Get file information without retrieving content */
   // public async getFileInfo(key: string): Promise<FileInfo | null> {
   //   // Implementation will get metadata from filesystem or S3
   //   throw new Error('Not implemented')
   // }
 
-  /**
-   * Check if a file exists
-   */
+  /** Check if a file exists */
   // public async fileExists(key: string): Promise<boolean> {
   //   // Implementation will check existence in filesystem or S3
   //   throw new Error('Not implemented')
   // }
 
-  /**
-   * Delete stored bytes using a storage key
-   */
+  /** Delete stored bytes using a storage key */
   public async delete(key: string): Promise<StorageResult<void>> {
     const storagePath = this.keyToPath(key)
 
@@ -665,25 +578,19 @@ export class StorageService {
     return err(StorageErrorCode.FAILED, 'Storage provider not configured')
   }
 
-  /**
-   * Generate a public URL for a file (if configured)
-   */
+  /** Generate a public URL for a file (if configured) */
   // public getPublicUrl(key: string): string | null {
   //   // Implementation will generate URL based on config
   //   throw new Error('Not implemented')
   // }
 
-  /**
-   * Generate a signed URL for temporary access (S3 only)
-   */
+  /** Generate a signed URL for temporary access (S3 only) */
   // public async getSignedUrl(key: string, expiresIn = 3600): Promise<string | null> {
   //   // Implementation will generate presigned URL for S3
   //   throw new Error('Not implemented')
   // }
 
-  /**
-   * Create Hono app with storage endpoints
-   */
+  /** Create Hono app with storage endpoints */
   // private createHonoApp(): Hono {
   //   // Implementation will create Hono routes for:
   //   // - GET /blob/:key - Retrieve file
@@ -694,8 +601,8 @@ export class StorageService {
   // }
 
   /**
-   * Serve stored bytes as HTTP response with FileMetadata
-   * Convenience overload that accepts FileMetadata directly
+   * Serve stored bytes as HTTP response with FileMetadata Convenience overload that accepts FileMetadata
+   * directly
    */
   public async serveWithMetadata(c: Context, metadata: FileMetadata): Promise<Response> {
     return this.serve(c, metadata.key, {
@@ -707,9 +614,7 @@ export class StorageService {
     })
   }
 
-  /**
-   * Serve stored bytes as HTTP response
-   */
+  /** Serve stored bytes as HTTP response */
   public async serve(
     c: Context,
     key: string,
@@ -800,9 +705,7 @@ export class StorageService {
     return c.text('Storage not configured', 500)
   }
 
-  /**
-   * Handle file upload from Hono request
-   */
+  /** Handle file upload from Hono request */
   // public async handleUpload(
   //   c: any // Hono context type
   // ): Promise<StoreFileResult> {
@@ -810,9 +713,7 @@ export class StorageService {
   //   throw new Error('Not implemented')
   // }
 
-  /**
-   * Clean up resources (close connections, etc.)
-   */
+  /** Clean up resources (close connections, etc.) */
   public async cleanup(): Promise<void> {
     if (this.s3Client) {
       this.s3Client.destroy()

@@ -1,10 +1,6 @@
-/**
- * Utility functions for working with ReadableStreams
- */
+/** Utility functions for working with ReadableStreams */
 
-/**
- * Read all chunks from a ReadableStream and combine into a single Uint8Array
- */
+/** Read all chunks from a ReadableStream and combine into a single Uint8Array */
 export async function streamToBytes(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
   const reader = stream.getReader()
   const chunks: Uint8Array[] = []
@@ -35,9 +31,7 @@ export async function streamToBytes(stream: ReadableStream<Uint8Array>): Promise
   return result
 }
 
-/**
- * Create a ReadableStream from a Uint8Array
- */
+/** Create a ReadableStream from a Uint8Array */
 export function bytesToStream(bytes: Uint8Array): ReadableStream<Uint8Array> {
   return new ReadableStream({
     start(controller) {

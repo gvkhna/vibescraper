@@ -580,9 +580,7 @@ const FILE_CATEGORY_MAPPINGS: Record<string, FileTypeInfo | undefined> = {
   }
 }
 
-/**
- * Get complete file type information
- */
+/** Get complete file type information */
 export function getFileTypeInfo(filepath?: string, mimeType?: string): FileTypeInfo {
   const detectedMimeType = mimeType ?? (filepath && getMimeType(filepath))
 
@@ -663,9 +661,7 @@ export function getFileTypeInfo(filepath?: string, mimeType?: string): FileTypeI
   }
 }
 
-/**
- * Get Tailwind CSS classes for file type colors
- */
+/** Get Tailwind CSS classes for file type colors */
 export function getFileTypeColors(colorScheme: FileColorScheme): { text: string; background: string } {
   const colorMap: Record<FileColorScheme, { text: string; background: string } | undefined> = {
     green: { text: 'text-green-600', background: 'bg-green-100' },
@@ -688,9 +684,7 @@ export function getFileTypeColors(colorScheme: FileColorScheme): { text: string;
   return defaultColorScheme
 }
 
-/**
- * Get MIME type for a file path with custom overrides
- */
+/** Get MIME type for a file path with custom overrides */
 export function getMimeType(filepath: string): string | undefined {
   // Check for extension-based override first
   const ext = /\.[^.]+$/.exec(filepath)?.[0]?.toLowerCase()
@@ -715,9 +709,7 @@ export function encodeContentDispositionFilename(filename: string) {
   return encodedFilename
 }
 
-/**
- * Determine if a MIME type should be displayed inline or as attachment
- */
+/** Determine if a MIME type should be displayed inline or as attachment */
 export function getContentDisposition({
   mimeType,
   filename,
@@ -765,9 +757,7 @@ export function getContentDisposition({
   // return `${disposition}; filename="${filename}"; filename*=UTF-8''${encodedFilename}`
 }
 
-/**
- * Check if content type is compressible
- */
+/** Check if content type is compressible */
 export function isCompressibleContentType(contentType: string): boolean {
   const COMPRESSIBLE_CONTENT_TYPE_REGEX =
     /^\s*(?:text\/[^;\s]+|application\/(?:javascript|json|xml|xml-dtd|ecmascript|dart|postscript|rtf|tar|toml|vnd\.dart|vnd\.ms-fontobject|vnd\.ms-opentype|wasm|x-httpd-php|x-javascript|x-ns-proxy-autoconfig|x-sh|x-tar|x-virtualbox-hdd|x-virtualbox-ova|x-virtualbox-ovf|x-virtualbox-vbox|x-virtualbox-vdi|x-virtualbox-vhd|x-virtualbox-vmdk|x-www-form-urlencoded)|font\/(?:otf|ttf)|image\/(?:bmp|vnd\.adobe\.photoshop|vnd\.microsoft\.icon|vnd\.ms-dds|x-icon|x-ms-bmp)|message\/rfc822|model\/gltf-binary|x-shader\/x-fragment|x-shader\/x-vertex|[^;\s]+?\+(?:json|text|xml|yaml))(?:[;\s]|$)/i

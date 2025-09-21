@@ -268,10 +268,13 @@ export class StorageService {
 
       let saveBytes: Uint8Array | null = null
       if (compress === true || compress === 'br') {
+        this.log(`Store: brotli web-async`)
         saveBytes = await brotliCompressBytes(bytes)
       } else if (compress === 'gzip') {
+        this.log(`Store: gzip web-async`)
         saveBytes = await gzipCompressBytes(bytes)
       } else {
+        this.log(`Store: web-async`)
         saveBytes = bytes
       }
       const command = new PutObjectCommand({
@@ -296,10 +299,13 @@ export class StorageService {
       try {
         let saveBytes: Uint8Array | null = null
         if (compress === true || compress === 'br') {
+          this.log(`Store: brotli fs-sync`)
           saveBytes = brotliCompressBytesSync(bytes)
         } else if (compress === 'gzip') {
+          this.log(`Store: gzip fs-sync`)
           saveBytes = gzipCompressBytesSync(bytes)
         } else {
+          this.log(`Store: fs-sync`)
           saveBytes = bytes
         }
         fs.mkdirSync(pathDirname(filePath), { recursive: true })
@@ -363,8 +369,9 @@ export class StorageService {
 
     try {
       // Convert File to bytes
-      const buffer = await file.arrayBuffer()
-      const bytes = new Uint8Array(buffer)
+      // const buffer = await file.arrayBuffer()
+      // const bytes = new Uint8Array(buffer)
+      const bytes = await file.bytes()
 
       // Store the bytes
       const storeResult = await this.store(bytes, compress)
@@ -418,10 +425,13 @@ export class StorageService {
         const bytes = await response.Body.transformToByteArray()
         let returnBytes: Uint8Array | null = null
         if (decompress === true || decompress === 'br') {
+          this.log(`Retrieve: brotli web`)
           returnBytes = await brotliDecompressBytes(bytes)
         } else if (decompress === 'gzip') {
+          this.log(`Retrieve: gzip web`)
           returnBytes = await gzipDecompressBytes(bytes)
         } else {
+          this.log(`Retrieve: web`)
           returnBytes = bytes
         }
         this.log(`Storage: Retrieved ${returnBytes.length} bytes <- ${key} (S3)`)
@@ -609,10 +619,13 @@ export class StorageService {
         this.log(`Storage: Created stream <- ${key} (S3)`)
         let returnStream: ReadableStream | null = null
         if (decompress === true || decompress === 'br') {
+          this.log(`Stream: brotli web-stream`)
           returnStream = brotliDecompressStream(response.Body.transformToWebStream())
         } else if (decompress === 'gzip') {
+          this.log(`Stream: gzip web-stream`)
           returnStream = gzipDecompressStream(response.Body.transformToWebStream())
         } else {
+          this.log(`Stream: web-stream`)
           returnStream = response.Body.transformToWebStream()
         }
         return ok(returnStream)
@@ -646,10 +659,13 @@ export class StorageService {
         })
         let returnStream: ReadableStream | null = null
         if (decompress === true || decompress === 'br') {
+          this.log(`Stream: brotli fs-stream`)
           returnStream = brotliDecompressStream(stream)
         } else if (decompress === 'gzip') {
+          this.log(`Stream: gzip fs-stream`)
           returnStream = gzipDecompressStream(stream)
         } else {
+          this.log(`Stream: fs-stream`)
           returnStream = stream
         }
         this.log(`Storage: Created stream for ${bytes.length} bytes <- ${key}`)
@@ -728,10 +744,13 @@ export class StorageService {
           ? options.enc
           : null
 
-    const acceptEncodingSet = new Set(
-      (c.req.header('accept-encoding') ?? '').split(',').map((enc) => enc.trim())
-    )
+    this.log(`Request encoding: ${encoding}`)
+    const acceptEncodingHeader = c.req.header('Accept-Encoding') ?? ''
+    const acceptEncodingSet = new Set(acceptEncodingHeader.split(',').map((enc) => enc.trim()))
+    this.log(`Request accept-encoding header: ${acceptEncodingHeader}`)
+
     const requestAcceptsEncoding = typeof encoding === 'string' && acceptEncodingSet.has(encoding)
+    this.log(`Request requestAcceptsEncoding: ${requestAcceptsEncoding}`)
 
     const queryOverrideDecode =
       queryEnc === 'br' || queryEnc === 'gzip'
@@ -740,12 +759,15 @@ export class StorageService {
           ? 'br'
           : null
 
+    this.log(`Request queryOverrideDecode: ${queryOverrideDecode}`)
+
     const decompress =
       typeof queryOverrideDecode === 'string' && queryOverrideDecode === encoding
         ? false
         : requestAcceptsEncoding
           ? encoding
           : false
+    this.log(`Request decompressing: ${decompress}`)
 
     if (this.config.STORAGE_PROVIDER === 'bucket') {
       const result = await this.stream(key, decompress)
@@ -796,13 +818,14 @@ export class StorageService {
             mimeType,
             lastModified,
             hash,
-            encoding: decompress ? null : encoding
+            encoding
           },
           {
             download,
             inline,
             cacheControl: this.config.STORAGE_CACHE_CONTROL_HEADER
-          }
+          },
+          decompress
         )
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error)

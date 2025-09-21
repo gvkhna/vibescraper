@@ -1,4 +1,5 @@
-/* eslint-disable no-console */
+import { CreateBucketCommand, S3Client } from '@aws-sdk/client-s3'
+import debug from 'debug'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -12,11 +13,14 @@ import { readFixture } from './read-fixture'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+const log = debug('test')
+
 describe('storageService - Bucket (MinIO)', () => {
   let minio: StartedTestContainer | null = null
   let storageService: StorageService
 
   beforeAll(async () => {
+    // eslint-disable-next-line no-console
     console.log('Starting MinIO container...')
 
     // Start MinIO container
@@ -33,11 +37,9 @@ describe('storageService - Bucket (MinIO)', () => {
     const host = minio.getHost()
     const port = minio.getMappedPort(9000)
 
-    console.log(`MinIO started at ${host}:${port}`)
+    log(`MinIO started at ${host}:${port}`)
 
     // Create S3 client to set up bucket
-    // eslint-disable-next-line no-restricted-syntax
-    const { S3Client, CreateBucketCommand } = await import('@aws-sdk/client-s3')
 
     const s3Client = new S3Client({
       endpoint: `http://${host}:${port}`,
@@ -57,8 +59,9 @@ describe('storageService - Bucket (MinIO)', () => {
           Bucket: bucketName
         })
       )
-      console.log(`Created bucket: ${bucketName}`)
+      log(`Created bucket: ${bucketName}`)
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log('Bucket creation error (may already exist):', error)
     }
 
@@ -74,19 +77,21 @@ describe('storageService - Bucket (MinIO)', () => {
       STORAGE_CACHE_CONTROL_HEADER: 'public, max-age=31536000'
     }
 
-    storageService = new StorageService(config, console.log)
-    console.log('Storage service initialized')
+    storageService = new StorageService(config, log)
+    log('Storage service initialized')
   }, 60000) // 1 minute timeout for container setup
 
   afterAll(async () => {
-    console.log('Cleaning up...')
+    log('Cleaning up...')
     try {
       await storageService.cleanup()
       if (minio) {
         await minio.stop()
       }
+      // eslint-disable-next-line no-console
       console.log('Cleanup complete')
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Cleanup error:', error)
     }
   }, 30000)
@@ -133,14 +138,14 @@ describe('storageService - Bucket (MinIO)', () => {
     expect(retrievedBytes).toStrictEqual(originalBytes)
     expect(retrievedBytes).toHaveLength(originalBytes.length)
 
-    console.log(`Retrieved ${retrievedBytes.length} bytes successfully`)
+    log(`Retrieved ${retrievedBytes.length} bytes successfully`)
 
     // Clean up the test file
     const deleteResult = await storageService.delete(key)
 
     expect(deleteResult.success).toBe(true)
 
-    console.log('File deleted successfully')
+    log('File deleted successfully')
   })
 
   it('should return NOT_FOUND error for non-existent file', async () => {
@@ -160,7 +165,7 @@ describe('storageService - Bucket (MinIO)', () => {
       expect(result.message).toContain('File not found')
       expect(result.message).toContain(nonExistentKey)
     }
-    console.log('NOT_FOUND error handled correctly for getBlob')
+    log('NOT_FOUND error handled correctly for getBlob')
   })
 
   it('should return NOT_FOUND error when deleting non-existent file', async () => {
@@ -180,7 +185,7 @@ describe('storageService - Bucket (MinIO)', () => {
       expect(result.message).toContain('File not found')
       expect(result.message).toContain(nonExistentKey)
     }
-    console.log('NOT_FOUND error handled correctly for deleteBlob')
+    log('NOT_FOUND error handled correctly for deleteBlob')
   })
 
   it('should reject invalid data when storing', async () => {
@@ -225,7 +230,7 @@ describe('storageService - Bucket (MinIO)', () => {
       expect(emptyResult.message).toContain('Cannot store empty data')
     }
 
-    console.log('Input validation working correctly')
+    log('Input validation working correctly')
   })
 
   it('should store and retrieve file as stream', async () => {
@@ -295,7 +300,7 @@ describe('storageService - Bucket (MinIO)', () => {
     expect(retrievedBytes).toStrictEqual(originalBytes)
     expect(retrievedBytes).toHaveLength(originalBytes.length)
 
-    console.log('Stream retrieval working correctly')
+    log('Stream retrieval working correctly')
 
     // Clean up
     const deleteResult = await storageService.delete(key)
@@ -320,7 +325,7 @@ describe('storageService - Bucket (MinIO)', () => {
       expect(result.message).toContain('File not found')
       expect(result.message).toContain(nonExistentKey)
     }
-    console.log('NOT_FOUND error handled correctly for getBlobStream')
+    log('NOT_FOUND error handled correctly for getBlobStream')
   })
 
   it('should work with streamToBytes utility', async () => {
@@ -357,7 +362,7 @@ describe('storageService - Bucket (MinIO)', () => {
     expect(retrievedBytes).toStrictEqual(originalBytes)
     expect(retrievedBytes).toHaveLength(originalBytes.length)
 
-    console.log('streamToBytes utility working correctly')
+    log('streamToBytes utility working correctly')
 
     // Clean up
     const deleteResult = await storageService.delete(key)

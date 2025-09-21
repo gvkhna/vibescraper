@@ -1,4 +1,5 @@
-/* eslint-disable no-console */
+import { CreateBucketCommand, S3Client } from '@aws-sdk/client-s3'
+import debug from 'debug'
 import { Hono } from 'hono'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -15,6 +16,8 @@ import { streamToBytes } from '../src/stream-utils'
 import { brotliDecompressBytesSync, gzipDecompressBytesSync } from '../src/zlib-utils'
 
 import { readFixture } from './read-fixture'
+
+const log = debug('test')
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -191,6 +194,7 @@ describe('compression - Bucket (MinIO)', () => {
   let app: Hono
 
   beforeAll(async () => {
+    // eslint-disable-next-line no-console
     console.log('Starting MinIO container (compression tests)...')
     minio = await new GenericContainer('minio/minio:latest')
       .withCommand(['server', '/data'])
@@ -205,8 +209,6 @@ describe('compression - Bucket (MinIO)', () => {
     const host = minio.getHost()
     const port = minio.getMappedPort(9000)
 
-    // eslint-disable-next-line no-restricted-syntax
-    const { S3Client, CreateBucketCommand } = await import('@aws-sdk/client-s3')
     const s3Client = new S3Client({
       endpoint: `http://${host}:${port}`,
       region: 'auto',
@@ -221,7 +223,7 @@ describe('compression - Bucket (MinIO)', () => {
     try {
       await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }))
     } catch (error) {
-      console.log('Bucket may already exist:', error)
+      log('Bucket may already exist:', error)
     }
 
     const config: BucketStorageConfig = {
@@ -234,7 +236,7 @@ describe('compression - Bucket (MinIO)', () => {
       STORAGE_FORCE_PATH_STYLE: true,
       STORAGE_CACHE_CONTROL_HEADER: 'public, max-age=31536000'
     }
-    storageService = new StorageService(config, console.log)
+    storageService = new StorageService(config, log)
 
     // Hono app to exercise serve() for bucket
     app = new Hono()
@@ -252,7 +254,10 @@ describe('compression - Bucket (MinIO)', () => {
       if (minio) {
         await minio.stop()
       }
+      // eslint-disable-next-line no-console
+      console.log('Cleanup complete')
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Cleanup error (compression tests):', error)
     }
   }, 30000)

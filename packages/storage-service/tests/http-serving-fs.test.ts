@@ -1,24 +1,10 @@
-import { CreateBucketCommand, S3Client } from '@aws-sdk/client-s3'
 import { Hono } from 'hono'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import {
-  GenericContainer,
-  Network,
-  type StartedNetwork,
-  type StartedTestContainer,
-  Wait
-} from 'testcontainers'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { serveStream } from '../src/serve-stream'
-import {
-  type BucketStorageConfig,
-  type FilesystemStorageConfig,
-  StorageService
-} from '../src/storage-service'
-import { streamToBytes } from '../src/stream-utils'
+import { type FilesystemStorageConfig, StorageService } from '../src/storage-service'
 
 import { readFixture } from './read-fixture'
 const __filename = fileURLToPath(import.meta.url)

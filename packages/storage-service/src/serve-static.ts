@@ -5,6 +5,7 @@ import { createReadStream, lstatSync } from 'node:fs'
 
 import { getContentDisposition, getMimeType, isCompressibleContentType } from './mime-utils'
 import type { FileMetadata, ServeOptions } from './storage-service'
+import { brotliDecompressStream, gzipDecompressStream } from './zlib-utils'
 
 const log = debug('app:server:serve-static')
 
@@ -53,7 +54,8 @@ export function serveStatic(
   c: Context,
   filePath: string,
   { filename, mimeType, filesize, lastModified, hash, encoding }: Partial<FileMetadata>,
-  { download, inline, cacheControl }: ServeOptions
+  { download, inline, cacheControl }: ServeOptions,
+  decompress: 'gzip' | 'br' | false
 ): Response {
   log('serve static resp')
 
@@ -64,7 +66,7 @@ export function serveStatic(
   }
 
   // ---- 2. Set for encoding ----
-  if (encoding) {
+  if (encoding && decompress === false) {
     c.header('Content-Encoding', encoding)
     c.header('Vary', 'Accept-Encoding', { append: true })
   }
@@ -115,7 +117,7 @@ export function serveStatic(
 
   // ---- 6. Range requests ----
   const range = c.req.header('range') ?? ''
-  if (range) {
+  if (range && !decompress) {
     c.header('Accept-Ranges', 'bytes')
     c.header('Date', stats.birthtime.toUTCString())
 
@@ -126,6 +128,8 @@ export function serveStatic(
       end = size - 1
     }
 
+    // TODO: Support multipart ranges
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Range_requests#multipart_ranges
     const chunksize = end - start + 1
     const stream = createReadStream(filePath, { start, end })
 
@@ -136,6 +140,16 @@ export function serveStatic(
   }
 
   // ---- 7. Normal full-file response ----
-  c.header('Content-Length', size.toString())
-  return c.body(createStreamBody(createReadStream(filePath)), 200)
+  if (decompress) {
+    if (filesize) {
+      c.header('Content-Length', filesize.toString())
+    }
+    const fileStream = createStreamBody(createReadStream(filePath))
+    const decompressStream =
+      decompress === 'gzip' ? gzipDecompressStream(fileStream) : brotliDecompressStream(fileStream)
+    return c.body(decompressStream, 200)
+  } else {
+    c.header('Content-Length', size.toString())
+    return c.body(createStreamBody(createReadStream(filePath)), 200)
+  }
 }

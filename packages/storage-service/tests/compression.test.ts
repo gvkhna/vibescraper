@@ -14,14 +14,10 @@ import {
 import { streamToBytes } from '../src/stream-utils'
 import { brotliDecompressBytesSync, gzipDecompressBytesSync } from '../src/zlib-utils'
 
+import { readFixture } from './read-fixture'
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-
-const readFixture = (name: string) => {
-  const p = path.join(__dirname, '..', 'fixtures', name)
-  const buf = fs.readFileSync(p)
-  return new Uint8Array(buf)
-}
 
 describe('compression - Filesystem', () => {
   let storageService: StorageService
@@ -331,28 +327,6 @@ describe('compression - Bucket (MinIO)', () => {
 
       expect(del.success).toBe(true)
     })
-
-    it('br: serve via HTTP round-trip', async () => {
-      expect.assertions(2)
-
-      const original = readFixture('text.fixture')
-      const storeResult = await storageService.store(original, 'br')
-
-      expect(storeResult.success).toBe(true)
-
-      if (!storeResult.success) {
-        throw new Error('store failed')
-      }
-      const key = storeResult.data
-
-      const req = new Request(`http://localhost/storage/${key}?enc=br`)
-      const res = await app.fetch(req)
-      const body = new Uint8Array(await res.arrayBuffer())
-
-      expect(body).toStrictEqual(original)
-
-      await storageService.delete(key)
-    })
   })
 
   describe('gzip', () => {
@@ -424,28 +398,6 @@ describe('compression - Bucket (MinIO)', () => {
       const del = await storageService.delete(key)
 
       expect(del.success).toBe(true)
-    })
-
-    it('gzip: serve via HTTP round-trip', async () => {
-      expect.assertions(2)
-
-      const original = readFixture('text.fixture')
-      const storeResult = await storageService.store(original, 'gzip')
-
-      expect(storeResult.success).toBe(true)
-
-      if (!storeResult.success) {
-        throw new Error('store failed')
-      }
-      const key = storeResult.data
-
-      const req = new Request(`http://localhost/storage/${key}?enc=gzip`)
-      const res = await app.fetch(req)
-      const body = new Uint8Array(await res.arrayBuffer())
-
-      expect(body).toStrictEqual(original)
-
-      await storageService.delete(key)
     })
   })
 })

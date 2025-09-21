@@ -7,6 +7,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { type BucketStorageConfig, StorageService } from '../src/storage-service'
 import { streamToBytes } from '../src/stream-utils'
+
+import { readFixture } from './read-fixture'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -93,9 +95,7 @@ describe('storageService - Bucket (MinIO)', () => {
     expect.assertions(8)
 
     // Read the test image file
-    const imagePath = path.join(__dirname, '..', 'fixtures', 'image.jpg')
-    const fileBuffer = fs.readFileSync(imagePath)
-    const originalBytes = new Uint8Array(fileBuffer)
+    const originalBytes = readFixture('image.jpg')
 
     // console.log(`Storing ${originalBytes.length} bytes...`)
 
@@ -232,9 +232,7 @@ describe('storageService - Bucket (MinIO)', () => {
     expect.assertions(9)
 
     // Read the test image file
-    const imagePath = path.join(__dirname, '..', 'fixtures', 'image.jpg')
-    const fileBuffer = fs.readFileSync(imagePath)
-    const originalBytes = new Uint8Array(fileBuffer)
+    const originalBytes = readFixture('image.jpg')
 
     // Store the file
     const storeResult = await storageService.store(originalBytes)
@@ -329,9 +327,7 @@ describe('storageService - Bucket (MinIO)', () => {
     expect.assertions(6)
 
     // Read the test image file
-    const imagePath = path.join(__dirname, '..', 'fixtures', 'image.jpg')
-    const fileBuffer = fs.readFileSync(imagePath)
-    const originalBytes = new Uint8Array(fileBuffer)
+    const originalBytes = readFixture('image.jpg')
 
     // Store the file
     const storeResult = await storageService.store(originalBytes)

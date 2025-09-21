@@ -5,6 +5,8 @@ import { describe, expect, it } from 'vitest'
 
 import { hashBytes } from '../src/hash-bytes'
 
+import { readFixture } from './read-fixture'
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -14,9 +16,7 @@ describe('sha256 hashBytes', () => {
     const expectedHash = '3b852b7faaed217e958c20ddc84e9218e5efb2e31af73970327fffe17cfe7c91'
 
     // Read the test image file
-    const imagePath = path.join(__dirname, '..', 'fixtures', 'image.jpg')
-    const fileBuffer = fs.readFileSync(imagePath)
-    const fileBytes = new Uint8Array(fileBuffer)
+    const fileBytes = readFixture('image.jpg')
 
     // Compute hash using our function
     const computedHash = hashBytes(fileBytes)

@@ -1,18 +1,20 @@
-/* eslint-disable no-console */
-import {describe, it, expect, beforeAll, afterAll} from 'vitest'
-import {SandboxManager} from '../src/sandbox-manager'
-import process from 'node:process'
-import path from 'node:path'
+import debug from 'debug'
 import fs from 'node:fs/promises'
+import path from 'node:path'
+import process from 'node:process'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-describe('SandboxManager Import Transformation Tests', () => {
+import { SandboxManager } from '../src/sandbox-manager'
+const log = debug('test')
+
+describe('sandboxManager Import Transformation Tests', () => {
   let sandboxManager: SandboxManager | undefined
   const testTmpDir = path.join(process.cwd(), 'tmp')
 
   beforeAll(async () => {
-    await fs.mkdir(testTmpDir, {recursive: true})
+    await fs.mkdir(testTmpDir, { recursive: true })
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
-      console.log('[TRANSFORM TEST]', ...args)
+      log('[TRANSFORM TEST]', ...args)
     })
     // Wait for sandbox to be ready before running tests
     await sandboxManager.waitForReady()
@@ -24,14 +26,16 @@ describe('SandboxManager Import Transformation Tests', () => {
       await new Promise((resolve) => setTimeout(resolve, 1000))
     }
     try {
-      await fs.rm(testTmpDir, {recursive: true, force: true})
+      await fs.rm(testTmpDir, { recursive: true, force: true })
     } catch {
       // Ignore cleanup errors
     }
   })
 
-  describe('Node Built-in Module Transformations', () => {
+  describe('node Built-in Module Transformations', () => {
     it('should transform bare node module imports to node: prefix', async () => {
+      expect.assertions(4)
+
       const code = `
         import path from 'path'
         import fs from 'fs'
@@ -50,10 +54,13 @@ describe('SandboxManager Import Transformation Tests', () => {
       expect(logs?.some((msg) => msg.log.includes('CRYPTO_RANDOM: function'))).toBe(true)
 
       const status = messages?.find((msg) => msg.type === 'status' && msg.status === 'completed')
+
       expect(status?.type === 'status' && status.status === 'completed').toBe(true)
     }, 15000)
 
     it('should handle node module imports with /promises suffix', async () => {
+      expect.assertions(2)
+
       const code = `
         import fs from 'fs/promises'
 
@@ -64,11 +71,15 @@ describe('SandboxManager Import Transformation Tests', () => {
       const logs = result?.filter((msg) => msg.type === 'log') ?? []
 
       expect(logs.some((msg) => msg.log.includes('FS_PROMISES: true'))).toBe(true)
+
       const status = result?.find((msg) => msg.type === 'status' && msg.status === 'completed')
+
       expect(status?.type === 'status' && status.status === 'completed').toBe(true)
     }, 10000)
 
     it('should not double-prefix already prefixed node: imports', async () => {
+      expect.assertions(2)
+
       const code = `
         import path from 'node:path'
         import fs from 'node:fs'
@@ -78,15 +89,16 @@ describe('SandboxManager Import Transformation Tests', () => {
 
       const result = await sandboxManager?.executeCodeBuffered(code)
 
-      expect(result?.some((log) => log.type === 'log' && log.log.includes('ALREADY_PREFIXED: true'))).toBe(
-        true
-      )
+      expect(result?.some((l) => l.type === 'log' && l.log.includes('ALREADY_PREFIXED: true'))).toBe(true)
+
       const status = result?.find((msg) => msg.type === 'status' && msg.status === 'completed')
+
       expect(status?.type === 'status' && status.status === 'completed').toBe(true)
     }, 10000)
   })
 
-  describe('NPM Package Transformations', () => {
+  describe('nPM Package Transformations', () => {
+    // eslint-disable-next-line vitest/no-commented-out-tests
     // it('should transform bare npm package imports to npm: prefix', async () => {
     //   if (!denoAvailable) {
     //     return
@@ -96,8 +108,8 @@ describe('SandboxManager Import Transformation Tests', () => {
     //     import {ulid} from 'ulid'
 
     //     const id = ulid()
-    //     console.log('ULID_LENGTH:', id.length === 26)
-    //     console.log('ULID_TYPE:', typeof id === 'string')
+    //     log('ULID_LENGTH:', id.length === 26)
+    //     log('ULID_TYPE:', typeof id === 'string')
     //   `
 
     //   const result = await sandboxManager?.executeCodeBuffered(code, false)
@@ -110,6 +122,8 @@ describe('SandboxManager Import Transformation Tests', () => {
     // }, 20000)
 
     it('should handle scoped npm packages', async () => {
+      expect.assertions(3)
+
       const code = `
         import dayjs from 'dayjs'
 
@@ -123,11 +137,15 @@ describe('SandboxManager Import Transformation Tests', () => {
 
       expect(logs.some((msg) => msg.log.includes('DAYJS_VALID: true'))).toBe(true)
       expect(logs.some((msg) => msg.log.includes('DAYJS_FORMAT: true'))).toBe(true)
+
       const status = result?.find((msg) => msg.type === 'status' && msg.status === 'completed')
+
       expect(status?.type === 'status' && status.status === 'completed').toBe(true)
     }, 20000)
 
     it('should not double-prefix already prefixed npm: imports', async () => {
+      expect.assertions(2)
+
       const code = `
         import {ulid} from 'npm:ulid'
 
@@ -138,13 +156,17 @@ describe('SandboxManager Import Transformation Tests', () => {
       const logs = result?.filter((msg) => msg.type === 'log') ?? []
 
       expect(logs.some((msg) => msg.log.includes('NPM_PREFIXED: true'))).toBe(true)
+
       const status = result?.find((msg) => msg.type === 'status' && msg.status === 'completed')
+
       expect(status?.type === 'status' && status.status === 'completed').toBe(true)
     }, 20000)
   })
 
-  describe('Mixed Import Transformations', () => {
+  describe('mixed Import Transformations', () => {
     it('should handle multiple import types in the same file', async () => {
+      expect.assertions(5)
+
       const code = `
         import path from 'path'
         import {ulid} from 'ulid'
@@ -164,11 +186,15 @@ describe('SandboxManager Import Transformation Tests', () => {
       expect(logs.some((msg) => msg.log.includes('ULID_OK: true'))).toBe(true)
       expect(logs.some((msg) => msg.log.includes('FS_OK: true'))).toBe(true)
       expect(logs.some((msg) => msg.log.includes('CRYPTO_OK: true'))).toBe(true)
+
       const status = result?.find((msg) => msg.type === 'status' && msg.status === 'completed')
+
       expect(status?.type === 'status' && status.status === 'completed').toBe(true)
     }, 20000)
 
     it('should handle dynamic imports', async () => {
+      expect.assertions(3)
+
       const code = `
         async function testDynamic() {
           const path = await import('path')
@@ -186,11 +212,14 @@ describe('SandboxManager Import Transformation Tests', () => {
 
       expect(logs.some((msg) => msg.log.includes('DYNAMIC_PATH: true'))).toBe(true)
       expect(logs.some((msg) => msg.log.includes('DYNAMIC_ULID: true'))).toBe(true)
-      console.log('results', result)
+
+      log('results', result)
       const status = result?.find((msg) => msg.type === 'status' && msg.status === 'completed')
+
       expect(status?.type === 'status' && status.status === 'completed').toBe(true)
     }, 20000)
 
+    // eslint-disable-next-line vitest/no-commented-out-tests
     // it('should handle require() calls (CommonJS)', async () => {
     //   if (!denoAvailable) {
     //     return
@@ -200,8 +229,8 @@ describe('SandboxManager Import Transformation Tests', () => {
     //     const path = require('path')
     //     const fs = require('fs')
 
-    //     console.log('REQUIRE_PATH:', typeof path.join === 'function')
-    //     console.log('REQUIRE_FS:', typeof fs.readFile === 'function')
+    //     log('REQUIRE_PATH:', typeof path.join === 'function')
+    //     log('REQUIRE_FS:', typeof fs.readFile === 'function')
     //   `
 
     //   const result = await sandboxManager?.executeCodeBuffered(code, false)
@@ -214,8 +243,10 @@ describe('SandboxManager Import Transformation Tests', () => {
     // }, 10000)
   })
 
-  describe('Line Number Preservation', () => {
+  describe('line Number Preservation', () => {
     it('should preserve line numbers in error messages after transformation', async () => {
+      expect.assertions(5)
+
       const code = `
         import path from 'path'
         import {ulid} from 'ulid'
@@ -230,18 +261,21 @@ describe('SandboxManager Import Transformation Tests', () => {
       const logs = result?.filter((msg) => msg.type === 'log') ?? []
       const exceptions = result?.filter((msg) => msg.type === 'exception') ?? []
 
-      // Should have executed the console.logs before the error
+      // Should have executed the logs before the error
       expect(logs.some((msg) => msg.log.includes('LINE 5'))).toBe(true)
       expect(logs.some((msg) => msg.log.includes('LINE 6'))).toBe(true)
       expect(logs.some((msg) => msg.log.includes('LINE 8'))).toBe(false)
 
       // Should have an error with correct line number
       expect(exceptions.length).toBeGreaterThan(0)
+
       const errorStack = JSON.stringify(exceptions[0])
+
       expect(errorStack).toContain('Error on line 7')
       // The stack trace should reference line 7 (or close to it, accounting for wrapper code)
     }, 10000)
 
+    // eslint-disable-next-line vitest/no-commented-out-tests
     //   it('should handle syntax errors with correct line numbers', async () => {
     //     if (!denoAvailable) {
     //       return
@@ -250,9 +284,9 @@ describe('SandboxManager Import Transformation Tests', () => {
     //     const code = `
     //       import path from 'path'
 
-    //       console.log('LINE 4')
+    //       log('LINE 4')
     //       const x = {
-    //       console.log('This will cause syntax error')
+    //       log('This will cause syntax error')
     //     `
 
     //     const result = await sandboxManager?.executeCodeBuffered(code, false)
@@ -266,8 +300,10 @@ describe('SandboxManager Import Transformation Tests', () => {
     //   }, 10000)
   })
 
-  describe('JSR Package Support', () => {
+  describe('jSR Package Support', () => {
     it('should not transform jsr: prefixed imports', async () => {
+      expect.assertions(1)
+
       const code = `
         import {assertEquals} from 'jsr:@std/assert'
 
@@ -285,11 +321,13 @@ describe('SandboxManager Import Transformation Tests', () => {
       // Either works or fails gracefully
       const hasSuccess = logs.some((msg) => msg.log.includes('JSR_ASSERT_WORKS: true'))
       const hasError = logs.some((msg) => msg.log.includes('JSR_ASSERT_ERROR:'))
+
       expect(hasSuccess || hasError).toBe(true)
     }, 20000)
   })
 
-  describe('Special Cases', () => {
+  describe('special Cases', () => {
+    // eslint-disable-next-line vitest/no-commented-out-tests
     // it('should handle imports with query parameters and hashes', async () => {
     //   if (!denoAvailable) {
     //     return
@@ -300,7 +338,7 @@ describe('SandboxManager Import Transformation Tests', () => {
     //     import data from './data.json?raw'
     //     import styles from './styles.css#inline'
 
-    //     console.log('SPECIAL_IMPORTS_TEST: completed')
+    //     log('SPECIAL_IMPORTS_TEST: completed')
     //   `
 
     //   const result = await sandboxManager?.executeCodeBuffered(code, false)
@@ -311,6 +349,8 @@ describe('SandboxManager Import Transformation Tests', () => {
     // }, 10000)
 
     it('should handle export statements correctly', async () => {
+      expect.assertions(2)
+
       const code = `
         import path from 'path'
         export {path}
@@ -324,11 +364,15 @@ describe('SandboxManager Import Transformation Tests', () => {
       const logs = result?.filter((msg) => msg.type === 'log') ?? []
 
       expect(logs.some((msg) => msg.log.includes('EXPORTS_HANDLED: true'))).toBe(true)
+
       const status = result?.find((msg) => msg.type === 'status' && msg.status === 'completed')
+
       expect(status?.type === 'status' && status.status === 'completed').toBe(true)
     }, 10000)
 
     it('should handle multi-line imports', async () => {
+      expect.assertions(4)
+
       const code = `
         import {
           join,
@@ -352,7 +396,9 @@ describe('SandboxManager Import Transformation Tests', () => {
       expect(logs.some((msg) => msg.log.includes('MULTILINE_JOIN: true'))).toBe(true)
       expect(logs.some((msg) => msg.log.includes('MULTILINE_RESOLVE: true'))).toBe(true)
       expect(logs.some((msg) => msg.log.includes('MULTILINE_READFILE: true'))).toBe(true)
+
       const status = result?.find((msg) => msg.type === 'status' && msg.status === 'completed')
+
       expect(status?.type === 'status' && status.status === 'completed').toBe(true)
     }, 10000)
   })

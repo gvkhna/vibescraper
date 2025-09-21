@@ -1,5 +1,5 @@
-import {createAuthClient} from 'better-auth/react'
-import {organizationClient, usernameClient, magicLinkClient, adminClient} from 'better-auth/client/plugins'
+import { adminClient, magicLinkClient, organizationClient, usernameClient } from 'better-auth/client/plugins'
+import { createAuthClient } from 'better-auth/react'
 
 export const authReactClient = createAuthClient({
   baseURL: `${globalThis.window.location.protocol}//${globalThis.window.location.host}`,

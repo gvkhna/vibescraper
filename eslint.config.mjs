@@ -1,35 +1,30 @@
 import eslint from '@eslint/js';
-import {defineConfig} from 'eslint/config';
-import tseslint from 'typescript-eslint';
-// import astroPlugin from 'eslint-plugin-astro';
-// import astroParser from 'astro-eslint-parser';
-// import tsParser from '@typescript-eslint/parser';
-import react from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactCompiler from 'eslint-plugin-react-compiler';
 import stylistic from '@stylistic/eslint-plugin';
+import vitest from '@vitest/eslint-plugin';
+import { defineConfig } from 'eslint/config';
+import react from 'eslint-plugin-react';
+import reactCompiler from 'eslint-plugin-react-compiler';
+import reactHooks from 'eslint-plugin-react-hooks';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 export default defineConfig([
   {
     ignores: [
       // Configs & root files
-      'eslint.config.mjs',
-      'vite.config.ts',
       // Build artifacts
       'dist*/**/*',
       'packages/**/dist/**/*',
       'tmp/**/*',
       '**/*tmp*',
-      '**/*test*',
 
       // Auto-generated
       '**/_*',
 
       // Non-TS files
       '**/*.cjs',
-      '**/*.js',
-      '**/*.mjs'
+      '**/*.js'
     ]
   },
   ...defineConfig(
@@ -43,7 +38,10 @@ export default defineConfig([
           tsconfigRootDir: import.meta.dirname
         }
       },
-      plugins: {},
+      plugins: {
+        'simple-import-sort': simpleImportSort,
+        '@stylistic': stylistic
+      },
       rules: {
         // '@typescript-eslint/no-deprecated': 'off',
 
@@ -55,12 +53,37 @@ export default defineConfig([
 
         '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/consistent-type-definitions': 'off',
+        '@typescript-eslint/no-import-type-side-effects': 'error',
         '@typescript-eslint/no-confusing-void-expression': 'error',
         '@typescript-eslint/dot-notation': 'off',
         '@typescript-eslint/prefer-for-of': 'off',
         '@typescript-eslint/consistent-indexed-object-style': 'off',
         '@typescript-eslint/array-type': 'off',
         '@typescript-eslint/no-inferrable-types': 'warn',
+
+        'simple-import-sort/imports': [
+          'error',
+          {
+            groups: [
+              // 1. Side effect imports at the start. For me this is important because I want to import reset.css and global styles at the top of my main file.
+              ['^\\u0000'],
+              // 2. `react` and packages: Things that start with a letter (or digit or underscore), or `@` followed by a letter.
+              ['^react$', '^@?\\w'],
+              // 3. Absolute imports and other imports such as Vue-style `@/foo`.
+              // Anything not matched in another group. (also relative imports starting with "../")
+              ['^@', '^'],
+              // 4. relative imports from same folder "./" (I like to have them grouped together)
+              ['^\\./'],
+              // 5. style module imports always come last, this helps to avoid CSS order issues
+              ['^.+\\.(module.css|module.scss)$'],
+              // 6. media imports
+              ['^.+\\.(gif|png|svg|jpg)$']
+            ]
+          }
+        ],
+
+        '@stylistic/comma-spacing': 'error',
+        '@stylistic/object-curly-spacing': ['error', 'always'],
 
         // warn about undefined usage
         'no-undefined': 'warn',
@@ -178,55 +201,55 @@ export default defineConfig([
           'error',
           {
             paths: [
-              {name: 'assert', message: "Use 'node:assert' instead of 'assert'"},
-              {name: 'buffer', message: "Use 'node:buffer' instead of 'buffer'"},
-              {name: 'child_process', message: "Use 'node:child_process' instead of 'child_process'"},
-              {name: 'console', message: "Use 'node:console' instead of 'console'"},
-              {name: 'crypto', message: "Use 'node:crypto' instead of 'crypto'"},
+              { name: 'assert', message: "Use 'node:assert' instead of 'assert'" },
+              { name: 'buffer', message: "Use 'node:buffer' instead of 'buffer'" },
+              { name: 'child_process', message: "Use 'node:child_process' instead of 'child_process'" },
+              { name: 'console', message: "Use 'node:console' instead of 'console'" },
+              { name: 'crypto', message: "Use 'node:crypto' instead of 'crypto'" },
               {
                 name: 'diagnostics_channel',
                 message: "Use 'node:diagnostics_channel' instead of 'diagnostics_channel'"
               },
-              {name: 'events', message: "Use 'node:events' instead of 'events'"},
-              {name: 'fs', message: "Use 'node:fs' instead of 'fs'"},
-              {name: 'fs/promises', message: "Use 'node:fs/promises' instead of 'fs/promises'"},
-              {name: 'module', message: "Use 'node:module' instead of 'module'"},
-              {name: 'os', message: "Use 'node:os' instead of 'os'"},
-              {name: 'path', message: "Use 'node:path' instead of 'path'"},
-              {name: 'punycode', message: "Use 'node:punycode' instead of 'punycode'"},
-              {name: 'querystring', message: "Use 'node:querystring' instead of 'querystring'"},
-              {name: 'readline', message: "Use 'node:readline' instead of 'readline'"},
-              {name: 'sqlite', message: "Use 'node:sqlite' instead of 'sqlite'"},
-              {name: 'stream', message: "Use 'node:stream' instead of 'stream'"},
-              {name: 'string_decoder', message: "Use 'node:string_decoder' instead of 'string_decoder'"},
-              {name: 'timers', message: "Use 'node:timers' instead of 'timers'"},
-              {name: 'tty', message: "Use 'node:tty' instead of 'tty'"},
-              {name: 'url', message: "Use 'node:url' instead of 'url'"},
+              { name: 'events', message: "Use 'node:events' instead of 'events'" },
+              { name: 'fs', message: "Use 'node:fs' instead of 'fs'" },
+              { name: 'fs/promises', message: "Use 'node:fs/promises' instead of 'fs/promises'" },
+              { name: 'module', message: "Use 'node:module' instead of 'module'" },
+              { name: 'os', message: "Use 'node:os' instead of 'os'" },
+              { name: 'path', message: "Use 'node:path' instead of 'path'" },
+              { name: 'punycode', message: "Use 'node:punycode' instead of 'punycode'" },
+              { name: 'querystring', message: "Use 'node:querystring' instead of 'querystring'" },
+              { name: 'readline', message: "Use 'node:readline' instead of 'readline'" },
+              { name: 'sqlite', message: "Use 'node:sqlite' instead of 'sqlite'" },
+              { name: 'stream', message: "Use 'node:stream' instead of 'stream'" },
+              { name: 'string_decoder', message: "Use 'node:string_decoder' instead of 'string_decoder'" },
+              { name: 'timers', message: "Use 'node:timers' instead of 'timers'" },
+              { name: 'tty', message: "Use 'node:tty' instead of 'tty'" },
+              { name: 'url', message: "Use 'node:url' instead of 'url'" },
 
-              {name: 'async_hooks', message: "Use 'node:async_hooks' instead of 'async_hooks'"},
-              {name: 'dgram', message: "Use 'node:dgram' instead of 'dgram'"},
-              {name: 'dns', message: "Use 'node:dns' instead of 'dns'"},
-              {name: 'http', message: "Use 'node:http' instead of 'http'"},
-              {name: 'http2', message: "Use 'node:http2' instead of 'http2'"},
-              {name: 'https', message: "Use 'node:https' instead of 'https'"},
-              {name: 'inspector', message: "Use 'node:inspector' instead of 'inspector'"},
-              {name: 'net', message: "Use 'node:net' instead of 'net'"},
-              {name: 'perf_hooks', message: "Use 'node:perf_hooks' instead of 'perf_hooks'"},
-              {name: 'process', message: "Use 'node:process' instead of 'process'"},
-              {name: 'test', message: "Use 'node:test' instead of 'test'"},
-              {name: 'tls', message: "Use 'node:tls' instead of 'tls'"},
-              {name: 'util', message: "Use 'node:util' instead of 'util'"},
-              {name: 'v8', message: "Use 'node:v8' instead of 'v8'"},
-              {name: 'vm', message: "Use 'node:vm' instead of 'vm'"},
-              {name: 'worker_threads', message: "Use 'node:worker_threads' instead of 'worker_threads'"},
-              {name: 'zlib', message: "Use 'node:zlib' instead of 'zlib'"},
+              { name: 'async_hooks', message: "Use 'node:async_hooks' instead of 'async_hooks'" },
+              { name: 'dgram', message: "Use 'node:dgram' instead of 'dgram'" },
+              { name: 'dns', message: "Use 'node:dns' instead of 'dns'" },
+              { name: 'http', message: "Use 'node:http' instead of 'http'" },
+              { name: 'http2', message: "Use 'node:http2' instead of 'http2'" },
+              { name: 'https', message: "Use 'node:https' instead of 'https'" },
+              { name: 'inspector', message: "Use 'node:inspector' instead of 'inspector'" },
+              { name: 'net', message: "Use 'node:net' instead of 'net'" },
+              { name: 'perf_hooks', message: "Use 'node:perf_hooks' instead of 'perf_hooks'" },
+              { name: 'process', message: "Use 'node:process' instead of 'process'" },
+              { name: 'test', message: "Use 'node:test' instead of 'test'" },
+              { name: 'tls', message: "Use 'node:tls' instead of 'tls'" },
+              { name: 'util', message: "Use 'node:util' instead of 'util'" },
+              { name: 'v8', message: "Use 'node:v8' instead of 'v8'" },
+              { name: 'vm', message: "Use 'node:vm' instead of 'vm'" },
+              { name: 'worker_threads', message: "Use 'node:worker_threads' instead of 'worker_threads'" },
+              { name: 'zlib', message: "Use 'node:zlib' instead of 'zlib'" },
 
-              {name: 'cluster', message: "Use 'node:cluster' instead of 'cluster'"},
-              {name: 'domain', message: "Use 'node:domain' instead of 'domain'"},
-              {name: 'repl', message: "Use 'node:repl' instead of 'repl'"},
-              {name: 'sea', message: "Use 'node:sea' instead of 'sea'"},
-              {name: 'trace_events', message: "Use 'node:trace_events' instead of 'trace_events'"},
-              {name: 'wasi', message: "Use 'node:wasi' instead of 'wasi'"}
+              { name: 'cluster', message: "Use 'node:cluster' instead of 'cluster'" },
+              { name: 'domain', message: "Use 'node:domain' instead of 'domain'" },
+              { name: 'repl', message: "Use 'node:repl' instead of 'repl'" },
+              { name: 'sea', message: "Use 'node:sea' instead of 'sea'" },
+              { name: 'trace_events', message: "Use 'node:trace_events' instead of 'trace_events'" },
+              { name: 'wasi', message: "Use 'node:wasi' instead of 'wasi'" }
             ]
           }
         ],
@@ -347,6 +370,37 @@ export default defineConfig([
     }
   ),
   {
+    files: ['**/*.{js,cjs,mjs,jsx}'],
+    extends: [tseslint.configs.disableTypeChecked],
+    rules: {
+      'no-undef': 'off'
+    }
+  },
+  {
+    files: ['**/*test.ts', '**/*.spec.ts'],
+    plugins: {
+      vitest
+    },
+    rules: {
+      ...vitest.configs.all.rules,
+      'vitest/no-hooks': 'off',
+      'vitest/max-expects': 'off',
+      'vitest/prefer-strict-equal': 'error',
+      'no-undefined': 'off',
+      'vitest/no-conditional-in-test': 'off',
+      'vitest/no-conditional-expect': 'off',
+      'vitest/prefer-expect-assertions': [
+        'error',
+        {
+          onlyFunctionsWithExpectInLoop: true,
+          onlyFunctionsWithExpectInCallback: true,
+          onlyFunctionsWithAsyncKeyword: true
+        }
+      ],
+      '@typescript-eslint/no-unnecessary-condition': 'off'
+    }
+  },
+  {
     files: ['**/*.{jsx,tsx}'],
     plugins: {
       react: react,
@@ -373,10 +427,10 @@ export default defineConfig([
 
       // this is enforced in react files because sometimes llms add
       // comments inline in react which can cause hard to find parsing errors
-      '@stylistic/line-comment-position': ['error', {position: 'above'}],
+      '@stylistic/line-comment-position': ['error', { position: 'above' }],
 
-      'react/jsx-no-bind': ['error', {allowArrowFunctions: true, allowFunctions: true}],
-      'react/jsx-no-undef': ['error', {allowGlobals: false}],
+      'react/jsx-no-bind': ['error', { allowArrowFunctions: true, allowFunctions: true }],
+      'react/jsx-no-undef': ['error', { allowGlobals: false }],
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'error',
       'react-hooks/rules-of-hooks': 'error',

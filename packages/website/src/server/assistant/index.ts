@@ -1,21 +1,23 @@
-import {Hono} from 'hono'
-import type {HonoServer} from '..'
-import * as schema from '@/db/schema'
-import {
-  asc as sqlAsc,
-  inArray as sqlInArray,
-  max as sqlMax,
-  eq as sqlEq,
-  desc as sqlDesc,
-  and as sqlAnd,
-  getTableColumns
-} from 'drizzle-orm'
 import debug from 'debug'
-import {validator} from 'hono/validator'
-import {HttpStatusCode} from '@/lib/http-status-codes'
-import {userCannotProjectAction} from '@/lib/permissions-helper'
-import {createPaginationEntity, DEFAULT_PAGE_SIZE} from '@/store/pagination-entity-state'
-import type {ChatFileVersionBlockType} from '@/partials/assistant-ui/chat-message-schema'
+import {
+  and as sqlAnd,
+  asc as sqlAsc,
+  desc as sqlDesc,
+  eq as sqlEq,
+  getTableColumns,
+  inArray as sqlInArray,
+  max as sqlMax
+} from 'drizzle-orm'
+import { Hono } from 'hono'
+import { validator } from 'hono/validator'
+
+import * as schema from '@/db/schema'
+import { HttpStatusCode } from '@/lib/http-status-codes'
+import { userCannotProjectAction } from '@/lib/permissions-helper'
+import type { ChatFileVersionBlockType } from '@/partials/assistant-ui/chat-message-schema'
+import { createPaginationEntity, DEFAULT_PAGE_SIZE } from '@/store/pagination-entity-state'
+import type { HonoServer } from '..'
+
 import extractor from './extractor'
 import models from './models'
 
@@ -32,32 +34,32 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectChatPublicId} = c.req.valid('json')
+      const { projectChatPublicId } = c.req.valid('json')
 
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       const projectChat = await db.query.projectChat.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectChatPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectChatPublicId)
       })
 
       if (!projectChat) {
-        return c.json({message: 'Project chat not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project chat not found' }, HttpStatusCode.NotFound)
       }
 
       const projectId = projectChat.projectId
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.id, projectId)
+        where: (table, { eq: tableEq }) => tableEq(table.id, projectId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'update', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       await db
@@ -67,7 +69,7 @@ const app = new Hono<HonoServer>()
         })
         .where(sqlEq(schema.projectChat.publicId, projectChatPublicId))
 
-      const {id: _, projectId: __, ...projectChatCols} = getTableColumns(schema.projectChat)
+      const { id: _, projectId: __, ...projectChatCols } = getTableColumns(schema.projectChat)
       const chats = await db
         .select(projectChatCols)
         .from(schema.projectChat)
@@ -81,7 +83,7 @@ const app = new Hono<HonoServer>()
         .limit(DEFAULT_PAGE_SIZE + 1)
 
       const paginateProjectChats = createPaginationEntity<schema.ProjectChatCursor>()
-      const {items: projectChats, pageInfo} = paginateProjectChats(chats, DEFAULT_PAGE_SIZE)
+      const { items: projectChats, pageInfo } = paginateProjectChats(chats, DEFAULT_PAGE_SIZE)
 
       return c.json(
         {
@@ -102,18 +104,18 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectChatMessagePublicId, idemKey, versionBlock} = c.req.valid('json')
+      const { projectChatMessagePublicId, idemKey, versionBlock } = c.req.valid('json')
 
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       if (!user) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       const projectChatMessage = await db.query.projectChatMessage.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectChatMessagePublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectChatMessagePublicId)
       })
 
       if (projectChatMessage) {
@@ -128,14 +130,14 @@ const app = new Hono<HonoServer>()
             })
             .where(sqlEq(schema.projectChatMessage.id, projectChatMessage.id))
 
-          return c.json({message: 'success'}, HttpStatusCode.Ok)
+          return c.json({ message: 'success' }, HttpStatusCode.Ok)
         } catch (e) {
           log('error updating project version blocks', e)
-          return c.json({message: 'Project Chat Message update failed'}, HttpStatusCode.BadRequest)
+          return c.json({ message: 'Project Chat Message update failed' }, HttpStatusCode.BadRequest)
         }
       }
 
-      return c.json({message: 'Project Chat Message not found'}, HttpStatusCode.NotFound)
+      return c.json({ message: 'Project Chat Message not found' }, HttpStatusCode.NotFound)
     }
   )
   .post(
@@ -147,44 +149,44 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectChatPublicId, projectChatMessagePublicIds} = c.req.valid('json')
+      const { projectChatPublicId, projectChatMessagePublicIds } = c.req.valid('json')
 
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       const projectChat = await db.query.projectChat.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectChatPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectChatPublicId)
       })
 
       if (!projectChat) {
-        return c.json({message: 'Project chat not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project chat not found' }, HttpStatusCode.NotFound)
       }
 
       const projectId = projectChat.projectId
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.id, projectId)
+        where: (table, { eq: tableEq }) => tableEq(table.id, projectId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       const projectChatMessages = await db.query.projectChatMessage.findMany({
-        where: (table, {eq, inArray, and}) =>
+        where: (table, { eq, inArray, and }) =>
           and(eq(table.projectChatId, projectChat.id), inArray(table.publicId, projectChatMessagePublicIds))
       })
 
       const result: schema.ProjectChatMessageDTOType[] = projectChatMessages.map(
-        ({id: _, projectChatId: __, usage: ___, ...rest}) => rest
+        ({ id: _, projectChatId: __, usage: ___, ...rest }) => rest
       )
 
-      return c.json({result}, HttpStatusCode.Ok)
+      return c.json({ result }, HttpStatusCode.Ok)
     }
   )
   .post(
@@ -196,36 +198,36 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectChatPublicId, projectChatMessagePublicId} = c.req.valid('json')
+      const { projectChatPublicId, projectChatMessagePublicId } = c.req.valid('json')
 
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       const projectChat = await db.query.projectChat.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectChatPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectChatPublicId)
       })
 
       if (!projectChat) {
-        return c.json({message: 'Project chat not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project chat not found' }, HttpStatusCode.NotFound)
       }
 
       const projectId = projectChat.projectId
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.id, projectId)
+        where: (table, { eq: tableEq }) => tableEq(table.id, projectId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       const projectChatMessage = await db.query.projectChatMessage.findFirst({
-        where: (table, {eq: tableEq, and: tableAnd}) =>
+        where: (table, { eq: tableEq, and: tableAnd }) =>
           tableAnd(
             tableEq(table.projectChatId, projectChat.id),
             tableEq(table.publicId, projectChatMessagePublicId)
@@ -233,7 +235,7 @@ const app = new Hono<HonoServer>()
       })
 
       if (projectChatMessage) {
-        const {id: _, projectChatId: __, usage: ___, ...chatMessageDTO} = projectChatMessage
+        const { id: _, projectChatId: __, usage: ___, ...chatMessageDTO } = projectChatMessage
         const projectChatMessageDTO: schema.ProjectChatMessageDTOType = chatMessageDTO
 
         return c.json(
@@ -243,7 +245,7 @@ const app = new Hono<HonoServer>()
           HttpStatusCode.Ok
         )
       }
-      return c.json({message: 'Project Chat Message not found'}, HttpStatusCode.NotFound)
+      return c.json({ message: 'Project Chat Message not found' }, HttpStatusCode.NotFound)
     }
   )
   .post(
@@ -254,25 +256,25 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectPublicId} = c.req.valid('json')
+      const { projectPublicId } = c.req.valid('json')
 
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
-      const {id: _, projectId: __, ...projectChatCols} = getTableColumns(schema.projectChat)
+      const { id: _, projectId: __, ...projectChatCols } = getTableColumns(schema.projectChat)
       const chats = await db
         .select(projectChatCols)
         .from(schema.projectChat)
@@ -286,7 +288,7 @@ const app = new Hono<HonoServer>()
         .limit(DEFAULT_PAGE_SIZE + 1)
 
       const paginateProjectChats = createPaginationEntity<schema.ProjectChatCursor>()
-      const {items: projectChats, pageInfo} = paginateProjectChats(chats, DEFAULT_PAGE_SIZE)
+      const { items: projectChats, pageInfo } = paginateProjectChats(chats, DEFAULT_PAGE_SIZE)
 
       return c.json(
         {
@@ -306,22 +308,22 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectChatMessageId, projectComponentIdempotencyKey} = c.req.valid('json')
+      const { projectChatMessageId, projectComponentIdempotencyKey } = c.req.valid('json')
 
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       if (!user) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       const chatMessage = await db.query.projectChatMessage.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectChatMessageId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectChatMessageId)
       })
 
       if (!chatMessage) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       const currentKeys = chatMessage.idempotencyKeys ?? []
@@ -352,35 +354,35 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectPublicId} = c.req.valid('json')
+      const { projectPublicId } = c.req.valid('json')
 
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'update', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       const existingEmptyChat = await db.query.projectChat.findFirst({
-        where: (table, {eq: tableEq, and: tableAnd}) =>
+        where: (table, { eq: tableEq, and: tableAnd }) =>
           tableAnd(tableEq(table.projectId, project.id), tableEq(table.chatType, 'empty'))
       })
       if (existingEmptyChat) {
-        const {id: _, projectId: __, ...existingChatDTO} = existingEmptyChat
+        const { id: _, projectId: __, ...existingChatDTO } = existingEmptyChat
         const projectChatDTO: schema.ProjectChatDTOType = existingChatDTO
-        return c.json({chat: projectChatDTO}, HttpStatusCode.Ok)
+        return c.json({ chat: projectChatDTO }, HttpStatusCode.Ok)
       }
 
-      const {id: _, projectId: __, ...projectChatCols} = getTableColumns(schema.projectChat)
+      const { id: _, projectId: __, ...projectChatCols } = getTableColumns(schema.projectChat)
 
       const [emptyChat] = await db
         .insert(schema.projectChat)
@@ -393,7 +395,7 @@ const app = new Hono<HonoServer>()
         .returning(projectChatCols)
 
       const projectChatDTO: schema.ProjectChatDTOType = emptyChat
-      return c.json({chat: projectChatDTO}, HttpStatusCode.Ok)
+      return c.json({ chat: projectChatDTO }, HttpStatusCode.Ok)
     }
   )
   .post(
@@ -404,37 +406,37 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectChatPublicId} = c.req.valid('json')
+      const { projectChatPublicId } = c.req.valid('json')
 
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       const projectChat = await db.query.projectChat.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectChatPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectChatPublicId)
       })
 
       if (!projectChat) {
-        return c.json({message: 'Project chat not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project chat not found' }, HttpStatusCode.NotFound)
       }
 
       const projectId = projectChat.projectId
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.id, projectId)
+        where: (table, { eq: tableEq }) => tableEq(table.id, projectId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       const firstMessage = await db.query.projectChatMessage.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(schema.projectChatMessage.projectChatId, projectChat.id),
-        orderBy: (table, {asc: tableAsc}) => [tableAsc(schema.projectChatMessage.publicId)]
+        where: (table, { eq: tableEq }) => tableEq(schema.projectChatMessage.projectChatId, projectChat.id),
+        orderBy: (table, { asc: tableAsc }) => [tableAsc(schema.projectChatMessage.publicId)]
       })
 
       // if (!firstMessage) {
@@ -487,7 +489,7 @@ const app = new Hono<HonoServer>()
         .where(sqlEq(schema.projectChat.id, projectChat.id))
         .returning()
 
-      const {id: _, projectId: __, ...projectChatCols} = getTableColumns(schema.projectChat)
+      const { id: _, projectId: __, ...projectChatCols } = getTableColumns(schema.projectChat)
       const chats = await db
         .select(projectChatCols)
         .from(schema.projectChat)
@@ -501,7 +503,7 @@ const app = new Hono<HonoServer>()
         .limit(DEFAULT_PAGE_SIZE + 1)
 
       const paginateProjectChats = createPaginationEntity<schema.ProjectChatCursor>()
-      const {items: projectChats, pageInfo} = paginateProjectChats(chats, DEFAULT_PAGE_SIZE)
+      const { items: projectChats, pageInfo } = paginateProjectChats(chats, DEFAULT_PAGE_SIZE)
 
       return c.json(
         {
@@ -530,32 +532,32 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectChatPublicId} = c.req.valid('json')
+      const { projectChatPublicId } = c.req.valid('json')
 
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       const projectChat = await db.query.projectChat.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectChatPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectChatPublicId)
       })
 
       if (!projectChat) {
-        return c.json({message: 'Project chat not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project chat not found' }, HttpStatusCode.NotFound)
       }
 
       const projectId = projectChat.projectId
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.id, projectId)
+        where: (table, { eq: tableEq }) => tableEq(table.id, projectId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       const {

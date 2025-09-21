@@ -1,18 +1,18 @@
 'use client'
 
-import {type ReactNode, useState} from 'react'
+import { type ReactNode, useState } from 'react'
+import { Loader2, Plus } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
-  DialogDescription,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogFooter
-} from '@/components/ui/dialog'
-import {Input} from '@/components/ui/input'
-import {Button} from '@/components/ui/button'
-import {Plus, Loader2} from 'lucide-react'
-import {nowait} from '@/lib/async-utils'
+  DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { nowait } from '@/lib/async-utils'
 
 export interface NewProjectDialogProps {
   open: boolean

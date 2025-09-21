@@ -1,8 +1,7 @@
-import {defineConfig} from 'vite'
+import { dirname, isAbsolute, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
-
-import {resolve, dirname, isAbsolute} from 'node:path'
-import {fileURLToPath} from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

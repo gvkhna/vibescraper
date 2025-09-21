@@ -12,8 +12,8 @@
    without changes.  (See bottom of file for higher‑level router helpers.)
 --------------------------------------------------------------------------- */
 
-import {mockId, MockLanguageModelV2} from 'ai/test'
-import {simulateReadableStream, type LanguageModel} from 'ai'
+import { type LanguageModel, simulateReadableStream } from 'ai'
+import { mockId, MockLanguageModelV2 } from 'ai/test'
 import debug from 'debug'
 
 const log = debug('app:mock-stream-text')
@@ -38,7 +38,7 @@ const log = debug('app:mock-stream-text')
 export type RouterMockModelKey = string | RegExp
 export type RouterMockModelValue = string | ((prompt: string) => string)
 
-type Route = {match: RouterMockModelKey; reply: RouterMockModelValue}
+type Route = { match: RouterMockModelKey; reply: RouterMockModelValue }
 
 interface RouterOpts {
   chunkDelayInMs?: number
@@ -71,23 +71,23 @@ export function createRouterMockModel(routes: RoutesMap) {
       log('chosen route', reply)
       const id = 'text-1'
       const deltas: any[] = [
-        {type: 'text-start', id},
+        { type: 'text-start', id },
         ...chunkByWords(reply, wordsPerChunk).map((slice) => ({
           type: 'text-delta',
           id,
           delta: slice
         })),
-        {type: 'text-end', id},
+        { type: 'text-end', id },
         {
           type: 'finish',
           finishReason: 'stop',
           logprobs: undefined,
-          usage: {promptTokens: 1, completionTokens: 1}
+          usage: { promptTokens: 1, completionTokens: 1 }
         }
       ]
       return {
-        rawCall: {rawPrompt: opts.prompt, rawSettings: {}},
-        stream: simulateReadableStream({chunks: deltas, chunkDelayInMs, initialDelayInMs: 300})
+        rawCall: { rawPrompt: opts.prompt, rawSettings: {} },
+        stream: simulateReadableStream({ chunks: deltas, chunkDelayInMs, initialDelayInMs: 300 })
       }
     }
   })

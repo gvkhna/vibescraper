@@ -1,5 +1,6 @@
-import type {ProjectPublicId} from '@/db/schema'
-import {createContext, type PropsWithChildren, useContext, type FC} from 'react'
+import { createContext, type FC, type PropsWithChildren, useContext } from 'react'
+
+import type { ProjectPublicId } from '@/db/schema'
 
 // Define the shape of the environment variables your context will contain
 export interface TextEditorContextValue {
@@ -14,7 +15,7 @@ export const TextEditorContextProvider: FC<PropsWithChildren<TextEditorContextVa
   publicId,
   children
 }) => {
-  const value: TextEditorContextValue = {publicId}
+  const value: TextEditorContextValue = { publicId }
   return <TextEditorContext.Provider value={value}>{children}</TextEditorContext.Provider>
 }
 

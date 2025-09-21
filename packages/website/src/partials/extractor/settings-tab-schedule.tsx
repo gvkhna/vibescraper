@@ -1,18 +1,19 @@
 'use client'
 
 import * as React from 'react'
-import {Label} from '@/components/ui/label'
-import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from '@/components/ui/select'
-import {Input} from '@/components/ui/input'
-import {Checkbox} from '@/components/ui/checkbox'
-import type {ProjectCommitSettings} from '@/db/schema/project'
+
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import type { ProjectCommitSettings } from '@/db/schema/project'
 
 interface ScheduleTabContentProps {
   commitSettings: ProjectCommitSettings
   setCommitSettings: React.Dispatch<React.SetStateAction<ProjectCommitSettings>>
 }
 
-export function ScheduleTabContent({commitSettings, setCommitSettings}: ScheduleTabContentProps) {
+export function ScheduleTabContent({ commitSettings, setCommitSettings }: ScheduleTabContentProps) {
   const [enableDailySchedule, setEnableDailySchedule] = React.useState(false)
   
   // Track which days are enabled (all enabled by default)
@@ -53,9 +54,9 @@ export function ScheduleTabContent({commitSettings, setCommitSettings}: Schedule
         const mm = m[2] ? parseInt(m[2], 10) : 0
         const minutes = sign * (hh * 60 + mm)
         const text = `UTC${minutes >= 0 ? '+' : '-'}${pad(Math.trunc(Math.abs(minutes) / 60))}:${pad(Math.abs(minutes) % 60)}`
-        return {minutes, text}
+        return { minutes, text }
       }
-      return {minutes: 0, text: 'UTC'}
+      return { minutes: 0, text: 'UTC' }
     }
 
     const getFriendly = (tz: string) => {
@@ -77,10 +78,10 @@ export function ScheduleTabContent({commitSettings, setCommitSettings}: Schedule
 
     const items = zones
       .map((tz) => {
-        const {minutes, text} = getOffset(tz)
+        const { minutes, text } = getOffset(tz)
         const friendly = getFriendly(tz)
         const label = `(${text}) ${friendly} [${tz}]`
-        return {value: tz, label, minutes}
+        return { value: tz, label, minutes }
       })
       .sort((a, b) => a.minutes - b.minutes || a.value.localeCompare(b.value))
 
@@ -97,12 +98,12 @@ export function ScheduleTabContent({commitSettings, setCommitSettings}: Schedule
     }
 
     const includedDeepOffset = new Set<number>()
-    const out: {value: string; label: string}[] = []
+    const out: { value: string; label: string }[] = []
 
     for (const it of items) {
       const depth = it.value.split('/').length
       if (depth <= 2) {
-        out.push({value: it.value, label: it.label})
+        out.push({ value: it.value, label: it.label })
       } else {
         if (hasTwoSegForOffset.has(it.minutes)) {
           continue
@@ -111,7 +112,7 @@ export function ScheduleTabContent({commitSettings, setCommitSettings}: Schedule
           continue
         }
         includedDeepOffset.add(it.minutes)
-        out.push({value: it.value, label: it.label})
+        out.push({ value: it.value, label: it.label })
       }
     }
 

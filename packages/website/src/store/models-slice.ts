@@ -1,6 +1,8 @@
-import type {StateSlice} from './use-store'
-import api from '@/lib/api-client'
 import debug from 'debug'
+
+import api from '@/lib/api-client'
+
+import type { StateSlice } from './use-store'
 
 const log = debug('app:models-slice')
 

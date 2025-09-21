@@ -1,9 +1,10 @@
 // import {createAuthClient} from 'better-auth/client'
-import {nowait} from '@/lib/async-utils'
 // import path from 'node:path'
 // import {fileURLToPath} from 'node:url'
 // import process from 'node:process'
 import debug from 'debug'
+
+import { nowait } from '@/lib/async-utils'
 
 const log = debug('app:db-seed')
 

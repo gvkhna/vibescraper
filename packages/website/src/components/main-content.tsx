@@ -1,33 +1,33 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs'
+import {
+  BookOpen,
+  ChevronDown,
+  Code,
+  Copy,
+  Database,
+  FileText,
+  Globe,
+  Play,
+  RefreshCw,
+  Settings,
+  Zap,
+  ZoomIn,
+  ZoomOut } from 'lucide-react'
+
+import { DataTable } from '@/components/data-table'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import {Badge} from '@/components/ui/badge'
-import {
-  Play,
-  Settings,
-  Copy,
-  ZoomIn,
-  ZoomOut,
-  RefreshCw,
-  ChevronDown,
-  Globe,
-  Code,
-  FileText,
-  BookOpen,
-  Zap,
-  Database
-} from 'lucide-react'
-import {DataTable} from '@/components/data-table'
-import {nowait} from '@/lib/async-utils'
+import { Input } from '@/components/ui/input'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { nowait } from '@/lib/async-utils'
 
 interface MainContentProps {
   currentUrl: string
@@ -59,7 +59,7 @@ export function MainContent({
   return (
     <div
       className='flex flex-1 flex-col overflow-hidden'
-      style={{marginRight: sidebarWidth}}
+      style={{ marginRight: sidebarWidth }}
     >
       {/* Action Bar */}
       <div
@@ -312,11 +312,11 @@ function CrawlSettingsDropdown() {
   )
 }
 
-function StatusBadge({status}: {status: 'success' | 'error' | 'loading'}) {
+function StatusBadge({ status }: { status: 'success' | 'error' | 'loading' }) {
   const variants = {
-    success: {color: 'text-[#10B981]', bg: 'bg-[#10B981]/20', border: 'border-[#10B981]/30'},
-    error: {color: 'text-red-400', bg: 'bg-red-400/20', border: 'border-red-400/30'},
-    loading: {color: 'text-[#F59E0B]', bg: 'bg-[#F59E0B]/20', border: 'border-[#F59E0B]/30'}
+    success: { color: 'text-[#10B981]', bg: 'bg-[#10B981]/20', border: 'border-[#10B981]/30' },
+    error: { color: 'text-red-400', bg: 'bg-red-400/20', border: 'border-red-400/30' },
+    loading: { color: 'text-[#F59E0B]', bg: 'bg-[#F59E0B]/20', border: 'border-[#F59E0B]/30' }
   }
 
   const variant = variants[status]
@@ -330,7 +330,7 @@ function StatusBadge({status}: {status: 'success' | 'error' | 'loading'}) {
   )
 }
 
-function RenderedPreview({url}: {url: string}) {
+function RenderedPreview({ url }: { url: string }) {
   return (
     <div className='m-4 h-full overflow-hidden rounded-lg border border-white/10 bg-white/5'>
       <div className='flex h-full items-center justify-center'>
@@ -344,7 +344,7 @@ function RenderedPreview({url}: {url: string}) {
   )
 }
 
-function CodePreview({content, language}: {content: string; language: string}) {
+function CodePreview({ content, language }: { content: string; language: string }) {
   return (
     <div className='relative h-full'>
       <div className='absolute right-4 top-4 z-10'>

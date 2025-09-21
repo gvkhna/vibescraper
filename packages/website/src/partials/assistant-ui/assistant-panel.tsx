@@ -1,12 +1,14 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {Sparkles, MessageSquare, X, ChevronLeft} from 'lucide-react'
-import {AssistantChatLoader} from './assistant-chat-loader'
-import {AssistantChatHistory} from './assistant-chat-history'
-import {useStore} from '@/store/use-store'
 import debug from 'debug'
+import { ChevronLeft, MessageSquare, Sparkles, X } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { useStore } from '@/store/use-store'
+
+import { AssistantChatHistory } from './assistant-chat-history'
+import { AssistantChatLoader } from './assistant-chat-loader'
 
 const log = debug('app:assistant-panel')
 

@@ -1,4 +1,4 @@
-import {getMimeType as honoGetMimeType} from 'hono/utils/mime'
+import { getMimeType as honoGetMimeType } from 'hono/utils/mime'
 // Extended file categories as string literals
 export type FileCategory =
   | 'image'
@@ -666,18 +666,18 @@ export function getFileTypeInfo(filepath?: string, mimeType?: string): FileTypeI
 /**
  * Get Tailwind CSS classes for file type colors
  */
-export function getFileTypeColors(colorScheme: FileColorScheme): {text: string; background: string} {
-  const colorMap: Record<FileColorScheme, {text: string; background: string} | undefined> = {
-    green: {text: 'text-green-600', background: 'bg-green-100'},
-    blue: {text: 'text-blue-600', background: 'bg-blue-100'},
-    purple: {text: 'text-purple-600', background: 'bg-purple-100'},
-    pink: {text: 'text-pink-600', background: 'bg-pink-100'},
-    red: {text: 'text-red-600', background: 'bg-red-100'},
-    orange: {text: 'text-orange-600', background: 'bg-orange-100'},
-    yellow: {text: 'text-yellow-600', background: 'bg-yellow-100'},
-    gray: {text: 'text-gray-600', background: 'bg-gray-100'},
-    indigo: {text: 'text-indigo-600', background: 'bg-indigo-100'},
-    teal: {text: 'text-teal-600', background: 'bg-teal-100'}
+export function getFileTypeColors(colorScheme: FileColorScheme): { text: string; background: string } {
+  const colorMap: Record<FileColorScheme, { text: string; background: string } | undefined> = {
+    green: { text: 'text-green-600', background: 'bg-green-100' },
+    blue: { text: 'text-blue-600', background: 'bg-blue-100' },
+    purple: { text: 'text-purple-600', background: 'bg-purple-100' },
+    pink: { text: 'text-pink-600', background: 'bg-pink-100' },
+    red: { text: 'text-red-600', background: 'bg-red-100' },
+    orange: { text: 'text-orange-600', background: 'bg-orange-100' },
+    yellow: { text: 'text-yellow-600', background: 'bg-yellow-100' },
+    gray: { text: 'text-gray-600', background: 'bg-gray-100' },
+    indigo: { text: 'text-indigo-600', background: 'bg-indigo-100' },
+    teal: { text: 'text-teal-600', background: 'bg-teal-100' }
   }
 
   const mappedColorScheme = colorMap[colorScheme]

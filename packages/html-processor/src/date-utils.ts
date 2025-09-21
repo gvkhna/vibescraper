@@ -1,5 +1,5 @@
-import {toZonedTime, fromZonedTime, format as formatTz} from 'date-fns-tz'
-import {parse, isValid, parseISO, format} from 'date-fns'
+import { format, isValid, parse, parseISO } from 'date-fns'
+import { format as formatTz, fromZonedTime, toZonedTime } from 'date-fns-tz'
 
 /**
  * Common timezones
@@ -18,7 +18,7 @@ export type TimezoneKey = keyof typeof TIMEZONES
 /**
  * Default time when time is not specified
  */
-export const DEFAULT_TIME = {hours: 6, minutes: 0} // 6:00 AM default
+export const DEFAULT_TIME = { hours: 6, minutes: 0 } // 6:00 AM default
 
 /**
  * Date parsing result
@@ -36,7 +36,7 @@ export interface ParsedDate {
  */
 export interface DateParseOptions {
   timezone?: string
-  defaultTime?: {hours: number; minutes: number}
+  defaultTime?: { hours: number; minutes: number }
   formats?: string[]
 }
 
@@ -49,7 +49,7 @@ export function parseDateWithTimezone(
   timeText?: string,
   options: DateParseOptions = {}
 ): ParsedDate {
-  const {timezone = TIMEZONES.PST, defaultTime = DEFAULT_TIME} = options
+  const { timezone = TIMEZONES.PST, defaultTime = DEFAULT_TIME } = options
 
   const cleanDate = dateText.trim().replace(/\s+/g, ' ')
 
@@ -141,14 +141,14 @@ export function parseDateWithTimezone(
  * Parse date text in Pacific timezone (convenience function)
  */
 export function parseDateInPacificTimezone(dateText: string, timeText?: string): ParsedDate {
-  return parseDateWithTimezone(dateText, timeText, {timezone: TIMEZONES.PST})
+  return parseDateWithTimezone(dateText, timeText, { timezone: TIMEZONES.PST })
 }
 
 /**
  * Parse date text in Eastern timezone (convenience function)
  */
 export function parseDateInEasternTimezone(dateText: string, timeText?: string): ParsedDate {
-  return parseDateWithTimezone(dateText, timeText, {timezone: TIMEZONES.EST})
+  return parseDateWithTimezone(dateText, timeText, { timezone: TIMEZONES.EST })
 }
 
 /**
@@ -193,7 +193,7 @@ function getTimezoneAbbreviation(date: Date, timezone: string): string {
     default:
       // Try to get abbreviation from date-fns-tz
       try {
-        return formatTz(date, 'zzz', {timeZone: timezone})
+        return formatTz(date, 'zzz', { timeZone: timezone })
       } catch {
         return timezone
       }
@@ -229,7 +229,7 @@ export function formatInTimezone(
   timezone: string = TIMEZONES.PST,
   formatString = 'yyyy-MM-dd HH:mm:ss zzz'
 ): string {
-  return formatTz(utcDate, formatString, {timeZone: timezone})
+  return formatTz(utcDate, formatString, { timeZone: timezone })
 }
 
 /**
@@ -328,11 +328,11 @@ export function parseRelativeDate(text: string, timezone: string = TIMEZONES.PST
 /**
  * Format date for human-readable display
  */
-export function humanizeDate(date: Date, options?: {includeTime?: boolean; timezone?: string}): string {
-  const {includeTime = false, timezone = TIMEZONES.PST} = options || {}
+export function humanizeDate(date: Date, options?: { includeTime?: boolean; timezone?: string }): string {
+  const { includeTime = false, timezone = TIMEZONES.PST } = options || {}
 
   const formatString = includeTime ? "MMMM d, yyyy 'at' h:mm a zzz" : 'MMMM d, yyyy'
-  return formatTz(date, formatString, {timeZone: timezone})
+  return formatTz(date, formatString, { timeZone: timezone })
 }
 
 /**
@@ -352,6 +352,6 @@ export function debugDate(parsedDate: ParsedDate, label = 'Date'): void {
   )
   console.log(`  Timezone: ${parsedDate.timezone}`)
   console.log(
-    `  Human: ${humanizeDate(parsedDate.utcDate, {includeTime: true, timezone: parsedDate.timezone})}`
+    `  Human: ${humanizeDate(parsedDate.utcDate, { includeTime: true, timezone: parsedDate.timezone })}`
   )
 }

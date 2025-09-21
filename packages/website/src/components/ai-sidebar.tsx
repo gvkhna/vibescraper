@@ -1,12 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { BarChart3, ChevronLeft, ChevronRight, Code, Database, FileText, MessageCircle, Paperclip, Send, Sparkles } from 'lucide-react'
+
 import { Badge } from "@/components/ui/badge"
-import { MessageCircle, Database, Code, FileText, BarChart3, Send, Paperclip, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
 
 interface AISidebarProps {
   currentUrl: string

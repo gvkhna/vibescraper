@@ -1,8 +1,9 @@
 'use client'
 
-import {Dialog, DialogContent, DialogHeader, DialogTitle} from '@/components/ui/dialog'
-import {AuthView} from '@daveyplate/better-auth-ui'
-import {Sparkles} from 'lucide-react'
+import { AuthView } from '@daveyplate/better-auth-ui'
+import { Sparkles } from 'lucide-react'
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 interface BetterAuthModalProps {
   open: boolean

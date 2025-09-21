@@ -1,21 +1,23 @@
-/* eslint-disable no-console */
-import {describe, it, expect, beforeAll, afterAll, beforeEach} from 'vitest'
-import {SandboxManager} from '../src/sandbox-manager'
-import process from 'node:process'
-import path from 'node:path'
+import debug from 'debug'
 import fs from 'node:fs/promises'
+import path from 'node:path'
+import process from 'node:process'
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
-describe('SandboxManager', () => {
+import { SandboxManager } from '../src/sandbox-manager'
+const log = debug('test')
+
+describe('test SandboxManager', () => {
   let sandboxManager: SandboxManager
   const testTmpDir = path.join(process.cwd(), 'tmp')
 
   beforeAll(async () => {
     // Ensure tmp directory exists
-    await fs.mkdir(testTmpDir, {recursive: true})
+    await fs.mkdir(testTmpDir, { recursive: true })
 
     // Create sandbox manager with a simple logger
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
-      // console.log('[TEST]', ...args)
+      log('[TEST]', ...args)
     })
     // Wait for sandbox to be ready before running tests
     await sandboxManager.waitForReady()
@@ -26,7 +28,9 @@ describe('SandboxManager', () => {
     // The sandbox manager will clean up its own files
   })
 
-  it('should execute simple console.log code', async () => {
+  it('should execute simple log code', async () => {
+    expect.assertions(6)
+
     const code = `console.log('Hello from sandbox!')`
     const messages = await sandboxManager.executeCodeBuffered(code, false)
 
@@ -37,17 +41,20 @@ describe('SandboxManager', () => {
 
     // Find the log message
     const logMessage = messages.find((msg) => msg.type === 'log')
+
     expect(logMessage).toBeDefined()
-    if (logMessage) {
-      expect(logMessage.log).toBe('Hello from sandbox!')
-    }
+
+    expect(logMessage?.log).toBe('Hello from sandbox!')
 
     // Check for completion status
     const statusMessage = messages.find((msg) => msg.type === 'status' && msg.status === 'completed')
+
     expect(statusMessage).toBeDefined()
   }, 10000) // 10 second timeout
 
   it('should execute code with multiple console logs', async () => {
+    expect.assertions(4)
+
     const code = `
       console.log('First message')
       console.log('Second message')
@@ -57,7 +64,8 @@ describe('SandboxManager', () => {
 
     // Filter log messages
     const logMessages = messages.filter((msg) => msg.type === 'log')
-    expect(logMessages.length).toBe(3)
+
+    expect(logMessages).toHaveLength(3)
 
     // Check the content
     expect(logMessages[0].log).toBe('First message')
@@ -66,6 +74,8 @@ describe('SandboxManager', () => {
   }, 10000)
 
   it('should handle async code execution', async () => {
+    expect.assertions(4)
+
     const code = `
       console.log('Starting async operation')
       await new Promise(resolve => setTimeout(resolve, 100))
@@ -74,17 +84,21 @@ describe('SandboxManager', () => {
     const messages = await sandboxManager.executeCodeBuffered(code, false)
 
     const logMessages = messages.filter((msg) => msg.type === 'log')
-    expect(logMessages.length).toBe(2)
+
+    expect(logMessages).toHaveLength(2)
 
     expect(logMessages[0].log).toBe('Starting async operation')
     expect(logMessages[1].log).toBe('Async operation completed')
 
     // Check completion
     const statusMessage = messages.find((msg) => msg.type === 'status' && msg.status === 'completed')
+
     expect(statusMessage).toBeDefined()
   }, 10000)
 
   it('should handle errors in code execution', async () => {
+    expect.assertions(4)
+
     const code = `
       console.log('Before error')
       throw new Error('Test error')
@@ -94,13 +108,17 @@ describe('SandboxManager', () => {
 
     // Should have the first log
     const logMessages = messages.filter((msg) => msg.type === 'log')
-    expect(logMessages.length).toBe(1)
+
+    expect(logMessages).toHaveLength(1)
 
     expect(logMessages[0].log).toBe('Before error')
 
     // Should have an exception message
     const exceptionMessage = messages.find((msg) => msg.type === 'exception')
+
     expect(exceptionMessage).toBeDefined()
+
+    let message: string | null = null
     if (exceptionMessage) {
       const exception = exceptionMessage.exception
       if (typeof exception === 'object' && 'message' in exception) {
@@ -110,6 +128,8 @@ describe('SandboxManager', () => {
   }, 10000)
 
   it('should execute test code when testing flag is true', async () => {
+    expect.assertions(4)
+
     const code = `
       test('simple test', () => {
         expect(1 + 1).toBe(2)
@@ -123,19 +143,24 @@ describe('SandboxManager', () => {
 
     // Find test messages
     const testMessages = messages.filter((msg) => msg.type === 'test')
+
     expect(testMessages.length).toBeGreaterThan(0)
 
     // Check for passed tests
     const passedTests = testMessages.filter((msg) => msg.status === 'passed')
-    expect(passedTests.length).toBe(2)
+
+    expect(passedTests).toHaveLength(2)
 
     // Check test names
     const testNames = testMessages.filter((msg) => msg.status === 'passed').map((msg) => msg.name)
+
     expect(testNames).toContain('simple test')
     expect(testNames).toContain('another test')
   }, 15000)
 
   it('should handle different console methods', async () => {
+    expect.assertions(8)
+
     const code = `
       console.log('log message')
       console.info('info message')

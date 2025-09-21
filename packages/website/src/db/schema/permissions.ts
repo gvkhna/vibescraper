@@ -1,9 +1,11 @@
-import {pgTable, text, uniqueIndex, timestamp, jsonb} from 'drizzle-orm/pg-core'
-import {relations} from 'drizzle-orm'
-import {ulid, type ULID} from 'ulid'
-import type {ActorType, AuditEntrySchema, PermissionPolicyV1Schema} from '@/lib/permission-policy-schema'
-import {TIMESTAMPS_SCHEMA, type BrandedType, type StrictOmit} from './common'
-import {user, type UserId} from './better-auth'
+import { relations } from 'drizzle-orm'
+import { jsonb, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
+import { type ULID, ulid } from 'ulid'
+
+import type { ActorType, AuditEntrySchema, PermissionPolicyV1Schema } from '@/lib/permission-policy-schema'
+
+import { user, type UserId } from './better-auth'
+import { type BrandedType, type StrictOmit, TIMESTAMPS_SCHEMA } from './common'
 
 export type SubjectPolicyId = BrandedType<ULID, 'SubjectPolicyId'>
 export type SubjectPolicyPublicId = BrandedType<ULID, 'SubjectPolicyPublicId'>
@@ -46,7 +48,7 @@ export const actor = pgTable(
       .$type<ActorPublicId>(),
     type: text().notNull().$type<ActorType>(),
     userId: text()
-      .references(() => user.id, {onDelete: 'cascade'})
+      .references(() => user.id, { onDelete: 'cascade' })
       .$type<UserId>(), // Only for type 'user'
     // apiKeyId: text().references(() => apiKey.id, { onDelete: "cascade" }), // Only for type 'apiKey'
     // anonymousId: text().$type<AnonymousActorId>(),
@@ -55,7 +57,7 @@ export const actor = pgTable(
   (table) => [uniqueIndex().on(table.publicId)]
 )
 
-export const actorRelations = relations(actor, ({one}) => ({
+export const actorRelations = relations(actor, ({ one }) => ({
   user: one(user, {
     fields: [actor.userId],
     references: [user.id]
@@ -83,7 +85,7 @@ export const policyAuditEntry = pgTable(
       .$type<PolicyAuditEntryPublicId>(),
     subjectPolicyId: text()
       .notNull()
-      .references(() => subjectPolicy.id, {onDelete: 'cascade'})
+      .references(() => subjectPolicy.id, { onDelete: 'cascade' })
       .$type<SubjectPolicyId>(),
     entry: jsonb().notNull().$type<AuditEntrySchema>(),
     createdAt: timestamp().notNull().defaultNow()

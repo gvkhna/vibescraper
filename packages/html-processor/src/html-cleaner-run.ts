@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* eslint-disable no-console */
 
 /**
  * Utility script to extract readable content from HTML files
@@ -6,10 +7,11 @@
  * Usage: bun run src/html-readability-utility.ts
  */
 
-import {readFile, writeFile} from 'node:fs/promises'
-import {resolve, dirname} from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {htmlCleaner} from './html-cleaner'
+import { readFile, writeFile } from 'node:fs/promises'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import { htmlCleaner } from './html-cleaner'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

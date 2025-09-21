@@ -1,7 +1,7 @@
 // components/markdown/markdown-renderer-context.tsx
-import {createContext, useContext} from 'react'
+import { createContext, useContext } from 'react'
 
-import {AssistantProjectComponentDefault} from './assistant-project-component-default'
+import { AssistantProjectComponentDefault } from './assistant-project-component-default'
 
 const defaultComponent = AssistantProjectComponentDefault
 

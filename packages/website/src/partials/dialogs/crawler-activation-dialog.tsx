@@ -1,20 +1,21 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {Dialog, DialogContent, DialogDescription, DialogTitle} from '@/components/ui/dialog'
-import {Label} from '@/components/ui/label'
-import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from '@/components/ui/select'
-import {Switch} from '@/components/ui/switch'
-import {Input} from '@/components/ui/input'
-import {Textarea} from '@/components/ui/textarea'
-import {Zap, Calendar, Link2, Globe, AlertCircle} from 'lucide-react'
-import {Badge} from '@/components/ui/badge'
-import {cn} from '@/lib/utils'
-import type {ProjectPublicId} from '@/db/schema'
-import type {SQLUTCTimestamp} from '@/db/schema/common'
-import {sqlFormatTimestamp} from '@/lib/format-dates'
-import {nowait} from '@/lib/async-utils'
+import { AlertCircle, Calendar, Globe, Link2, Zap } from 'lucide-react'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
+import type { ProjectPublicId } from '@/db/schema'
+import type { SQLUTCTimestamp } from '@/db/schema/common'
+import { nowait } from '@/lib/async-utils'
+import { sqlFormatTimestamp } from '@/lib/format-dates'
+import { cn } from '@/lib/utils'
 
 interface CrawlerActivationDialogConfig {
   schedule: 'manual' | 'hourly' | 'daily' | 'weekly' | 'monthly'
@@ -135,7 +136,7 @@ export function CrawlerActivationDialog({
                       <Select
                         value={config.schedule}
                         onValueChange={(v: typeof config.schedule) => {
-                          setConfig({...config, schedule: v})
+                          setConfig({ ...config, schedule: v })
                         }}
                       >
                         <SelectTrigger
@@ -192,7 +193,7 @@ export function CrawlerActivationDialog({
                           type='time'
                           value={config.time}
                           onChange={(e) => {
-                            setConfig({...config, time: e.target.value})
+                            setConfig({ ...config, time: e.target.value })
                           }}
                           className='mt-2 border-white/20 bg-[#0A0A0B]'
                         />
@@ -211,7 +212,7 @@ export function CrawlerActivationDialog({
                       <Select
                         value={config.timezone}
                         onValueChange={(v) => {
-                          setConfig({...config, timezone: v})
+                          setConfig({ ...config, timezone: v })
                         }}
                       >
                         <SelectTrigger
@@ -298,7 +299,7 @@ export function CrawlerActivationDialog({
                       id='follow-links'
                       checked={config.followLinks}
                       onCheckedChange={(checked) => {
-                        setConfig({...config, followLinks: checked})
+                        setConfig({ ...config, followLinks: checked })
                       }}
                       className='data-[state=checked]:bg-green-500'
                     />
@@ -326,7 +327,7 @@ export function CrawlerActivationDialog({
                         <Select
                           value={config.maxDepth.toString()}
                           onValueChange={(v) => {
-                            setConfig({...config, maxDepth: parseInt(v)})
+                            setConfig({ ...config, maxDepth: parseInt(v) })
                           }}
                         >
                           <SelectTrigger
@@ -361,7 +362,7 @@ export function CrawlerActivationDialog({
                           type='number'
                           value={config.maxPages}
                           onChange={(e) => {
-                            setConfig({...config, maxPages: parseInt(e.target.value) || 100})
+                            setConfig({ ...config, maxPages: parseInt(e.target.value) || 100 })
                           }}
                           className='mt-2 border-white/20 bg-[#0A0A0B]'
                           placeholder='100'
@@ -383,7 +384,7 @@ export function CrawlerActivationDialog({
                         id='same-origin'
                         checked={config.sameOriginOnly}
                         onCheckedChange={(checked) => {
-                          setConfig({...config, sameOriginOnly: checked})
+                          setConfig({ ...config, sameOriginOnly: checked })
                         }}
                         className='data-[state=checked]:bg-green-500'
                       />
@@ -401,7 +402,7 @@ export function CrawlerActivationDialog({
                         id='include-pattern'
                         value={config.includePattern ?? ''}
                         onChange={(e) => {
-                          setConfig({...config, includePattern: e.target.value})
+                          setConfig({ ...config, includePattern: e.target.value })
                         }}
                         className='mt-2 border-white/20 bg-[#0A0A0B] font-mono'
                         placeholder='/products/.*'
@@ -420,7 +421,7 @@ export function CrawlerActivationDialog({
                         id='exclude-pattern'
                         value={config.excludePattern ?? ''}
                         onChange={(e) => {
-                          setConfig({...config, excludePattern: e.target.value})
+                          setConfig({ ...config, excludePattern: e.target.value })
                         }}
                         className='mt-2 border-white/20 bg-[#0A0A0B] font-mono'
                         placeholder='.*\?page=.*'

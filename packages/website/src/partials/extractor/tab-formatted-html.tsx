@@ -1,12 +1,13 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {Copy, FileCode2} from 'lucide-react'
-import {nowait} from '@/lib/async-utils'
-import {useStore} from '@/store/use-store'
-import {EmptyStateData} from '@/components/empty-state-data'
-import {TextViewer} from '@/partials/monaco-editor/text-viewer'
+import { Copy, FileCode2 } from 'lucide-react'
+
+import { EmptyStateData } from '@/components/empty-state-data'
+import { Button } from '@/components/ui/button'
+import { nowait } from '@/lib/async-utils'
+import { TextViewer } from '@/partials/monaco-editor/text-viewer'
+import { useStore } from '@/store/use-store'
 
 export function TabFormattedHtml() {
   const [copied, setCopied] = React.useState(false)

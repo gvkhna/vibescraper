@@ -1,5 +1,6 @@
-import type {WritableDraft, Draft} from 'immer'
-import type {EnforceExactWritable} from '@/lib/type-utils'
+import type { Draft, WritableDraft } from 'immer'
+
+import type { EnforceExactWritable } from '@/lib/type-utils'
 
 export type LoadingState = 'unloaded' | 'loading' | 'loaded' | 'failed'
 export type SavingState = 'idle' | 'saving' | 'error'
@@ -20,7 +21,7 @@ export function initialPaginationEntityState<TCursor>(): WritableDraft<Paginatio
 
 export function updatePaginationEntityState<T, TCursor>(
   entity: EnforceExactWritable<T, PaginationEntityState<TCursor>>,
-  {startCursor, hasNextPage}: {startCursor: TCursor | null; hasNextPage: boolean}
+  { startCursor, hasNextPage }: { startCursor: TCursor | null; hasNextPage: boolean }
 ) {
   const draft = entity as WritableDraft<PaginationEntityState<TCursor>>
   draft.startCursor = startCursor as Draft<TCursor> | null | undefined
@@ -62,7 +63,7 @@ export function createPaginationEntity<C extends string>() {
     if (!rows || rows.length === 0) {
       return {
         items: [],
-        pageInfo: {hasNextPage: false, startCursor: null}
+        pageInfo: { hasNextPage: false, startCursor: null }
       }
     }
 
@@ -74,7 +75,7 @@ export function createPaginationEntity<C extends string>() {
 
     return {
       items,
-      pageInfo: {hasNextPage, startCursor}
+      pageInfo: { hasNextPage, startCursor }
     }
   }
 }

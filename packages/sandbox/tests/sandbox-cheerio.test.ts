@@ -1,18 +1,20 @@
-/* eslint-disable no-console */
-import {describe, it, expect, beforeAll, afterAll} from 'vitest'
-import {SandboxManager} from '../src/sandbox-manager'
-import process from 'node:process'
-import path from 'node:path'
+import debug from 'debug'
 import fs from 'node:fs/promises'
+import path from 'node:path'
+import process from 'node:process'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-describe('SandboxManager Cheerio Test', () => {
+import { SandboxManager } from '../src/sandbox-manager'
+const log = debug('test')
+
+describe('sandboxManager Cheerio Test', () => {
   let sandboxManager: SandboxManager | undefined
   const testTmpDir = path.join(process.cwd(), 'tmp')
 
   beforeAll(async () => {
-    await fs.mkdir(testTmpDir, {recursive: true})
+    await fs.mkdir(testTmpDir, { recursive: true })
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
-      console.log('[CHEERIO TEST]', ...args)
+      log('[CHEERIO TEST]', ...args)
     })
     // Wait for sandbox to be ready before running tests
     await sandboxManager.waitForReady()
@@ -24,13 +26,15 @@ describe('SandboxManager Cheerio Test', () => {
       await new Promise((resolve) => setTimeout(resolve, 1000))
     }
     try {
-      await fs.rm(testTmpDir, {recursive: true, force: true})
+      await fs.rm(testTmpDir, { recursive: true, force: true })
     } catch {
       // Ignore cleanup errors
     }
   })
 
   it('should import and use cheerio successfully', async () => {
+    expect.assertions(3)
+
     const code = `
       import * as cheerio from 'cheerio'
 
@@ -48,6 +52,7 @@ describe('SandboxManager Cheerio Test', () => {
     expect(logs.some((msg) => msg.log.includes('CHEERIO_TEXT: Hello World'))).toBe(true)
 
     const status = result?.find((msg) => msg.type === 'status' && msg.status === 'completed')
+
     expect(status?.type === 'status' && status.status === 'completed').toBe(true)
   }, 30000)
 })

@@ -1,22 +1,24 @@
-import {Hono} from 'hono'
-import type {HonoServer} from '..'
-import * as schema from '@/db/schema'
-import {asc as sqlAsc, max as sqlMax, eq as sqlEq} from 'drizzle-orm'
-import {z} from 'zod'
 import debug from 'debug'
-import {validator} from 'hono/validator'
-import {HttpStatusCode} from '@/lib/http-status-codes'
-import {userCannotProjectAction} from '@/lib/permissions-helper'
+import { asc as sqlAsc, eq as sqlEq, max as sqlMax } from 'drizzle-orm'
+import { Hono } from 'hono'
+import { validator } from 'hono/validator'
+import { z } from 'zod'
+
+import { getModelBySize, type ModelSize } from '@/assistant-ai'
+import { SchemaToolsPrompt, TestPingPrompt, TestPrompt } from '@/assistant-ai/prompts'
+import { makeExtractionTools } from '@/assistant-ai/tools/assistant-extraction-tools'
+import { makeTestTools } from '@/assistant-ai/tools/test-tools'
+import * as schema from '@/db/schema'
+import { HttpStatusCode } from '@/lib/http-status-codes'
+import { userCannotProjectAction } from '@/lib/permissions-helper'
 import {
+  type ChatMessagePersistanceType,
   convertUIMessageToChatMessage,
-  type VSUIMessage,
-  type ChatMessagePersistanceType
+  type VSUIMessage
 } from '@/partials/assistant-ui/chat-message-schema'
-import {getModelBySize, type ModelSize} from '@/assistant-ai'
-import {SchemaToolsPrompt, TestPingPrompt, TestPrompt} from '@/assistant-ai/prompts'
-import {aiStreamResponse} from './ai-stream-response'
-import {makeTestTools} from '@/assistant-ai/tools/test-tools'
-import {makeExtractionTools} from '@/assistant-ai/tools/assistant-extraction-tools'
+import type { HonoServer } from '..'
+
+import { aiStreamResponse } from './ai-stream-response'
 // import type {ProjectVersionBlockType} from '@partials/assistant-ui/project-version-block'
 // import {makeTools} from '@/private-llm/assistant-tools'
 
@@ -48,7 +50,7 @@ const app = new Hono<HonoServer>().post(
     return parsed.data
   }),
   async (c) => {
-    const {messages, projectChatPublicId, projectCommitPublicId, model, trigger, editorSliceActiveTab} =
+    const { messages, projectChatPublicId, projectCommitPublicId, model, trigger, editorSliceActiveTab } =
       c.req.valid('json')
     const user = c.get('user')
     const db = c.get('db')
@@ -56,40 +58,40 @@ const app = new Hono<HonoServer>().post(
     log('calling messages', messages, projectChatPublicId)
 
     if (!projectChatPublicId) {
-      return c.json({message: 'Project chat public id not found'}, HttpStatusCode.BadRequest)
+      return c.json({ message: 'Project chat public id not found' }, HttpStatusCode.BadRequest)
     }
 
     if (!projectCommitPublicId) {
-      return c.json({message: 'Project commit public id not found'}, HttpStatusCode.BadRequest)
+      return c.json({ message: 'Project commit public id not found' }, HttpStatusCode.BadRequest)
     }
 
     const projectChat = await db.query.projectChat.findFirst({
-      where: (table, {eq}) => eq(table.publicId, projectChatPublicId)
+      where: (table, { eq }) => eq(table.publicId, projectChatPublicId)
     })
 
     if (!projectChat) {
-      return c.json({message: 'Project chat not found'}, HttpStatusCode.NotFound)
+      return c.json({ message: 'Project chat not found' }, HttpStatusCode.NotFound)
     }
 
     const projectId = projectChat.projectId
 
     const project = await db.query.project.findFirst({
-      where: (table, {eq}) => eq(table.id, projectId)
+      where: (table, { eq }) => eq(table.id, projectId)
     })
 
     if (!project) {
-      return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+      return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
     }
 
     if (await userCannotProjectAction(db, 'update', user, project.subjectPolicyId)) {
-      return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+      return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
     }
 
     let message: VSUIMessage | null = null
     if (messages.length === 1) {
       message = messages[0]
     } else {
-      return c.json({message: 'Incorrect number of messages sent'}, HttpStatusCode.BadRequest)
+      return c.json({ message: 'Incorrect number of messages sent' }, HttpStatusCode.BadRequest)
     }
 
     if (projectChat.chatType === 'empty') {
@@ -101,7 +103,7 @@ const app = new Hono<HonoServer>().post(
         .where(sqlEq(schema.projectChat.id, projectChat.id))
 
       const emptyChat = await db.query.projectChat.findFirst({
-        where: (table, {eq, and}) => and(eq(table.projectId, project.id), eq(table.chatType, 'empty'))
+        where: (table, { eq, and }) => and(eq(table.projectId, project.id), eq(table.chatType, 'empty'))
       })
       if (!emptyChat) {
         await db.insert(schema.projectChat).values({
@@ -120,7 +122,7 @@ const app = new Hono<HonoServer>().post(
     if (message.id && message.role === 'user' && message.parts.length === 0) {
       // We need to look up this message from the database
       pendingChatMessage = await db.query.projectChatMessage.findFirst({
-        where: (table, {eq: tableEq}) =>
+        where: (table, { eq: tableEq }) =>
           tableEq(table.publicId, message.id as schema.ProjectChatMessagePublicId)
       })
     }
@@ -140,8 +142,8 @@ const app = new Hono<HonoServer>().post(
       llmConversationMessages = [pendingChatMessage]
     } else {
       // Regular message flow - get index and save the new user message
-      const [{maxIdx}] = await db
-        .select({maxIdx: sqlMax(schema.projectChatMessage.index)})
+      const [{ maxIdx }] = await db
+        .select({ maxIdx: sqlMax(schema.projectChatMessage.index) })
         .from(schema.projectChatMessage)
         .where(sqlEq(schema.projectChatMessage.projectChatId, projectChat.id))
       userMessageIndex = typeof maxIdx === 'number' ? maxIdx + 1 : 0
@@ -189,7 +191,7 @@ const app = new Hono<HonoServer>().post(
     const modelSize: ModelSize = model === 'small' ? 'small' : model === 'medium' ? 'medium' : 'large'
     const currentModel = getModelBySize(modelSize)
     if (!currentModel) {
-      return c.json({error: 'Model not configured'}, 500)
+      return c.json({ error: 'Model not configured' }, 500)
     }
 
     // const systemPrompt = ExtractorPrompt({})
@@ -203,7 +205,7 @@ const app = new Hono<HonoServer>().post(
 
     const sandbox = c.get('sandbox')
     if (!sandbox) {
-      return c.json({error: 'Sandbox not available'}, HttpStatusCode.BadGateway)
+      return c.json({ error: 'Sandbox not available' }, HttpStatusCode.BadGateway)
     }
 
     const tools = makeExtractionTools(db, project, projectCommitPublicId, sandbox)

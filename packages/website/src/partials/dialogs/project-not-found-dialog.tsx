@@ -1,15 +1,16 @@
 'use client'
 
-import {AlertTriangle} from 'lucide-react'
-import {Button} from '@/components/ui/button'
-import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog'
+import { AlertTriangle } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 interface ProjectNotFoundDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function ProjectNotFoundDialog({open, onOpenChange}: ProjectNotFoundDialogProps) {
+export function ProjectNotFoundDialog({ open, onOpenChange }: ProjectNotFoundDialogProps) {
   return (
     <Dialog
       open={open}

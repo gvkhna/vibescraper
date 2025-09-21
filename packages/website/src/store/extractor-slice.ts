@@ -1,23 +1,24 @@
-import type {StateSlice} from './use-store'
+import debug from 'debug'
+
 import type {
-  ProjectPublicId,
-  ProjectSchemaDTOType,
   ExtractorDTOType,
   ProjectCommitDTOType,
-  ProjectCommitPublicId
+  ProjectCommitPublicId,
+  ProjectPublicId,
+  ProjectSchemaDTOType
 } from '@/db/schema'
 import api from '@/lib/api-client'
-import debug from 'debug'
+import { asyncRetry } from '@/lib/async-utils'
+
 import {
+  type AsyncEntityState,
   failLoading,
   finishLoading,
   initialAsyncEntityState,
   isLoaded,
   isLoading,
-  startLoading,
-  type AsyncEntityState
-} from './async-entity-state'
-import {asyncRetry} from '@/lib/async-utils'
+  startLoading } from './async-entity-state'
+import type { StateSlice } from './use-store'
 
 const log = debug('app:extractor-slice')
 
@@ -38,6 +39,9 @@ export interface ProjectScrapingState {
   isScrapingActive: boolean
 }
 
+export const ScrapeModes = ['scrape', 'crawl-and-scrape'] as const
+export type ScrapeMode = (typeof ScrapeModes)[number]
+
 export interface ExtractorSlice {
   // Project commit state (current configuration)
   projectCommit: ProjectCommitDTOType | null
@@ -53,8 +57,8 @@ export interface ExtractorSlice {
   projectScrapingState: Record<ProjectPublicId, ProjectScrapingState | undefined>
 
   // Scraping mode (UI-level control)
-  scrapeMode: 'scrape' | 'crawlAndScrape'
-  setScrapeMode: (mode: 'scrape' | 'crawlAndScrape') => void
+  scrapeMode: ScrapeMode
+  setScrapeMode: (mode: ScrapeMode) => void
   toggleScrapeMode: () => void
 
   // Load all schemas for a project
@@ -67,10 +71,10 @@ export interface ExtractorSlice {
   reloadProjectCommit: (projectCommitPublicId: ProjectCommitPublicId) => Promise<void>
 
   // Update the URL being scraped
-  updateScrapingUrl: (url: string) => Promise<{success: boolean}>
+  updateScrapingUrl: (url: string) => Promise<{ success: boolean }>
 
   // Clear the scraped content cache
-  clearScrapedCache: () => Promise<{success: boolean}>
+  clearScrapedCache: () => Promise<{ success: boolean }>
 
   // Fetch and cache content from current URL
   fetchPageContent: (forceRefresh?: boolean) => Promise<{
@@ -80,7 +84,7 @@ export interface ExtractorSlice {
   }>
 
   // Clear recent URLs
-  clearRecentUrls: () => Promise<{success: boolean}>
+  clearRecentUrls: () => Promise<{ success: boolean }>
 }
 
 export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
@@ -105,7 +109,7 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
       set(
         (draft) => {
           draft.extractorSlice.scrapeMode =
-            draft.extractorSlice.scrapeMode === 'scrape' ? 'crawlAndScrape' : 'scrape'
+            draft.extractorSlice.scrapeMode === 'scrape' ? 'crawl-and-scrape' : 'scrape'
         },
         true,
         'extractor/toggleScrapeMode'
@@ -173,11 +177,11 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
                 'extractor/loadSchemas:done'
               )
             } else {
-              const body = (await resp.json()) as {message: string}
+              const body = (await resp.json()) as { message: string }
               throw new Error(body.message)
             }
           },
-          {retries: 2, minDelay: 500}
+          { retries: 2, minDelay: 500 }
         )
       } catch (e) {
         log('Error loading schemas:', e)
@@ -240,7 +244,7 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
             })
 
             if (resp.ok) {
-              const body = (await resp.json()) as {extractors: ExtractorDTOType[]}
+              const body = (await resp.json()) as { extractors: ExtractorDTOType[] }
 
               set(
                 (draft) => {
@@ -256,11 +260,11 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
                 'extractor/loadExtractors:done'
               )
             } else {
-              const body = (await resp.json()) as {message: string}
+              const body = (await resp.json()) as { message: string }
               throw new Error(body.message)
             }
           },
-          {retries: 2, minDelay: 500}
+          { retries: 2, minDelay: 500 }
         )
       } catch (e) {
         log('Error loading extractors:', e)
@@ -298,7 +302,7 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
       try {
         // Fetch the latest project commit and active schema
         const response = await api.project.projectCommitPublicId.$post({
-          json: {projectCommitPublicId}
+          json: { projectCommitPublicId }
         })
 
         if (!response.ok) {
@@ -307,7 +311,7 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
         }
 
         const body = await response.json()
-        const {commit, activeSchema, activeExtractor} = body.result
+        const { commit, activeSchema, activeExtractor } = body.result
 
         // Update the project commit, active schema, and active extractor in state
         set(
@@ -419,7 +423,7 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
 
       if (!projectCommitPublicId) {
         log('No project commit to update')
-        return {success: false}
+        return { success: false }
       }
 
       try {
@@ -440,10 +444,10 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
         await get().extractorSlice.reloadProjectCommit(projectCommitPublicId)
 
         log('Scraping URL updated successfully')
-        return {success: true}
+        return { success: true }
       } catch (e) {
         log('Error updating scraping URL:', e)
-        return {success: false}
+        return { success: false }
       }
     },
 
@@ -452,12 +456,12 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
 
       if (!projectCommitPublicId) {
         log('No project commit to clear cache for')
-        return {success: false}
+        return { success: false }
       }
 
       try {
         const response = await api.project.clearCache.$post({
-          json: {projectCommitPublicId}
+          json: { projectCommitPublicId }
         })
 
         if (!response.ok) {
@@ -477,10 +481,10 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
         )
 
         log('Cache cleared successfully')
-        return {success: true}
+        return { success: true }
       } catch (e) {
         log('Error clearing cache:', e)
-        return {success: false}
+        return { success: false }
       }
     },
 
@@ -490,14 +494,14 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
 
       if (!projectCommitPublicId || !currentUrl) {
         log('No project commit or URL to fetch')
-        return {success: false, error: 'No URL configured'}
+        return { success: false, error: 'No URL configured' }
       }
 
       // Get current project ID from the store
       const projectPublicId = get().projectSlice.project?.project.publicId
       if (!projectPublicId) {
         log('No project ID available')
-        return {success: false, error: 'No project selected'}
+        return { success: false, error: 'No project selected' }
       }
 
       // Set scraping as active for this project
@@ -575,7 +579,7 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
           'extractor/fetchPageContent:error'
         )
 
-        return {success: false, error: errorMessage}
+        return { success: false, error: errorMessage }
       }
     },
 
@@ -584,7 +588,7 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
 
       if (!projectCommitPublicId) {
         log('No project commit to clear recent URLs')
-        return {success: false}
+        return { success: false }
       }
 
       try {
@@ -604,7 +608,7 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
         set(
           (draft) => {
             if (draft.extractorSlice.projectCommit) {
-              draft.extractorSlice.projectCommit.recentUrls = {urls: []}
+              draft.extractorSlice.projectCommit.recentUrls = { urls: [] }
             }
           },
           true,
@@ -612,10 +616,10 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
         )
 
         log('Recent URLs cleared successfully')
-        return {success: true}
+        return { success: true }
       } catch (e) {
         log('Error clearing recent URLs:', e)
-        return {success: false}
+        return { success: false }
       }
     }
   }) as ExtractorSlice

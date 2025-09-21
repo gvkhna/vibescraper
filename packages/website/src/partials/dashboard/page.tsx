@@ -1,12 +1,14 @@
 'use client'
 
 import * as React from 'react'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import {ProjectHeader} from './project-header'
-import {OverviewTab} from './overview-tab'
-import {MonitoringTab} from './monitoring-tab'
-import {APIAccessTab} from './api-access-tab'
-import {DashboardShell} from './dashboard-shell'
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
+import { APIAccessTab } from './api-access-tab'
+import { DashboardShell } from './dashboard-shell'
+import { MonitoringTab } from './monitoring-tab'
+import { OverviewTab } from './overview-tab'
+import { ProjectHeader } from './project-header'
 
 export function DashboardPage() {
   const [projectName, setProjectName] = React.useState('Acme Product Crawler')

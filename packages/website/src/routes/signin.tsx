@@ -1,8 +1,9 @@
 'use client'
 
-import {createFileRoute} from '@tanstack/react-router'
-import {AuthPageTemplate} from '@/partials/webapp/better-auth-ui'
-import {z} from 'zod'
+import { createFileRoute } from '@tanstack/react-router'
+import { z } from 'zod'
+
+import { AuthPageTemplate } from '@/partials/webapp/better-auth-ui'
 
 const searchSchema = z.object({
   redirect: z.string().optional()
@@ -14,7 +15,7 @@ export const Route = createFileRoute('/signin')({
 })
 
 function SignInPage() {
-  const {redirect} = Route.useSearch()
+  const { redirect } = Route.useSearch()
 
   return (
     <AuthPageTemplate

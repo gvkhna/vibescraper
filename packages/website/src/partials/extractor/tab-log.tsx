@@ -1,11 +1,12 @@
 'use client'
 
 import * as React from 'react'
-import {FileText, Terminal, AlertCircle, Info, AlertTriangle} from 'lucide-react'
-import {EmptyStateData} from '@/components/empty-state-data'
-import {useStore} from '@/store/use-store'
-import type {CodeExecutionMessage} from '@vibescraper/sandbox'
-import {cn} from '@/lib/utils'
+import type { CodeExecutionMessage } from '@vibescraper/sandbox'
+import { AlertCircle, AlertTriangle, FileText, Info, Terminal } from 'lucide-react'
+
+import { EmptyStateData } from '@/components/empty-state-data'
+import { cn } from '@/lib/utils'
+import { useStore } from '@/store/use-store'
 
 export function TabLog() {
   const extractionMessages = useStore(

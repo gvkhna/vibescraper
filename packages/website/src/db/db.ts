@@ -1,12 +1,14 @@
-import {drizzle as drizzleNeon} from 'drizzle-orm/neon-serverless'
-import {Pool} from '@neondatabase/serverless'
-import {drizzle as drizzlePostgres} from 'drizzle-orm/postgres-js'
-import {DefaultLogger, type LogWriter} from 'drizzle-orm/logger'
-import postgres from 'postgres'
-import * as schema from './schema'
-import {PRIVATE_VARS} from '@/vars.private'
-import {PUBLIC_VARS} from '@/vars.public'
+import { Pool } from '@neondatabase/serverless'
 import debug from 'debug'
+import { DefaultLogger, type LogWriter } from 'drizzle-orm/logger'
+import { drizzle as drizzleNeon } from 'drizzle-orm/neon-serverless'
+import { drizzle as drizzlePostgres } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
+
+import { PRIVATE_VARS } from '@/vars.private'
+import { PUBLIC_VARS } from '@/vars.public'
+
+import * as schema from './schema'
 
 const log = debug('app:db')
 const dbLog = debug('db:log')
@@ -20,10 +22,10 @@ class AppDebugLogWriter implements LogWriter {
     dbLog(message)
   }
 }
-const logger = new DefaultLogger({writer: new AppDebugLogWriter()})
+const logger = new DefaultLogger({ writer: new AppDebugLogWriter() })
 
-const sqlNeonPool = new Pool({connectionString: PRIVATE_VARS.DATABASE_POOL_URL ?? PRIVATE_VARS.DATABASE_URL})
-const dbNeon = drizzleNeon({client: sqlNeonPool, schema, logger, casing: 'camelCase'})
+const sqlNeonPool = new Pool({ connectionString: PRIVATE_VARS.DATABASE_POOL_URL ?? PRIVATE_VARS.DATABASE_URL })
+const dbNeon = drizzleNeon({ client: sqlNeonPool, schema, logger, casing: 'camelCase' })
 
 /**
  * Universal batch function that works with both batch-enabled databases (Neon, LibSQL, D1)
@@ -33,14 +35,14 @@ const dbNeon = drizzleNeon({client: sqlNeonPool, schema, logger, casing: 'camelC
  */
 export async function dbBatch<T extends readonly unknown[]>(
   queries: T
-): Promise<{-readonly [P in keyof T]: Awaited<T[P]>}> {
+): Promise<{ -readonly [P in keyof T]: Awaited<T[P]> }> {
   // Check if the database instance has batch capability
   if ('batch' in db && typeof db.batch === 'function') {
     try {
       // Cast to any for the batch call since we're bypassing db.batch typing
       const batchFn = db.batch as (queries: readonly unknown[]) => Promise<unknown[]>
       const results = await batchFn(queries)
-      return results as {-readonly [P in keyof T]: Awaited<T[P]>}
+      return results as { -readonly [P in keyof T]: Awaited<T[P]> }
     } catch (error) {
       // If batch fails, fall back to Promise.all
       log('Batch operation failed, falling back to Promise.all:', error)
@@ -50,7 +52,7 @@ export async function dbBatch<T extends readonly unknown[]>(
   // Fallback to Promise.all for regular PostgreSQL
   // This is exactly how Promise.all works - natural inference
   const results = await Promise.all(queries)
-  return results as {-readonly [P in keyof T]: Awaited<T[P]>}
+  return results as { -readonly [P in keyof T]: Awaited<T[P]> }
 }
 
 export const db: typeof dbNeon = (() => {
@@ -135,7 +137,7 @@ export const db: typeof dbNeon = (() => {
         })
     }
 
-    const dbPostgres = drizzlePostgres({client: postgresClient, schema, casing: 'camelCase'})
+    const dbPostgres = drizzlePostgres({ client: postgresClient, schema, casing: 'camelCase' })
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-explicit-any
     return dbPostgres as any

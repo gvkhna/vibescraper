@@ -1,24 +1,16 @@
-import {db as database} from '@/db/db'
-import * as schema from '@/db/schema'
-import {eq as sqlEq} from 'drizzle-orm'
-import {sqlNow, type SQLUTCTimestamp} from '@/db/schema/common'
-import {hashString} from '@/lib/hash-helper'
-import {htmlFormat, htmlCleaner, htmlReadability, htmlMarkdown} from '@vibescraper/html-processor'
-import {compileJsonSchema, validateDataAgainstSchema} from '@vibescraper/shared-types'
+import { htmlCleaner, htmlFormat, htmlMarkdown, htmlReadability } from '@vibescraper/html-processor'
+import { compileJsonSchema, validateDataAgainstSchema } from '@vibescraper/json-schemas'
+import type { CodeExecutionMessage, SandboxManager } from '@vibescraper/sandbox'
 import debug from 'debug'
-import type {JsonObject, JsonValue} from 'type-fest'
-import type {SandboxManager, CodeExecutionMessage} from '@vibescraper/sandbox'
+import { eq as sqlEq } from 'drizzle-orm'
+import type { JsonObject, JsonValue } from 'type-fest'
+
+import { db as database } from '@/db/db'
+import * as schema from '@/db/schema'
+import { sqlNow, type SQLUTCTimestamp } from '@/db/schema/common'
+import { hashString } from '@/lib/hash-helper'
 
 const log = debug('app:scrape-processor')
-
-// Create a singleton sandbox manager instance
-// let sandboxManager: SandboxManager | null = null
-
-// function getSandboxManager(): SandboxManager {
-//   sandboxManager ??= new SandboxManager(PRIVATE_VARS.TMP_DIR, worker)
-//   return sandboxManager
-// }
-
 /**
  * Custom validation logic for handling both single objects and arrays
  * @param schemaObject - The JSON schema to validate against
@@ -31,12 +23,12 @@ function validateExtractionResult(
 ): {
   success: boolean
   message?: string
-  itemErrors?: Array<{itemIndex: number; errors: string[]}>
+  itemErrors?: Array<{ itemIndex: number; errors: string[] }>
 } {
   try {
     // If data is an array, validate each item individually
     if (Array.isArray(data)) {
-      const itemErrors: Array<{itemIndex: number; errors: string[]}> = []
+      const itemErrors: Array<{ itemIndex: number; errors: string[] }> = []
       let hasErrors = false
 
       for (let i = 0; i < data.length; i++) {
@@ -119,7 +111,7 @@ async function runExtraction(
     // const inputJson = JSON.stringify({html: cleanedHtml, url})
 
     const executionResult = await sandbox.executeFunctionBuffered(script, [cleanedHtml], false)
-    const {messages} = executionResult
+    const { messages } = executionResult
 
     log(
       'Sandbox execution completed, result present:',
@@ -225,13 +217,13 @@ async function tryExtraction(
     log('Fetching active extractor and schema from database')
     // Get the active script
     const activeExtractor = await db.query.extractor.findFirst({
-      where: (table, {and, eq}) =>
+      where: (table, { and, eq }) =>
         and(eq(table.projectId, projectId), eq(table.version, projectCommit.activeExtractorVersion!))
     })
 
     // Get the active schema
     const activeSchema = await db.query.projectSchema.findFirst({
-      where: (table, {and, eq}) =>
+      where: (table, { and, eq }) =>
         and(eq(table.projectId, projectId), eq(table.version, projectCommit.activeSchemaVersion!))
     })
 
@@ -293,7 +285,7 @@ export async function scrapeProcess({
     // Find the project commit
     log('Finding project commit in database')
     const projectCommit = await db.query.projectCommit.findFirst({
-      where: (table, {eq: tableEq}) => tableEq(table.publicId, projectCommitPublicId)
+      where: (table, { eq: tableEq }) => tableEq(table.publicId, projectCommitPublicId)
     })
 
     if (!projectCommit) {
@@ -309,7 +301,7 @@ export async function scrapeProcess({
     // Find the related project
     log('Finding related project in database')
     const project = await db.query.project.findFirst({
-      where: (table, {eq}) => eq(table.id, projectCommit.projectId)
+      where: (table, { eq }) => eq(table.id, projectCommit.projectId)
     })
 
     if (!project) {
@@ -382,7 +374,7 @@ export async function scrapeProcess({
       // Find or create projectUrl entry for fresh fetch
       log('Finding or creating projectUrl entry')
       let projectUrl = await db.query.projectUrl.findFirst({
-        where: (table, {and, eq}) => and(eq(table.projectId, project.id), eq(table.url, urlToScrape))
+        where: (table, { and, eq }) => and(eq(table.projectId, project.id), eq(table.url, urlToScrape))
       })
 
       if (!projectUrl) {
@@ -403,14 +395,14 @@ export async function scrapeProcess({
       if (!forceRefresh) {
         log('Checking for existing successful crawl run')
         const recentCrawlRun = await db.query.crawlRun.findFirst({
-          where: (table, {and, eq}) => and(eq(table.projectId, project.id), eq(table.status, 'success')),
-          orderBy: (table, {desc}) => desc(table.startedAt)
+          where: (table, { and, eq }) => and(eq(table.projectId, project.id), eq(table.status, 'success')),
+          orderBy: (table, { desc }) => desc(table.startedAt)
         })
 
         if (recentCrawlRun) {
           log('Found recent crawl run:', recentCrawlRun.id, '- checking for HTTP response')
           existingResponse = await db.query.httpResponse.findFirst({
-            where: (table, {and, eq}) =>
+            where: (table, { and, eq }) =>
               and(eq(table.crawlRunId, recentCrawlRun.id), eq(table.projectUrlId, projectUrl.id))
           })
           log('Existing response found:', !!existingResponse)
@@ -634,7 +626,7 @@ export async function scrapeProcess({
                   formattedContent = result.content
                 }
               }
-              cacheData.readabilityResult = {...result, content: formattedContent}
+              cacheData.readabilityResult = { ...result, content: formattedContent }
             }
           } catch (error) {
             log('Failed to extract readability:', error)

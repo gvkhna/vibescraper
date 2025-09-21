@@ -1,11 +1,11 @@
-import {describe, it, expect} from 'vitest'
-import {htmlReadability} from './html-readability'
+import { describe, expect, it } from 'vitest'
 
+import mediumExpectedResult from './fixtures/html-readability.test.medium-text.fixture?raw'
 // Import test assets using ?raw
 import mediumRawHtml from './fixtures/html-to-markdown.test.medium-raw.fixture?raw'
-import mediumExpectedResult from './fixtures/html-readability.test.medium-text.fixture?raw'
+import { htmlReadability } from './html-readability'
 
-describe('htmlReadability', () => {
+describe('test htmlReadability()', () => {
   it('should extract readable content from Medium article correctly', () => {
     const result = htmlReadability(
       mediumRawHtml,
@@ -13,6 +13,7 @@ describe('htmlReadability', () => {
     )
 
     const resultJson = JSON.stringify(result)
+
     expect(resultJson).toBe(mediumExpectedResult)
   })
 })

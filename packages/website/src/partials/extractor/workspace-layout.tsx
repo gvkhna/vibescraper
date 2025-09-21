@@ -1,13 +1,14 @@
 'use client'
 
-import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from '@/components/ui/resizable'
-import {ExtractionPanel} from './extraction-panel'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
+import { useStore } from '@/store/use-store'
 // import {SchemaPanel} from './schema-panel'
 // import {DataPanel} from './data-panel'
 // import {Button} from '@/components/ui/button'
 // import {PanelLeftClose, PanelRightClose, PanelBottomClose} from 'lucide-react'
-import {AssistantPanel} from '../assistant-ui/assistant-panel'
-import {useStore} from '@/store/use-store'
+import { AssistantPanel } from '../assistant-ui/assistant-panel'
+
+import { ExtractionPanel } from './extraction-panel'
 
 interface WorkspaceLayoutProps {
   // Removed isProcessing - now handled by pipeline status component internally

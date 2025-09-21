@@ -45,6 +45,9 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
+  "[raw]": {
+    "editor.wordWrap": "bounded"
+  },
   "[tailwindcss]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -57,6 +60,10 @@
   "custom-language-properties": {
     "astro.comments.blockComment": ["{/*", "*/}"]
   },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.ts": "explicit"
+  },
   // "tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]],
   "editor.formatOnSave": true,
   "eslint.codeActionsOnSave.mode": "all",
@@ -65,7 +72,8 @@
   "eslint.useFlatConfig": true,
   "eslint.validate": ["javascript", "javascriptreact", "astro", "typescript", "typescriptreact"],
   "files.associations": {
-    "*.css": "tailwindcss"
+    "*.css": "tailwindcss",
+    "*.fixture": "raw"
   },
   "jupyter.kernels.excludePythonEnvironments": [
     "/usr/bin/python3",
@@ -93,6 +101,7 @@
   "python.analysis.useLibraryCodeForTypes": true,
   "python.defaultInterpreterPath": "${env:HOME}/.asdf/shims/python",
   "search.exclude": {
+    "**/*.tsbuildinfo": true,
     "**/.git": true,
     "**/build": true,
     "**/dist": true,
@@ -104,5 +113,162 @@
   "tailwindCSS.experimental.configFile": "packages/website/src/global.css",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.preferences.preferTypeOnlyAutoImports": true,
-  "typescript.tsdk": "./node_modules/typescript/lib"
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "unicodesubsitutions.rules": [
+    {
+      "invalid": "\\u2E3A",
+      "message": "Replace TWO-EM Dash Character",
+      "valid": "--"
+    },
+    {
+      "invalid": "\\u1806",
+      "message": "Replace Unicode Hyphen",
+      "valid": "-"
+    },
+    {
+      "invalid": "\\u2010",
+      "message": "Replace Unicode Hyphen",
+      "valid": "-"
+    },
+    {
+      "invalid": "\\u2011",
+      "message": "Replace Unicode Hyphen",
+      "valid": "-"
+    },
+    {
+      "invalid": "\\u2012",
+      "message": "Replace Unicode Hyphen",
+      "valid": "-"
+    },
+    {
+      "invalid": "\\u2E3B",
+      "message": "Replace THREE-EM Dash Character",
+      "valid": "---"
+    },
+    {
+      "invalid": "\\u058A",
+      "message": "Armenian hyphen should be a hyphen.",
+      "valid": "\\u002D"
+    },
+    {
+      "invalid": "\\u0009",
+      "message": "Remove CHARACTER TABULATION",
+      "valid": ""
+    },
+    {
+      "invalid": "\\u000B",
+      "message": "Remove LINE TABULATION",
+      "valid": ""
+    },
+    {
+      "invalid": "\\u000C",
+      "message": "Remove FORM FEED",
+      "valid": ""
+    },
+    {
+      "invalid": "\\u000D",
+      "message": "Remove CARRIAGE RETURN",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u00A0",
+      "message": "Replace NO-BREAK SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u00AD",
+      "message": "Remove SOFT HYPHEN",
+      "valid": "-"
+    },
+    {
+      "invalid": "\\u034F",
+      "message": "Remove COMBINING GRAPHEME JOINER",
+      "valid": ""
+    },
+    {
+      "invalid": "\\u2000",
+      "message": "Remove EN QUAD",
+      "valid": ""
+    },
+    {
+      "invalid": "\\u2001",
+      "message": "Remove EM QUAD",
+      "valid": ""
+    },
+    {
+      "invalid": "\\u2002",
+      "message": "Replace EN SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u2003",
+      "message": "Replace EM SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u2004",
+      "message": "Replace THREE-PER-EM SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u2005",
+      "message": "Replace FOUR-PER-EM SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u2006",
+      "message": "Replace SIX-PER-EM SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u2007",
+      "message": "Replace FIGURE SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u2008",
+      "message": "Replace PUNCTUATION SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u2009",
+      "message": "Replace THIN SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u200A",
+      "message": "Replace HAIR SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u200B",
+      "message": "Replace ZERO WIDTH SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u202F",
+      "message": "Replace NARROW NO-BREAK SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u205F",
+      "message": "Replace MEDIUM MATHEMATICAL SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\u3000",
+      "message": "Replace IDEOGRAPHIC SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\uFEFF",
+      "message": "Replace ZERO WIDTH NO-BREAK SPACE with space",
+      "valid": " "
+    },
+    {
+      "invalid": "\\uE0020",
+      "message": "Replace TAG SPACE with space",
+      "valid": " "
+    }
+  ]
 }

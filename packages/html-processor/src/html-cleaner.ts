@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import * as cheerio from 'cheerio'
-import {ElementType} from 'domelementtype'
-import type {ChildNode, Element, Text} from 'domhandler'
+import { ElementType } from 'domelementtype'
+import type { ChildNode, Element, Text } from 'domhandler'
 import prettier from 'prettier'
 
 export interface HtmlCleanerOptions {
@@ -127,7 +127,7 @@ function cleanElementAttributes(
 
   const tagName = element.tagName.toLowerCase()
   const $el = $(element)
-  const currentAttribs = {...element.attribs}
+  const currentAttribs = { ...element.attribs }
 
   // Get allowed attributes for this element
   const globalAttrs = preserveAttributes.global ?? []
@@ -220,7 +220,7 @@ function cleanHtmlCore(
   tagsToRemove: string[],
   preserveAttributes: HtmlCleanerOptions['preserveAttributes'],
   debug = false
-): {loaded: string; cleaned: string} | null {
+): { loaded: string; cleaned: string } | null {
   const parsedHtml = parseLooseHTML(html)
   if (!parsedHtml) {
     if (debug) {
@@ -263,7 +263,7 @@ function cleanHtmlCore(
   // Clean head but keep the element
   $('head').empty()
 
-  return {loaded, cleaned: $.html()}
+  return { loaded, cleaned: $.html() }
 }
 
 /**
@@ -285,7 +285,7 @@ export async function htmlCleaner(
     return null
   }
 
-  const {loaded, cleaned} = cleanResult
+  const { loaded, cleaned } = cleanResult
 
   // Load cleaned HTML for text extraction
   const $ = cheerio.load(cleaned)

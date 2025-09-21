@@ -1,10 +1,11 @@
+/* eslint-disable */
 await (async function () {
   const envInput = import.meta.env ?? {}
 
-  const {Console} = await import('node:console')
+  const { Console } = await import('node:console')
   const util = await import('node:util')
-  const {Writable, PassThrough} = await import('node:stream')
-  const {hrtime} = await import('node:process')
+  const { Writable, PassThrough } = await import('node:stream')
+  const { hrtime } = await import('node:process')
 
   const _originalClose = globalThis.self.close.bind(self)
 
@@ -49,7 +50,7 @@ await (async function () {
         return input[key] !== undefined
       },
       toObject() {
-        return {...input}
+        return { ...input }
       },
       set(_key, _value) {},
       delete(_key) {}
@@ -132,7 +133,7 @@ await (async function () {
     constructor(options) {
       // Pass the options directly to the super constructor.
       super(options)
-      this.nativeConsole = new Console({stdout: logStream, stderr: errorStream, colorMode: false})
+      this.nativeConsole = new Console({ stdout: logStream, stderr: errorStream, colorMode: false })
     }
 
     group(...args) {
@@ -169,7 +170,7 @@ await (async function () {
   }
 
   // Replace global console
-  const sandboxConsole = new SandboxConsole({stdout: logStream, stderr: errorStream, colorMode: false})
+  const sandboxConsole = new SandboxConsole({ stdout: logStream, stderr: errorStream, colorMode: false })
   globalThis.console = sandboxConsole
   Object.freeze(globalThis.console)
   Object.freeze(SandboxConsole.prototype)
@@ -221,7 +222,7 @@ await (async function () {
   const processEvents = {}
 
   Object.assign(globalThis.process, {
-    env: {...envInput},
+    env: { ...envInput },
     hrtime: hrtimeShim,
     cwd: () => {
       try {
@@ -296,7 +297,7 @@ await (async function () {
         stack: `Uncaught ${err.stack}`
       }
     }
-    return {message: String(err)}
+    return { message: String(err) }
   }
   Object.freeze(serializeError)
 

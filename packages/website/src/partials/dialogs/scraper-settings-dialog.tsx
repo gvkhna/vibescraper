@@ -1,10 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import {Dialog, DialogContent, DialogTitle, DialogDescription} from '@/components/ui/dialog'
-import type {ProjectPublicId} from '@/db/schema'
-import type {ProjectCommitSettings, ExtractorSettings} from '@/db/schema/project'
-import {ScraperSettingsContent} from '@/partials/extractor/scraper-settings-content'
+
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import type { ProjectPublicId } from '@/db/schema'
+import type { ExtractorSettings, ProjectCommitSettings } from '@/db/schema/project'
+import { ScraperSettingsContent } from '@/partials/extractor/scraper-settings-content'
 
 interface ScraperSettingsDialogProps {
   open: boolean
@@ -15,7 +16,7 @@ interface ScraperSettingsDialogProps {
     commit?: ProjectCommitSettings
     extractor?: ExtractorSettings | null
   }
-  onSave: (settings: {commit: ProjectCommitSettings; extractor: ExtractorSettings}) => Promise<void>
+  onSave: (settings: { commit: ProjectCommitSettings; extractor: ExtractorSettings }) => Promise<void>
   openConfirmDeleteProjectDialog?: () => void
 }
 

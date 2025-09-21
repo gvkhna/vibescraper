@@ -1,4 +1,5 @@
-import type {APIRoute} from 'astro'
+import type { APIRoute } from 'astro'
+
 import app from '@/server/index'
 
 const handler: APIRoute = (ctx) => app.fetch(ctx.request)

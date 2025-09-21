@@ -1,6 +1,7 @@
-import {Hono} from 'hono'
-import {type HonoServer} from '.'
-import {HttpStatusCode} from '@/lib/http-status-codes'
+import { Hono } from 'hono'
+
+import { HttpStatusCode } from '@/lib/http-status-codes'
+import type { HonoServer } from '.'
 
 const app = new Hono<HonoServer>().get('/', async (c) => {
   // const user = c.get('user')

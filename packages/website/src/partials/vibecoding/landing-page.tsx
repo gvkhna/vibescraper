@@ -1,24 +1,24 @@
 'use client'
 
-import {useState} from 'react'
-import {useNavigate, Link} from '@tanstack/react-router'
+import { useState } from 'react'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { AlertTriangle, Sparkles, User } from 'lucide-react'
+import { toast } from 'sonner'
+
 import {
   PromptInput,
+  type PromptInputMessage,
   PromptInputSubmit,
   PromptInputTextarea,
-  PromptInputToolbar,
-  type PromptInputMessage
-} from '@/components/ai-elements/prompt-input'
-import {Sparkles, User, AlertTriangle} from 'lucide-react'
-import {nowait} from '@/lib/async-utils'
+  PromptInputToolbar } from '@/components/ai-elements/prompt-input'
+import { GitHubStarsButton } from '@/components/animate-ui/buttons/github-stars'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import api from '@/lib/api-client'
-import {toast} from 'sonner'
-import {authReactClient} from '@/lib/auth-react-client'
-import {Button} from '@/components/ui/button'
-import {BetterAuthUserButton} from '@/partials/webapp/better-auth-user-button'
-import {BetterAuthModal} from '@/partials/webapp/better-auth-modal'
-import {GitHubStarsButton} from '@/components/animate-ui/buttons/github-stars'
-import {Badge} from '@/components/ui/badge'
+import { nowait } from '@/lib/async-utils'
+import { authReactClient } from '@/lib/auth-react-client'
+import { BetterAuthModal } from '@/partials/webapp/better-auth-modal'
+import { BetterAuthUserButton } from '@/partials/webapp/better-auth-user-button'
 
 export function VibecodingLandingPage() {
   const [input, setInput] = useState('')
@@ -62,7 +62,7 @@ export function VibecodingLandingPage() {
           params: {
             'project-public-id': data.project.publicId
           },
-          search: data.chatPublicId ? {chat: data.chatPublicId} : {}
+          search: data.chatPublicId ? { chat: data.chatPublicId } : {}
         })
       }
     } catch (error) {

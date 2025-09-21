@@ -1,19 +1,20 @@
 /* eslint-disable no-undefined */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
-import {
-  type TSchema,
-  type TObject,
-  type TString,
-  type TNumber,
-  type TInteger,
-  type TBoolean,
-  type TArray,
-  type TUnion,
-  type TUndefined,
-  type TAny
+import type {
+  TAny,
+  TArray,
+  TBoolean,
+  TInteger,
+  TNumber,
+  TObject,
+  TSchema,
+  TString,
+  TUndefined,
+  TUnion
 } from '@sinclair/typebox'
-import type {TreeNode, TreeNodeType} from './tree-table-editor'
 import debug from 'debug'
+
+import type { TreeNode, TreeNodeType } from './tree-table-editor'
 
 type JsonLikeSchema = TUndefined | TAny | TObject
 

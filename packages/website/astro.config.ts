@@ -1,16 +1,16 @@
-import {fileURLToPath} from 'node:url'
-import {dirname, resolve} from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { dirname, resolve } from 'node:path'
 
-import {loadEnv} from 'vite'
-import {defineConfig} from 'astro/config'
+import { loadEnv } from 'vite'
+import { defineConfig } from 'astro/config'
 import tailwindcss from '@tailwindcss/vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import node from '@astrojs/node'
 import react from '@astrojs/react'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
-import {viteMaildev} from '@vibescraper/dev-utils'
-import {tanstackRouter} from '@tanstack/router-plugin/vite'
+import { viteMaildev } from '@vibescraper/dev-utils'
+import { tanstackRouter } from '@tanstack/router-plugin/vite'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const projectRoot = resolve(__dirname, '../..')
@@ -22,7 +22,7 @@ const env = loadEnv(processEnv.NODE_ENV ?? 'development', projectRoot, '')
 // console.log('Loaded env vars:', Object.keys(env))
 // console.log('PUBLIC_HOSTNAME:', env.PUBLIC_HOSTNAME)
 
-const {PUBLIC_HOSTNAME} = env
+const { PUBLIC_HOSTNAME } = env
 
 // https://astro.build/config
 export default defineConfig({

@@ -1,12 +1,12 @@
+import { convertToModelMessages, type ModelMessage, type UIMessage } from 'ai'
+import debug from 'debug'
+
 import * as schema from '@/db/schema'
 import {
+  type ChatMessagePersistanceType,
   convertChatMessageToUIMessage,
   isDataKey,
-  isToolKey,
-  type ChatMessagePersistanceType
-} from '@/partials/assistant-ui/chat-message-schema'
-import {convertToModelMessages, type ModelMessage, type UIMessage} from 'ai'
-import debug from 'debug'
+  isToolKey } from '@/partials/assistant-ui/chat-message-schema'
 
 const log = debug('app:prepare-context')
 /**
@@ -100,7 +100,7 @@ export function prepareContext(
 
   // Prepend the system prompt only if it's a valid string
   if (typeof systemPrompt === 'string') {
-    finalMessages = [{role: 'system', content: systemPrompt}, ...convertToModelMessages(contextWindow)]
+    finalMessages = [{ role: 'system', content: systemPrompt }, ...convertToModelMessages(contextWindow)]
   } else {
     finalMessages = convertToModelMessages(contextWindow)
   }

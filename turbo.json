@@ -1,7 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": [".env"],
-  "globalEnv": ["DOCKER_HOST", "TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "TESTCONTAINERS_RYUK_DISABLED"],
+  "globalEnv": [
+    "PATH",
+    "DOCKER_HOST",
+    "TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE",
+    "TESTCONTAINERS_RYUK_DISABLED"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -14,6 +19,11 @@
       "cache": false,
       "dependsOn": ["^build"],
       "persistent": true
+    },
+    "format": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "outputs": []
     },
     "lint": {
       "dependsOn": ["^build"],

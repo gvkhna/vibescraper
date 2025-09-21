@@ -1,21 +1,22 @@
-import type {StateSlice} from './use-store'
+import debug from 'debug'
+
+import type { ProjectChatCursor, ProjectChatPublicId, ProjectDTOType, ProjectPublicId } from '@/db/schema'
 import api from '@/lib/api-client'
-import type {ProjectChatCursor, ProjectChatPublicId, ProjectDTOType, ProjectPublicId} from '@/db/schema'
 import type {
   ProjectDialogsConfig,
   ProjectDialogState,
   ProjectDialogType
 } from '@/partials/dialogs/project-dialogs'
+
 import {
+  type AsyncEntityState,
   finishLoading,
   finishSaving,
   initialAsyncEntityState,
   startLoading,
-  startSaving,
-  type AsyncEntityState
-} from './async-entity-state'
-import debug from 'debug'
-import {initialPaginationEntityState, updatePaginationEntityState} from './pagination-entity-state'
+  startSaving } from './async-entity-state'
+import { initialPaginationEntityState, updatePaginationEntityState } from './pagination-entity-state'
+import type { StateSlice } from './use-store'
 
 const log = debug('app:project-slice')
 
@@ -27,20 +28,20 @@ export interface ProjectSlice {
     type: T,
     payload: T extends ProjectDialogType ? ProjectDialogsConfig[T] : null
   ) => void
-  setProjectPublic: () => Promise<{success: boolean}>
-  setProjectPrivate: () => Promise<{success: boolean}>
+  setProjectPublic: () => Promise<{ success: boolean }>
+  setProjectPrivate: () => Promise<{ success: boolean }>
   loadProject: (projectPublicId: ProjectPublicId, chatId?: ProjectChatPublicId) => Promise<void>
-  duplicateProject: () => Promise<{success: boolean; newProjectPublicId: ProjectPublicId | null}>
-  renameProject: (newProjectName: string) => Promise<{success: boolean}>
-  deleteProject: () => Promise<{success: boolean}>
-  createProject: (projectName: string) => Promise<{success: boolean; projectPublicId: ProjectPublicId | null}>
+  duplicateProject: () => Promise<{ success: boolean; newProjectPublicId: ProjectPublicId | null }>
+  renameProject: (newProjectName: string) => Promise<{ success: boolean }>
+  deleteProject: () => Promise<{ success: boolean }>
+  createProject: (projectName: string) => Promise<{ success: boolean; projectPublicId: ProjectPublicId | null }>
 }
 
 export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
   ({
     project: null,
     asyncEntityState: initialAsyncEntityState(),
-    currentProjectDialog: {type: null, payload: null},
+    currentProjectDialog: { type: null, payload: null },
     setCurrentProjectDialog(type, payload) {
       set(
         (draft) => {
@@ -104,14 +105,14 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
       } finally {
         set(
           (draft) => {
-            finishSaving({entity: draft.projectSlice.asyncEntityState, isUnchanged: true})
+            finishSaving({ entity: draft.projectSlice.asyncEntityState, isUnchanged: true })
             // draft.projectSlice.isUpdatingVisibility = false
           },
           true,
           'project/setProjectPublic:done'
         )
       }
-      return {success}
+      return { success }
     },
     renameProject: async (newProjectName: string) => {
       const projectId = get().projectSlice.project?.project.publicId
@@ -156,21 +157,21 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
           const addRecentProject = get().recentProjectsSlice.addRecentProject
           const removeRecentProject = get().recentProjectsSlice.removeRecentProject
           removeRecentProject(projectId)
-          addRecentProject({publicId: projectId, name: newProjectName})
+          addRecentProject({ publicId: projectId, name: newProjectName })
         } else {
           log('project renaming error', await response.json())
         }
       } finally {
         set(
           (draft) => {
-            finishSaving({entity: draft.projectSlice.asyncEntityState, isUnchanged: true})
+            finishSaving({ entity: draft.projectSlice.asyncEntityState, isUnchanged: true })
             // draft.projectSlice.isDuplicating = false
           },
           true,
           'project/renameProject:done'
         )
       }
-      return {success}
+      return { success }
     },
     duplicateProject: async () => {
       const projectId = get().projectSlice.project?.project.publicId
@@ -209,14 +210,14 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
       } finally {
         set(
           (draft) => {
-            finishSaving({entity: draft.projectSlice.asyncEntityState, isUnchanged: true})
+            finishSaving({ entity: draft.projectSlice.asyncEntityState, isUnchanged: true })
             // draft.projectSlice.isDuplicating = false
           },
           true,
           'project/duplicateProject/finally'
         )
       }
-      return {success, newProjectPublicId}
+      return { success, newProjectPublicId }
     },
     createProject: async (projectName: string) => {
       let success = false
@@ -248,7 +249,7 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
         log('error creating project', error)
         throw error
       }
-      return {success, projectPublicId}
+      return { success, projectPublicId }
     },
     deleteProject: async () => {
       const projectPublicId = get().projectSlice.project?.project.publicId
@@ -293,7 +294,7 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
       } finally {
         //
       }
-      return {success}
+      return { success }
     },
     setProjectPrivate: async () => {
       const projectPublicId = get().projectSlice.project?.project.publicId
@@ -338,14 +339,14 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
       } finally {
         set(
           (draft) => {
-            finishSaving({entity: draft.projectSlice.asyncEntityState, isUnchanged: true})
+            finishSaving({ entity: draft.projectSlice.asyncEntityState, isUnchanged: true })
             // draft.projectSlice.isUpdatingVisibility = false
           },
           true,
           'project/setProjectPrivate:finally'
         )
       }
-      return {success}
+      return { success }
     },
     loadProject: async (projectPublicId, chatId) => {
       set(

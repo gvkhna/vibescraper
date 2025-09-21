@@ -1,7 +1,8 @@
 // assuming your types are defined in a separate file
 
-import type {JsonObject, JsonArray} from 'type-fest'
-import type {TreeNode, TreeNodeType} from './tree-table-editor'
+import type { JsonArray, JsonObject } from 'type-fest'
+
+import type { TreeNode, TreeNodeType } from './tree-table-editor'
 
 /**
  * Converts a standard JSON object into a TreeNode array for the table editor

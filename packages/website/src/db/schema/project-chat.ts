@@ -1,11 +1,13 @@
-import {pgTable, text, integer, uniqueIndex, jsonb} from 'drizzle-orm/pg-core'
-import {ulid, type ULID} from 'ulid'
-import {TIMESTAMPS_SCHEMA, type BrandedType, type SQLUTCTimestamp, type StrictOmit} from './common'
-import {type ProjectId, project} from './project'
+import { integer, jsonb, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core'
+import { type ULID, ulid } from 'ulid'
+
 import type {
   ChatFileVersionBlockType,
   ChatMessageSchemaType
 } from '@/partials/assistant-ui/chat-message-schema'
+
+import { type BrandedType, type SQLUTCTimestamp, type StrictOmit, TIMESTAMPS_SCHEMA } from './common'
+import { project, type ProjectId } from './project'
 
 export type ProjectChatId = BrandedType<ULID, 'ProjectChatId'>
 export type ProjectChatPublicId = BrandedType<ULID, 'ProjectChatPublicId'>
@@ -25,7 +27,7 @@ export const projectChat = pgTable(
       .$type<ProjectChatPublicId>(),
     projectId: text()
       .notNull()
-      .references(() => project.id, {onDelete: 'cascade'})
+      .references(() => project.id, { onDelete: 'cascade' })
       .$type<ProjectId>(),
     title: text().notNull(),
     titleStatus: text()
@@ -59,7 +61,7 @@ export const projectChatMessage = pgTable(
       .$type<ProjectChatMessagePublicId>(),
     projectChatId: text()
       .notNull()
-      .references(() => projectChat.id, {onDelete: 'cascade'})
+      .references(() => projectChat.id, { onDelete: 'cascade' })
       .$type<ProjectChatId>(),
 
     /* Strict union for role */

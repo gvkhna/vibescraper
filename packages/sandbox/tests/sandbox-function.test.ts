@@ -1,18 +1,20 @@
-/* eslint-disable no-console */
-import {describe, it, expect, beforeAll, afterAll} from 'vitest'
-import {SandboxManager} from '../src/sandbox-manager'
-import process from 'node:process'
-import path from 'node:path'
+import debug from 'debug'
 import fs from 'node:fs/promises'
+import path from 'node:path'
+import process from 'node:process'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-describe('SandboxManager Function Execution Test', () => {
+import { SandboxManager } from '../src/sandbox-manager'
+const log = debug('test')
+
+describe('sandboxManager Function Execution Test', () => {
   let sandboxManager: SandboxManager | undefined
   const testTmpDir = path.join(process.cwd(), 'tmp')
 
   beforeAll(async () => {
-    await fs.mkdir(testTmpDir, {recursive: true})
+    await fs.mkdir(testTmpDir, { recursive: true })
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
-      console.log('[FUNCTION TEST]', ...args)
+      log('[FUNCTION TEST]', ...args)
     })
     // Wait for sandbox to be ready before running tests
     await sandboxManager.waitForReady()
@@ -24,13 +26,64 @@ describe('SandboxManager Function Execution Test', () => {
       await new Promise((resolve) => setTimeout(resolve, 1000))
     }
     try {
-      await fs.rm(testTmpDir, {recursive: true, force: true})
+      await fs.rm(testTmpDir, { recursive: true, force: true })
     } catch {
       // Ignore cleanup errors
     }
   })
 
+  it('should handle functions that return empty values', async () => {
+    expect.assertions(5)
+
+    const code = `
+      export default async function main() {
+        return []
+      }
+    `
+    const executionResult = await sandboxManager?.executeFunctionBuffered(code, [], false)
+
+    log('execution result', executionResult)
+    const completed = executionResult?.messages.find(
+      (msg) => msg.type === 'status' && msg.status === 'completed'
+    )
+
+    const resultMessage = executionResult?.messages.find((msg) => msg.type === 'result')
+    // console.log('exception', exception)
+
+    expect(executionResult).toBeDefined()
+    expect('result' in executionResult!).toBeDefined()
+    expect(completed).toBeDefined()
+    expect(resultMessage).toBeDefined()
+    expect(executionResult?.result).toStrictEqual([])
+  })
+
+  it('should handle functions that return nothing', async () => {
+    expect.assertions(5)
+
+    const code = `
+      export default async function main() {
+      }
+    `
+    const executionResult = await sandboxManager?.executeFunctionBuffered(code, [], false)
+
+    log('execution result', executionResult)
+    const completed = executionResult?.messages.find(
+      (msg) => msg.type === 'status' && msg.status === 'completed'
+    )
+
+    const resultMessage = executionResult?.messages.find((msg) => msg.type === 'result')
+    // console.log('exception', exception)
+
+    expect(executionResult).toBeDefined()
+    expect('result' in executionResult!).toBeDefined()
+    expect(completed).toBeDefined()
+    expect(resultMessage).toBeDefined()
+    expect(resultMessage?.result).toBeUndefined()
+  })
+
   it('should execute a function with input and return parsed result', async () => {
+    expect.assertions(7)
+
     const code = `
       import * as cheerio from 'cheerio'
 
@@ -81,19 +134,22 @@ describe('SandboxManager Function Execution Test', () => {
       title: string
       url: string
       headings: string[]
-      links: {text: string; href: string}[]
+      links: { text: string; href: string }[]
     }
+
     expect(result).toBeDefined()
     expect(result.title).toBe('Test Page')
     expect(result.url).toBe('https://test.com/page')
-    expect(result.headings).toEqual(['Main Heading', 'Sub Heading'])
-    expect(result.links).toEqual([
-      {text: 'Example Link', href: 'https://example.com'},
-      {text: 'Local Link', href: '/local'}
+    expect(result.headings).toStrictEqual(['Main Heading', 'Sub Heading'])
+    expect(result.links).toStrictEqual([
+      { text: 'Example Link', href: 'https://example.com' },
+      { text: 'Local Link', href: '/local' }
     ])
   }, 30000)
 
   it('should handle functions that return null', async () => {
+    expect.assertions(3)
+
     const code = `
       export default function(input) {
         const data = JSON.parse(input)
@@ -107,19 +163,23 @@ describe('SandboxManager Function Execution Test', () => {
       }
     `
 
-    const inputData = {returnNull: true}
+    const inputData = { returnNull: true }
     const executionResult = await sandboxManager?.executeFunctionBuffered(
       code,
       [JSON.stringify(inputData)],
       false
     )
 
+    log('executionResult', executionResult)
+
     expect(executionResult).toBeDefined()
     expect('result' in executionResult!).toBe(true)
-    expect(executionResult!.result).toBe(null)
+    expect(executionResult!.result).toBeNull()
   }, 15000)
 
   it('should handle functions that return complex objects', async () => {
+    expect.assertions(6)
+
     const code = `
       export default function(input) {
         const data = JSON.parse(input)
@@ -142,7 +202,7 @@ describe('SandboxManager Function Execution Test', () => {
       }
     `
 
-    const inputData = {test: 'complex object test'}
+    const inputData = { test: 'complex object test' }
     const executionResult = await sandboxManager?.executeFunctionBuffered(
       code,
       [JSON.stringify(inputData)],
@@ -153,7 +213,7 @@ describe('SandboxManager Function Execution Test', () => {
     expect('result' in executionResult!).toBe(true)
 
     const result = executionResult!.result as {
-      input: {test: string}
+      input: { test: string }
       meta: {
         processed: boolean
         timestamp: number
@@ -167,9 +227,10 @@ describe('SandboxManager Function Execution Test', () => {
         }
       }
     }
-    expect(result.input).toEqual(inputData)
+
+    expect(result.input).toStrictEqual(inputData)
     expect(result.meta.processed).toBe(true)
-    expect(result.meta.array).toEqual([1, 2, 3, 'test'])
+    expect(result.meta.array).toStrictEqual([1, 2, 3, 'test'])
     expect(result.meta.nested.level1.level2.value).toBe('deep value')
   }, 15000)
 })

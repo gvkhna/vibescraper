@@ -1,20 +1,20 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
+import { Bell, BookOpen, ChevronDown, KeyRound } from 'lucide-react'
+
+import { ApiKeysDialog } from '@/components/api-keys-dialog'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuLabel
-} from '@/components/ui/dropdown-menu'
-import {Bell, BookOpen, ChevronDown, KeyRound} from 'lucide-react'
-import {ApiKeysDialog} from '@/components/api-keys-dialog'
-import {cn} from '@/lib/utils'
-import {authReactClient} from '@/lib/auth-react-client'
-import {BetterAuthUserButton} from '@/partials/webapp/better-auth-user-button'
+  DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { authReactClient } from '@/lib/auth-react-client'
+import { cn } from '@/lib/utils'
+import { BetterAuthUserButton } from '@/partials/webapp/better-auth-user-button'
 
 export function DashboardNav() {
   const [apiKeysOpen, setApiKeysOpen] = React.useState(false)

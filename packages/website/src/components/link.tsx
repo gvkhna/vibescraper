@@ -1,7 +1,8 @@
-import type {HTMLProps} from 'react'
-import {Link as TanstackRouterLink} from '@tanstack/react-router'
-import {buttonVariants} from '@/components/ui/button'
-import {cn} from '@/lib/utils'
+import { Link as TanstackRouterLink } from '@tanstack/react-router'
+import type { HTMLProps } from 'react'
+
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 export interface LinkProps extends HTMLProps<HTMLAnchorElement> {
   to?: string
@@ -9,7 +10,7 @@ export interface LinkProps extends HTMLProps<HTMLAnchorElement> {
 }
 
 export function Link(props: LinkProps) {
-  const {children, to, href, className: classNameProp, preload, ...rest} = props
+  const { children, to, href, className: classNameProp, preload, ...rest } = props
 
   let linkHref = ''
   if (href) {
@@ -29,7 +30,7 @@ export function Link(props: LinkProps) {
   return (
     <TanstackRouterLink
       to={linkHref}
-      className={cn(buttonVariants({variant: 'link'}), className)}
+      className={cn(buttonVariants({ variant: 'link' }), className)}
       preload={preloadAny}
       {...rest}
     >

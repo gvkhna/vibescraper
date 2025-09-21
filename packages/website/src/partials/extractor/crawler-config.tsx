@@ -1,17 +1,17 @@
 'use client'
 
-import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Textarea} from '@/components/ui/textarea'
-import {Label} from '@/components/ui/label'
-import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from '@/components/ui/select'
-import {Switch} from '@/components/ui/switch'
-import {Checkbox} from '@/components/ui/checkbox'
-import {Slider} from '@/components/ui/slider'
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table'
-import {GlassCard} from '@/components/quick-stats'
-import {RadioCard} from './radio-card'
+import { GlassCard } from '@/components/quick-stats'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Slider } from '@/components/ui/slider'
+import { Switch } from '@/components/ui/switch'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Textarea } from '@/components/ui/textarea'
+
+import { RadioCard } from './radio-card'
 
 export function CrawlerConfig() {
   return (
@@ -47,8 +47,8 @@ export function CrawlerConfig() {
             </TableHeader>
             <TableBody>
               {[
-                {url: 'https://example.com/products', status: 'OK', last: 'Today 11:20'},
-                {url: 'https://example.com/blog', status: '429', last: 'Today 10:10'}
+                { url: 'https://example.com/products', status: 'OK', last: 'Today 11:20' },
+                { url: 'https://example.com/blog', status: '429', last: 'Today 10:10' }
               ].map((r, idx) => (
                 <TableRow
                   key={idx}
@@ -111,7 +111,7 @@ export function CrawlerConfig() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Array.from({length: 10}, (_, i) => String(i + 1)).map((d) => (
+                  {Array.from({ length: 10 }, (_, i) => String(i + 1)).map((d) => (
                     <SelectItem
                       key={d}
                       value={d}

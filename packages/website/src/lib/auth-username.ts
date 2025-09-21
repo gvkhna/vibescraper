@@ -1,7 +1,8 @@
-import {db} from '../db/db'
-import {user} from '../db/schema'
-import {eq} from 'drizzle-orm'
 import debug from 'debug'
+import { eq } from 'drizzle-orm'
+
+import { db } from '../db/db'
+import { user } from '../db/schema'
 
 const log = debug('app:auth-username')
 
@@ -130,7 +131,7 @@ export async function validateUsername(newUsername: string): Promise<boolean> {
   // Check for uniqueness in database
   try {
     const existingUser = await db
-      .select({id: user.id})
+      .select({ id: user.id })
       .from(user)
       .where(eq(user.username, normalizedUsername))
       .limit(1)
@@ -211,7 +212,7 @@ export async function isUsernameAvailable(username: string): Promise<{
   // Check database
   try {
     const existingUser = await db
-      .select({id: user.id})
+      .select({ id: user.id })
       .from(user)
       .where(eq(user.username, normalizedUsername))
       .limit(1)
@@ -223,7 +224,7 @@ export async function isUsernameAvailable(username: string): Promise<{
       }
     }
 
-    return {available: true}
+    return { available: true }
   } catch (error) {
     log('Error checking username availability:', error)
     return {

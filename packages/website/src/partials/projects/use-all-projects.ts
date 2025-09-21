@@ -1,6 +1,7 @@
-import api from '@/lib/api-client'
-import {type InferRequestType} from 'hono'
+import type { InferRequestType } from 'hono'
 import useSWR from 'swr'
+
+import api from '@/lib/api-client'
 
 const call = api.projects.userProjects
 export function useAllProjects(param: InferRequestType<typeof call.$get>) {

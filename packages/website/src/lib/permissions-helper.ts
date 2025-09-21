@@ -1,7 +1,10 @@
-import {eq, sql} from 'drizzle-orm'
-import { type Patch, type WritableDraft} from 'immer'
+import { subject } from '@casl/ability'
+import { eq, sql } from 'drizzle-orm'
+import type { Patch, WritableDraft } from 'immer'
+
 import * as schema from '@/db/schema'
-import {db as database} from '../db/db'
+import { db as database } from '../db/db'
+
 import {
   abilityForActor,
   type AuditActorEntry,
@@ -9,12 +12,11 @@ import {
   PermissionPolicyV1,
   type Policy
 } from './permission-policy-schema'
-import {subject} from '@casl/ability'
 
 export async function userCannotProjectAction(
   db: typeof database,
   actionType: PermissionPolicyActionType,
-  user: {id: schema.UserId} | null,
+  user: { id: schema.UserId } | null,
   subjectPolicyId: schema.SubjectPolicyId
 ): Promise<boolean> {
   const actor = await userActor(db, user)
@@ -25,13 +27,13 @@ export async function userCannotProjectAction(
 
 export async function userActor(
   db: typeof database,
-  user: {id: schema.UserId} | null
+  user: { id: schema.UserId } | null
 ): Promise<AuditActorEntry> {
   if (!user) {
-    return {actorType: 'anonymous'}
+    return { actorType: 'anonymous' }
   }
   const [actor] = await db.select().from(schema.actor).where(eq(schema.actor.userId, user.id))
-  return {actorType: 'actor', actorId: actor.publicId}
+  return { actorType: 'actor', actorId: actor.publicId }
 }
 
 export async function projectSubjectPolicy(db: typeof database, subjectPolicyId: schema.SubjectPolicyId) {
@@ -64,7 +66,7 @@ export interface updatePolicyArgs {
   actionType: PermissionPolicyActionType
 }
 export async function updatePolicy(args: updatePolicyArgs) {
-  const {db, policy, patches, inversePatches, actor, actionType, subjectPolicyId} = args
+  const { db, policy, patches, inversePatches, actor, actionType, subjectPolicyId } = args
 
   const [subjectPolicy] = await db
     .update(schema.subjectPolicy)

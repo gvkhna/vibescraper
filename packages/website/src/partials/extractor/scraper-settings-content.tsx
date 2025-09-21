@@ -1,17 +1,19 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {Settings, RefreshCw, X, AlertTriangle} from 'lucide-react'
-import {cn} from '@/lib/utils'
-import type {ProjectCommitSettings, ExtractorSettings} from '@/db/schema/project'
-import {nowait} from '@/lib/async-utils'
-import {ScheduleTabContent} from './settings-tab-schedule'
-import {FetchingTabContent} from './settings-tab-fetching'
-import {ExtractionTabContent} from './settings-tab-extraction'
-import {CrawlerTabContent} from './settings-tab-crawler'
-import {AdvancedTabContent} from './settings-tab-advanced'
-import {DangerZoneTabContent} from './settings-tab-danger-zone'
+import { AlertTriangle, RefreshCw, Settings, X } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import type { ExtractorSettings, ProjectCommitSettings } from '@/db/schema/project'
+import { nowait } from '@/lib/async-utils'
+import { cn } from '@/lib/utils'
+
+import { AdvancedTabContent } from './settings-tab-advanced'
+import { CrawlerTabContent } from './settings-tab-crawler'
+import { DangerZoneTabContent } from './settings-tab-danger-zone'
+import { ExtractionTabContent } from './settings-tab-extraction'
+import { FetchingTabContent } from './settings-tab-fetching'
+import { ScheduleTabContent } from './settings-tab-schedule'
 
 type TabKey = 'schedule' | 'fetching' | 'extraction' | 'crawler' | 'advanced' | 'danger'
 
@@ -21,7 +23,7 @@ interface ScraperSettingsContentProps {
     commit?: ProjectCommitSettings
     extractor?: ExtractorSettings | null
   }
-  onSave: (settings: {commit: ProjectCommitSettings; extractor: ExtractorSettings}) => Promise<void>
+  onSave: (settings: { commit: ProjectCommitSettings; extractor: ExtractorSettings }) => Promise<void>
   onClose: () => void
   openConfirmDeleteProjectDialog?: () => void
 }
@@ -84,13 +86,13 @@ export function ScraperSettingsContent({
     }
   }
 
-  const menuItems: Array<{key: TabKey; label: string; icon: React.ReactNode; isDanger?: boolean}> = [
-    {key: 'schedule', label: 'Schedule', icon: <RefreshCw className='h-4 w-4' />},
+  const menuItems: Array<{ key: TabKey; label: string; icon: React.ReactNode; isDanger?: boolean }> = [
+    { key: 'schedule', label: 'Schedule', icon: <RefreshCw className='h-4 w-4' /> },
     // {key: 'fetching', label: 'Fetching', icon: <Settings className='h-4 w-4' />},
     // {key: 'extraction', label: 'Extraction', icon: <Settings className='h-4 w-4' />},
     // {key: 'crawler', label: 'Crawler', icon: <Settings className='h-4 w-4' />},
     // {key: 'advanced', label: 'Advanced', icon: <Settings className='h-4 w-4' />},
-    {key: 'danger', label: 'Danger Zone', icon: <AlertTriangle className='h-4 w-4' />, isDanger: true}
+    { key: 'danger', label: 'Danger Zone', icon: <AlertTriangle className='h-4 w-4' />, isDanger: true }
   ]
 
   return (

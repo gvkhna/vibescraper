@@ -1,10 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import {Database, Copy, CheckCircle, AlertCircle} from 'lucide-react'
-import {Button} from '@/components/ui/button'
-import {useStore} from '@/store/use-store'
-import {nowait} from '@/lib/async-utils'
+import { AlertCircle, CheckCircle, Copy, Database } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { nowait } from '@/lib/async-utils'
+import { useStore } from '@/store/use-store'
 
 export function DataTabPopoverContent() {
   const [copiedToClipboard, setCopiedToClipboard] = React.useState(false)

@@ -1,19 +1,20 @@
-import fs from 'node:fs'
-import type {Context} from 'hono'
 import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
   DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
   S3ServiceException
 } from '@aws-sdk/client-s3'
-import {FetchHttpHandler} from '@smithy/fetch-http-handler'
-import type {BrowserClient} from '@smithy/types'
-import {join as pathJoin, dirname as pathDirname, resolve as pathResolve, isAbsolute} from 'node:path'
-import {serveStream} from './serve-stream'
-import {serveStatic} from './serve-static'
-import {hashBytes} from './hash-bytes'
-import {fileURLToPath} from 'node:url'
+import { FetchHttpHandler } from '@smithy/fetch-http-handler'
+import type { BrowserClient } from '@smithy/types'
+import type { Context } from 'hono'
+import fs from 'node:fs'
+import { dirname as pathDirname, isAbsolute, join as pathJoin, resolve as pathResolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import { hashBytes } from './hash-bytes'
+import { serveStatic } from './serve-static'
+import { serveStream } from './serve-stream'
 
 export type Logger = (...args: unknown[]) => void
 
@@ -29,21 +30,21 @@ export enum StorageErrorCode {
  * Storage operation result
  */
 export type StorageResult<T> =
-  | {success: true; data: T}
-  | {success: false; error: StorageErrorCode; message: string}
+  | { success: true; data: T }
+  | { success: false; error: StorageErrorCode; message: string }
 
 /**
  * Helper to create success result
  */
 function ok<T>(data: T): StorageResult<T> {
-  return {success: true, data}
+  return { success: true, data }
 }
 
 /**
  * Helper to create error result
  */
 function err<T>(error: StorageErrorCode, message: string): StorageResult<T> {
-  return {success: false, error, message}
+  return { success: false, error, message }
 }
 
 /**
@@ -239,7 +240,7 @@ export class StorageService {
       // Ensure base directory exists for filesystem storage
       if (!fs.existsSync(this.basePath)) {
         try {
-          fs.mkdirSync(this.basePath, {recursive: true})
+          fs.mkdirSync(this.basePath, { recursive: true })
           this.log(`Storage: Created base directory`)
         } catch (error) {
           this.log(`Storage: Warning - could not create base directory: ${error}`)
@@ -273,7 +274,7 @@ export class StorageService {
   /**
    * Generate a new storage key and its path
    */
-  public generateKey(): {key: string; path: string} {
+  public generateKey(): { key: string; path: string } {
     // Remove dashes and lowercase
     const uuid = globalThis.crypto.randomUUID().replace(/-/g, '').toLowerCase()
     return {
@@ -319,7 +320,7 @@ export class StorageService {
       return err(StorageErrorCode.FAILED, `Invalid data format: ${message}`)
     }
 
-    const {key, path} = this.generateKey()
+    const { key, path } = this.generateKey()
 
     if (this.config.STORAGE_PROVIDER === 'bucket') {
       if (!this.s3Client) {
@@ -346,7 +347,7 @@ export class StorageService {
     } else if (this.basePath) {
       const filePath = pathJoin(this.basePath, path)
       try {
-        fs.mkdirSync(pathDirname(filePath), {recursive: true})
+        fs.mkdirSync(pathDirname(filePath), { recursive: true })
         fs.writeFileSync(filePath, bytes)
         this.log(`Storage: Stored ${bytes.length} bytes -> ${key}`)
         return ok(key)
@@ -717,7 +718,7 @@ export class StorageService {
   ): Promise<Response> {
     const storagePath = this.keyToPath(key)
 
-    const {download: queryDownload, inline: queryInline, filename: queryFilename} = c.req.query()
+    const { download: queryDownload, inline: queryInline, filename: queryFilename } = c.req.query()
 
     const download = options?.download ?? !(queryDownload === '0' || queryDownload === 'false')
     const inline = options?.inline ?? !(queryInline === '0' || queryInline === 'false')

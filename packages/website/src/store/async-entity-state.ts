@@ -1,5 +1,6 @@
-import type {WritableDraft} from 'immer'
-import type {EnforceExactWritable} from '@/lib/type-utils'
+import type { WritableDraft } from 'immer'
+
+import type { EnforceExactWritable } from '@/lib/type-utils'
 
 export type LoadingState = 'unloaded' | 'loading' | 'loaded' | 'failed'
 export type SavingState = 'idle' | 'saving' | 'error'

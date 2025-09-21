@@ -1,5 +1,6 @@
-import type {authReactClient} from '@/lib/auth-react-client'
-import {createContext, type PropsWithChildren, useContext, type FC} from 'react'
+import { createContext, type FC, type PropsWithChildren, useContext } from 'react'
+
+import type { authReactClient } from '@/lib/auth-react-client'
 
 // Define the shape of the environment variables your context will contain
 export interface AuthContextValue {
@@ -10,8 +11,8 @@ export interface AuthContextValue {
 export const AuthContext = createContext<AuthContextValue | null>(null)
 
 // Provide the context value to the subtree
-export const AuthProvider: FC<PropsWithChildren<AuthContextValue>> = ({session, children}) => {
-  const value: AuthContextValue = {session}
+export const AuthProvider: FC<PropsWithChildren<AuthContextValue>> = ({ session, children }) => {
+  const value: AuthContextValue = { session }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 

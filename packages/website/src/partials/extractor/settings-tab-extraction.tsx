@@ -1,11 +1,12 @@
 'use client'
 
 import * as React from 'react'
-import {Label} from '@/components/ui/label'
-import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from '@/components/ui/select'
-import {Input} from '@/components/ui/input'
-import {Switch} from '@/components/ui/switch'
-import type {ExtractorSettings, CleaningMethod} from '@/db/schema/project'
+
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import type { CleaningMethod, ExtractorSettings } from '@/db/schema/project'
 
 interface ExtractionTabContentProps {
   extractorSettings: ExtractorSettings
@@ -29,7 +30,7 @@ export function ExtractionTabContent({
           <Select
             value={extractorSettings.cleaningMethod}
             onValueChange={(v: CleaningMethod) => {
-              setExtractorSettings({...extractorSettings, cleaningMethod: v})
+              setExtractorSettings({ ...extractorSettings, cleaningMethod: v })
             }}
           >
             <SelectTrigger
@@ -105,8 +106,8 @@ export function ExtractionTabContent({
               <Switch
                 checked={extractorSettings.htmlFilter.removeComments}
                 onCheckedChange={(checked) => {
-                  const htmlFilter = {...extractorSettings.htmlFilter, removeComments: checked}
-                  setExtractorSettings({...extractorSettings, htmlFilter})
+                  const htmlFilter = { ...extractorSettings.htmlFilter, removeComments: checked }
+                  setExtractorSettings({ ...extractorSettings, htmlFilter })
                 }}
                 className='data-[state=checked]:bg-blue-500'
               />
@@ -120,8 +121,8 @@ export function ExtractionTabContent({
               <Switch
                 checked={extractorSettings.htmlFilter.removeHead}
                 onCheckedChange={(checked) => {
-                  const htmlFilter = {...extractorSettings.htmlFilter, removeHead: checked}
-                  setExtractorSettings({...extractorSettings, htmlFilter})
+                  const htmlFilter = { ...extractorSettings.htmlFilter, removeHead: checked }
+                  setExtractorSettings({ ...extractorSettings, htmlFilter })
                 }}
                 className='data-[state=checked]:bg-blue-500'
               />

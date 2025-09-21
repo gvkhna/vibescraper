@@ -1,21 +1,21 @@
 'use client'
 
-import {createFileRoute} from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import {
   ChangeEmailCard,
   ChangePasswordCard,
   DeleteAccountCard,
+  ProvidersCard,
   SessionsCard,
   UpdateAvatarCard,
-  UpdateUsernameCard,
-  ProvidersCard,
-  UpdateNameCard
-} from '@daveyplate/better-auth-ui'
-import {Button} from '@/components/ui/button'
-import {ArrowLeft} from 'lucide-react'
-import {useNavigate} from '@tanstack/react-router'
-import {nowait} from '@/lib/async-utils'
-import {useState, useEffect} from 'react'
+  UpdateNameCard,
+  UpdateUsernameCard } from '@daveyplate/better-auth-ui'
+import { createFileRoute } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
+import { ArrowLeft } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { nowait } from '@/lib/async-utils'
 
 export const Route = createFileRoute('/app/settings/')({
   component: RouteComponent
@@ -33,7 +33,7 @@ function RouteComponent() {
             variant='ghost'
             size='sm'
             onClick={() => {
-              nowait(navigate({to: '/'}))
+              nowait(navigate({ to: '/' }))
             }}
             className='text-white/70 hover:bg-white/10 hover:text-white'
           >

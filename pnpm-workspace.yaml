@@ -4,17 +4,6 @@ packages:
 forceLegacyDeploy: true
 minimumReleaseAge: 1440
 
-onlyBuiltDependencies:
-  - "@dashevo/protobufjs"
-  - "@tailwindcss/oxide"
-  - cpu-features
-  - esbuild
-  - fsevents
-  - microtime
-  - protobufjs
-  - sharp
-  - ssh2
-
 peerDependencyRules:
   ignoreMissing:
     - canvas

@@ -1,6 +1,6 @@
-import {sha256} from '@noble/hashes/sha2'
-import {utf8ToBytes, bytesToHex} from '@noble/hashes/utils'
-import {stringify} from 'safe-stable-stringify'
+import { sha256 } from '@noble/hashes/sha2'
+import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils'
+import { stringify } from 'safe-stable-stringify'
 
 /** Hash a Uint8Array and return lowercase hex */
 export const hashBytes = (bytes: Uint8Array): string => bytesToHex(sha256(bytes))

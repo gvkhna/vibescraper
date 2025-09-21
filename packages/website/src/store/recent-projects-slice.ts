@@ -1,5 +1,6 @@
-import type {StateSlice} from './use-store'
-import type {ProjectDTOType, ProjectPublicId} from '@/db/schema'
+import type { ProjectDTOType, ProjectPublicId } from '@/db/schema'
+
+import type { StateSlice } from './use-store'
 
 export type ProjectInfo = Pick<ProjectDTOType['project'], 'name' | 'publicId'> & {
   lastOpened: number

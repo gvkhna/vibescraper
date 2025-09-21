@@ -1,12 +1,14 @@
-import {Hono} from 'hono'
-import {type HonoServer} from '..'
-import * as schema from '@/db/schema'
-import {eq as sqlEq} from 'drizzle-orm'
-import {validator} from 'hono/validator'
-import {HttpStatusCode} from '@/lib/http-status-codes'
-import {userCannotProjectAction} from '@/lib/permissions-helper'
 import debug from 'debug'
-import {scrapeProcess} from './scrape-process'
+import { eq as sqlEq } from 'drizzle-orm'
+import { Hono } from 'hono'
+import { validator } from 'hono/validator'
+
+import * as schema from '@/db/schema'
+import { HttpStatusCode } from '@/lib/http-status-codes'
+import { userCannotProjectAction } from '@/lib/permissions-helper'
+import type { HonoServer } from '..'
+
+import { scrapeProcess } from './scrape-process'
 
 const log = debug('app:project')
 
@@ -20,36 +22,36 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectCommitPublicId, forceRefresh = false} = c.req.valid('json')
+      const { projectCommitPublicId, forceRefresh = false } = c.req.valid('json')
       const user = c.get('user')
       const db = c.get('db')
       const sandbox = c.get('sandbox')
 
       // Find the project commit to check permissions
       const projectCommit = await db.query.projectCommit.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectCommitPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectCommitPublicId)
       })
 
       if (!projectCommit) {
-        return c.json({message: 'Project commit not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project commit not found' }, HttpStatusCode.NotFound)
       }
 
       // Find the related project for permission checking
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.id, projectCommit.projectId)
+        where: (table, { eq: tableEq }) => tableEq(table.id, projectCommit.projectId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       // Check read permission
       if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
-        return c.json({message: 'Access unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Access unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       if (!sandbox) {
-        return c.json({message: 'Server failed to process script'}, HttpStatusCode.BadGateway)
+        return c.json({ message: 'Server failed to process script' }, HttpStatusCode.BadGateway)
       }
 
       // Use the extracted scraping logic
@@ -92,33 +94,33 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectCommitPublicId} = c.req.valid('json')
+      const { projectCommitPublicId } = c.req.valid('json')
       const user = c.get('user')
       const db = c.get('db')
 
       // Fetch the project commit by its publicId
       const projectCommit = await db.query.projectCommit.findFirst({
-        where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
+        where: (table, { eq }) => eq(table.publicId, projectCommitPublicId)
       })
 
       if (!projectCommit) {
-        return c.json({message: 'Commit not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Commit not found' }, HttpStatusCode.NotFound)
       }
 
       // Fetch the related project for permission check
       const project = await db.query.project.findFirst({
-        where: (table, {eq}) => eq(table.id, projectCommit.projectId)
+        where: (table, { eq }) => eq(table.id, projectCommit.projectId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
-        return c.json({message: 'Access unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Access unauthorized' }, HttpStatusCode.Forbidden)
       }
 
-      const {id: __, userId: ___, projectId: ____, ...restOfProjectCommit} = projectCommit
+      const { id: __, userId: ___, projectId: ____, ...restOfProjectCommit } = projectCommit
       const projectCommitDTO: schema.ProjectCommitDTOType = restOfProjectCommit
 
       // Fetch the active schema if there is one
@@ -126,12 +128,12 @@ const app = new Hono<HonoServer>()
       const activeSchemaVersion = projectCommit.activeSchemaVersion
       if (typeof activeSchemaVersion === 'number') {
         const schemaRecord = await db.query.projectSchema.findFirst({
-          where: (table, {and, eq}) =>
+          where: (table, { and, eq }) =>
             and(eq(table.projectId, projectCommit.projectId), eq(table.version, activeSchemaVersion))
         })
 
         if (schemaRecord) {
-          const {id: _____, projectId: ______, ...restOfSchema} = schemaRecord
+          const { id: _____, projectId: ______, ...restOfSchema } = schemaRecord
           activeSchema = restOfSchema
         }
       }
@@ -141,12 +143,12 @@ const app = new Hono<HonoServer>()
       const activeExtractorVersion = projectCommit.activeExtractorVersion
       if (typeof activeExtractorVersion === 'number') {
         const extractorRecord = await db.query.extractor.findFirst({
-          where: (table, {and, eq}) =>
+          where: (table, { and, eq }) =>
             and(eq(table.projectId, projectCommit.projectId), eq(table.version, activeExtractorVersion))
         })
 
         if (extractorRecord) {
-          const {id: _____, projectId: ______, ...restOfExtractor} = extractorRecord
+          const { id: _____, projectId: ______, ...restOfExtractor } = extractorRecord
           activeExtractor = restOfExtractor
         }
       }
@@ -173,31 +175,31 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectCommitPublicId, currentEditorUrl} = c.req.valid('json')
+      const { projectCommitPublicId, currentEditorUrl } = c.req.valid('json')
       const user = c.get('user')
       const db = c.get('db')
 
       // Find the project commit
       const projectCommit = await db.query.projectCommit.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectCommitPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectCommitPublicId)
       })
 
       if (!projectCommit) {
-        return c.json({message: 'Project commit not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project commit not found' }, HttpStatusCode.NotFound)
       }
 
       // Find the related project
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.id, projectCommit.projectId)
+        where: (table, { eq: tableEq }) => tableEq(table.id, projectCommit.projectId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       // Check write permission
       if (await userCannotProjectAction(db, 'update', user, project.subjectPolicyId)) {
-        return c.json({message: 'Access unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Access unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       // Check if URL is changing
@@ -253,31 +255,31 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectCommitPublicId} = c.req.valid('json')
+      const { projectCommitPublicId } = c.req.valid('json')
       const user = c.get('user')
       const db = c.get('db')
 
       // Find the project commit
       const projectCommit = await db.query.projectCommit.findFirst({
-        where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
+        where: (table, { eq }) => eq(table.publicId, projectCommitPublicId)
       })
 
       if (!projectCommit) {
-        return c.json({message: 'Project commit not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project commit not found' }, HttpStatusCode.NotFound)
       }
 
       // Find the related project
       const project = await db.query.project.findFirst({
-        where: (table, {eq}) => eq(table.id, projectCommit.projectId)
+        where: (table, { eq }) => eq(table.id, projectCommit.projectId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       // Check write permission
       if (await userCannotProjectAction(db, 'update', user, project.subjectPolicyId)) {
-        return c.json({message: 'Access unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Access unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       // Clear the cache fields
@@ -308,38 +310,38 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectCommitPublicId} = c.req.valid('json')
+      const { projectCommitPublicId } = c.req.valid('json')
       const user = c.get('user')
       const db = c.get('db')
 
       // Find the project commit
       const projectCommit = await db.query.projectCommit.findFirst({
-        where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
+        where: (table, { eq }) => eq(table.publicId, projectCommitPublicId)
       })
 
       if (!projectCommit) {
-        return c.json({message: 'Project commit not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project commit not found' }, HttpStatusCode.NotFound)
       }
 
       // Find the related project
       const project = await db.query.project.findFirst({
-        where: (table, {eq}) => eq(table.id, projectCommit.projectId)
+        where: (table, { eq }) => eq(table.id, projectCommit.projectId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       // Check write permission
       if (await userCannotProjectAction(db, 'update', user, project.subjectPolicyId)) {
-        return c.json({message: 'Access unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Access unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       // Clear the recent URLs
       await db
         .update(schema.projectCommit)
         .set({
-          recentUrls: {urls: []}
+          recentUrls: { urls: [] }
         })
         .where(sqlEq(schema.projectCommit.id, projectCommit.id))
 
@@ -362,13 +364,13 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectCommitPublicId} = c.req.valid('param')
+      const { projectCommitPublicId } = c.req.valid('param')
       const user = c.get('user')
       const db = c.get('db')
 
       // Find the project commit
       const projectCommit = await db.query.projectCommit.findFirst({
-        where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
+        where: (table, { eq }) => eq(table.publicId, projectCommitPublicId)
       })
 
       if (!projectCommit) {
@@ -377,7 +379,7 @@ const app = new Hono<HonoServer>()
 
       // Find the related project for permission check
       const project = await db.query.project.findFirst({
-        where: (table, {eq}) => eq(table.id, projectCommit.projectId)
+        where: (table, { eq }) => eq(table.id, projectCommit.projectId)
       })
 
       if (!project) {

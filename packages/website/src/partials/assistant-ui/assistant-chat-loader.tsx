@@ -1,10 +1,12 @@
 'use client'
 
 import debug from 'debug'
-import {useStore} from '@/store/use-store'
-import {nowait} from '@/lib/async-utils'
-import {AssistantChat} from './assistant-chat'
-import {isLoaded} from '@/store/async-entity-state'
+
+import { nowait } from '@/lib/async-utils'
+import { isLoaded } from '@/store/async-entity-state'
+import { useStore } from '@/store/use-store'
+
+import { AssistantChat } from './assistant-chat'
 
 const log = debug('app:assistant-chat-loader')
 

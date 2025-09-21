@@ -6,10 +6,12 @@ export function nowait(promise: Promise<unknown>, logger?: (...args: unknown[]) 
   // eslint-disable-next-line no-void
   void promise.catch((err: unknown) => {
     // Optional: log errors to Sentry or console
-    const log = logger ?? ((...args: unknown[]) => {
-      // eslint-disable-next-line no-console
-      console.log('[nowait]', ...args)
-    })
+    const log =
+      logger ??
+      ((...args: unknown[]) => {
+        // eslint-disable-next-line no-console
+        console.log('[nowait]', ...args)
+      })
     log('Unhandled nowait error:', err)
   })
 }

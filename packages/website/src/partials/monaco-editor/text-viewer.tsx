@@ -1,10 +1,11 @@
-import {useEffect, useRef} from 'react'
+import { useEffect, useRef } from 'react'
+import debug from 'debug'
+
 import {
-  MonacoTextEditor,
   type ExternalEditorRefHandle,
+  MonacoTextEditor,
   type MonacoTextEditorProps
 } from './monaco-text-editor'
-import debug from 'debug'
 
 const log = debug('app:viewer-text')
 

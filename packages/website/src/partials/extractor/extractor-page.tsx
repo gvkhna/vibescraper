@@ -1,11 +1,13 @@
 'use client'
 
 import * as React from 'react'
-import {TopBar} from './top-bar'
-import {WorkspaceLayout} from './workspace-layout'
-import {useStore} from '@/store/use-store'
-import {nowait} from '@/lib/async-utils'
-import {sqlTimestampToDate} from '@/lib/format-dates'
+
+import { nowait } from '@/lib/async-utils'
+import { sqlTimestampToDate } from '@/lib/format-dates'
+import { useStore } from '@/store/use-store'
+
+import { TopBar } from './top-bar'
+import { WorkspaceLayout } from './workspace-layout'
 
 interface ExtractorPageProps {
   projectPublicId: string

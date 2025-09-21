@@ -1,10 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import {ThemeProvider} from '@/components/theme-provider'
-import {DashboardNav} from '@/partials/dashboard/dashboard-nav'
 
-export function DashboardShell({children}: {children: React.ReactNode}) {
+import { ThemeProvider } from '@/components/theme-provider'
+import { DashboardNav } from '@/partials/dashboard/dashboard-nav'
+
+export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute='class' defaultTheme='dark' enableSystem={false}>
       <div className='min-h-screen bg-[#0A0A0B] text-white'>

@@ -1,16 +1,17 @@
-import {StrictMode, type PropsWithChildren} from 'react'
-import {SWRConfig} from 'swr'
-import {ThemeProvider} from 'next-themes'
-import {Toaster} from '@/components/ui/sonner'
-import {ErrorBoundary} from 'react-error-boundary'
-import {EnvProvider, type EnvContextValue} from './env-context'
-import {RouterProvider, createRouter} from '@tanstack/react-router'
-// import debug from 'debug'
+import { type PropsWithChildren, StrictMode } from 'react'
+import { createRouter, RouterProvider } from '@tanstack/react-router'
+import { ThemeProvider } from 'next-themes'
+import { ErrorBoundary } from 'react-error-boundary'
+import { SWRConfig } from 'swr'
 
+import { Toaster } from '@/components/ui/sonner'
+// import debug from 'debug'
 // Import the generated route tree
-import {routeTree} from '@/routeTree.gen.ts'
-import {ErrorPage} from './error-page'
-import {NotFoundPage} from './not-found-page'
+import { routeTree } from '@/routeTree.gen.ts'
+
+import { type EnvContextValue, EnvProvider } from './env-context'
+import { ErrorPage } from './error-page'
+import { NotFoundPage } from './not-found-page'
 
 // Create a new router instance
 const router = createRouter({

@@ -1,7 +1,8 @@
 // env.ts
-import {resolveEnvironment} from './resolve-environment'
-import {z} from 'zod'
 import debug from 'debug'
+import { z } from 'zod'
+
+import { resolveEnvironment } from './resolve-environment'
 
 const parseSMTPPort = (value: string) => {
   const port = parseInt(value, 10)

@@ -1,4 +1,4 @@
-import type {Linter, Rule} from 'eslint'
+import type { Linter, Rule } from 'eslint'
 
 export const plugin = {
   meta: {
@@ -28,7 +28,7 @@ export const plugin = {
         ) {
           const args = node.arguments
           if (args.length < 2) {
-            context.report({node, messageId: 'missingStatus'})
+            context.report({ node, messageId: 'missingStatus' })
           }
         }
       }

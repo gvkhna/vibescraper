@@ -1,12 +1,14 @@
 'use client'
 
 import * as React from 'react'
-import {Database, Copy, CheckCircle, AlertCircle} from 'lucide-react'
-import {Button} from '@/components/ui/button'
-import {HoverCard, HoverCardContent, HoverCardTrigger} from '@/components/ui/hover-card'
-import {useStore} from '@/store/use-store'
-import {ExtractionTabsTrigger} from './extraction-tabs'
-import {nowait} from '@/lib/async-utils'
+import { AlertCircle, CheckCircle, Copy, Database } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
+import { nowait } from '@/lib/async-utils'
+import { useStore } from '@/store/use-store'
+
+import { ExtractionTabsTrigger } from './extraction-tabs'
 
 export function DataTabWithHover() {
   const [copiedToClipboard, setCopiedToClipboard] = React.useState(false)

@@ -1,6 +1,6 @@
-import {type LanguageModelV2StreamPart} from '@ai-sdk/provider'
-import {mockId, convertArrayToReadableStream, MockLanguageModelV2} from 'ai/test'
-import {simulateReadableStream, type LanguageModel, type UIMessageChunk} from 'ai'
+import type { LanguageModelV2StreamPart } from '@ai-sdk/provider'
+import { type LanguageModel, simulateReadableStream, type UIMessageChunk } from 'ai'
+import { convertArrayToReadableStream, mockId, MockLanguageModelV2 } from 'ai/test'
 import debug from 'debug'
 
 const log = debug('app:mock-tool-stream')
@@ -10,7 +10,7 @@ export type ToolMockModelValue =
   | LanguageModelV2StreamPart[]
   | ((prompt: string) => LanguageModelV2StreamPart[])
 
-type Route = {match: ToolMockModelKey; reply: ToolMockModelValue}
+type Route = { match: ToolMockModelKey; reply: ToolMockModelValue }
 
 interface RouterOpts {
   chunkDelayInMs?: number
@@ -51,7 +51,7 @@ export function createToolMockModel(routes: RoutesMap) {
       // log('chosen route', reply)
 
       const deltas = [
-        {type: 'stream-start', warnings: []},
+        { type: 'stream-start', warnings: [] },
         ...(reply ?? []),
         {
           type: 'text-start',
@@ -62,7 +62,7 @@ export function createToolMockModel(routes: RoutesMap) {
           id,
           delta: 'test message'
         },
-        {type: 'text-end', id},
+        { type: 'text-end', id },
         {
           type: 'finish',
           finishReason: 'tool-calls',
@@ -76,7 +76,7 @@ export function createToolMockModel(routes: RoutesMap) {
       // log('deltas', deltas)
       return {
         // stream: convertArrayToReadableStream(deltas)
-        stream: simulateReadableStream({chunks: deltas, chunkDelayInMs, initialDelayInMs: 300})
+        stream: simulateReadableStream({ chunks: deltas, chunkDelayInMs, initialDelayInMs: 300 })
       }
     }
   })

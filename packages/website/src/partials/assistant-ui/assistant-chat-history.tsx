@@ -1,16 +1,17 @@
-import {Button} from '@/components/ui/button'
+import { formatDistanceToNow } from 'date-fns'
+import debug from 'debug'
+import { Clock, MessageSquare, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import {MoreHorizontal, Trash2, MessageSquare, Clock, Plus} from 'lucide-react'
-import {cn} from '@/lib/utils'
-import {formatDistanceToNow} from 'date-fns'
-import {useStore} from '@/store/use-store'
-import {nowait} from '@/lib/async-utils'
-import debug from 'debug'
+import { nowait } from '@/lib/async-utils'
+import { cn } from '@/lib/utils'
+import { useStore } from '@/store/use-store'
 
 const log = debug('app:assistant-chat-history')
 
@@ -18,7 +19,7 @@ interface AssistantChatHistoryProps {
   className?: string
 }
 
-export function AssistantChatHistory({className}: AssistantChatHistoryProps) {
+export function AssistantChatHistory({ className }: AssistantChatHistoryProps) {
   const project = useStore((state) => state.projectSlice.project?.project)
   const projectChatsState = useStore((state) => state.assistantSlice.projectChatsState)
   const selectedProjectChat = useStore((state) => state.assistantSlice.selectedProjectChat)
@@ -94,7 +95,7 @@ export function AssistantChatHistory({className}: AssistantChatHistoryProps) {
                         <span className='flex items-center gap-1'>
                           <Clock className='h-3 w-3' />
                           {chat.updatedAt
-                            ? formatDistanceToNow(new Date(chat.updatedAt), {addSuffix: true})
+                            ? formatDistanceToNow(new Date(chat.updatedAt), { addSuffix: true })
                             : 'recently'}
                         </span>
                       </div>

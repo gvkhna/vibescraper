@@ -1,11 +1,12 @@
-import {createFileRoute, useNavigate} from '@tanstack/react-router'
-import {ExtractorPage} from '@/partials/extractor/extractor-page'
-import {z} from 'zod'
-import {useEffect} from 'react'
-import {useStore} from '@/store/use-store'
-import type {ProjectChatPublicId, ProjectPublicId} from '@/db/schema'
-import {ProjectDialogs} from '@/partials/dialogs/project-dialogs'
-import {nowait} from '@/lib/async-utils'
+import { useEffect } from 'react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { z } from 'zod'
+
+import type { ProjectChatPublicId, ProjectPublicId } from '@/db/schema'
+import { nowait } from '@/lib/async-utils'
+import { ProjectDialogs } from '@/partials/dialogs/project-dialogs'
+import { ExtractorPage } from '@/partials/extractor/extractor-page'
+import { useStore } from '@/store/use-store'
 
 // Define search params schema for optional chat parameter
 const searchSchema = z.object({
@@ -18,9 +19,9 @@ export const Route = createFileRoute('/app/scraper/$project-public-id/edit')({
 })
 
 function Page() {
-  const {['project-public-id']: projectPublicId} = Route.useParams()
-  const {chat: chatId} = Route.useSearch()
-  const navigate = useNavigate({from: '/app/scraper/$project-public-id/edit'})
+  const { ['project-public-id']: projectPublicId } = Route.useParams()
+  const { chat: chatId } = Route.useSearch()
+  const navigate = useNavigate({ from: '/app/scraper/$project-public-id/edit' })
 
   const loadProject = useStore((state) => state.projectSlice.loadProject)
 

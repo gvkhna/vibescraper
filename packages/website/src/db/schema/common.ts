@@ -1,11 +1,11 @@
-import {timestamp} from 'drizzle-orm/pg-core'
-import {SQL, sql} from 'drizzle-orm'
+import { SQL, sql } from 'drizzle-orm'
+import { timestamp } from 'drizzle-orm/pg-core'
 
 export type StrictOmit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & {
   [P in K]?: never
 }
 
-export type BrandedType<K, T> = K & {__brand: T}
+export type BrandedType<K, T> = K & { __brand: T }
 
 /**
  * Represents a UTC timestamp as returned by PostgreSQL.
@@ -28,8 +28,8 @@ export function sqlNow() {
 }
 
 export const TIMESTAMPS_SCHEMA = {
-  createdAt: timestamp({mode: 'string'}).notNull().defaultNow().$type<SQLUTCTimestamp>(),
-  updatedAt: timestamp({mode: 'string'})
+  createdAt: timestamp({ mode: 'string' }).notNull().defaultNow().$type<SQLUTCTimestamp>(),
+  updatedAt: timestamp({ mode: 'string' })
     .notNull()
     .defaultNow()
     .$onUpdate(() => sql`now()`)

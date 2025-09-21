@@ -1,8 +1,8 @@
-import {BetterAuthUIProvider} from '@/partials/webapp/better-auth-ui-provider'
-import {NotFoundPage} from '@/partials/webapp/not-found-page'
-import {createRootRoute, Link, Outlet, redirect} from '@tanstack/react-router'
-import {TanStackRouterDevtools} from '@tanstack/react-router-devtools'
-import {ErrorPage} from '@/partials/webapp/error-page'
+import { BetterAuthUIProvider } from '@/partials/webapp/better-auth-ui-provider'
+import { NotFoundPage } from '@/partials/webapp/not-found-page'
+import { createRootRoute, Link, Outlet, redirect } from '@tanstack/react-router'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { ErrorPage } from '@/partials/webapp/error-page'
 
 export const Route = createRootRoute({
   notFoundComponent: () => <NotFoundPage />,

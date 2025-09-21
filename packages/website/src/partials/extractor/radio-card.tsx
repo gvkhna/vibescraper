@@ -1,9 +1,10 @@
 'use client'
 
 import * as React from 'react'
-import {cn} from '@/lib/utils'
 
-export function RadioCard({label, desc, defaultChecked}: {label: string; desc: string; defaultChecked?: boolean}) {
+import { cn } from '@/lib/utils'
+
+export function RadioCard({ label, desc, defaultChecked }: { label: string; desc: string; defaultChecked?: boolean }) {
   const [checked, setChecked] = React.useState(!!defaultChecked)
   return (
     <button

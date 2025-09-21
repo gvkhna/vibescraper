@@ -1,9 +1,10 @@
-import TestExtractorPromptRaw from './test-extractor-prompt.txt?raw'
-import TestPromptRaw from './test-prompt.txt?raw'
-import TestPingPromptRaw from './test-ping-prompt.txt?raw'
-import SchemaToolsPromptRaw from './schema-tools-prompt.txt?raw'
-import ExtractorPromptRaw from './extractor-prompt.txt?raw'
 import template from 'lodash-es/template'
+
+import ExtractorPromptRaw from './extractor-prompt.txt?raw'
+import SchemaToolsPromptRaw from './schema-tools-prompt.txt?raw'
+import TestExtractorPromptRaw from './test-extractor-prompt.txt?raw'
+import TestPingPromptRaw from './test-ping-prompt.txt?raw'
+import TestPromptRaw from './test-prompt.txt?raw'
 
 export function TestPrompt(opts: object) {
   return template(TestPromptRaw)(opts)

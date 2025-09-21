@@ -1,4 +1,4 @@
-import type {Preview} from '@storybook/react'
+import type { Preview } from '@storybook/react'
 import '../src/styles.css'
 import debug from 'debug'
 
@@ -7,7 +7,7 @@ debug.log = console.info.bind(console)
 
 const preview: Preview = {
   parameters: {
-    actions: {argTypesRegex: '^on[A-Z].*'},
+    actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
       matchers: {
         color: /(background|color)$/i,

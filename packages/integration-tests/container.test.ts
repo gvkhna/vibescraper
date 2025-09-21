@@ -1,9 +1,17 @@
-import {describe, it, expect, beforeAll, afterAll} from 'vitest'
-import {GenericContainer, Network, Wait, type StartedNetwork, type StartedTestContainer} from 'testcontainers'
+/* eslint-disable no-console */
+import process from 'node:process'
+import {
+  GenericContainer,
+  Network,
+  type StartedNetwork,
+  type StartedTestContainer,
+  Wait
+} from 'testcontainers'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-const DOCKER_IMAGE = process.env.DOCKER_IMAGE || 'vibescraper:latest'
+const DOCKER_IMAGE = process.env.DOCKER_IMAGE ?? 'vibescraper:latest'
 
-describe('Website Integration', () => {
+describe('website Integration', () => {
   let network: StartedNetwork | null = null
   let postgres: StartedTestContainer | null = null
   let app: StartedTestContainer | null = null
@@ -57,12 +65,13 @@ describe('Website Integration', () => {
   }, 30000)
 
   it('should serve index endpoint', async () => {
+    expect.assertions(2)
+
     const host = app?.getHost()
     const port = app?.getMappedPort(4321)
     const response = await fetch(`http://${host}:${port}`)
 
     expect(response.ok).toBe(true)
     expect(response.status).toBe(200)
-    console.log('GET / endpoint working')
   })
 })

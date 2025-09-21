@@ -1,18 +1,19 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {Badge} from '@/components/ui/badge'
+import { KeyRound, MoreHorizontal, Play, Settings } from 'lucide-react'
+
+import { GlassCard } from '@/components/quick-stats'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem
-} from '@/components/ui/dropdown-menu'
-import {MoreHorizontal, Play, Settings, KeyRound} from 'lucide-react'
-import {PipelineStatus} from './pipeline-status'
-import {GlassCard} from '@/components/quick-stats'
-import {cn} from '@/lib/utils'
+  DropdownMenuItem,
+  DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
+
+import { PipelineStatus } from './pipeline-status'
 
 export function ProjectHeader({
   name,

@@ -1,17 +1,24 @@
 'use client'
 
-import React, {Fragment, useEffect, useState} from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
+import { useChat } from '@ai-sdk/react'
+import { DefaultChatTransport } from 'ai'
+import debug from 'debug'
+import { CopyIcon, GlobeIcon, RefreshCcwIcon } from 'lucide-react'
+import { toast } from 'sonner'
+
+import { Action, Actions } from '@/components/ai-elements/actions'
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton
 } from '@/components/ai-elements/conversation'
-import {toast} from 'sonner'
-import {Action, Actions} from '@/components/ai-elements/actions'
-import {CopyIcon, GlobeIcon, RefreshCcwIcon} from 'lucide-react'
+import { Loader } from '@/components/ai-elements/loader'
+import { Message, MessageContent } from '@/components/ai-elements/message'
 import {
   PromptInput,
   PromptInputButton,
+  type PromptInputMessage,
   PromptInputModelSelect,
   PromptInputModelSelectContent,
   PromptInputModelSelectItem,
@@ -20,27 +27,20 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar,
-  PromptInputTools,
-  type PromptInputMessage
-} from '@/components/ai-elements/prompt-input'
-import {useChat} from '@ai-sdk/react'
-import {Loader} from '@/components/ai-elements/loader'
-import {nowait} from '@/lib/async-utils'
-import {assistantPendingInitialMessageAwait} from './assistant-pending-initial-message-await'
-import {DefaultChatTransport} from 'ai'
+  PromptInputTools } from '@/components/ai-elements/prompt-input'
 import type {
-  ProjectPublicId,
-  ProjectCommitPublicId,
-  ProjectChatPublicId,
   ProjectChatDTOType,
-  ProjectChatMessagePublicId
-} from '@/db/schema'
-import {useStore} from '@/store/use-store'
-import debug from 'debug'
+  ProjectChatMessagePublicId,
+  ProjectChatPublicId,
+  ProjectCommitPublicId,
+  ProjectPublicId } from '@/db/schema'
 import api from '@/lib/api-client'
-import {convertChatMessageToUIMessage, type VSUIMessage} from './chat-message-schema'
-import {Message, MessageContent} from '@/components/ai-elements/message'
-import {AssistantChatMessagePart} from './assistant-chat-message-part'
+import { nowait } from '@/lib/async-utils'
+import { useStore } from '@/store/use-store'
+
+import { AssistantChatMessagePart } from './assistant-chat-message-part'
+import { assistantPendingInitialMessageAwait } from './assistant-pending-initial-message-await'
+import { convertChatMessageToUIMessage, type VSUIMessage } from './chat-message-schema'
 
 const log = debug('app:assistant-chat')
 
@@ -113,7 +113,7 @@ export function AssistantChat({
     id: selectedChat,
     transport: new DefaultChatTransport({
       api: chatEndpoint,
-      prepareSendMessagesRequest: ({messages: sendMessages, trigger}) => {
+      prepareSendMessagesRequest: ({ messages: sendMessages, trigger }) => {
         const lastMessage = sendMessages.slice(-1)
         return {
           body: {
@@ -251,7 +251,7 @@ export function AssistantChat({
           const initialMessage = chatMessages[initialMessageIds[0]]
           if (initialMessage) {
             const message = convertChatMessageToUIMessage(initialMessage)
-            nowait(sendMessage({messageId: initialMessageIds[0], ...message}))
+            nowait(sendMessage({ messageId: initialMessageIds[0], ...message }))
           }
         })
       )
@@ -278,7 +278,7 @@ export function AssistantChat({
       // ready
       if (input.trim()) {
         setInput('')
-        await sendMessage({text: prompt})
+        await sendMessage({ text: prompt })
       }
     }
   }
@@ -329,7 +329,7 @@ export function AssistantChat({
                     <Actions className='mt-2'>
                       <Action
                         onClick={() => {
-                          nowait(regenerate({messageId: message.id}))
+                          nowait(regenerate({ messageId: message.id }))
                           toast('Regenerating message...')
                         }}
                         label='Regenerate'

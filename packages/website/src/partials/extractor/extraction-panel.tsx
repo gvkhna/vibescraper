@@ -1,81 +1,83 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
+// import {TabFilteredHtml} from './tab-filtered-html'
+import debug from 'debug'
+import {
+  AlertCircle,
+  BookOpen,
+  BrushCleaning,
+  CheckCircle,
+  Code,
+  Copy,
+  Database,
+  FileCode2,
+  FileJson,
+  FileJson2,
+  FileText,
+  FileType2,
+  Filter,
+  Globe,
+  PanelBottomOpen,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
+  Sparkles,
+  SquareFunction
+} from 'lucide-react'
+
+import { SplitButtonDropdown, type SplitButtonDropdownTab } from '@/components/split-button-dropdown'
+import { Button } from '@/components/ui/button'
+import type { ConfigurationTabType, DataTabType, ExtractionPanelTabType } from '@/store/editor-slice'
+import { useStore } from '@/store/use-store'
+
 import {
   ExtractionTabs,
   ExtractionTabsContent,
   ExtractionTabsList,
   ExtractionTabsTrigger
 } from './extraction-tabs'
-import {
-  Globe,
-  Database,
-  Filter,
-  Code,
-  FileText,
-  Sparkles,
-  BookOpen,
-  PanelLeftOpen,
-  PanelRightOpen,
-  PanelRightClose,
-  PanelBottomOpen,
-  FileJson2,
-  BrushCleaning,
-  FileType2,
-  FileCode2,
-  SquareFunction,
-  Copy,
-  CheckCircle,
-  AlertCircle,
-  FileJson
-} from 'lucide-react'
-import {PipelineStatus} from './pipeline-status'
-import {useStore} from '@/store/use-store'
-import {SplitButtonDropdown, type SplitButtonDropdownTab} from '@/components/split-button-dropdown'
-import type {ExtractionPanelTabType, ConfigurationTabType, DataTabType} from '@/store/editor-slice'
-import {TabPreview} from './tab-preview'
-import {TabRawHtml} from './tab-raw-html'
-import {TabFormattedHtml} from './tab-formatted-html'
-import {TabCleanedHtml} from './tab-cleaned-html'
-// import {TabFilteredHtml} from './tab-filtered-html'
-import {TabReadabilityHtml} from './tab-readability-html'
-import {TabMarkdown} from './tab-markdown'
-import {TabPlaintext} from './tab-plaintext'
-import {TabData} from './tab-data'
-import {TabDataJson} from './tab-data-json'
-import {TabDataSchema} from './tab-data-schema'
-import {TabSchemaJson} from './tab-schema-json'
-import {TabExtractionScript} from './tab-extraction-script'
-import {TabLog} from './tab-log'
-import debug from 'debug'
+import { PipelineStatus } from './pipeline-status'
+import { TabCleanedHtml } from './tab-cleaned-html'
+import { TabData } from './tab-data'
+import { TabDataJson } from './tab-data-json'
+import { TabDataSchema } from './tab-data-schema'
+import { TabExtractionScript } from './tab-extraction-script'
+import { TabFormattedHtml } from './tab-formatted-html'
+import { TabLog } from './tab-log'
+import { TabMarkdown } from './tab-markdown'
+import { TabPlaintext } from './tab-plaintext'
+import { TabPreview } from './tab-preview'
+import { TabRawHtml } from './tab-raw-html'
+import { TabReadabilityHtml } from './tab-readability-html'
+import { TabSchemaJson } from './tab-schema-json'
 
 const log = debug('app:extraction-panel')
 
 // Define which tabs belong in the HTML/content dropdown
 const CONTENT_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType>[] = [
-  {value: 'preview', label: 'Preview', icon: Globe},
+  { value: 'preview', label: 'Preview', icon: Globe },
   // {value: 'filtered-html', label: 'Filtered', icon: Filter},
-  {value: 'raw-html', label: 'Raw HTML', icon: Code},
-  {value: 'formatted-html', label: 'Formatted HTML', icon: FileCode2},
-  {value: 'cleaned-html', label: 'Cleaned HTML', icon: BrushCleaning},
-  {value: 'plaintext', label: 'Plaintext', icon: FileText}
+  { value: 'raw-html', label: 'Raw HTML', icon: Code },
+  { value: 'formatted-html', label: 'Formatted HTML', icon: FileCode2 },
+  { value: 'cleaned-html', label: 'Cleaned HTML', icon: BrushCleaning },
+  { value: 'plaintext', label: 'Plaintext', icon: FileText }
   // {value: 'readability-html', label: 'Readability HTML', icon: BookOpen},
   // {value: 'markdown', label: 'Markdown', icon: FileType2}
 ]
 
 // Define which tabs belong in the configuration dropdown (schema/extraction-script/log)
 const CONFIGURATION_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType>[] = [
-  {value: 'data-schema', label: 'Data Schema', icon: FileJson2},
-  {value: 'schema-json', label: 'Schema JSON', icon: FileJson},
-  {value: 'extraction-script', label: 'Extraction Script', icon: SquareFunction},
-  {value: 'log', label: 'Log', icon: FileText}
+  { value: 'data-schema', label: 'Data Schema', icon: FileJson2 },
+  { value: 'schema-json', label: 'Schema JSON', icon: FileJson },
+  { value: 'extraction-script', label: 'Extraction Script', icon: SquareFunction },
+  { value: 'log', label: 'Log', icon: FileText }
 ]
 
 // Define which tabs belong in the data dropdown (data table/json)
 const DATA_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType>[] = [
-  {value: 'data-table', label: 'Data Table', icon: Database},
-  {value: 'data-json', label: 'Data JSON', icon: FileJson}
+  { value: 'data-table', label: 'Data Table', icon: Database },
+  { value: 'data-json', label: 'Data JSON', icon: FileJson }
 ]
 
 export function ExtractionPanel() {

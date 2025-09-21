@@ -1,7 +1,8 @@
 'use client'
 
-import {cn} from '@/lib/utils'
-import {UserButton} from '@daveyplate/better-auth-ui'
+import { UserButton } from '@daveyplate/better-auth-ui'
+
+import { cn } from '@/lib/utils'
 
 interface BetterAuthUserButtonProps {
   size?: 'icon' | 'default'
@@ -9,7 +10,7 @@ interface BetterAuthUserButtonProps {
   align?: 'center' | 'start' | 'end'
 }
 
-export function BetterAuthUserButton({size = 'icon', align = 'end'}: BetterAuthUserButtonProps) {
+export function BetterAuthUserButton({ size = 'icon', align = 'end' }: BetterAuthUserButtonProps) {
   return (
     <UserButton
       size={size}

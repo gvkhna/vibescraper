@@ -1,4 +1,4 @@
-import {ChatFileProjectVersionBlock} from './chat-file-version-block'
+import { ChatFileProjectVersionBlock } from './chat-file-version-block'
 
 export interface AssistantProjectComponentDefaultProps {}
 

@@ -14,15 +14,11 @@
     "build": "vite build",
     "clean": "rimraf dist .turbo node_modules/.cache node_modules/.vite-temp *.tsbuildinfo",
     "dev": "vite build --watch",
+    "format": "bun eslint --quiet --config ../../eslint.config.mjs . --fix && bun prettier --write .",
     "lint": "bun eslint --config ../../eslint.config.mjs .",
-    "test": "vitest run",
     "typecheck": "bun tsc --noEmit && bun eslint --quiet ."
   },
-  "dependencies": {
-    "ajv": "^8.17.1",
-    "ajv-errors": "^3.0.0",
-    "ajv-formats": "^3.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {},
   "peerDependencies": {}
 }

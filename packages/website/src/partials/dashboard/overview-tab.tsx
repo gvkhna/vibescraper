@@ -1,9 +1,10 @@
 'use client'
 
 import * as React from 'react'
+
+import { QuickStats } from '@/components/quick-stats'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { QuickStats } from '@/components/quick-stats'
 
 export function OverviewTab() {
   return (

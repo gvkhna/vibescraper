@@ -3,9 +3,10 @@
 
 import * as React from 'react'
 import * as TabsPrimitive from '@radix-ui/react-tabs'
-import {type ComponentPropsWithoutRef} from 'react'
-import {cn} from '@/lib/utils'
-import {type ExtractionPanelTabType} from '@/store/editor-slice'
+import type { ComponentPropsWithoutRef } from 'react'
+
+import { cn } from '@/lib/utils'
+import type { ExtractionPanelTabType } from '@/store/editor-slice'
 
 // Enhanced props with value type for Root component
 type ExtractionTabsProps = Omit<
@@ -18,7 +19,7 @@ type ExtractionTabsProps = Omit<
 }
 
 // Root component with simplified typing
-function ExtractionTabs({className, ...props}: ExtractionTabsProps) {
+function ExtractionTabs({ className, ...props }: ExtractionTabsProps) {
   return (
     <TabsPrimitive.Root
       data-slot='tabs'
@@ -31,7 +32,7 @@ function ExtractionTabs({className, ...props}: ExtractionTabsProps) {
 ExtractionTabs.displayName = 'ExtractionTabs'
 
 // List component
-function ExtractionTabsList({className, ...props}: ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
+function ExtractionTabsList({ className, ...props }: ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
   return (
     <TabsPrimitive.List
       data-slot='tabs-list'
@@ -51,7 +52,7 @@ type ExtractionTabsTriggerProps = Omit<ComponentPropsWithoutRef<typeof TabsPrimi
 }
 
 // Trigger component with typed value
-function ExtractionTabsTrigger({className, value, ...props}: ExtractionTabsTriggerProps) {
+function ExtractionTabsTrigger({ className, value, ...props }: ExtractionTabsTriggerProps) {
   return (
     <TabsPrimitive.Trigger
       data-slot='tabs-trigger'
@@ -60,11 +61,10 @@ function ExtractionTabsTrigger({className, value, ...props}: ExtractionTabsTrigg
         `data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring
         focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input
         dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex
-        h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-md border
-        border-transparent px-2 py-1 text-sm font-medium transition-[color,box-shadow] focus-visible:outline-1
-        focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50
-        data-[state=active]:shadow-sm [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none
-        [&_svg]:shrink-0`,
+        h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent
+        px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px]
+        focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm
+        [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4`,
         className
       )}
       {...props}
@@ -79,16 +79,16 @@ type ExtractionTabsContentProps = Omit<ComponentPropsWithoutRef<typeof TabsPrimi
 }
 
 // Content component with typed value
-function ExtractionTabsContent({className, value, ...props}: ExtractionTabsContentProps) {
+function ExtractionTabsContent({ className, value, ...props }: ExtractionTabsContentProps) {
   return (
     <TabsPrimitive.Content
       data-slot='tabs-content'
       value={value as any}
-      className={cn('flex-1 min-h-0 outline-none', className)}
+      className={cn('min-h-0 flex-1 outline-none', className)}
       {...props}
     />
   )
 }
 ExtractionTabsContent.displayName = 'ExtractionTabsContent'
 
-export {ExtractionTabs, ExtractionTabsList, ExtractionTabsTrigger, ExtractionTabsContent}
+export { ExtractionTabs, ExtractionTabsContent, ExtractionTabsList, ExtractionTabsTrigger }

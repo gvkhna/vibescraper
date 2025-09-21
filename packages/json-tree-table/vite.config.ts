@@ -1,10 +1,10 @@
-import {defineConfig} from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import {resolve, dirname, isAbsolute} from 'node:path'
-import {fileURLToPath} from 'node:url'
+import { dirname, isAbsolute, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const projectRoot = resolve(__dirname, '../..') // monorepo root

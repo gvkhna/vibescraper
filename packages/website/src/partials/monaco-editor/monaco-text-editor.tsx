@@ -1,13 +1,15 @@
-import {useRef, useEffect, forwardRef, useImperativeHandle, useState} from 'react'
-import {Editor, type OnMount} from '@monaco-editor/react'
-import {monaco as monacoNS} from './monaco-namespace'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { Editor, type OnMount } from '@monaco-editor/react'
 import debug from 'debug'
-import {nowait} from '@/lib/async-utils'
-import {options as htmlOptions, beforeMount as htmlBeforeMount} from './options-html'
-import {options as jsonOptions, beforeMount as jsonBeforeMount} from './options-json'
-import {options as jsOptions, beforeMount as jsBeforeMount} from './options-js'
-import {options as mdOptions, beforeMount as mdBeforeMount} from './options-md'
-import {options as textOptions, beforeMount as textBeforeMount} from './options-text'
+
+import { nowait } from '@/lib/async-utils'
+
+import { monaco as monacoNS } from './monaco-namespace'
+import { beforeMount as htmlBeforeMount, options as htmlOptions } from './options-html'
+import { beforeMount as jsBeforeMount, options as jsOptions } from './options-js'
+import { beforeMount as jsonBeforeMount, options as jsonOptions } from './options-json'
+import { beforeMount as mdBeforeMount, options as mdOptions } from './options-md'
+import { beforeMount as textBeforeMount, options as textOptions } from './options-text'
 const log = debug('app:monaco-text')
 
 // Types for editor props
@@ -28,7 +30,7 @@ export interface ExternalEditorRefHandle {
 }
 
 export const MonacoTextEditor = forwardRef<ExternalEditorRefHandle, MonacoTextEditorProps>(
-  ({value, onChange, readOnly = false, lang, onSave, options = {}, theme = 'dark'}, ref) => {
+  ({ value, onChange, readOnly = false, lang, onSave, options = {}, theme = 'dark' }, ref) => {
     // const externalEditorRef = useRef<any>(null)
     const [isVisible, setIsVisible] = useState(true)
 

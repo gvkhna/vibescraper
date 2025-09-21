@@ -1,8 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
+import { useNavigate } from '@tanstack/react-router'
+import { ChevronDown, Plus, Settings, Zap } from 'lucide-react'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,17 +13,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import {ChevronDown, Plus, Zap, Settings} from 'lucide-react'
-import {Switch} from '@/components/ui/switch'
-import {Badge} from '@/components/ui/badge'
-import {HoverCard, HoverCardContent, HoverCardTrigger} from '@/components/ui/hover-card'
-import {ScrapeButtonWithHover} from './scrape-button-with-hover'
-import {UrlHistoryCombobox} from './url-history-combobox'
-import {useStore} from '@/store/use-store'
-import {useNavigate} from '@tanstack/react-router'
-import {authReactClient} from '@/lib/auth-react-client'
-import {nowait} from '@/lib/async-utils'
-import {BetterAuthUserButton} from '@/partials/webapp/better-auth-user-button'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
+import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
+import { nowait } from '@/lib/async-utils'
+import { authReactClient } from '@/lib/auth-react-client'
+import { BetterAuthUserButton } from '@/partials/webapp/better-auth-user-button'
+import { useStore } from '@/store/use-store'
+
+import { ScrapeButtonWithHover } from './scrape-button-with-hover'
+import { UrlHistoryCombobox } from './url-history-combobox'
 
 export interface TopBarProps {
   onNewSite: () => void
@@ -219,7 +221,7 @@ export function TopBar({
                       nowait(
                         navigate({
                           to: '/app/scraper/$project-public-id/edit',
-                          params: {'project-public-id': project.publicId}
+                          params: { 'project-public-id': project.publicId }
                         })
                       )
                     }
@@ -237,7 +239,7 @@ export function TopBar({
             <DropdownMenuSeparator className='bg-white/10' />
             <DropdownMenuItem
               onClick={() => {
-                nowait(navigate({to: '/app/scrapers'}))
+                nowait(navigate({ to: '/app/scrapers' }))
               }}
               className='text-white/90 hover:bg-white/10 focus:bg-white/10'
             >
@@ -245,7 +247,7 @@ export function TopBar({
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                nowait(navigate({to: '/'}))
+                nowait(navigate({ to: '/' }))
               }}
               className='text-blue-400 hover:bg-white/10 focus:bg-white/10'
             >

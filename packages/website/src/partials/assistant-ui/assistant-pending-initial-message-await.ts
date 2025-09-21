@@ -1,7 +1,8 @@
-import type {ProjectPublicId} from '@/db/schema'
-import type {ProjectChatPublicId} from '@/db/schema'
-import {useStore} from '@/store/use-store'
 import debug from 'debug'
+
+import type { ProjectPublicId } from '@/db/schema'
+import type { ProjectChatPublicId } from '@/db/schema'
+import { useStore } from '@/store/use-store'
 
 const log = debug('app:assistant-pending-initial-message-await')
 

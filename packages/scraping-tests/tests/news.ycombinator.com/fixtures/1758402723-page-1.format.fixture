@@ -1,0 +1,964 @@
+<html lang="en">
+  <head></head>
+  <body>
+    <center>
+      <table id="hnmain">
+        <tbody>
+          <tr>
+            <td>
+              <table>
+                <tbody>
+                  <tr>
+                    <td><a href="https://news.ycombinator.com"></a></td>
+                    <td>
+                      <span
+                        ><b><a href="news">Hacker News</a></b
+                        ><a href="newest">new</a> | <a href="front">past</a> | <a href="newcomments">comments</a> |
+                        <a href="ask">ask</a> | <a href="show">show</a> | <a href="jobs">jobs</a> |
+                        <a href="submit" rel="nofollow">submit</a></span
+                      >
+                    </td>
+                    <td>
+                      <span><a href="login?goto=news">login</a></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr></tr>
+          <tr id="bigbox">
+            <td>
+              <table>
+                <tbody>
+                  <tr id="45314592">
+                    <td><span>1.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45314592" href="vote?id=45314592&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://seattleultrasonics.com/">Ultrasonic Chef's Knife</a
+                        ><span>
+                          (<a href="from?site=seattleultrasonics.com"><span>seattleultrasonics.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45314592">194 points</span> by <a href="user?id=hemloc_io">hemloc_io</a
+                        ><span><a href="item?id=45314592">4 hours ago</a></span
+                        ><span id="unv_45314592"></span> | <a href="hide?id=45314592&amp;goto=news">hide</a> |
+                        <a href="item?id=45314592">141&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45315312">
+                    <td><span>2.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45315312" href="vote?id=45315312&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://jasonspielman.com/notebooklm">Designing NotebookLM</a
+                        ><span>
+                          (<a href="from?site=jasonspielman.com"><span>jasonspielman.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45315312">96 points</span> by <a href="user?id=vinhnx">vinhnx</a
+                        ><span><a href="item?id=45315312">3 hours ago</a></span
+                        ><span id="unv_45315312"></span> | <a href="hide?id=45315312&amp;goto=news">hide</a> |
+                        <a href="item?id=45315312">35&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45277052">
+                    <td><span>3.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45277052" href="vote?id=45277052&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://www.knitted-anatomy.at/cardiovascular-system/">Knitted Anatomy</a
+                        ><span>
+                          (<a href="from?site=knitted-anatomy.at"><span>knitted-anatomy.at</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45277052">13 points</span> by <a href="user?id=blikstiender">blikstiender</a
+                        ><span><a href="item?id=45277052">1 hour ago</a></span
+                        ><span id="unv_45277052"></span> | <a href="hide?id=45277052&amp;goto=news">hide</a> |
+                        <a href="item?id=45277052">discuss</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45316744">
+                    <td><span>4.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45316744" href="vote?id=45316744&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://harpers.org/archive/2025/10/a-change-of-tune-veronique-greenwood-bell-ringing/"
+                          >A revolution in English bell ringing</a
+                        ><span>
+                          (<a href="from?site=harpers.org"><span>harpers.org</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45316744">11 points</span> by <a href="user?id=ascertain">ascertain</a
+                        ><span><a href="item?id=45316744">1 hour ago</a></span
+                        ><span id="unv_45316744"></span> | <a href="hide?id=45316744&amp;goto=news">hide</a> |
+                        <a href="item?id=45316744">8&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45316833">
+                    <td><span>5.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45316833" href="vote?id=45316833&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://www.philips.com/a-w/about/news/archive/standard/news/articles/2025/philips-announces-digital-pathology-scanner-with-native-configurable-dicom-jpeg-and-jpeg-xl-output-in-world-first.html"
+                          >Philips announces digital pathology scanner with native DICOM JPEG XL output</a
+                        ><span>
+                          (<a href="from?site=philips.com"><span>philips.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45316833">48 points</span> by <a href="user?id=ksec">ksec</a
+                        ><span><a href="item?id=45316833">1 hour ago</a></span
+                        ><span id="unv_45316833"></span> | <a href="hide?id=45316833&amp;goto=news">hide</a> |
+                        <a href="item?id=45316833">19&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45272022">
+                    <td><span>6.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45272022" href="vote?id=45272022&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://glocq.github.io/en/blog/20250428/">Solving a wooden puzzle using Haskell</a
+                        ><span>
+                          (<a href="from?site=glocq.github.io"><span>glocq.github.io</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45272022">21 points</span> by <a href="user?id=Bogdanp">Bogdanp</a
+                        ><span><a href="item?id=45272022">2 hours ago</a></span
+                        ><span id="unv_45272022"></span> | <a href="hide?id=45272022&amp;goto=news">hide</a> |
+                        <a href="item?id=45272022">7&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45287838">
+                    <td><span>7.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45287838" href="vote?id=45287838&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://hedgehogreview.com/issues/lessons-of-babel/articles/after-babel-fish"
+                          >After Babel Fish: The promise of cheap translations at the speed of the Web</a
+                        ><span>
+                          (<a href="from?site=hedgehogreview.com"><span>hedgehogreview.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45287838">14 points</span> by <a href="user?id=miqkt">miqkt</a
+                        ><span><a href="item?id=45287838">2 hours ago</a></span
+                        ><span id="unv_45287838"></span> | <a href="hide?id=45287838&amp;goto=news">hide</a> |
+                        <a href="item?id=45287838">4&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45287474">
+                    <td><span>8.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45287474" href="vote?id=45287474&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://sethmlarson.dev/scream-cipher">Scream cipher</a
+                        ><span>
+                          (<a href="from?site=sethmlarson.dev"><span>sethmlarson.dev</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45287474">228 points</span> by <a href="user?id=alexmolas">alexmolas</a
+                        ><span><a href="item?id=45287474">13 hours ago</a></span
+                        ><span id="unv_45287474"></span> | <a href="hide?id=45287474&amp;goto=news">hide</a> |
+                        <a href="item?id=45287474">88&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45313557">
+                    <td><span>9.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45313557" href="vote?id=45313557&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://gwern.net/doc/science/2019-savage.pdf"
+                          >Cormac McCarthy's tips on how to write a science paper (2019) [pdf]</a
+                        ><span>
+                          (<a href="from?site=gwern.net"><span>gwern.net</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45313557">166 points</span> by <a href="user?id=surprisetalk">surprisetalk</a
+                        ><span><a href="item?id=45313557">5 hours ago</a></span
+                        ><span id="unv_45313557"></span> | <a href="hide?id=45313557&amp;goto=news">hide</a> |
+                        <a href="item?id=45313557">64&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45263035">
+                    <td><span>10.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45263035" href="vote?id=45263035&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://neal.fun/not-a-robot/">I'm Not a Robot</a
+                        ><span>
+                          (<a href="from?site=neal.fun"><span>neal.fun</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45263035">186 points</span> by <a href="user?id=meetpateltech">meetpateltech</a
+                        ><span><a href="item?id=45263035">15 hours ago</a></span
+                        ><span id="unv_45263035"></span> | <a href="hide?id=45263035&amp;goto=news">hide</a> |
+                        <a href="item?id=45263035">107&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45312515">
+                    <td><span>11.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45312515" href="vote?id=45312515&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://dgl.cx/2025/09/images-over-dns">Images over DNS</a
+                        ><span>
+                          (<a href="from?site=dgl.cx"><span>dgl.cx</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45312515">139 points</span> by <a href="user?id=dgl">dgl</a
+                        ><span><a href="item?id=45312515">9 hours ago</a></span
+                        ><span id="unv_45312515"></span> | <a href="hide?id=45312515&amp;goto=news">hide</a> |
+                        <a href="item?id=45312515">36&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45265688">
+                    <td><span>12.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45265688" href="vote?id=45265688&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://www.bbc.com/news/uk-wales-44886585"
+                          >Escapee pregnancy test frogs colonised Wales for 50 years (2019)</a
+                        ><span>
+                          (<a href="from?site=bbc.com"><span>bbc.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45265688">96 points</span> by <a href="user?id=Luc">Luc</a
+                        ><span><a href="item?id=45265688">12 hours ago</a></span
+                        ><span id="unv_45265688"></span> | <a href="hide?id=45265688&amp;goto=news">hide</a> |
+                        <a href="item?id=45265688">39&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45316244">
+                    <td><span>13.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45316244" href="vote?id=45316244&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://quarters.captaintouch.com/blog/posts/2025-09-20-tv-time-machine-a-raspberry-pi-that-plays-random-90s-tv.html"
+                          >TV Time Machine: A Raspberry Pi That Plays Random 90s TV</a
+                        ><span>
+                          (<a href="from?site=captaintouch.com"><span>captaintouch.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45316244">34 points</span> by <a href="user?id=capitain">capitain</a
+                        ><span><a href="item?id=45316244">2 hours ago</a></span
+                        ><span id="unv_45316244"></span> | <a href="hide?id=45316244&amp;goto=news">hide</a> |
+                        <a href="item?id=45316244">20&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45293012">
+                    <td><span>14.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45293012" href="vote?id=45293012&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://github.com/rastapasta/mapscii">MapSCII – World map in terminal</a
+                        ><span>
+                          (<a href="from?site=github.com/rastapasta"><span>github.com/rastapasta</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45293012">119 points</span> by <a href="user?id=_august">_august</a
+                        ><span><a href="item?id=45293012">10 hours ago</a></span
+                        ><span id="unv_45293012"></span> | <a href="hide?id=45293012&amp;goto=news">hide</a> |
+                        <a href="item?id=45293012">17&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45312326">
+                    <td><span>15.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45312326" href="vote?id=45312326&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://furilabs.com/flx1s-is-launched/">FLX1s phone is launched</a
+                        ><span>
+                          (<a href="from?site=furilabs.com"><span>furilabs.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45312326">111 points</span> by <a href="user?id=slau">slau</a
+                        ><span><a href="item?id=45312326">9 hours ago</a></span
+                        ><span id="unv_45312326"></span> | <a href="hide?id=45312326&amp;goto=news">hide</a> |
+                        <a href="item?id=45312326">95&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45285711">
+                    <td><span>16.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45285711" href="vote?id=45285711&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://github.com/huggingface/evaluation-guidebook/blob/main/yearly_dives/2025-evaluations-for-useful-models.md"
+                          >Evals in 2025: going beyond simple benchmarks to build models people can use</a
+                        ><span>
+                          (<a href="from?site=github.com/huggingface"><span>github.com/huggingface</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45285711">42 points</span> by <a href="user?id=jxmorris12">jxmorris12</a
+                        ><span><a href="item?id=45285711">8 hours ago</a></span
+                        ><span id="unv_45285711"></span> | <a href="hide?id=45285711&amp;goto=news">hide</a> |
+                        <a href="item?id=45285711">2&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45313418">
+                    <td><span>17.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45313418" href="vote?id=45313418&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://www.cell.com/cell-reports-physical-science/fulltext/S2666-3864(25)00409-6"
+                          >Living microbial cement supercapacitors with reactivatable energy storage</a
+                        ><span>
+                          (<a href="from?site=cell.com"><span>cell.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45313418">70 points</span> by <a href="user?id=PaulHoule">PaulHoule</a
+                        ><span><a href="item?id=45313418">7 hours ago</a></span
+                        ><span id="unv_45313418"></span> | <a href="hide?id=45313418&amp;goto=news">hide</a> |
+                        <a href="item?id=45313418">39&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45313415">
+                    <td><span>18.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45313415" href="vote?id=45313415&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://spectrum.ieee.org/iphone-17-pro-vapor-chamber"
+                          >Vapor chamber tech keeps iPhone 17 Pro cool</a
+                        ><span>
+                          (<a href="from?site=ieee.org"><span>ieee.org</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45313415">57 points</span> by <a href="user?id=rbanffy">rbanffy</a
+                        ><span><a href="item?id=45313415">7 hours ago</a></span
+                        ><span id="unv_45313415"></span> | <a href="hide?id=45313415&amp;goto=news">hide</a> |
+                        <a href="item?id=45313415">125&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45314157">
+                    <td><span>19.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45314157" href="vote?id=45314157&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://utcc.utoronto.ca/~cks/space/blog/linux/SystemdCanBeRestrictionCause"
+                          >Systemd can be a cause of restrictions on daemons</a
+                        ><span>
+                          (<a href="from?site=utcc.utoronto.ca"><span>utcc.utoronto.ca</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45314157">81 points</span> by <a href="user?id=zdw">zdw</a
+                        ><span><a href="item?id=45314157">5 hours ago</a></span
+                        ><span id="unv_45314157"></span> | <a href="hide?id=45314157&amp;goto=news">hide</a> |
+                        <a href="item?id=45314157">79&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45276501">
+                    <td><span>20.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45276501" href="vote?id=45276501&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="item?id=45276501"
+                          >Show HN: Math2Tex – Convert handwritten math and complex notes to LaTeX text</a
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45276501">41 points</span> by <a href="user?id=leoyixing">leoyixing</a
+                        ><span><a href="item?id=45276501">7 hours ago</a></span
+                        ><span id="unv_45276501"></span> | <a href="hide?id=45276501&amp;goto=news">hide</a> |
+                        <a href="item?id=45276501">13&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45314432">
+                    <td><span>21.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45314432" href="vote?id=45314432&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://www.economist.com/science-and-technology/2025/09/19/are-touchscreens-in-cars-dangerous"
+                          >Are touchscreens in cars dangerous?</a
+                        ><span>
+                          (<a href="from?site=economist.com"><span>economist.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45314432">141 points</span> by <a href="user?id=Brajeshwar">Brajeshwar</a
+                        ><span><a href="item?id=45314432">5 hours ago</a></span
+                        ><span id="unv_45314432"></span> | <a href="hide?id=45314432&amp;goto=news">hide</a> |
+                        <a href="item?id=45314432">138&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45275058">
+                    <td><span>22.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45275058" href="vote?id=45275058&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://www.galois.com/articles/claude-can-sometimes-prove-it"
+                          >Claude can sometimes prove it</a
+                        ><span>
+                          (<a href="from?site=galois.com"><span>galois.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45275058">170 points</span> by <a href="user?id=lairv">lairv</a
+                        ><span><a href="item?id=45275058">13 hours ago</a></span
+                        ><span id="unv_45275058"></span> | <a href="hide?id=45275058&amp;goto=news">hide</a> |
+                        <a href="item?id=45275058">50&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45313597">
+                    <td><span>23.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45313597" href="vote?id=45313597&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://www.openmymind.net/Is-Zigs-New-Io-Unsafe/">Is Zig's new writer unsafe?</a
+                        ><span>
+                          (<a href="from?site=openmymind.net"><span>openmymind.net</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45313597">119 points</span> by <a href="user?id=ibobev">ibobev</a
+                        ><span><a href="item?id=45313597">6 hours ago</a></span
+                        ><span id="unv_45313597"></span> | <a href="hide?id=45313597&amp;goto=news">hide</a> |
+                        <a href="item?id=45313597">101&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45313194">
+                    <td><span>24.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45313194" href="vote?id=45313194&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://asawicki.info/news_1790_bezier_curve_as_easing_function_in_c"
+                          >Bezier Curve as Easing Function in C++</a
+                        ><span>
+                          (<a href="from?site=asawicki.info"><span>asawicki.info</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45313194">43 points</span> by <a href="user?id=ibobev">ibobev</a
+                        ><span><a href="item?id=45313194">7 hours ago</a></span
+                        ><span id="unv_45313194"></span> | <a href="hide?id=45313194&amp;goto=news">hide</a> |
+                        <a href="item?id=45313194">5&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45316266">
+                    <td><span>25.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45316266" href="vote?id=45316266&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://lwn.net/Articles/1033955/">Bringing restartable sequences out of the niche</a
+                        ><span>
+                          (<a href="from?site=lwn.net"><span>lwn.net</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45316266">20 points</span> by <a href="user?id=PaulHoule">PaulHoule</a
+                        ><span><a href="item?id=45316266">2 hours ago</a></span
+                        ><span id="unv_45316266"></span> | <a href="hide?id=45316266&amp;goto=news">hide</a> |
+                        <a href="item?id=45316266">1&nbsp;comment</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45310995">
+                    <td><span>26.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45310995" href="vote?id=45310995&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://www.corning.com/worldwide/en/products/life-sciences/resources/stories/in-the-field/pyrex-vs-pyrex-whats-the-difference.html"
+                          >PYREX vs. pyrex: What's the difference?</a
+                        ><span>
+                          (<a href="from?site=corning.com"><span>corning.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45310995">75 points</span> by <a href="user?id=lisper">lisper</a
+                        ><span><a href="item?id=45310995">14 hours ago</a></span
+                        ><span id="unv_45310995"></span> | <a href="hide?id=45310995&amp;goto=news">hide</a> |
+                        <a href="item?id=45310995">63&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45259623">
+                    <td><span>27.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45259623" href="vote?id=45259623&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://jtibs.substack.com/p/if-all-the-world-were-a-monorepo"
+                          >If all the world were a monorepo</a
+                        ><span>
+                          (<a href="from?site=jtibs.substack.com"><span>jtibs.substack.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45259623">244 points</span> by <a href="user?id=sebg">sebg</a
+                        ><span><a href="item?id=45259623">20 hours ago</a></span
+                        ><span id="unv_45259623"></span> | <a href="hide?id=45259623&amp;goto=news">hide</a> |
+                        <a href="item?id=45259623">68&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45312696">
+                    <td><span>28.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45312696" href="vote?id=45312696&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://lore.kernel.org/git/20250904-b4-pks-rust-breaking-change-v1-0-3af1d25e0be9@pks.im/"
+                          >Git: Introduce Rust and announce it will become mandatory in the build system</a
+                        ><span>
+                          (<a href="from?site=kernel.org"><span>kernel.org</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45312696">281 points</span> by <a href="user?id=WhyNotHugo">WhyNotHugo</a
+                        ><span><a href="item?id=45312696">8 hours ago</a></span
+                        ><span id="unv_45312696"></span> | <a href="hide?id=45312696&amp;goto=news">hide</a> |
+                        <a href="item?id=45312696">243&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45316921">
+                    <td><span>29.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45316921" href="vote?id=45316921&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://arstechnica.com/space/2025/09/starship-will-soon-fly-over-towns-and-cities-but-will-dodge-the-biggest-ones/"
+                          rel="nofollow"
+                          >Starship will soon fly over towns and cities, but will dodge the biggest ones</a
+                        ><span>
+                          (<a href="from?site=arstechnica.com"><span>arstechnica.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45316921">7 points</span> by <a href="user?id=lisper">lisper</a
+                        ><span><a href="item?id=45316921">1 hour ago</a></span
+                        ><span id="unv_45316921"></span> | <a href="hide?id=45316921&amp;goto=news">hide</a> |
+                        <a href="item?id=45316921">2&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45310529">
+                    <td><span>30.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45310529" href="vote?id=45310529&amp;how=up&amp;goto=news"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://www.seangoedecke.com/ai-agents-and-code-review/"
+                          >If you are good at code review, you will be good at using AI agents</a
+                        ><span>
+                          (<a href="from?site=seangoedecke.com"><span>seangoedecke.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45310529">119 points</span> by <a href="user?id=imasl42">imasl42</a
+                        ><span><a href="item?id=45310529">16 hours ago</a></span
+                        ><span id="unv_45310529"></span> | <a href="hide?id=45310529&amp;goto=news">hide</a> |
+                        <a href="item?id=45310529">117&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr></tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td><a href="?p=2" rel="next">More</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <table>
+                <tbody>
+                  <tr>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <br />
+              <center>
+                <span
+                  ><a href="newsguidelines.html">Guidelines</a> | <a href="newsfaq.html">FAQ</a> |
+                  <a href="lists">Lists</a> | <a href="https://github.com/HackerNews/API">API</a> |
+                  <a href="security.html">Security</a> | <a href="https://www.ycombinator.com/legal/">Legal</a> |
+                  <a href="https://www.ycombinator.com/apply/">Apply to YC</a> |
+                  <a href="mailto:hn@ycombinator.com">Contact</a></span
+                ><br /><br />
+                <form>Search:</form>
+              </center>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </center>
+  </body>
+</html>

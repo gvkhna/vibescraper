@@ -1,17 +1,19 @@
-import {toast} from 'sonner'
-import {DeleteProjectConfirmDialog} from '@/partials/dialogs/delete-project-confirm-dialog'
-import {NewProjectDialog} from '@/partials/dialogs/new-project-dialog'
-import {RenameProjectDialog} from '@/partials/dialogs/rename-project-dialog'
-import {useStore} from '@/store/use-store'
-import {ProjectNotFoundDialog} from './project-not-found-dialog'
-import {useNavigate} from '@tanstack/react-router'
-import {nowait} from '@/lib/async-utils'
+import { useEffect, useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import debug from 'debug'
-import {useEffect, useState} from 'react'
-import {getErrorMessage} from '@/lib/error-message'
-import {CrawlerActivationDialog} from './crawler-activation-dialog'
-import {ScraperSettingsDialog} from './scraper-settings-dialog'
+import { toast } from 'sonner'
+
 import api from '@/lib/api-client'
+import { nowait } from '@/lib/async-utils'
+import { getErrorMessage } from '@/lib/error-message'
+import { DeleteProjectConfirmDialog } from '@/partials/dialogs/delete-project-confirm-dialog'
+import { NewProjectDialog } from '@/partials/dialogs/new-project-dialog'
+import { RenameProjectDialog } from '@/partials/dialogs/rename-project-dialog'
+import { useStore } from '@/store/use-store'
+
+import { CrawlerActivationDialog } from './crawler-activation-dialog'
+import { ProjectNotFoundDialog } from './project-not-found-dialog'
+import { ScraperSettingsDialog } from './scraper-settings-dialog'
 
 const log = debug('app:project-dialogs')
 
@@ -26,8 +28,8 @@ export type ProjectDialogsConfig = {
 
 export type ProjectDialogType = keyof ProjectDialogsConfig
 export type ProjectDialogState =
-  | {type: null; payload: null}
-  | {[K in ProjectDialogType]: {type: K; payload: ProjectDialogsConfig[K]}}[ProjectDialogType]
+  | { type: null; payload: null }
+  | { [K in ProjectDialogType]: { type: K; payload: ProjectDialogsConfig[K] } }[ProjectDialogType]
 
 export function ProjectDialogs() {
   const navigate = useNavigate()
@@ -106,7 +108,7 @@ export function ProjectDialogs() {
             setCurrentProjectDialog('project-not-found', null)
           } else {
             setCurrentProjectDialog(null, null)
-            nowait(navigate({to: '/'}))
+            nowait(navigate({ to: '/' }))
           }
         }}
       />
@@ -134,7 +136,7 @@ export function ProjectDialogs() {
           if (result.success) {
             toast.success('Project has been successfully deleted.')
             setCurrentProjectDialog(null, null)
-            await navigate({to: '/'})
+            await navigate({ to: '/' })
           } else {
             toast.error('Failed to delete project. Please try again.')
             throw new Error('Failed to set public')
@@ -172,7 +174,7 @@ export function ProjectDialogs() {
             toast.success(`Scraper "${projectName}" created successfully`)
             await navigate({
               to: '/app/scraper/$project-public-id/edit',
-              params: {'project-public-id': result.projectPublicId}
+              params: { 'project-public-id': result.projectPublicId }
             })
           } else {
             toast.error('Failed to create project. Please try again.')

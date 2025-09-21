@@ -1,13 +1,14 @@
 'use client'
 
 import * as React from 'react'
-import {Database, Copy, CheckCircle, AlertCircle} from 'lucide-react'
-import {EmptyStateData} from '@/components/empty-state-data'
-import {useStore} from '@/store/use-store'
-import {Button} from '@/components/ui/button'
-import {cn} from '@/lib/utils'
-import {JsonTreeTable} from '@vibescraper/json-tree-table'
-import {nowait} from '@/lib/async-utils'
+import { JsonTreeTable } from '@vibescraper/json-tree-table'
+import { AlertCircle, CheckCircle, Copy, Database } from 'lucide-react'
+
+import { EmptyStateData } from '@/components/empty-state-data'
+import { Button } from '@/components/ui/button'
+import { nowait } from '@/lib/async-utils'
+import { cn } from '@/lib/utils'
+import { useStore } from '@/store/use-store'
 
 export function TabData() {
   // Get extraction data from project commit cache

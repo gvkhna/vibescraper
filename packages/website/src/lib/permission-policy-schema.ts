@@ -1,7 +1,8 @@
-import {z} from 'zod'
-import type {Patch} from 'immer'
+import { AbilityBuilder, type ForcedSubject, type MatchConditions, PureAbility } from '@casl/ability'
+import type { Patch } from 'immer'
+import { z } from 'zod'
+
 import * as schema from '@/db/schema'
-import {AbilityBuilder, PureAbility, type ForcedSubject, type MatchConditions} from '@casl/ability'
 
 export const PermissionPolicyActionValues = ['create', 'read', 'update', 'delete', 'setPermissions'] as const
 export type PermissionPolicyActionType = (typeof PermissionPolicyActionValues)[number]
@@ -12,8 +13,8 @@ export type ActorType = (typeof ActorValues)[number]
 // ==== Audit Entry Schema ====
 
 export type AuditActorEntry =
-  | {actorType: 'actor'; actorId: schema.ActorPublicId} // If actorType is 'user', actorId is UserActorId
-  | {actorType: 'anonymous'; actorId?: undefined} // If actorType is 'anonymous', actorId is non-existant
+  | { actorType: 'actor'; actorId: schema.ActorPublicId } // If actorType is 'user', actorId is UserActorId
+  | { actorType: 'anonymous'; actorId?: undefined } // If actorType is 'anonymous', actorId is non-existant
 
 export const AuditEntry = z.object({
   actor: z.union([
@@ -85,7 +86,7 @@ type AppAbility = PureAbility<[Action, Subject], MatchConditions>
 export function abilityForActor(actor: AuditActorEntry) {
   // const actor = resolveActorEntry(actorEntry)
 
-  const {can, build} = new AbilityBuilder<AppAbility>(PureAbility)
+  const { can, build } = new AbilityBuilder<AppAbility>(PureAbility)
 
   if (actor.actorType === 'actor') {
     can(

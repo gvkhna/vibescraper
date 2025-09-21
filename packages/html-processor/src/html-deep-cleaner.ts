@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import * as cheerio from 'cheerio'
-import {ElementType} from 'domelementtype'
-import type {ChildNode, Element, Text} from 'domhandler'
-import {readFile, writeFile} from 'node:fs/promises'
-import {join} from 'node:path'
+import { ElementType } from 'domelementtype'
+import type { ChildNode, Element, Text } from 'domhandler'
+import { readFile, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
 // import {encoding_for_model} from 'tiktoken'
 import prettier from 'prettier'
 
@@ -175,7 +175,7 @@ function cleanElementAttributes(
 
   const tagName = element.tagName.toLowerCase()
   const $el = $(element)
-  const currentAttribs = {...element.attribs}
+  const currentAttribs = { ...element.attribs }
 
   // Get allowed attributes for this element
   const globalAttrs = preserveAttributes.global ?? []
@@ -268,7 +268,7 @@ function cleanHtmlCore(
   tagsToRemove: string[],
   preserveAttributes: CleanerOptions['preserveAttributes'],
   debug = false
-): {loaded: string; cleaned: string} | null {
+): { loaded: string; cleaned: string } | null {
   const parsedHtml = parseLooseHTML(html)
   if (!parsedHtml) {
     if (debug) {
@@ -311,7 +311,7 @@ function cleanHtmlCore(
   // Clean head but keep the element
   $('head').empty()
 
-  return {loaded, cleaned: $.html()}
+  return { loaded, cleaned: $.html() }
 }
 
 // function getTokenCount(text: string, models: string[]): Record<string, number> {
@@ -344,8 +344,8 @@ export async function cleanHtml(html: string, options: CleanerOptions = {}): Pro
     debug = {},
     tagsToRemove = DEFAULT_TAGS_TO_REMOVE,
     preserveAttributes = DEFAULT_ACCESSIBILITY_ATTRIBUTES,
-    formatting = {enabled: true},
-    tokenCounting = {enabled: false, models: ['gpt-4', 'gpt-4-1106-preview']}
+    formatting = { enabled: true },
+    tokenCounting = { enabled: false, models: ['gpt-4', 'gpt-4-1106-preview'] }
   } = options
 
   const enableLogging = debug.enableLogging ?? false
@@ -360,7 +360,7 @@ export async function cleanHtml(html: string, options: CleanerOptions = {}): Pro
     throw new Error('Failed to clean HTML')
   }
 
-  const {loaded, cleaned} = cleanResult
+  const { loaded, cleaned } = cleanResult
 
   // Load cleaned HTML for text extraction
   const $ = cheerio.load(cleaned)
@@ -497,7 +497,7 @@ export async function cleanHtmlFromUrl(
     retryDelay?: number
   } = {}
 ): Promise<CleanerResult> {
-  const {fetchOptions = {}, maxRetries = 3, retryDelay = 1000, ...cleanerOptions} = options
+  const { fetchOptions = {}, maxRetries = 3, retryDelay = 1000, ...cleanerOptions } = options
 
   let lastError: Error | null = null
   for (let attempt = 1; attempt <= maxRetries; attempt++) {

@@ -1,9 +1,11 @@
-import type {StateSlice} from './use-store'
-import type {ProjectPublicId} from '@/db/schema'
-import type {LoadingState} from './async-entity-state'
 import debug from 'debug'
-import type {BrandedType} from '@/db/schema/common'
-import {shortid} from '@/lib/short-id'
+
+import type { ProjectPublicId } from '@/db/schema'
+import type { BrandedType } from '@/db/schema/common'
+import { shortid } from '@/lib/short-id'
+
+import type { LoadingState } from './async-entity-state'
+import type { StateSlice } from './use-store'
 
 export type TabId = BrandedType<string, 'TabId'>
 

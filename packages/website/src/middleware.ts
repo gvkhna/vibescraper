@@ -1,6 +1,7 @@
-import {defineMiddleware} from 'astro:middleware'
+import { defineMiddleware } from 'astro:middleware'
 import debug from 'debug'
-import {PUBLIC_VARS} from './vars.public'
+
+import { PUBLIC_VARS } from './vars.public'
 
 const log = debug('app:request')
 // 1 minute
@@ -8,7 +9,7 @@ const TIMEOUT_MS = 60 * 1000
 const INCLUDE_USER_AGENT = true
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const {method, url, headers} = context.request
+  const { method, url, headers } = context.request
   const start = Date.now()
 
   const clonedUrl = new URL(url)

@@ -1,18 +1,20 @@
-/* eslint-disable no-console */
-import {describe, it, expect, beforeEach, afterEach} from 'vitest'
-import {SandboxManager} from '../src/sandbox-manager'
-import process from 'node:process'
-import path from 'node:path'
+import debug from 'debug'
 import fs from 'node:fs/promises'
+import path from 'node:path'
+import process from 'node:process'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-describe('SandboxManager Crash Recovery Tests', () => {
+import { SandboxManager } from '../src/sandbox-manager'
+const log = debug('test')
+
+describe('sandboxManager Crash Recovery Tests', () => {
   let sandboxManager: SandboxManager | undefined
   const testTmpDir = path.join(process.cwd(), 'tmp')
 
   beforeEach(async () => {
-    await fs.mkdir(testTmpDir, {recursive: true})
+    await fs.mkdir(testTmpDir, { recursive: true })
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
-      console.log('[RECOVERY TEST]', ...args)
+      log('[RECOVERY TEST]', ...args)
     })
     // Wait for sandbox to be ready before running tests
     await sandboxManager.waitForReady()
@@ -26,13 +28,15 @@ describe('SandboxManager Crash Recovery Tests', () => {
     }
     // Clean up temp directory
     try {
-      await fs.rm(testTmpDir, {recursive: true, force: true})
+      await fs.rm(testTmpDir, { recursive: true, force: true })
     } catch {
       // Ignore cleanup errors
     }
   })
 
   it('should recover after timeout and allow subsequent executions', async () => {
+    expect.assertions(6)
+
     // First, cause a timeout with an infinite loop
     const infiniteLoopCode = `
       console.log('STARTING_INFINITE_LOOP')
@@ -83,6 +87,8 @@ describe('SandboxManager Crash Recovery Tests', () => {
   }, 45000) // 45 second timeout for the entire test
 
   it('should recover after memory exhaustion and allow subsequent executions', async () => {
+    expect.assertions(5)
+
     // First, try to exhaust memory
     const memoryExhaustCode = `
       console.log('STARTING_MEMORY_EXHAUSTION')
@@ -110,7 +116,8 @@ describe('SandboxManager Crash Recovery Tests', () => {
     const startLog = messages1?.find(
       (msg) => msg.type === 'log' && msg.log.includes('STARTING_MEMORY_EXHAUSTION')
     )
-    expect(startLog).toBeDefined()
+
+    expect(startLog, 'startLog').toBeDefined()
 
     // Should either get a memory error or complete/fail status
     const memoryError = messages1?.find((msg) => msg.type === 'log' && msg.log.includes('MEMORY_ERROR:'))
@@ -120,7 +127,7 @@ describe('SandboxManager Crash Recovery Tests', () => {
     const completeStatus = messages1?.find((msg) => msg.type === 'status' && msg.status === 'completed')
 
     // We expect some kind of termination
-    expect(memoryError ?? failStatus ?? completeStatus).toBeDefined()
+    expect(memoryError ?? failStatus ?? completeStatus, 'memoryError - fail or complete').toBeDefined()
 
     // Wait a bit for the worker to restart if it crashed
     await new Promise((resolve) => setTimeout(resolve, 3000))
@@ -141,12 +148,14 @@ describe('SandboxManager Crash Recovery Tests', () => {
     )
     const completedStatus2 = messages2?.find((msg) => msg.type === 'status' && msg.status === 'completed')
 
-    expect(recoveryLog).toBeDefined()
-    expect(arrayLog).toBeDefined()
-    expect(completedStatus2).toBeDefined()
+    expect(recoveryLog, 'recoveryLog').toBeDefined()
+    expect(arrayLog, 'arrayLog').toBeDefined()
+    expect(completedStatus2, 'completedStatus2').toBeDefined()
   }, 45000) // 45 second timeout for the entire test
 
   it('should handle uncaught exceptions and allow recovery', async () => {
+    expect.assertions(6)
+
     // First, cause an uncaught exception
     const exceptionCode = `
       console.log('BEFORE_EXCEPTION')

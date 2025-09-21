@@ -1,20 +1,21 @@
 "use client"
 
+import { Activity, Database, FileSearch, FolderTree, Plus, Settings } from 'lucide-react'
+
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarFooter,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
-  SidebarSeparator,
+  SidebarMenuItem,
   SidebarRail,
+  SidebarSeparator,
 } from "@/components/ui/sidebar"
-import { FolderTree, Activity, Database, FileSearch, Settings, Plus } from 'lucide-react'
 
 export function AppSidebar() {
   const items = [

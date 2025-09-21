@@ -1,6 +1,6 @@
 // tools.ts
-import {type ToolSet} from 'ai'
-import z, {success} from 'zod'
+import type { ToolSet } from 'ai'
+import z, { success } from 'zod'
 
 /* ──────────────────────────────────────────────────────────────────────────
    Shared types
@@ -60,7 +60,7 @@ const tools = {
   /* Simple connectivity check */
   ping: {
     description: 'Simple ping test - returns pong',
-    inputSchema: z.object({input: z.boolean()}),
+    inputSchema: z.object({ input: z.boolean() }),
     outputSchema: z.object({
       success: z.boolean(),
       message: z.string()
@@ -69,69 +69,106 @@ const tools = {
 
   /* ── Schema authoring ─────────────────────────────────────────────────── */
 
-  schemaGet: {
-    description: 'Read the current data validation schema',
-    inputSchema: z.object(),
-    outputSchema: z.object({
-      success: z.boolean(),
-      schema: JsonSchema.nullish(),
-      version: z.number().nullish(),
-      message: z.string().nullish(),
-      // warning: z.string().nullish(),
-      error: z.string().nullish()
-      // warn: z.string().nullish() // fine
-    })
-  },
+  // schemaGet: {
+  //   description: 'Read the current data validation schema',
+  //   inputSchema: z.object(),
+  //   outputSchema: z.object({
+  //     success: z.boolean(),
+  //     schema: JsonSchema.nullish(),
+  //     version: z.number().nullish(),
+  //     message: z.string().nullish(),
+  //     // warning: z.string().nullish(),
+  //     error: z.string().nullish()
+  //     // warn: z.string().nullish() // fine
+  //   })
+  // },
 
-  schemaSet: {
-    description: 'Replace the data validation schema (creates a new version)',
+  fileGet: {
+    description:
+      'Read the current file version, schema - data validation schema, crawler - crawling script, extractor - extraction script',
     inputSchema: z.object({
-      schema: JsonSchema.describe('Complete JSON Schema object to enforce on extraction results'),
-      message: z.string().optional().describe('Commit message for this version')
+      type: z.literal(['schema.json', 'crawler.js', 'extractor.js'])
     }),
     outputSchema: z.object({
       success: z.boolean(),
+      file: z.union([JsonSchema, z.string()]).nullish(),
       version: z.number().nullish(),
-      // warning: z.string().nullish(),
+      message: z.string().nullish(),
       error: z.string().nullish()
     })
   },
+
+  fileSet: {
+    description:
+      'Replace the current file version, schema - data validation schema, crawler - crawling script, extractor - extraction script',
+    inputSchema: z.union([
+      z.object({
+        type: z.literal(['crawler.js', 'extractor.js']),
+        file: z.string().describe('Complete script contents'),
+        message: z.string().optional().describe('Commit message for this version')
+      }),
+      z.object({
+        type: z.literal(['schema.json']),
+        file: JsonSchema.describe('Complete schema contents'),
+        message: z.string().optional().describe('Commit message for this version')
+      })
+    ]),
+    outputSchema: z.object({
+      success: z.boolean(),
+      version: z.number().nullish(),
+      error: z.string().nullish()
+    })
+  },
+
+  // schemaSet: {
+  //   description: 'Replace the data validation schema (creates a new version)',
+  //   inputSchema: z.object({
+  //     schema: JsonSchema.describe('Complete JSON Schema object to enforce on extraction results'),
+  //     message: z.string().optional().describe('Commit message for this version')
+  //   }),
+  //   outputSchema: z.object({
+  //     success: z.boolean(),
+  //     version: z.number().nullish(),
+  //     // warning: z.string().nullish(),
+  //     error: z.string().nullish()
+  //   })
+  // },
 
   /* ── Script authoring ─────────────────────────────────────────────────── */
 
-  scriptGet: {
-    description: 'Read the current extraction script',
-    inputSchema: z.object(),
-    outputSchema: z.object({
-      success: z.boolean(),
-      script: z.string().nullish(),
-      version: z.number().nullish(),
-      message: z.string().nullish(),
-      error: z.string().nullish(),
-      // name: z.string().nullish(),
-      // description: z.string().nullish(),
-      // scriptLanguage: ScriptLanguage.optional(),
-      updatedAt: z.iso.datetime().nullish()
-    })
-  },
+  // scriptGet: {
+  //   description: 'Read the current extraction script',
+  //   inputSchema: z.object(),
+  //   outputSchema: z.object({
+  //     success: z.boolean(),
+  //     script: z.string().nullish(),
+  //     version: z.number().nullish(),
+  //     message: z.string().nullish(),
+  //     error: z.string().nullish(),
+  //     // name: z.string().nullish(),
+  //     // description: z.string().nullish(),
+  //     // scriptLanguage: ScriptLanguage.optional(),
+  //     updatedAt: z.iso.datetime().nullish()
+  //   })
+  // },
 
-  scriptSet: {
-    description: 'Replace the extraction script (creates a new version)',
-    inputSchema: z.object({
-      script: z.string().describe('Complete extraction script. Must return JSON matching the schema'),
-      // scriptLanguage: ScriptLanguage.default('javascript'),
-      // name: z.string().optional(),
-      // description: z.string().optional(),
-      message: z.string().optional().describe('Commit message for this version')
-      // correlationId: Uuid.optional()
-    }),
-    outputSchema: z.object({
-      success: z.boolean(),
-      version: z.number().nullish(),
-      // correlationId: z.string().optional(),
-      error: z.string().nullish()
-    })
-  },
+  // scriptSet: {
+  //   description: 'Replace the extraction script (creates a new version)',
+  //   inputSchema: z.object({
+  //     script: z.string().describe('Complete extraction script. Must return JSON matching the schema'),
+  //     // scriptLanguage: ScriptLanguage.default('javascript'),
+  //     // name: z.string().optional(),
+  //     // description: z.string().optional(),
+  //     message: z.string().optional().describe('Commit message for this version')
+  //     // correlationId: Uuid.optional()
+  //   }),
+  //   outputSchema: z.object({
+  //     success: z.boolean(),
+  //     version: z.number().nullish(),
+  //     // correlationId: z.string().optional(),
+  //     error: z.string().nullish()
+  //   })
+  // },
 
   /* ── Version browsing / rollback (generic for schema & script) ────────── */
 

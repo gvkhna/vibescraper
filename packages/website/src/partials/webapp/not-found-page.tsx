@@ -1,10 +1,10 @@
-import {FileQuestion} from 'lucide-react'
+import { FileQuestion } from 'lucide-react'
 
-import {Button} from '@/components/ui/button'
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
-import {Link} from '@/components/link'
+import { Link } from '@/components/link'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
-export function NotFoundPage(props: {data?: unknown}) {
+export function NotFoundPage(props: { data?: unknown }) {
   return (
     <div className='flex h-screen w-full items-center justify-center'>
       <Card className='mx-auto max-w-md text-center'>

@@ -1,13 +1,12 @@
 module.exports = {
   // Base configuration - no plugins here to avoid conflicts
-  tailwindFunctions: ['clsx', 'tw', 'cn'],
   bracketSameLine: false,
   singleAttributePerLine: true,
   htmlWhitespaceSensitivity: 'css',
   semi: false,
   printWidth: 110,
   trailingComma: 'none',
-  bracketSpacing: false,
+  bracketSpacing: true,
   jsxSingleQuote: true,
   singleQuote: true,
   plugins: [],
@@ -16,6 +15,7 @@ module.exports = {
       files: ['*.astro'],
       options: {
         parser: 'astro',
+        tailwindFunctions: ['clsx', 'tw', 'cn'],
         printWidth: 90,
         astroAllowShorthand: true,
         plugins: [
@@ -28,6 +28,7 @@ module.exports = {
     },
     {
       files: ['*.tsx', '*.jsx'],
+      tailwindFunctions: ['clsx', 'tw', 'cn'],
       options: {
         plugins: [
           require.resolve('prettier-plugin-tailwindcss'),
@@ -39,6 +40,7 @@ module.exports = {
     // Match all json except package.json
     {
       files: ['*.json', '**/*.json'],
+      ignores: ['package.json', '**/package.json'],
       options: {
         plugins: [require.resolve('prettier-plugin-sort-json')],
         jsonRecursiveSort: true

@@ -1,28 +1,30 @@
-import type {Rule, Linter} from 'eslint'
+import type { Linter, Rule } from 'eslint'
+import type * as ESTree from 'estree'
 
 // Helper function to check if expression is simple state access
-function isSimpleStateAccess(node: any, selector: any) {
+function isSimpleStateAccess(
+  node:
+    | ESTree.ArrowFunctionExpression['body']
+    | ESTree.FunctionExpression['body']
+    | ESTree.MemberExpression['object'],
+  selector: ESTree.ArrowFunctionExpression | ESTree.FunctionExpression
+) {
   switch (node.type) {
     case 'MemberExpression':
       // Check the object is either state identifier or another member expression
       if (node.object.type === 'Identifier') {
         // Must start with 'state'
-        if (selector.params[0] && node.object.name !== selector.params[0].name) {
+        const firstArgument = selector.params[0]
+        if (
+          selector.params[0] &&
+          firstArgument.type === 'Identifier' &&
+          node.object.name !== firstArgument.name
+        ) {
           return false
         }
         return true
       }
       // Recursively check nested member expressions
-      return isSimpleStateAccess(node.object, selector)
-
-    case 'OptionalMemberExpression':
-      // Same logic as MemberExpression but with optional chaining
-      if (node.object.type === 'Identifier') {
-        if (selector.params[0] && node.object.name !== selector.params[0].name) {
-          return false
-        }
-        return true
-      }
       return isSimpleStateAccess(node.object, selector)
 
     case 'ChainExpression':

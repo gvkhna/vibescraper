@@ -1,25 +1,26 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Label} from '@/components/ui/label'
-import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from '@/components/ui/select'
-import {Checkbox} from '@/components/ui/checkbox'
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table'
-import {GlassCard} from '@/components/quick-stats'
+
+import { GlassCard } from '@/components/quick-stats'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 export function Monitoring() {
   return (
     <div className='space-y-4'>
       <div className='grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-6'>
         {[
-          {label: 'Success Rate', value: '98.4%', color: '#10B981'},
-          {label: 'Pages Crawled (today)', value: '12,430', color: '#3B82F6'},
-          {label: 'Data Extracted', value: '4,220', color: '#8B5CF6'},
-          {label: 'Avg Response (ms)', value: '420', color: '#F59E0B'},
-          {label: 'Error Rate', value: '1.6%', color: '#EF4444'},
-          {label: 'Queue Pending', value: '32', color: '#22D3EE'}
+          { label: 'Success Rate', value: '98.4%', color: '#10B981' },
+          { label: 'Pages Crawled (today)', value: '12,430', color: '#3B82F6' },
+          { label: 'Data Extracted', value: '4,220', color: '#8B5CF6' },
+          { label: 'Avg Response (ms)', value: '420', color: '#F59E0B' },
+          { label: 'Error Rate', value: '1.6%', color: '#EF4444' },
+          { label: 'Queue Pending', value: '32', color: '#22D3EE' }
         ].map((m, i) => (
           <GlassCard
             key={i}
@@ -46,7 +47,7 @@ export function Monitoring() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Array.from({length: 6}).map((_, i) => (
+              {Array.from({ length: 6 }).map((_, i) => (
                 <TableRow
                   key={i}
                   className='hover:bg-[#3B82F6]/10'

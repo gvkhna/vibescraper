@@ -89,7 +89,7 @@ export async function asyncRetry<T>(
     minDelay?: number
     factor?: number
     jitter?: number
-    onRetry?: (error: unknown, ctx: {attempt: number; delay: number}) => void
+    onRetry?: (error: unknown, ctx: { attempt: number; delay: number }) => void
   } = {}
 ): Promise<T> {
   if (retries < 1) {
@@ -112,7 +112,7 @@ export async function asyncRetry<T>(
       const jitterOffset = delay * jitter * (Math.random() * 2 - 1) // ±
       const wait = Math.max(0, delay + jitterOffset)
 
-      onRetry?.(err, {attempt, delay: wait})
+      onRetry?.(err, { attempt, delay: wait })
 
       await new Promise((res) => setTimeout(res, wait))
       delay *= factor // exponential back‑off

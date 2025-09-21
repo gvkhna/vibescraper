@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "types": ["vite/client", "vitest/globals", "node", "web"]
+  },
+  "exclude": ["node_modules", "dist"],
+  "extends": "../../tsconfig.base.json",
+  "include": ["tests/**/*"]
+}

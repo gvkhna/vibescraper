@@ -1,15 +1,15 @@
 'use client'
 
 import * as React from 'react'
-import {Clock, Globe, X} from 'lucide-react'
-
-import {cn} from '@/lib/utils'
-import {Input} from '@/components/ui/input'
-import {Command, CommandEmpty, CommandGroup, CommandItem, CommandList} from '@/components/ui/command'
-import {Popover, PopoverTrigger, PopoverContent} from '@/components/ui/popover'
-import {useStore} from '@/store/use-store'
-import {nowait} from '@/lib/async-utils'
 import debug from 'debug'
+import { Clock, Globe, X } from 'lucide-react'
+
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command'
+import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { nowait } from '@/lib/async-utils'
+import { cn } from '@/lib/utils'
+import { useStore } from '@/store/use-store'
 
 const log = debug('app:url-history-combobox')
 

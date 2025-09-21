@@ -1,13 +1,14 @@
-import {tool} from 'ai'
-import {db as database} from '@/db/db'
-import * as dbSchema from '@/db/schema'
+import { compileJsonSchema } from '@vibescraper/json-schemas'
+import { SandboxManager } from '@vibescraper/sandbox'
+import { tool } from 'ai'
 import debug from 'debug'
-import {eq as sqlEq} from 'drizzle-orm'
-import {compileJsonSchema} from '@vibescraper/shared-types'
-import {scrapeProcess} from '@/server/project/scrape-process'
-import {SandboxManager} from '@vibescraper/sandbox'
+import { eq as sqlEq } from 'drizzle-orm'
+
+import { db as database } from '@/db/db'
+import * as dbSchema from '@/db/schema'
+import { sqlFormatTimestampUTC, sqlTimestampToDate } from '@/lib/format-dates'
+import { scrapeProcess } from '@/server/project/scrape-process'
 import tools from '.'
-import {sqlFormatTimestampUTC, sqlTimestampToDate} from '@/lib/format-dates'
 
 const log = debug('app:assistant-extraction-tools')
 
@@ -349,194 +350,134 @@ export function makeExtractionTools(
     //     }
     //   }
     // }),
-    schemaGet: tool({
-      ...tools.schemaGet,
-      execute: async (_input, _opts) => {
+    fileGet: tool({
+      ...tools.fileGet,
+      execute: async (input, _opts) => {
         try {
-          // Get the activeSchemaVersion from projectCommit
-          const projectCommit = await db.query.projectCommit.findFirst({
-            where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
-          })
+          switch (input.type) {
+            case 'schema.json': {
+              // Get the activeSchemaVersion from projectCommit
+              const projectCommit = await db.query.projectCommit.findFirst({
+                where: (table, { eq }) => eq(table.publicId, projectCommitPublicId)
+              })
 
-          const schemaVersion = projectCommit?.activeSchemaVersion
-          if (typeof schemaVersion !== 'number') {
-            return {
-              success: true,
-              schema: null,
-              version: null,
-              message: null
+              const schemaVersion = projectCommit?.activeSchemaVersion
+              if (typeof schemaVersion !== 'number') {
+                return {
+                  success: true,
+                  file: null,
+                  version: null,
+                  message: null,
+                  error: null
+                }
+              }
+
+              // Get the specific schema version
+              const activeSchema = await db.query.projectSchema.findFirst({
+                where: (table, { and, eq }) =>
+                  and(eq(table.projectId, project.id), eq(table.version, schemaVersion))
+              })
+
+              // If no schema exists at that version, return nulls
+              if (!activeSchema) {
+                return {
+                  success: true,
+                  file: null,
+                  version: null,
+                  message: null
+                }
+              }
+
+              // Return the active schema with all relevant info
+              return {
+                success: true,
+                file: activeSchema.schemaJson,
+                version: activeSchema.version,
+                message: activeSchema.message
+              }
             }
-          }
 
-          // Get the specific schema version
-          const activeSchema = await db.query.projectSchema.findFirst({
-            where: (table, {and, eq}) =>
-              and(eq(table.projectId, project.id), eq(table.version, schemaVersion))
-          })
-
-          // If no schema exists at that version, return nulls
-          if (!activeSchema) {
-            return {
-              success: true,
-              schema: null,
-              version: null,
-              message: null
+            case 'extractor.js': {
+              // Get the activeExtractorVersion from projectCommit
+              const projectCommit = await db.query.projectCommit.findFirst({
+                where: (table, { eq }) => eq(table.publicId, projectCommitPublicId)
+              })
+              const extractorVersion = projectCommit?.activeExtractorVersion
+              if (typeof extractorVersion !== 'number') {
+                return {
+                  success: true,
+                  file: null,
+                  version: null,
+                  message: null
+                }
+              }
+              // Get the specific extractor version
+              const activeExtractor = await db.query.extractor.findFirst({
+                where: (table, { and, eq }) =>
+                  and(eq(table.projectId, project.id), eq(table.version, extractorVersion))
+              })
+              // If no extractor exists at that version, return nulls
+              if (!activeExtractor) {
+                return {
+                  success: true,
+                  file: null,
+                  version: null,
+                  message: null
+                }
+              }
+              // Return the active extractor with all relevant info
+              return {
+                success: true,
+                file: activeExtractor.script,
+                version: activeExtractor.version,
+                message: activeExtractor.message
+                // updatedAt: sqlTimestampToDate(activeExtractor.createdAt).toISOString()
+              }
             }
-          }
-
-          // Return the active schema with all relevant info
-          return {
-            success: true,
-            schema: activeSchema.schemaJson,
-            version: activeSchema.version,
-            message: activeSchema.message
-          }
-        } catch (error) {
-          log('readSchema error:', error)
-          return {
-            success: false,
-            error: error instanceof Error ? error.message : 'Unknown error'
-          }
-        }
-      }
-    }),
-    schemaSet: tool({
-      ...tools.schemaSet,
-      execute: async (input) => {
-        try {
-          // 1. Validate the JSON Schema format
-          const schemaValidation = compileJsonSchema(input.schema)
-          if (!schemaValidation.success) {
-            return {
-              success: false,
-              error: `Invalid JSON Schema: ${schemaValidation.message}`
+            case 'crawler.js': {
+              // Get the activeCrawlerVersion from projectCommit
+              const projectCommit = await db.query.projectCommit.findFirst({
+                where: (table, { eq }) => eq(table.publicId, projectCommitPublicId)
+              })
+              const crawlerVersion = projectCommit?.activeCrawlerVersion
+              if (typeof crawlerVersion !== 'number') {
+                return {
+                  success: true,
+                  file: null,
+                  version: null,
+                  message: null
+                }
+              }
+              // Get the specific extractor version
+              const activeCrawler = await db.query.extractor.findFirst({
+                where: (table, { and, eq }) =>
+                  and(eq(table.projectId, project.id), eq(table.version, crawlerVersion))
+              })
+              // If no crawler exists at that version, return nulls
+              if (!activeCrawler) {
+                return {
+                  success: true,
+                  file: null,
+                  version: null,
+                  message: null
+                }
+              }
+              // Return the active extractor with all relevant info
+              return {
+                success: true,
+                file: activeCrawler.script,
+                version: activeCrawler.version,
+                message: activeCrawler.message
+                // updatedAt: sqlTimestampToDate(activeExtractor.createdAt).toISOString()
+              }
             }
-          }
-
-          // 2. Get current version number
-          const latestSchema = await db.query.projectSchema.findFirst({
-            where: (table, {eq}) => eq(table.projectId, project.id),
-            orderBy: (table, {desc}) => [desc(table.version)]
-          })
-          const newVersion = (latestSchema?.version ?? 0) + 1
-
-          // 3. Create new projectSchema version in database
-          await db.insert(dbSchema.projectSchema).values({
-            projectId: project.id,
-            version: newVersion,
-            schemaJson: input.schema,
-            message: input.message
-          })
-
-          // 4. Update projectCommit.activeSchemaVersion
-          await db
-            .update(dbSchema.projectCommit)
-            .set({activeSchemaVersion: newVersion})
-            .where(sqlEq(dbSchema.projectCommit.publicId, projectCommitPublicId))
-
-          return {
-            success: true,
-            version: newVersion
-          }
-        } catch (error) {
-          log('writeSchema error:', error)
-          return {
-            success: false,
-            error: error instanceof Error ? error.message : 'Unknown error'
-          }
-        }
-      }
-    }),
-    scriptGet: tool({
-      ...tools.scriptGet,
-      execute: async (_input, _opts) => {
-        try {
-          // Get the activeExtractorVersion from projectCommit
-          const projectCommit = await db.query.projectCommit.findFirst({
-            where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
-          })
-          const extractorVersion = projectCommit?.activeExtractorVersion
-          if (typeof extractorVersion !== 'number') {
-            return {
-              success: true,
-              script: null,
-              version: null,
-              message: null
-              // name: null,
-              // description: null,
-              // scriptLanguage: null
+            default: {
+              log('incorrect file type given: ', input.type)
+              return {
+                success: false,
+                error: 'Unknown error'
+              }
             }
-          }
-          // Get the specific extractor version
-          const activeExtractor = await db.query.extractor.findFirst({
-            where: (table, {and, eq}) =>
-              and(eq(table.projectId, project.id), eq(table.version, extractorVersion))
-          })
-          // If no extractor exists at that version, return nulls
-          if (!activeExtractor) {
-            return {
-              success: true,
-              script: null,
-              version: null,
-              message: null
-              // name: null,
-              // description: null,
-              // scriptLanguage: null
-            }
-          }
-          // Return the active extractor with all relevant info
-          return {
-            success: true,
-            script: activeExtractor.script,
-            version: activeExtractor.version,
-            message: activeExtractor.message,
-            updatedAt: sqlTimestampToDate(activeExtractor.createdAt).toISOString()
-            // name: activeExtractor.name,
-            // description: activeExtractor.description,
-            // scriptLanguage: activeExtractor.scriptLanguage
-          }
-        } catch (error) {
-          log('readScript error:', error)
-          return {
-            success: false,
-            error: error instanceof Error ? error.message : 'Unknown error'
-          }
-        }
-      }
-    }),
-    scriptSet: tool({
-      ...tools.scriptSet,
-      execute: async (input) => {
-        try {
-          // Get the latest extractor version
-          const latestExtractor = await db.query.extractor.findFirst({
-            where: (table, {eq}) => eq(table.projectId, project.id),
-            orderBy: (table, {desc}) => desc(table.version)
-          })
-
-          const newVersion = (latestExtractor?.version ?? 0) + 1
-
-          // Create new extractor version
-          await db.insert(dbSchema.extractor).values({
-            projectId: project.id,
-            version: newVersion,
-            // name: input.name ?? 'Main Extractor',
-            message: input.message,
-            script: input.script
-            // scriptLanguage: 'javascript' as const
-          })
-
-          log('Created new extractor version:', newVersion)
-
-          // Update the project commit to use the new version
-          await db
-            .update(dbSchema.projectCommit)
-            .set({activeExtractorVersion: newVersion})
-            .where(sqlEq(dbSchema.projectCommit.publicId, projectCommitPublicId))
-
-          return {
-            success: true,
-            version: newVersion
           }
         } catch (error) {
           log('writeScript error:', error)
@@ -547,13 +488,260 @@ export function makeExtractionTools(
         }
       }
     }),
+    fileSet: tool({
+      ...tools.fileSet,
+      execute: async (input, _opts) => {
+        try {
+          switch (input.type) {
+            case 'schema.json': {
+              const schemaValidation = compileJsonSchema(input.file)
+              if (!schemaValidation.success) {
+                return {
+                  success: false,
+                  error: `Invalid JSON Schema: ${schemaValidation.message}`
+                }
+              }
+
+              // 2. Get current version number
+              const latestSchema = await db.query.projectSchema.findFirst({
+                where: (table, { eq }) => eq(table.projectId, project.id),
+                orderBy: (table, { desc }) => [desc(table.version)]
+              })
+              const newVersion = (latestSchema?.version ?? 0) + 1
+
+              // 3. Create new projectSchema version in database
+              await db.insert(dbSchema.projectSchema).values({
+                projectId: project.id,
+                version: newVersion,
+                schemaJson: input.file,
+                message: input.message
+              })
+
+              // 4. Update projectCommit.activeSchemaVersion
+              await db
+                .update(dbSchema.projectCommit)
+                .set({ activeSchemaVersion: newVersion })
+                .where(sqlEq(dbSchema.projectCommit.publicId, projectCommitPublicId))
+
+              return {
+                success: true,
+                version: newVersion
+              }
+            }
+
+            case 'extractor.js': {
+              // Get the latest extractor version
+              const latestExtractor = await db.query.extractor.findFirst({
+                where: (table, { eq }) => eq(table.projectId, project.id),
+                orderBy: (table, { desc }) => desc(table.version)
+              })
+
+              const newVersion = (latestExtractor?.version ?? 0) + 1
+
+              // Create new extractor version
+              await db.insert(dbSchema.extractor).values({
+                projectId: project.id,
+                version: newVersion,
+                // name: input.name ?? 'Main Extractor',
+                message: input.message,
+                script: input.file
+                // scriptLanguage: 'javascript' as const
+              })
+
+              log('Created new extractor version:', newVersion)
+
+              // Update the project commit to use the new version
+              await db
+                .update(dbSchema.projectCommit)
+                .set({ activeExtractorVersion: newVersion })
+                .where(sqlEq(dbSchema.projectCommit.publicId, projectCommitPublicId))
+
+              return {
+                success: true,
+                version: newVersion
+              }
+            }
+            case 'crawler.js': {
+              // Get the latest crawler version
+              const latestCrawler = await db.query.crawler.findFirst({
+                where: (table, { eq }) => eq(table.projectId, project.id),
+                orderBy: (table, { desc }) => desc(table.version)
+              })
+
+              const newVersion = (latestCrawler?.version ?? 0) + 1
+
+              // Create new crawler version
+              await db.insert(dbSchema.crawler).values({
+                projectId: project.id,
+                version: newVersion,
+                message: input.message,
+                script: input.file
+              })
+
+              log('Created new crawler version:', newVersion)
+
+              // Update the project commit to use the new version
+              await db
+                .update(dbSchema.projectCommit)
+                .set({ activeCrawlerVersion: newVersion })
+                .where(sqlEq(dbSchema.projectCommit.publicId, projectCommitPublicId))
+
+              return {
+                success: true,
+                version: newVersion
+              }
+            }
+            default: {
+              return {
+                success: false,
+                error: 'Unknown error'
+              }
+            }
+          }
+        } catch (error) {
+          log('writeScript error:', error)
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        }
+      }
+    }),
+    // schemaGet: tool({
+    //   ...tools.schemaGet,
+    //   execute: async (_input, _opts) => {
+    //     try {
+    //       // Get the activeSchemaVersion from projectCommit
+    //       const projectCommit = await db.query.projectCommit.findFirst({
+    //         where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
+    //       })
+
+    //       const schemaVersion = projectCommit?.activeSchemaVersion
+    //       if (typeof schemaVersion !== 'number') {
+    //         return {
+    //           success: true,
+    //           schema: null,
+    //           version: null,
+    //           message: null
+    //         }
+    //       }
+
+    //       // Get the specific schema version
+    //       const activeSchema = await db.query.projectSchema.findFirst({
+    //         where: (table, {and, eq}) =>
+    //           and(eq(table.projectId, project.id), eq(table.version, schemaVersion))
+    //       })
+
+    //       // If no schema exists at that version, return nulls
+    //       if (!activeSchema) {
+    //         return {
+    //           success: true,
+    //           schema: null,
+    //           version: null,
+    //           message: null
+    //         }
+    //       }
+
+    //       // Return the active schema with all relevant info
+    //       return {
+    //         success: true,
+    //         schema: activeSchema.schemaJson,
+    //         version: activeSchema.version,
+    //         message: activeSchema.message
+    //       }
+    //     } catch (error) {
+    //       log('readSchema error:', error)
+    //       return {
+    //         success: false,
+    //         error: error instanceof Error ? error.message : 'Unknown error'
+    //       }
+    //     }
+    //   }
+    // }),
+    // schemaSet: tool({
+    //   ...tools.schemaSet,
+    //   execute: async (input) => {
+    // try {
+    // 1. Validate the JSON Schema format
+
+    //     } catch (error) {
+    //       log('writeSchema error:', error)
+    //       return {
+    //         success: false,
+    //         error: error instanceof Error ? error.message : 'Unknown error'
+    //       }
+    //     }
+    //   }
+    // }),
+    // scriptGet: tool({
+    //   ...tools.scriptGet,
+    //   execute: async (_input, _opts) => {
+    //     try {
+    // // Get the activeExtractorVersion from projectCommit
+    // const projectCommit = await db.query.projectCommit.findFirst({
+    //   where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
+    // })
+    // const extractorVersion = projectCommit?.activeExtractorVersion
+    // if (typeof extractorVersion !== 'number') {
+    //   return {
+    //     success: true,
+    //     script: null,
+    //     version: null,
+    //     message: null
+    //     // name: null,
+    //     // description: null,
+    //     // scriptLanguage: null
+    //   }
+    // }
+    // // Get the specific extractor version
+    // const activeExtractor = await db.query.extractor.findFirst({
+    //   where: (table, {and, eq}) =>
+    //     and(eq(table.projectId, project.id), eq(table.version, extractorVersion))
+    // })
+    // // If no extractor exists at that version, return nulls
+    // if (!activeExtractor) {
+    //   return {
+    //     success: true,
+    //     script: null,
+    //     version: null,
+    //     message: null
+    //     // name: null,
+    //     // description: null,
+    //     // scriptLanguage: null
+    //   }
+    // }
+    // // Return the active extractor with all relevant info
+    // return {
+    //   success: true,
+    //   script: activeExtractor.script,
+    //   version: activeExtractor.version,
+    //   message: activeExtractor.message,
+    //   updatedAt: sqlTimestampToDate(activeExtractor.createdAt).toISOString()
+    //   // name: activeExtractor.name,
+    //   // description: activeExtractor.description,
+    //   // scriptLanguage: activeExtractor.scriptLanguage
+    // }
+    //     } catch (error) {
+    //       log('readScript error:', error)
+    //       return {
+    //         success: false,
+    //         error: error instanceof Error ? error.message : 'Unknown error'
+    //       }
+    //     }
+    //   }
+    // }),
+    // scriptSet: tool({
+    //   ...tools.scriptSet,
+    //   execute: async (input) => {
+
+    // }),
     htmlGet: tool({
       ...tools.htmlGet,
       execute: async (input) => {
         try {
           // Get the project commit and its cached data
           const projectCommit = await db.query.projectCommit.findFirst({
-            where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
+            where: (table, { eq }) => eq(table.publicId, projectCommitPublicId)
           })
 
           if (!projectCommit?.cachedData) {
@@ -650,7 +838,7 @@ export function makeExtractionTools(
         try {
           // Get the project commit and its cached data
           const projectCommit = await db.query.projectCommit.findFirst({
-            where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
+            where: (table, { eq }) => eq(table.publicId, projectCommitPublicId)
           })
 
           if (!projectCommit?.cachedData) {
@@ -702,7 +890,7 @@ export function makeExtractionTools(
         try {
           // Get the project commit and its cached data
           const projectCommit = await db.query.projectCommit.findFirst({
-            where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
+            where: (table, { eq }) => eq(table.publicId, projectCommitPublicId)
           })
 
           if (!projectCommit?.cachedData?.extractionMessages) {

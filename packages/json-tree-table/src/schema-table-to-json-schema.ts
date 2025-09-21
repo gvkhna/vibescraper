@@ -1,7 +1,8 @@
-import {Type} from '@sinclair/typebox'
-import {Value} from '@sinclair/typebox/value'
-import {TypeCompiler} from '@sinclair/typebox/compiler'
-import {type TreeNode} from './tree-table-editor'
+import { Type } from '@sinclair/typebox'
+import { TypeCompiler } from '@sinclair/typebox/compiler'
+import { Value } from '@sinclair/typebox/value'
+
+import type { TreeNode } from './tree-table-editor'
 
 export function schemaTableToJsonSchema(schemaData: TreeNode[]) {
   const convertNodeToSchema = (node: TreeNode): any => {

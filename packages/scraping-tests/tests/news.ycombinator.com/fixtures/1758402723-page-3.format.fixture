@@ -1,0 +1,976 @@
+<html lang="en">
+  <head></head>
+  <body>
+    <center>
+      <table id="hnmain">
+        <tbody>
+          <tr>
+            <td>
+              <table>
+                <tbody>
+                  <tr>
+                    <td><a href="https://news.ycombinator.com"></a></td>
+                    <td>
+                      <span
+                        ><b><a href="news">Hacker News</a></b
+                        ><a href="newest">new</a> | <a href="front">past</a> | <a href="newcomments">comments</a> |
+                        <a href="ask">ask</a> | <a href="show">show</a> | <a href="jobs">jobs</a> |
+                        <a href="submit" rel="nofollow">submit</a></span
+                      >
+                    </td>
+                    <td>
+                      <span><a href="login?goto=news%3Fp%3D3">login</a></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr></tr>
+          <tr id="bigbox">
+            <td>
+              <table>
+                <tbody>
+                  <tr id="45282411">
+                    <td><span>61.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45282411" href="vote?id=45282411&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://felipepepe.medium.com/the-gentrification-of-video-game-history-dfe11f1e08ae"
+                          >The gentrification of videogame history</a
+                        ><span>
+                          (<a href="from?site=felipepepe.medium.com"><span>felipepepe.medium.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45282411">15 points</span> by <a href="user?id=akkartik">akkartik</a
+                        ><span><a href="item?id=45282411">4 hours ago</a></span
+                        ><span id="unv_45282411"></span> | <a href="hide?id=45282411&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45282411">16&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45283887">
+                    <td><span>62.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45283887" href="vote?id=45283887&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://skyfall.dev/posts/slack">Slack has raised our charges by $195k per year</a
+                        ><span>
+                          (<a href="from?site=skyfall.dev"><span>skyfall.dev</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45283887">3294 points</span> by <a href="user?id=JustSkyfall">JustSkyfall</a
+                        ><span><a href="item?id=45283887">2 days ago</a></span
+                        ><span id="unv_45283887"></span> | <a href="hide?id=45283887&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45283887">1423&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45300810">
+                    <td><span>63.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45300810" href="vote?id=45300810&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://windowsread.me/p/best-youtube-downloaders"
+                          >The best YouTube downloaders, and how Google silenced the press</a
+                        ><span>
+                          (<a href="from?site=windowsread.me"><span>windowsread.me</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45300810">505 points</span> by <a href="user?id=Leftium">Leftium</a
+                        ><span><a href="item?id=45300810">1 day ago</a></span
+                        ><span id="unv_45300810"></span> | <a href="hide?id=45300810&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45300810">222&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45268575">
+                    <td><span>64.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45268575" href="vote?id=45268575&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://discovery.kaust.edu.sa/en/article/25936/micro-leds-boost-random-number-generation/"
+                          >Micro-LEDs boost random number generation</a
+                        ><span>
+                          (<a href="from?site=edu.sa"><span>edu.sa</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45268575">64 points</span> by
+                        <a href="user?id=giuliomagnifico">giuliomagnifico</a
+                        ><span><a href="item?id=45268575">22 hours ago</a></span
+                        ><span id="unv_45268575"></span> | <a href="hide?id=45268575&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45268575">26&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45270015">
+                    <td><span>65.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45270015" href="vote?id=45270015&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://github.com/finite-sample/rmcp">R MCP Server</a
+                        ><span>
+                          (<a href="from?site=github.com/finite-sample"><span>github.com/finite-sample</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45270015">104 points</span> by <a href="user?id=neehao">neehao</a
+                        ><span><a href="item?id=45270015">1 day ago</a></span
+                        ><span id="unv_45270015"></span> | <a href="hide?id=45270015&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45270015">15&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45304706">
+                    <td><span>66.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45304706" href="vote?id=45304706&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://hedgehogreview.com/issues/lessons-of-babel/articles/perplexity"
+                          >An untidy history of AI across four books</a
+                        ><span>
+                          (<a href="from?site=hedgehogreview.com"><span>hedgehogreview.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45304706">119 points</span> by <a href="user?id=ewf">ewf</a
+                        ><span><a href="item?id=45304706">1 day ago</a></span
+                        ><span id="unv_45304706"></span> | <a href="hide?id=45304706&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45304706">39&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45298336">
+                    <td><span>67.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45298336" href="vote?id=45298336&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://nostr.com/">Nostr</a
+                        ><span>
+                          (<a href="from?site=nostr.com"><span>nostr.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45298336">363 points</span> by <a href="user?id=dtj1123">dtj1123</a
+                        ><span><a href="item?id=45298336">1 day ago</a></span
+                        ><span id="unv_45298336"></span> | <a href="hide?id=45298336&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45298336">311&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45265760">
+                    <td><span>68.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45265760" href="vote?id=45265760&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://interactivetextbooks.tudelft.nl/showthephysics/Introduction/About.html"
+                          >Show the Physics</a
+                        ><span>
+                          (<a href="from?site=tudelft.nl"><span>tudelft.nl</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45265760">183 points</span> by <a href="user?id=pillars">pillars</a
+                        ><span><a href="item?id=45265760">1 day ago</a></span
+                        ><span id="unv_45265760"></span> | <a href="hide?id=45265760&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45265760">7&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45310858">
+                    <td><span>69.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45310858" href="vote?id=45310858&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://www.economist.com/business/2025/09/18/the-4trn-accounting-puzzle-at-the-heart-of-the-ai-cloud"
+                          >The $4T accounting puzzle at the heart of the AI cloud</a
+                        ><span>
+                          (<a href="from?site=economist.com"><span>economist.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45310858">17 points</span> by <a href="user?id=toomuchtodo">toomuchtodo</a
+                        ><span><a href="item?id=45310858">15 hours ago</a></span
+                        ><span id="unv_45310858"></span> | <a href="hide?id=45310858&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45310858">6&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45300865">
+                    <td><span>70.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45300865" href="vote?id=45300865&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://www.smithsonianmag.com/smart-news/these-ant-queens-seem-to-defy-biology-they-lay-eggs-that-hatch-into-another-species-180987292/"
+                          >Ants that seem to defy biology – They lay eggs that hatch into another species</a
+                        ><span>
+                          (<a href="from?site=smithsonianmag.com"><span>smithsonianmag.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45300865">455 points</span> by <a href="user?id=sampo">sampo</a
+                        ><span><a href="item?id=45300865">1 day ago</a></span
+                        ><span id="unv_45300865"></span> | <a href="hide?id=45300865&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45300865">146&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45295898">
+                    <td><span>71.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45295898" href="vote?id=45295898&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://phishyurl.com/"
+                          >Want to piss off your IT department? Are the links not malicious looking enough?</a
+                        ><span>
+                          (<a href="from?site=phishyurl.com"><span>phishyurl.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45295898">1068 points</span> by <a href="user?id=jordigh">jordigh</a
+                        ><span><a href="item?id=45295898">1 day ago</a></span
+                        ><span id="unv_45295898"></span> | <a href="hide?id=45295898&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45295898">311&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45305845">
+                    <td><span>72.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45305845" href="vote?id=45305845&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://www.reuters.com/business/media-telecom/trump-mulls-adding-new-100000-fee-h-1b-visas-bloomberg-news-reports-2025-09-19/"
+                          >Trump to impose $100k fee for H-1B worker visas, White House says</a
+                        ><span>
+                          (<a href="from?site=reuters.com"><span>reuters.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45305845">1332 points</span> by <a href="user?id=mriguy">mriguy</a
+                        ><span><a href="item?id=45305845">1 day ago</a></span
+                        ><span id="unv_45305845"></span> | <a href="hide?id=45305845&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45305845">1726&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45312513">
+                    <td><span>73.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45312513" href="vote?id=45312513&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://www.nbcnews.com/world/europe/masaryk-message-revealed-envelope-czech-founding-father-rcna232353"
+                          >Czech founding father Masaryk's message revealed in long-sealed envelope</a
+                        ><span>
+                          (<a href="from?site=nbcnews.com"><span>nbcnews.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45312513">51 points</span> by <a href="user?id=tim-kt">tim-kt</a
+                        ><span><a href="item?id=45312513">9 hours ago</a></span
+                        ><span id="unv_45312513"></span> | <a href="hide?id=45312513&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45312513">2&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45297066">
+                    <td><span>74.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45297066" href="vote?id=45297066&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://deno.com/blog/javascript-tm-gofundme"
+                          >Help us raise $200k to free JavaScript from Oracle</a
+                        ><span>
+                          (<a href="from?site=deno.com"><span>deno.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45297066">664 points</span> by
+                        <a href="user?id=kaladin-jasnah">kaladin-jasnah</a
+                        ><span><a href="item?id=45297066">1 day ago</a></span
+                        ><span id="unv_45297066"></span> | <a href="hide?id=45297066&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45297066">321&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45255785">
+                    <td><span>75.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45255785" href="vote?id=45255785&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://arstechnica.com/tech-policy/2025/09/internet-archives-big-battle-with-music-publishers-ends-in-settlement/"
+                          >Internet Archive's big battle with music publishers ends in settlement</a
+                        ><span>
+                          (<a href="from?site=arstechnica.com"><span>arstechnica.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45255785">353 points</span> by <a href="user?id=coloneltcb">coloneltcb</a
+                        ><span><a href="item?id=45255785">1 day ago</a></span
+                        ><span id="unv_45255785"></span> | <a href="hide?id=45255785&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45255785">148&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45313394">
+                    <td><span>76.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45313394" href="vote?id=45313394&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://chipsandcheese.com/p/everactives-self-powered-soc-at-hot" rel="nofollow"
+                          >Everactive's Self-Powered SoC at Hot Chips 2025</a
+                        ><span>
+                          (<a href="from?site=chipsandcheese.com"><span>chipsandcheese.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45313394">3 points</span> by <a href="user?id=rbanffy">rbanffy</a
+                        ><span><a href="item?id=45313394">7 hours ago</a></span
+                        ><span id="unv_45313394"></span> | <a href="hide?id=45313394&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45313394">discuss</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45288161">
+                    <td><span>77.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45288161" href="vote?id=45288161&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://www.tomshardware.com/pc-components/cpus/nvidia-and-intel-announce-jointly-developed-intel-x86-rtx-socs-for-pcs-with-nvidia-graphics-also-custom-nvidia-data-center-x86-processors-nvidia-buys-usd5-billion-in-intel-stock-in-seismic-deal"
+                          >Nvidia buys $5B in Intel</a
+                        ><span>
+                          (<a href="from?site=tomshardware.com"><span>tomshardware.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45288161">984 points</span> by <a href="user?id=stycznik">stycznik</a
+                        ><span><a href="item?id=45288161">2 days ago</a></span
+                        ><span id="unv_45288161"></span> | <a href="hide?id=45288161&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45288161">598&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45299625">
+                    <td><span>78.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45299625" href="vote?id=45299625&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://github.com/msuzen/isingLenzMC"
+                          >Statistical Physics with R: Ising Model with Monte Carlo</a
+                        ><span>
+                          (<a href="from?site=github.com/msuzen"><span>github.com/msuzen</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45299625">110 points</span> by <a href="user?id=northlondoner">northlondoner</a
+                        ><span><a href="item?id=45299625">1 day ago</a></span
+                        ><span id="unv_45299625"></span> | <a href="hide?id=45299625&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45299625">65&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45305660">
+                    <td><span>79.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45305660" href="vote?id=45305660&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://kevinbryanecon.com/BryanAIBookReview.pdf"
+                          >The Economic Impacts of AI: A Multidisciplinary, Multibook Review [pdf]</a
+                        ><span>
+                          (<a href="from?site=kevinbryanecon.com"><span>kevinbryanecon.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45305660">68 points</span> by <a href="user?id=cjbarber">cjbarber</a
+                        ><span><a href="item?id=45305660">1 day ago</a></span
+                        ><span id="unv_45305660"></span> | <a href="hide?id=45305660&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45305660">22&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45271108">
+                    <td><span>80.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45271108" href="vote?id=45271108&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://starfront.space/">Starfront Observatories</a
+                        ><span>
+                          (<a href="from?site=starfront.space"><span>starfront.space</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45271108">47 points</span> by <a href="user?id=stefanpie">stefanpie</a
+                        ><span><a href="item?id=45271108">22 hours ago</a></span
+                        ><span id="unv_45271108"></span> | <a href="hide?id=45271108&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45271108">14&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45302222">
+                    <td><span>81.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45302222" href="vote?id=45302222&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://blog.davidv.dev/posts/revamping-an-old-tv-as-a-gift/"
+                          >Revamping an Old TV as a Gift (2019)</a
+                        ><span>
+                          (<a href="from?site=davidv.dev"><span>davidv.dev</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45302222">71 points</span> by <a href="user?id=deivid">deivid</a
+                        ><span><a href="item?id=45302222">1 day ago</a></span
+                        ><span id="unv_45302222"></span> | <a href="hide?id=45302222&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45302222">32&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45299170">
+                    <td><span>82.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45299170" href="vote?id=45299170&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://pup-e.com/goodbye-rubygems.pdf">Ruby Central's Attack on RubyGems [pdf]</a
+                        ><span>
+                          (<a href="from?site=pup-e.com"><span>pup-e.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45299170">669 points</span> by <a href="user?id=jolux">jolux</a
+                        ><span><a href="item?id=45299170">1 day ago</a></span
+                        ><span id="unv_45299170"></span> | <a href="hide?id=45299170&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45299170">240&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45316226">
+                    <td><span>83.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45316226" href="vote?id=45316226&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://www.axios.com/2025/09/20/trump-h-1b-immigration-visas"
+                          >New H-1B visa fee will not apply to existing holders, official says</a
+                        ><span>
+                          (<a href="from?site=axios.com"><span>axios.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45316226">47 points</span> by <a href="user?id=srameshc">srameshc</a
+                        ><span><a href="item?id=45316226">2 hours ago</a></span
+                        ><span id="unv_45316226"></span> | <a href="hide?id=45316226&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45316226">46&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45314779">
+                    <td><span>84.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45314779" href="vote?id=45314779&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://www.reuters.com/business/oracle-talks-with-meta-20-billion-ai-cloud-computing-deal-bloomberg-reports-2025-09-19/"
+                          >Oracle eyes $20B AI cloud computing deal with Meta, source says</a
+                        ><span>
+                          (<a href="from?site=reuters.com"><span>reuters.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45314779">7 points</span> by
+                        <a href="user?id=giuliomagnifico">giuliomagnifico</a
+                        ><span><a href="item?id=45314779">4 hours ago</a></span
+                        ><span id="unv_45314779"></span> | <a href="hide?id=45314779&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45314779">discuss</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45282504">
+                    <td><span>85.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45282504" href="vote?id=45282504&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://mini.gmshaders.com/p/tonemaps">Mini: Tonemaps (2023)</a
+                        ><span>
+                          (<a href="from?site=gmshaders.com"><span>gmshaders.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45282504">44 points</span> by <a href="user?id=bpierre">bpierre</a
+                        ><span><a href="item?id=45282504">1 day ago</a></span
+                        ><span id="unv_45282504"></span> | <a href="hide?id=45282504&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45282504">13&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45315004">
+                    <td><span>86.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45315004" href="vote?id=45315004&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://www.thecrimson.com/article/2025/9/20/harvard-heightened-cash-monitoring/"
+                          rel="nofollow"
+                          >DoED Puts Harvard Under Financial Monitoring: Federal Investigations Create Risk</a
+                        ><span>
+                          (<a href="from?site=thecrimson.com"><span>thecrimson.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45315004">12 points</span> by <a href="user?id=rntn">rntn</a
+                        ><span><a href="item?id=45315004">4 hours ago</a></span
+                        ><span id="unv_45315004"></span> | <a href="hide?id=45315004&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45315004">1&nbsp;comment</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45277900">
+                    <td><span>87.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45277900" href="vote?id=45277900&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://www.core77.com/posts/138492/A-3D-Printed-Business-Card-Embosser"
+                          >A 3D-Printed Business Card Embosser</a
+                        ><span>
+                          (<a href="from?site=core77.com"><span>core77.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45277900">100 points</span> by <a href="user?id=surprisetalk">surprisetalk</a
+                        ><span><a href="item?id=45277900">20 hours ago</a></span
+                        ><span id="unv_45277900"></span> | <a href="hide?id=45277900&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45277900">38&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45313251">
+                    <td><span>88.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45313251" href="vote?id=45313251&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://www.arrow-js.com/docs/"
+                          >Show HN: Arrow JavaScript, Reactivity Without the Framework</a
+                        ><span>
+                          (<a href="from?site=arrow-js.com"><span>arrow-js.com</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45313251">22 points</span> by <a href="user?id=jerawaj740">jerawaj740</a
+                        ><span><a href="item?id=45313251">7 hours ago</a></span
+                        ><span id="unv_45313251"></span> | <a href="hide?id=45313251&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45313251">6&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45312323">
+                    <td><span>89.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45312323" href="vote?id=45312323&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a
+                          href="https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/"
+                          >Node 20 will be deprecated on GitHub Actions runners</a
+                        ><span>
+                          (<a href="from?site=github.blog"><span>github.blog</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45312323">33 points</span> by <a href="user?id=redbell">redbell</a
+                        ><span><a href="item?id=45312323">9 hours ago</a></span
+                        ><span id="unv_45312323"></span> | <a href="hide?id=45312323&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45312323">6&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr id="45258029">
+                    <td><span>90.</span></td>
+                    <td>
+                      <center>
+                        <a id="up_45258029" href="vote?id=45258029&amp;how=up&amp;goto=news%3Fp%3D3"><div></div></a>
+                      </center>
+                    </td>
+                    <td>
+                      <span
+                        ><a href="https://fil-c.org/safepoints">Safepoints and Fil-C</a
+                        ><span>
+                          (<a href="from?site=fil-c.org"><span>fil-c.org</span></a
+                          >)</span
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td>
+                      <span
+                        ><span id="score_45258029">83 points</span> by <a href="user?id=matt_d">matt_d</a
+                        ><span><a href="item?id=45258029">1 day ago</a></span
+                        ><span id="unv_45258029"></span> | <a href="hide?id=45258029&amp;goto=news%3Fp%3D3">hide</a> |
+                        <a href="item?id=45258029">43&nbsp;comments</a></span
+                      >
+                    </td>
+                  </tr>
+                  <tr></tr>
+                  <tr></tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td><a href="?p=4" rel="next">More</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <table>
+                <tbody>
+                  <tr>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <br />
+              <center>
+                <span
+                  ><a href="newsguidelines.html">Guidelines</a> | <a href="newsfaq.html">FAQ</a> |
+                  <a href="lists">Lists</a> | <a href="https://github.com/HackerNews/API">API</a> |
+                  <a href="security.html">Security</a> | <a href="https://www.ycombinator.com/legal/">Legal</a> |
+                  <a href="https://www.ycombinator.com/apply/">Apply to YC</a> |
+                  <a href="mailto:hn@ycombinator.com">Contact</a></span
+                ><br /><br />
+                <form>Search:</form>
+              </center>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </center>
+  </body>
+</html>

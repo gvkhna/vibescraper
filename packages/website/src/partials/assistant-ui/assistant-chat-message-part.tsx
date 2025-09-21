@@ -1,19 +1,21 @@
-import type {VSUIMessage} from './chat-message-schema'
-import {Message, MessageContent} from '@/components/ai-elements/message'
-import {Source, Sources, SourcesContent, SourcesTrigger} from '@/components/ai-elements/source'
-import {Reasoning, ReasoningContent, ReasoningTrigger} from '@/components/ai-elements/reasoning'
-import {Response} from '@/components/ai-elements/response'
-import {CopyIcon, GlobeIcon, RefreshCcwIcon} from 'lucide-react'
-import {Action, Actions} from '@/components/ai-elements/actions'
-import {isToolUIPart, type ChatStatus} from 'ai'
-import {Tool, ToolContent, ToolHeader, ToolOutput, ToolInput} from '@/components/ai-elements/tool'
+import { type ChatStatus, isToolUIPart } from 'ai'
+import { CopyIcon, GlobeIcon, RefreshCcwIcon } from 'lucide-react'
+import type { IterableElement } from 'type-fest'
+
+import { Action, Actions } from '@/components/ai-elements/actions'
+import { Message, MessageContent } from '@/components/ai-elements/message'
+import { Reasoning, ReasoningContent, ReasoningTrigger } from '@/components/ai-elements/reasoning'
+import { Response } from '@/components/ai-elements/response'
+import { Source, Sources, SourcesContent, SourcesTrigger } from '@/components/ai-elements/source'
+import { Tool, ToolContent, ToolHeader, ToolInput, ToolOutput } from '@/components/ai-elements/tool'
+
+import type { VSUIMessage } from './chat-message-schema'
 import {
   convertChatMessageToUIMessage,
   isDataKey,
   isToolKey,
   type VSUIMessageChunk
 } from './chat-message-schema'
-import type {IterableElement} from 'type-fest'
 
 export interface AssistantChatMessagePartProps {
   message: VSUIMessage
@@ -23,7 +25,7 @@ export interface AssistantChatMessagePartProps {
 }
 
 export function AssistantChatMessagePart(props: AssistantChatMessagePartProps) {
-  const {message, part, index, status} = props
+  const { message, part, index, status } = props
   const type = part.type
   switch (true) {
     case isDataKey(type): {

@@ -1,20 +1,21 @@
-import {Hono, type Context} from 'hono'
-import type {HonoServer} from '..'
-import * as schema from '@/db/schema'
-import {eq as sqlEq} from 'drizzle-orm'
+import { JsonToSseTransformStream, type LanguageModel, streamText as aiStreamText, type ToolSet } from 'ai'
 import debug from 'debug'
-import {HttpStatusCode} from '@/lib/http-status-codes'
-import {streamSSE} from 'hono/streaming'
-import {streamText as aiStreamText, JsonToSseTransformStream, type LanguageModel, type ToolSet} from 'ai'
+import { eq as sqlEq } from 'drizzle-orm'
+import { type Context, Hono } from 'hono'
+import { streamSSE } from 'hono/streaming'
+
+import { prepareContext } from '@/assistant-ai/assistant-prepare-context'
+import * as schema from '@/db/schema'
+import { nowait } from '@/lib/async-utils'
+import { sqlTimestampToDate } from '@/lib/format-dates'
+import { HttpStatusCode } from '@/lib/http-status-codes'
 import {
+  type ChatMessagePersistanceType,
   convertUIMessageToChatMessage,
-  type VSUIMessage,
-  type ChatMessagePersistanceType
+  type VSUIMessage
 } from '@/partials/assistant-ui/chat-message-schema'
-import {PUBLIC_VARS} from '@/vars.public'
-import {sqlTimestampToDate} from '@/lib/format-dates'
-import {prepareContext} from '@/assistant-ai/assistant-prepare-context'
-import {nowait} from '@/lib/async-utils'
+import { PUBLIC_VARS } from '@/vars.public'
+import type { HonoServer } from '..'
 
 const log = debug('app:server:assistant')
 
@@ -59,14 +60,14 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
     cachedInputTokens: 0
   }
 
-  const content: typeof schema.projectChatMessage.$inferSelect.content = {parts: []}
+  const content: typeof schema.projectChatMessage.$inferSelect.content = { parts: [] }
 
   try {
     const result = aiStreamText({
       model,
       maxOutputTokens: 10000,
       tools: tools,
-      stopWhen: ({steps}) => {
+      stopWhen: ({ steps }) => {
         if (steps.length > 8) {
           return true
         }
@@ -92,7 +93,7 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
       //       logAI('[DB Error]', 'Failed to update aborted message', err)
       //     })
       // },
-      onChunk: ({chunk}) => {
+      onChunk: ({ chunk }) => {
         const chunkType = chunk.type
         switch (chunkType) {
           case 'reasoning-delta': {
@@ -412,6 +413,6 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
     )
   } catch (e) {
     log('ai stream response text threw error', e)
-    return c.json({message: 'Some unknown streaming error'}, HttpStatusCode.BadRequest)
+    return c.json({ message: 'Some unknown streaming error' }, HttpStatusCode.BadRequest)
   }
 }

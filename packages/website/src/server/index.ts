@@ -1,25 +1,26 @@
-import {Hono, type Context} from 'hono'
-import {auth} from '../lib/auth'
+import { SandboxManager } from '@vibescraper/sandbox'
+import { StorageService } from '@vibescraper/storage-service'
+import debug from 'debug'
+import type { Runner } from 'graphile-worker'
+import { type Context, Hono } from 'hono'
+
 // import {fileURLToPath} from 'node:url'
 import * as schema from '@/db/schema'
-import {db} from '../db/db'
 // import {dirname as pathDirname} from 'node:path'
-import {nowait} from '@/lib/async-utils'
-import debug from 'debug'
-import {PRIVATE_VARS} from '@/vars.private'
-import type {Runner} from 'graphile-worker'
-import {addJob, startWorker} from '@/task-queue/graphile.config'
+import { nowait } from '@/lib/async-utils'
+import { addJob, startWorker } from '@/task-queue/graphile.config'
+import { PRIVATE_VARS } from '@/vars.private'
+// import sandbox from './sandbox'
+import { PUBLIC_VARS } from '@/vars.public'
+import { db } from '../db/db'
+import { auth } from '../lib/auth'
 
 import account from './account'
 import assistant from './assistant'
-// import sandbox from './sandbox'
-import projects from './projects'
 import project from './project'
+import projects from './projects'
 import storage from './storage'
 import whoami from './whoami'
-import {PUBLIC_VARS} from '@/vars.public'
-import {SandboxManager} from '@vibescraper/sandbox'
-import {StorageService} from '@vibescraper/storage-service'
 
 const log = debug('app:server:index')
 
@@ -67,7 +68,7 @@ export type HonoServer = {
   // Bindings: HonoBindings
   Variables: {
     db: typeof db
-    user: (Omit<typeof auth.$Infer.Session.user, 'id'> & {id: schema.UserId}) | null
+    user: (Omit<typeof auth.$Infer.Session.user, 'id'> & { id: schema.UserId }) | null
     session: typeof auth.$Infer.Session.session | null
     sandbox: typeof sandboxManager | null
     storageService: StorageService
@@ -82,7 +83,7 @@ app.use('*', async (c, next) => {
     return next()
   }
 
-  const session = await auth.api.getSession({headers: c.req.raw.headers})
+  const session = await auth.api.getSession({ headers: c.req.raw.headers })
   c.set('db', db)
   c.set('sandbox', sandboxManager)
   c.set('storageService', storageService)
@@ -179,7 +180,7 @@ const routes = app
   .route('/storage', storage)
   .get('/', (c) => {
     log('health check')
-    return c.json({message: 'Server is healthy'}, 200)
+    return c.json({ message: 'Server is healthy' }, 200)
   })
 
 // Worker management

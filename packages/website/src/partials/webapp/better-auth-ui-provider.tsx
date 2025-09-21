@@ -1,29 +1,31 @@
-import {AuthUIProvider} from '@daveyplate/better-auth-ui'
-import {authReactClient} from '@/lib/auth-react-client'
-import {type ReactNode} from 'react'
-import {useNavigate, useRouter} from '@tanstack/react-router'
-import {Link} from '@/components/link'
-import {nowait} from '@/lib/async-utils'
-import {apiFetchClient} from '@/lib/api-fetch-client'
-import api from '@/lib/api-client'
+import { AuthUIProvider } from '@daveyplate/better-auth-ui'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import debug from 'debug'
-import {useEnvContext} from './env-context'
+import type { ReactNode } from 'react'
+
+import { Link } from '@/components/link'
+import api from '@/lib/api-client'
+import { apiFetchClient } from '@/lib/api-fetch-client'
+import { nowait } from '@/lib/async-utils'
+import { authReactClient } from '@/lib/auth-react-client'
+
+import { useEnvContext } from './env-context'
 
 const log = debug('app:auth-setup')
 
-export function BetterAuthUIProvider({children}: {children: ReactNode}) {
+export function BetterAuthUIProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   const router = useRouter()
-  const {publicEnv} = useEnvContext()
+  const { publicEnv } = useEnvContext()
 
   return (
     <AuthUIProvider
       authClient={authReactClient}
       navigate={(path) => {
-        nowait(navigate({to: path}))
+        nowait(navigate({ to: path }))
       }}
       replace={(path) => {
-        nowait(navigate({to: path, replace: true}))
+        nowait(navigate({ to: path, replace: true }))
       }}
       onSessionChange={() => router.invalidate()}
       magicLink={true}

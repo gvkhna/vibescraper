@@ -11,7 +11,7 @@ export async function streamToBytes(stream: ReadableStream<Uint8Array>): Promise
 
   try {
     while (true) {
-      const {done, value} = await reader.read()
+      const { done, value } = await reader.read()
       if (done) {
         break
       }

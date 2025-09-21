@@ -1,4 +1,4 @@
-import type {Rule, Linter} from 'eslint'
+import type { Linter, Rule } from 'eslint'
 
 export const plugin = {
   meta: {
@@ -23,7 +23,7 @@ export const plugin = {
         const args = node.arguments
 
         if (args.length !== 3) {
-          context.report({node, messageId: 'invalidArgs'})
+          context.report({ node, messageId: 'invalidArgs' })
           return
         }
 
@@ -33,7 +33,7 @@ export const plugin = {
         const isThirdArgString = third.type === 'Literal' && typeof third.value === 'string'
 
         if (!isSecondArgTrue || !isThirdArgString) {
-          context.report({node, messageId: 'invalidArgs'})
+          context.report({ node, messageId: 'invalidArgs' })
         }
 
         // New check: first argument must be a function with first param named "draft"
@@ -43,7 +43,7 @@ export const plugin = {
         ) {
           const param = first.params[0]
           if (param.type !== 'Identifier' || param.name !== 'draft') {
-            context.report({node: first, messageId: 'invalidParamName'})
+            context.report({ node: first, messageId: 'invalidParamName' })
           }
         }
       }

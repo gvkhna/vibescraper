@@ -1,28 +1,28 @@
 'use client'
 
 import * as React from 'react'
+import { Copy, Plus } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
-  DialogFooter
-} from '@/components/ui/dialog'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Label} from '@/components/ui/label'
-import {ScrollArea} from '@/components/ui/scroll-area'
-import {Copy, Plus} from 'lucide-react'
+  DialogFooter,
+  DialogHeader,
+  DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { ScrollArea } from '@/components/ui/scroll-area'
 // import { useToast } from "@/hooks/use-toast"
 
-type KeyItem = {id: string; label: string; lastUsed: string; masked: string}
+type KeyItem = { id: string; label: string; lastUsed: string; masked: string }
 
-export function ApiKeysDialog({open, onOpenChange}: {open: boolean; onOpenChange: (v: boolean) => void}) {
+export function ApiKeysDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   // const { toast } = useToast()
   const [keys, setKeys] = React.useState<KeyItem[]>([
-    {id: '1', label: 'Production', lastUsed: 'Today', masked: 'sk_live_****4F6A'},
-    {id: '2', label: 'Development', lastUsed: '2d ago', masked: 'sk_test_****1B2C'}
+    { id: '1', label: 'Production', lastUsed: 'Today', masked: 'sk_live_****4F6A' },
+    { id: '2', label: 'Development', lastUsed: '2d ago', masked: 'sk_test_****1B2C' }
   ])
   const [label, setLabel] = React.useState('')
 
@@ -61,7 +61,7 @@ export function ApiKeysDialog({open, onOpenChange}: {open: boolean; onOpenChange
                   }
                   setKeys((ks) => [
                     ...ks,
-                    {id: Math.random().toString(36).slice(2), label, lastUsed: 'Never', masked: 'sk_****'}
+                    { id: Math.random().toString(36).slice(2), label, lastUsed: 'Never', masked: 'sk_****' }
                   ])
                   setLabel('')
                 }}

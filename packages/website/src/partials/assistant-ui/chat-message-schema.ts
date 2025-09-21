@@ -1,13 +1,14 @@
+import type { InferUIMessageChunk, InferUITools, UIMessage, UIMessageChunk } from 'ai'
+import debug from 'debug'
+import z from 'zod'
+
+import tools from '@/assistant-ai/tools'
 import {
   projectChatMessage,
   type ProjectChatMessageDTOType,
   type ProjectChatMessagePublicId
 } from '@/db/schema'
-import type {StrictOmit} from '@/db/schema/common'
-import type {InferUIMessageChunk, InferUITools, UIMessage, UIMessageChunk} from 'ai'
-import debug from 'debug'
-import z from 'zod'
-import tools from '@/assistant-ai/tools'
+import type { StrictOmit } from '@/db/schema/common'
 
 const log = debug('app:chat-message-schema')
 
@@ -68,7 +69,7 @@ export function isToolKey(value: string): value is `tool-${string}` {
   return value.startsWith('tool-')
 }
 
-type SLToolParts = Extract<VSUIMessageChunk, {type: `tool-${string}`}>
+type SLToolParts = Extract<VSUIMessageChunk, { type: `tool-${string}` }>
 
 function isToolPart(part: VSUIMessageChunk): part is SLToolParts {
   return part.type.startsWith('tool-')
@@ -90,6 +91,6 @@ export function convertChatMessageToUIMessage(
 }
 
 export function convertUIMessageToChatMessage(uiMessage: VSUIMessage): ChatMessageSchemaType {
-  const {id: _, role: __, ...msg} = uiMessage
+  const { id: _, role: __, ...msg } = uiMessage
   return msg
 }

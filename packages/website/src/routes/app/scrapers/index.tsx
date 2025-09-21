@@ -1,20 +1,21 @@
-import {createFileRoute} from '@tanstack/react-router'
-import {FolderOpen, Clock, Activity, Globe, Plus} from 'lucide-react'
-import {Button} from '@/components/ui/button'
-import {useState, useEffect} from 'react'
-import {useNavigate} from '@tanstack/react-router'
-import {useShowResponseError} from '@/hooks/use-show-response-error'
-import {useStore} from '@/store/use-store'
-import {useAllProjects} from '@/partials/projects/use-all-projects'
-import {nowait} from '@/lib/async-utils'
-import {sqlFormatRelativeTimeFromUTC} from '@/lib/format-dates'
+import { useEffect, useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
+import { Activity, Clock, FolderOpen, Globe, Plus } from 'lucide-react'
 
-export function AllScrapersPage() {
+import { Button } from '@/components/ui/button'
+import { useShowResponseError } from '@/hooks/use-show-response-error'
+import { nowait } from '@/lib/async-utils'
+import { sqlFormatRelativeTimeFromUTC } from '@/lib/format-dates'
+import { useAllProjects } from '@/partials/projects/use-all-projects'
+import { useStore } from '@/store/use-store'
+
+function AllScrapersPage() {
   const navigate = useNavigate()
   const showResponseError = useShowResponseError()
 
   // Configure SWR for simple reload-on-mount behavior
-  const {data, error, isLoading, mutate} = useAllProjects({})
+  const { data, error, isLoading, mutate } = useAllProjects({})
 
   useEffect(() => {
     if (error) {
@@ -37,7 +38,7 @@ export function AllScrapersPage() {
             </div>
             <Button
               onClick={() => {
-                nowait(navigate({to: '/'}))
+                nowait(navigate({ to: '/' }))
               }}
               className='bg-primary hover:bg-primary/90'
             >
@@ -66,7 +67,7 @@ export function AllScrapersPage() {
                     nowait(
                       navigate({
                         to: '/app/scraper/$project-public-id/edit',
-                        params: {'project-public-id': project.publicId}
+                        params: { 'project-public-id': project.publicId }
                       })
                     )
                   }}
@@ -131,7 +132,7 @@ export function AllScrapersPage() {
                 <p className='text-muted-foreground mb-6'>Get started by creating your first web scraper</p>
                 <Button
                   onClick={() => {
-                    nowait(navigate({to: '/'}))
+                    nowait(navigate({ to: '/' }))
                   }}
                   className='bg-primary hover:bg-primary/90'
                 >

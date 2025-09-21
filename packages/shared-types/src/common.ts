@@ -35,5 +35,5 @@ export const PaginationParamsSchema = z.object({
   page: z.number().int().positive().optional().default(1),
   limit: z.number().int().positive().max(100).optional().default(10),
   sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional().default('asc'),
+  sortOrder: z.enum(['asc', 'desc']).optional().default('asc')
 })

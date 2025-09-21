@@ -1,14 +1,15 @@
-import {describe, it, expect, beforeAll, afterAll} from 'vitest'
-import {GenericContainer, Wait, type StartedTestContainer} from 'testcontainers'
-import {StorageService, type BucketStorageConfig} from '../src/storage-service'
+/* eslint-disable no-console */
 import fs from 'node:fs'
 import path from 'node:path'
-import {fileURLToPath} from 'node:url'
+import { fileURLToPath } from 'node:url'
+import { GenericContainer, type StartedTestContainer, Wait } from 'testcontainers'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
+import { type BucketStorageConfig, StorageService } from '../src/storage-service'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-describe('StorageService - Bucket (MinIO)', () => {
+describe('storageService - Bucket (MinIO)', () => {
   let minio: StartedTestContainer | null = null
   let storageService: StorageService
 
@@ -32,7 +33,8 @@ describe('StorageService - Bucket (MinIO)', () => {
     console.log(`MinIO started at ${host}:${port}`)
 
     // Create S3 client to set up bucket
-    const {S3Client, CreateBucketCommand} = await import('@aws-sdk/client-s3')
+    // eslint-disable-next-line no-restricted-syntax
+    const { S3Client, CreateBucketCommand } = await import('@aws-sdk/client-s3')
 
     const s3Client = new S3Client({
       endpoint: `http://${host}:${port}`,
@@ -87,43 +89,62 @@ describe('StorageService - Bucket (MinIO)', () => {
   }, 30000)
 
   it('should store and retrieve the same file data', async () => {
+    expect.assertions(8)
+
     // Read the test image file
     const imagePath = path.join(__dirname, '..', 'fixtures', 'image.jpg')
     const fileBuffer = fs.readFileSync(imagePath)
     const originalBytes = new Uint8Array(fileBuffer)
 
-    console.log(`Storing ${originalBytes.length} bytes...`)
+    // console.log(`Storing ${originalBytes.length} bytes...`)
 
     // Store the file
     const storeResult = await storageService.store(originalBytes)
+
     expect(storeResult.success).toBe(true)
-    if (!storeResult.success) throw new Error('Store failed')
+
+    if (!storeResult.success) {
+      throw new Error('Store failed')
+    }
 
     const key = storeResult.data
-    expect(key).toBeTruthy()
-    expect(typeof key).toBe('string')
-    console.log(`Stored with key: ${key}`)
+
+    expect(key).toBeDefined()
+
+    expect(key.length).toBeGreaterThan(0)
+
+    // console.log(`Stored with key: ${key}`)
 
     // Retrieve the file using the key
     const getResult = await storageService.retrieve(key)
+
     expect(getResult.success).toBe(true)
-    if (!getResult.success) throw new Error('Get failed')
+
+    if (!getResult.success) {
+      throw new Error('Get failed')
+    }
 
     const retrievedBytes = getResult.data
-    expect(retrievedBytes).toBeTruthy()
+
+    expect(retrievedBytes).toBeDefined()
 
     // Verify we get the same data back
-    expect(retrievedBytes).toEqual(originalBytes)
-    expect(retrievedBytes.length).toBe(originalBytes.length)
+    expect(retrievedBytes).toStrictEqual(originalBytes)
+    expect(retrievedBytes).toHaveLength(originalBytes.length)
+
     console.log(`Retrieved ${retrievedBytes.length} bytes successfully`)
 
     // Clean up the test file
     const deleteResult = await storageService.delete(key)
+
     expect(deleteResult.success).toBe(true)
+
     console.log('File deleted successfully')
   })
 
   it('should return NOT_FOUND error for non-existent file', async () => {
+    expect.assertions(4)
+
     // Generate a random key that doesn't exist
     const nonExistentKey = 'a'.repeat(32) // Valid key format but doesn't exist
 
@@ -132,7 +153,8 @@ describe('StorageService - Bucket (MinIO)', () => {
 
     // Verify we get a NOT_FOUND error
     expect(result.success).toBe(false)
-    if (result.success === false) {
+
+    if (!result.success) {
       expect(result.error).toBe('NOT_FOUND')
       expect(result.message).toContain('File not found')
       expect(result.message).toContain(nonExistentKey)
@@ -141,6 +163,8 @@ describe('StorageService - Bucket (MinIO)', () => {
   })
 
   it('should return NOT_FOUND error when deleting non-existent file', async () => {
+    expect.assertions(4)
+
     // Generate a random key that doesn't exist
     const nonExistentKey = 'b'.repeat(32) // Valid key format but doesn't exist
 
@@ -149,7 +173,8 @@ describe('StorageService - Bucket (MinIO)', () => {
 
     // Verify delete returns NOT_FOUND error
     expect(result.success).toBe(false)
-    if (result.success === false) {
+
+    if (!result.success) {
       expect(result.error).toBe('NOT_FOUND')
       expect(result.message).toContain('File not found')
       expect(result.message).toContain(nonExistentKey)
@@ -158,10 +183,14 @@ describe('StorageService - Bucket (MinIO)', () => {
   })
 
   it('should reject invalid data when storing', async () => {
+    expect.assertions(8)
+
     // Test with null/undefined
     // @ts-expect-error - Testing runtime validation
     const nullResult = await storageService.store(null)
+
     expect(nullResult.success).toBe(false)
+
     if (!nullResult.success) {
       expect(nullResult.message).toContain('No data provided')
     }
@@ -169,7 +198,9 @@ describe('StorageService - Bucket (MinIO)', () => {
     // Test with wrong type (not a Uint8Array)
     // @ts-expect-error - Testing runtime validation
     const stringResult = await storageService.store('not a buffer')
+
     expect(stringResult.success).toBe(false)
+
     if (!stringResult.success) {
       expect(stringResult.message).toContain('must be a Uint8Array')
     }
@@ -177,14 +208,18 @@ describe('StorageService - Bucket (MinIO)', () => {
     // Test with wrong type (plain array)
     // @ts-expect-error - Testing runtime validation
     const arrayResult = await storageService.store([1, 2, 3])
+
     expect(arrayResult.success).toBe(false)
+
     if (!arrayResult.success) {
       expect(arrayResult.message).toContain('must be a Uint8Array')
     }
 
     // Test with empty Uint8Array
     const emptyResult = await storageService.store(new Uint8Array(0))
+
     expect(emptyResult.success).toBe(false)
+
     if (!emptyResult.success) {
       expect(emptyResult.message).toContain('Cannot store empty data')
     }
@@ -193,6 +228,8 @@ describe('StorageService - Bucket (MinIO)', () => {
   })
 
   it('should store and retrieve file as stream', async () => {
+    expect.assertions(9)
+
     // Read the test image file
     const imagePath = path.join(__dirname, '..', 'fixtures', 'image.jpg')
     const fileBuffer = fs.readFileSync(imagePath)
@@ -200,19 +237,30 @@ describe('StorageService - Bucket (MinIO)', () => {
 
     // Store the file
     const storeResult = await storageService.store(originalBytes)
+
     expect(storeResult.success).toBe(true)
-    if (!storeResult.success) throw new Error('Store failed')
+
+    if (!storeResult.success) {
+      throw new Error('Store failed')
+    }
 
     const key = storeResult.data
-    expect(key).toBeTruthy()
-    expect(typeof key).toBe('string')
+
+    expect(key).toBeDefined()
+
+    expect(key.length).toBeGreaterThan(0)
 
     // Retrieve the file as a stream
     const streamResult = await storageService.stream(key)
+
     expect(streamResult.success).toBe(true)
-    if (!streamResult.success) throw new Error('Get stream failed')
+
+    if (!streamResult.success) {
+      throw new Error('Get stream failed')
+    }
 
     const stream = streamResult.data
+
     expect(stream).toBeInstanceOf(ReadableStream)
 
     // Read the stream using modern Web Streams API
@@ -221,10 +269,13 @@ describe('StorageService - Bucket (MinIO)', () => {
 
     try {
       while (true) {
-        const {done, value} = await reader.read()
-        if (done) break
+        const { done, value } = await reader.read()
+        if (done) {
+          break
+        }
         if (value) {
           expect(value).toBeInstanceOf(Uint8Array)
+
           chunks.push(value)
         }
       }
@@ -242,16 +293,20 @@ describe('StorageService - Bucket (MinIO)', () => {
     }
 
     // Verify we get the same data back
-    expect(retrievedBytes).toEqual(originalBytes)
-    expect(retrievedBytes.length).toBe(originalBytes.length)
+    expect(retrievedBytes).toStrictEqual(originalBytes)
+    expect(retrievedBytes).toHaveLength(originalBytes.length)
+
     console.log('Stream retrieval working correctly')
 
     // Clean up
     const deleteResult = await storageService.delete(key)
+
     expect(deleteResult.success).toBe(true)
   })
 
   it('should return NOT_FOUND error for stream of non-existent file', async () => {
+    expect.assertions(4)
+
     // Generate a random key that doesn't exist
     const nonExistentKey = 'c'.repeat(32) // Valid key format but doesn't exist
 
@@ -260,7 +315,8 @@ describe('StorageService - Bucket (MinIO)', () => {
 
     // Verify we get a NOT_FOUND error
     expect(result.success).toBe(false)
-    if (result.success === false) {
+
+    if (!result.success) {
       expect(result.error).toBe('NOT_FOUND')
       expect(result.message).toContain('File not found')
       expect(result.message).toContain(nonExistentKey)
@@ -269,9 +325,12 @@ describe('StorageService - Bucket (MinIO)', () => {
   })
 
   it('should work with streamToBytes utility', async () => {
+    expect.assertions(6)
+
     // Import the utility
-    const {streamToBytes} = await import('../src/stream-utils')
-    
+    // eslint-disable-next-line no-restricted-syntax
+    const { streamToBytes } = await import('../src/stream-utils')
+
     // Read the test image file
     const imagePath = path.join(__dirname, '..', 'fixtures', 'image.jpg')
     const fileBuffer = fs.readFileSync(imagePath)
@@ -279,27 +338,37 @@ describe('StorageService - Bucket (MinIO)', () => {
 
     // Store the file
     const storeResult = await storageService.store(originalBytes)
+
     expect(storeResult.success).toBe(true)
-    if (!storeResult.success) throw new Error('Store failed')
+
+    if (!storeResult.success) {
+      throw new Error('Store failed')
+    }
 
     const key = storeResult.data
 
     // Retrieve the file as a stream
     const streamResult = await storageService.stream(key)
+
     expect(streamResult.success).toBe(true)
-    if (!streamResult.success) throw new Error('Get stream failed')
+
+    if (!streamResult.success) {
+      throw new Error('Get stream failed')
+    }
 
     // Use the streamToBytes utility
     const retrievedBytes = await streamToBytes(streamResult.data)
 
     // Verify we get the same data back
     expect(retrievedBytes).toBeInstanceOf(Uint8Array)
-    expect(retrievedBytes).toEqual(originalBytes)
-    expect(retrievedBytes.length).toBe(originalBytes.length)
+    expect(retrievedBytes).toStrictEqual(originalBytes)
+    expect(retrievedBytes).toHaveLength(originalBytes.length)
+
     console.log('streamToBytes utility working correctly')
 
     // Clean up
     const deleteResult = await storageService.delete(key)
+
     expect(deleteResult.success).toBe(true)
   })
 })

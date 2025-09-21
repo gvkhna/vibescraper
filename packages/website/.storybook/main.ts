@@ -1,22 +1,21 @@
-// .storybook/main.ts (or main.mts)
-import {resolve, dirname} from 'node:path'
-import {fileURLToPath} from 'node:url'
-import tsconfigPaths from 'vite-tsconfig-paths'
-import type {InlineConfig} from 'vite'
+import type { StorybookConfig } from '@storybook/react-vite'
 import tailwindcss from '@tailwindcss/vite'
-import {nodePolyfills} from 'vite-plugin-node-polyfills'
-import type {StorybookConfig} from '@storybook/react-vite'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import type { InlineConfig } from 'vite'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const projectRoot = resolve(__dirname, '../..') // monorepo root
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
-  core: {disableTelemetry: true},
-  framework: {name: '@storybook/react-vite', options: {}},
+  core: { disableTelemetry: true },
+  framework: { name: '@storybook/react-vite', options: {} },
 
   viteFinal: async (config_: InlineConfig) => {
-    const {mergeConfig} = await import('vite')
+    const { mergeConfig } = await import('vite')
     return mergeConfig(config_, {
       base: resolve(__dirname, '..'),
       // root: resolve(__dirname, '..'), // keep SB root explicit
@@ -51,7 +50,7 @@ const config: StorybookConfig = {
           // Explicitly point to your monorepo tsconfig(s)
           projects: [resolve(__dirname, '../tsconfig.json')]
         }),
-        nodePolyfills({protocolImports: true})
+        nodePolyfills({ protocolImports: true })
       ]
     })
   }

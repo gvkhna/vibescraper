@@ -1,8 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {AlertTriangle, Trash2} from 'lucide-react'
+import { AlertTriangle, Trash2 } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
 
 interface DangerZoneTabContentProps {
   projectName: string

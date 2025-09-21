@@ -1,4 +1,4 @@
-import {z} from 'zod'
+import { z } from 'zod'
 
 const exampleSchema = z.object({
   input: z.string()

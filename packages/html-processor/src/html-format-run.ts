@@ -1,14 +1,16 @@
 #!/usr/bin/env bun
+/* eslint-disable no-console */
 /**
  * Utility script to format HTML files
  * Usage: bun run src/format-utility.ts
  */
 
-import {readFileSync, writeFileSync} from 'node:fs'
-import {resolve, dirname} from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {htmlFormat} from './html-format'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
 import process from 'node:process'
+import { fileURLToPath } from 'node:url'
+
+import { htmlFormat } from './html-format'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

@@ -1,14 +1,15 @@
 'use client'
 
+import type { LucideIcon } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import {ChevronDown} from 'lucide-react'
-import {cn} from '@/lib/utils'
-import type {LucideIcon} from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export interface SplitButtonDropdownTab<T extends string = string> {
   value: T

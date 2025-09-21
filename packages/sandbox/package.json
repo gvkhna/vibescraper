@@ -14,12 +14,14 @@
     "build": "vite build",
     "clean": "rimraf dist .turbo node_modules/.cache node_modules/.vite-temp *.tsbuildinfo",
     "dev": "vite build --watch",
+    "format": "bun eslint --quiet --config ../../eslint.config.mjs . --fix && bun prettier --write .",
+    "lint": "bun eslint --config ../../eslint.config.mjs .",
     "test": "vitest run",
     "typecheck": "bun tsc --noEmit && bun eslint --quiet ."
   },
   "devDependencies": {
     "@types/deno": "^2.3.0",
-    "@types/node": "^24.5.0"
+    "@types/node": "^24.5.2"
   },
   "peerDependencies": {}
 }

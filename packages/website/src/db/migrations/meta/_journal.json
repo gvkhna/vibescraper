@@ -5,50 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1754716510084,
-      "tag": "20250809051510_left_veda",
+      "when": 1758318762095,
+      "tag": "20250919215242_ambiguous_stranger",
       "breakpoints": false
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1754886076438,
-      "tag": "20250811042116_tired_zombie",
-      "breakpoints": false
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1754956365314,
-      "tag": "20250811235245_spooky_angel",
-      "breakpoints": false
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1755218101032,
-      "tag": "20250815003501_tiresome_kate_bishop",
-      "breakpoints": false
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1755277460467,
-      "tag": "20250815170420_peaceful_tyrannus",
-      "breakpoints": false
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1755796881507,
-      "tag": "20250821172121_certain_gladiator",
-      "breakpoints": false
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1755905100850,
-      "tag": "20250822232500_greedy_lightspeed",
+      "when": 1758320539588,
+      "tag": "20250919222219_pale_reptil",
       "breakpoints": false
     }
   ]

@@ -1,15 +1,17 @@
-import {betterAuth} from 'better-auth'
-import {db} from '../db/db'
-import {drizzleAdapter} from 'better-auth/adapters/drizzle'
-import {PRIVATE_VARS} from '@/vars.private'
-import {PUBLIC_VARS} from '@/vars.public'
-import * as schema from '../db/schema'
-import {createAuthMiddleware} from 'better-auth/plugins'
-import {sendEmail} from './email'
-import {organization, username, magicLink, admin} from 'better-auth/plugins'
+import { betterAuth } from 'better-auth'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { createAuthMiddleware } from 'better-auth/plugins'
+import { admin, magicLink, organization, username } from 'better-auth/plugins'
 import debug from 'debug'
-import {STRINGS} from '@/strings'
-import {validateUsername} from './auth-username'
+
+import { STRINGS } from '@/strings'
+import { PRIVATE_VARS } from '@/vars.private'
+import { PUBLIC_VARS } from '@/vars.public'
+import { db } from '../db/db'
+import * as schema from '../db/schema'
+
+import { validateUsername } from './auth-username'
+import { sendEmail } from './email'
 
 const log = debug('app:auth')
 
@@ -32,7 +34,7 @@ export const auth = betterAuth({
       }
     }),
     magicLink({
-      sendMagicLink: async ({email, token, url}, request) => {
+      sendMagicLink: async ({ email, token, url }, request) => {
         log(`Sending magic link to ${email}…`)
         await sendEmail(email, 'Your Magic Sign-In Link', 'email-magic-link', {
           public_brand_name: STRINGS.BRAND_NAME,
@@ -64,7 +66,7 @@ export const auth = betterAuth({
         if (newSession) {
           const user = newSession.user
           const actor = await db.query.actor.findFirst({
-            where: (table, {eq}) => eq(schema.actor.userId, user.id as schema.UserId)
+            where: (table, { eq }) => eq(schema.actor.userId, user.id as schema.UserId)
           })
           if (!actor) {
             await db.insert(schema.actor).values({

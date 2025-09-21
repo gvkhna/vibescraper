@@ -1,5 +1,5 @@
-import type {Meta, StoryObj} from '@storybook/react'
-import {JsonTreeTable} from './json-tree-table'
+import type { Meta, StoryObj } from '@storybook/react'
+import { JsonTreeTable } from './json-tree-table'
 
 const meta: Meta<typeof JsonTreeTable> = {
   title: 'JsonTreeTable',
@@ -10,7 +10,7 @@ const meta: Meta<typeof JsonTreeTable> = {
   tags: ['autodocs'],
   argTypes: {
     expandLevel: {
-      control: {type: 'number', min: 0, max: 5},
+      control: { type: 'number', min: 0, max: 5 },
       description: 'Default expansion level for nested objects'
     }
   }
@@ -175,7 +175,7 @@ export const MixedTypesLight: Story = {
       nullValue: null,
       failValue: undefined,
       array: [1, 2, 3],
-      object: {nested: 'value'},
+      object: { nested: 'value' },
       emptyArray: [],
       emptyObject: {}
     } as any,
@@ -659,10 +659,12 @@ export const ConstrainedSmall: Story = {
       <div className='min-h-screen bg-white p-8'>
         <div className='mx-auto max-w-md'>
           <h3 className='mb-4 text-lg font-semibold'>Small Container (max-w-md)</h3>
-          <div className='h-96 border-4 border-purple-500 rounded-lg overflow-hidden flex flex-col bg-purple-50'>
-            <div className='bg-white h-full w-full'>
-            <Story />
-          </div>
+          <div
+            className='flex h-96 flex-col overflow-hidden rounded-lg border-4 border-purple-500 bg-purple-50'
+          >
+            <div className='h-full w-full bg-white'>
+              <Story />
+            </div>
           </div>
         </div>
       </div>
@@ -670,7 +672,8 @@ export const ConstrainedSmall: Story = {
   ],
   args: {
     data: {
-      veryLongPropertyNameThatWillCauseHorizontalOverflow: 'This is a very long value that should cause horizontal scrolling when the container is too narrow to display it properly',
+      veryLongPropertyNameThatWillCauseHorizontalOverflow:
+        'This is a very long value that should cause horizontal scrolling when the container is too narrow to display it properly',
       anotherVeryLongPropertyName: 'Another long value to test overflow behavior',
       nested: {
         deeplyNestedPropertyWithLongName: 'Nested value that is also quite long',
@@ -685,7 +688,7 @@ export const ConstrainedSmall: Story = {
       },
       manyTopLevelProperties: 'To test vertical scrolling',
       item1: 'Value 1',
-      item2: 'Value 2', 
+      item2: 'Value 2',
       item3: 'Value 3',
       item4: 'Value 4',
       item5: 'Value 5',
@@ -705,10 +708,12 @@ export const ConstrainedMedium: Story = {
       <div className='min-h-screen bg-white p-8'>
         <div className='mx-auto max-w-2xl'>
           <h3 className='mb-4 text-lg font-semibold'>Medium Container (max-w-2xl)</h3>
-          <div className='h-64 border-4 border-orange-500 rounded-lg overflow-hidden flex flex-col bg-orange-50'>
-            <div className='bg-white h-full w-full'>
-            <Story />
-          </div>
+          <div
+            className='flex h-64 flex-col overflow-hidden rounded-lg border-4 border-orange-500 bg-orange-50'
+          >
+            <div className='h-full w-full bg-white'>
+              <Story />
+            </div>
           </div>
         </div>
       </div>
@@ -720,7 +725,8 @@ export const ConstrainedMedium: Story = {
         id: 1,
         title: 'Long title that might cause horizontal overflow in medium containers',
         url: 'https://very-long-domain-name-for-testing-overflow.com/api/v1/endpoint/with/many/segments/that/will/definitely/overflow',
-        description: 'A detailed description that contains a lot of text and should demonstrate how the component handles text wrapping and horizontal scrolling when the content is wider than the available container space.',
+        description:
+          'A detailed description that contains a lot of text and should demonstrate how the component handles text wrapping and horizontal scrolling when the content is wider than the available container space.',
         metadata: {
           tags: ['long-tag-name-1', 'another-very-long-tag-name', 'third-extremely-long-tag'],
           performance: {
@@ -750,10 +756,10 @@ export const ConstrainedTiny: Story = {
       <div className='min-h-screen bg-white p-8'>
         <div className='mx-auto w-64'>
           <h3 className='mb-4 text-lg font-semibold'>Tiny Container (w-64)</h3>
-          <div className='h-48 border-4 border-pink-500 rounded-lg overflow-hidden flex flex-col bg-pink-50'>
-            <div className='bg-white h-full w-full'>
-            <Story />
-          </div>
+          <div className='flex h-48 flex-col overflow-hidden rounded-lg border-4 border-pink-500 bg-pink-50'>
+            <div className='h-full w-full bg-white'>
+              <Story />
+            </div>
           </div>
         </div>
       </div>
@@ -772,7 +778,7 @@ export const ConstrainedTiny: Story = {
       key9: 'Ninth value to ensure vertical scroll',
       key10: 'Tenth value for complete testing',
       url: 'https://example.com/very/long/path/that/will/overflow',
-      num: 12345.67890,
+      num: 12345.6789,
       nested: {
         prop1: 'Nested value 1',
         prop2: 'Nested value 2'
@@ -788,12 +794,18 @@ export const FillTestVertical: Story = {
     (Story) => (
       <div className='min-h-screen bg-white p-8'>
         <h3 className='mb-4 text-lg font-semibold'>Vertical Fill Test - Tall Container, Little Data</h3>
-        <div className='h-[600px] w-full border-4 border-red-500 rounded-lg overflow-hidden flex flex-col relative'
-             style={{background: 'repeating-linear-gradient(45deg, #fecaca 0px, #fecaca 20px, #fca5a5 20px, #fca5a5 40px)'}}>
-          <div className='absolute top-2 right-2 text-xs bg-white px-2 py-1 rounded shadow text-red-800 z-10'>
+        <div
+          className='relative flex h-[600px] w-full flex-col overflow-hidden rounded-lg border-4
+            border-red-500'
+          style={{
+            background:
+              'repeating-linear-gradient(45deg, #fecaca 0px, #fecaca 20px, #fca5a5 20px, #fca5a5 40px)'
+          }}
+        >
+          <div className='absolute top-2 right-2 z-10 rounded bg-white px-2 py-1 text-xs text-red-800 shadow'>
             H: 600px | Data: 3 items
           </div>
-          <div className='bg-white h-full w-full'>
+          <div className='h-full w-full bg-white'>
             <Story />
           </div>
         </div>
@@ -815,12 +827,17 @@ export const FillTestHorizontal: Story = {
     (Story) => (
       <div className='min-h-screen bg-white p-8'>
         <h3 className='mb-4 text-lg font-semibold'>Horizontal Fill Test - Wide Container, Little Data</h3>
-        <div className='h-48 w-full border-4 border-blue-500 rounded-lg overflow-hidden flex flex-col relative'
-             style={{background: 'repeating-linear-gradient(90deg, #bfdbfe 0px, #bfdbfe 30px, #93c5fd 30px, #93c5fd 60px)'}}>
-          <div className='absolute top-2 right-2 text-xs bg-white px-2 py-1 rounded shadow text-blue-800 z-10'>
+        <div
+          className='relative flex h-48 w-full flex-col overflow-hidden rounded-lg border-4 border-blue-500'
+          style={{
+            background:
+              'repeating-linear-gradient(90deg, #bfdbfe 0px, #bfdbfe 30px, #93c5fd 30px, #93c5fd 60px)'
+          }}
+        >
+          <div className='absolute top-2 right-2 z-10 rounded bg-white px-2 py-1 text-xs text-blue-800 shadow'>
             W: 100% | Data: 3 items
           </div>
-          <div className='bg-white h-full w-full'>
+          <div className='h-full w-full bg-white'>
             <Story />
           </div>
         </div>
@@ -842,12 +859,19 @@ export const FillTestCombined: Story = {
     (Story) => (
       <div className='min-h-screen bg-white p-8'>
         <h3 className='mb-4 text-lg font-semibold'>Combined Fill Test - Large Container, Minimal Data</h3>
-        <div className='h-96 w-full border-4 border-green-500 rounded-lg overflow-hidden flex flex-col relative'
-             style={{background: 'repeating-linear-gradient(45deg, #bbf7d0 0px, #bbf7d0 25px, #86efac 25px, #86efac 50px)'}}>
-          <div className='absolute top-2 right-2 text-xs bg-white px-2 py-1 rounded shadow text-green-800 z-10'>
+        <div
+          className='relative flex h-96 w-full flex-col overflow-hidden rounded-lg border-4 border-green-500'
+          style={{
+            background:
+              'repeating-linear-gradient(45deg, #bbf7d0 0px, #bbf7d0 25px, #86efac 25px, #86efac 50px)'
+          }}
+        >
+          <div
+            className='absolute top-2 right-2 z-10 rounded bg-white px-2 py-1 text-xs text-green-800 shadow'
+          >
             384px × 100% | Data: 4 items
           </div>
-          <div className='bg-white h-full w-full'>
+          <div className='h-full w-full bg-white'>
             <Story />
           </div>
         </div>

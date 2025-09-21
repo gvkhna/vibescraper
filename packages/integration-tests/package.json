@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "clean": "rimraf dist .turbo node_modules/.cache *.tsbuildinfo",
+    "format": "bun eslint --quiet --config ../../eslint.config.mjs . --fix && bun prettier --write .",
+    "lint": "bun eslint --config ../../eslint.config.mjs .",
     "test": "vitest run",
     "typecheck": "bun tsc --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^24.3.0"
+    "@types/node": "^24.5.2"
   }
 }

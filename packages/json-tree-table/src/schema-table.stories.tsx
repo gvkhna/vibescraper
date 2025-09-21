@@ -1,10 +1,10 @@
-import type {Meta, StoryObj} from '@storybook/react'
-import {type FC, type PropsWithChildren, useState} from 'react'
-import {ScrollArea} from '@/components/ui/scroll-area'
+import type { Meta, StoryObj } from '@storybook/react'
+import { type FC, type PropsWithChildren, useState } from 'react'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
-import {type TreeNode, TreeTableEditor} from './tree-table-editor'
-import {schemaTableToJsonSchema} from './schema-table-to-json-schema'
-import {TooltipProvider} from '@/components/ui/tooltip'
+import { type TreeNode, TreeTableEditor } from './tree-table-editor'
+import { schemaTableToJsonSchema } from './schema-table-to-json-schema'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 const initialTreeData: TreeNode[] = [
   {
@@ -74,7 +74,7 @@ const meta = {
     schemaData: initialTreeData
   },
   argTypes: {
-    onChange: {action: 'updated'} // This allows Storybook to track changes
+    onChange: { action: 'updated' } // This allows Storybook to track changes
   }
 } satisfies Meta<typeof TreeTableEditor>
 

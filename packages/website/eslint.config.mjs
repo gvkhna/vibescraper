@@ -1,8 +1,9 @@
+import { eslintHonoHttpStatusCode } from '@vibescraper/dev-utils';
+import { eslintZustandSelectors } from '@vibescraper/dev-utils';
+import { eslintZustandSet } from '@vibescraper/dev-utils';
+import { defineConfig } from 'eslint/config';
+
 import rootConfig from '../../eslint.config.mjs';
-import {defineConfig} from 'eslint/config';
-import {eslintHonoHttpStatusCode} from '@vibescraper/dev-utils';
-import {eslintZustandSelectors} from '@vibescraper/dev-utils';
-import {eslintZustandSet} from '@vibescraper/dev-utils';
 
 export default defineConfig([
   ...rootConfig,
@@ -10,11 +11,10 @@ export default defineConfig([
     ignores: [
       '.astro/**/*',
       '.storybook/**/*',
-      '**/*stories*',
       'astro.config.ts',
       'drizzle.config.ts',
-      'src/**/_*.tmp.ts',
-      'src/**/_*.tmp.tsx',
+      'src/**/*stories*',
+      'src/**/*tmp*',
       'src/components/ai-elements/**',
       'src/components/animate-ui/**',
       'src/components/ui/**'

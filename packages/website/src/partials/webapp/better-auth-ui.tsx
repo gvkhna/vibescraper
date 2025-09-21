@@ -1,6 +1,6 @@
 'use client'
 
-import {AuthView} from '@daveyplate/better-auth-ui'
+import { AuthView } from '@daveyplate/better-auth-ui'
 
 interface AuthPageTemplateProps {
   pathname: string
@@ -40,7 +40,7 @@ const authConfig = {
   }
 }
 
-export function AuthPageTemplate({pathname, redirectTo}: AuthPageTemplateProps) {
+export function AuthPageTemplate({ pathname, redirectTo }: AuthPageTemplateProps) {
   const config = authConfig[pathname as keyof typeof authConfig]
 
   return (

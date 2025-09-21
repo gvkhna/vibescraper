@@ -1,5 +1,6 @@
+/* eslint-disable */
 await (async function () {
-  const {expect} = await import('jsr:@std/expect')
+  const { expect } = await import('jsr:@std/expect')
   globalThis.expect = expect
 
   const _originalPostMessage = globalThis.postMessage.bind(globalThis)
@@ -90,7 +91,7 @@ await (async function () {
 
   globalThis.test = (description, fn) => {
     // console.log('calling test');
-    globalThis.___TESTS___.push({description, fn, only: false, skip: false})
+    globalThis.___TESTS___.push({ description, fn, only: false, skip: false })
     // queueMicrotask(() => {
     //   console.log('called test microtask');
     // });
@@ -99,12 +100,12 @@ await (async function () {
   // 2) test.only()
   globalThis.test.only = (description, fn) => {
     onlyMode = true
-    globalThis.___TESTS___.push({description, fn, only: true, skip: false})
+    globalThis.___TESTS___.push({ description, fn, only: true, skip: false })
   }
 
   // 3) test.skip()
   globalThis.test.skip = (description, _fn) => {
-    globalThis.___TESTS___.push({description, fn: _fn, only: false, skip: true})
+    globalThis.___TESTS___.push({ description, fn: _fn, only: false, skip: true })
   }
 
   // The global `test` function
@@ -164,7 +165,7 @@ await (async function () {
   // console.log('setup tests', tests.length);
 
   globalThis.___RUN_TESTS___ = async () => {
-    for (const {description, fn, only, skip} of globalThis.___TESTS___) {
+    for (const { description, fn, only, skip } of globalThis.___TESTS___) {
       if (skip || (onlyMode && !only)) {
         // postTest('skipped', description, performance.now(), 0, 'Test skipped');
         postSkipped(description)

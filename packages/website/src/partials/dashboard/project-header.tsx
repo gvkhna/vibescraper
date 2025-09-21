@@ -1,16 +1,16 @@
 'use client'
 
 import * as React from 'react'
-import { Button } from '@/components/ui/button'
+import { MoreHorizontal, Play, Settings } from 'lucide-react'
+
+import { StatusBadge } from '@/components/status-badge'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem
-} from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Play, Settings } from 'lucide-react'
-import { StatusBadge } from '@/components/status-badge'
+  DropdownMenuItem,
+  DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 
 interface ProjectHeaderProps {

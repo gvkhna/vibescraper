@@ -1,8 +1,9 @@
 /* eslint-disable no-undefined */
 import React from 'react'
-import type {JsonObject} from 'type-fest'
-import {TreeTableEditor} from './tree-table-editor'
-import {jsonObjectToSchemaTable} from './json-object-to-schema-table'
+import type { JsonObject } from 'type-fest'
+
+import { jsonObjectToSchemaTable } from './json-object-to-schema-table'
+import { TreeTableEditor } from './tree-table-editor'
 
 // AJV type values
 export const JSON_SCHEMA_TYPES = [
@@ -36,7 +37,7 @@ export interface JsonSchemaTableProps {
   className?: string
 }
 
-import type {TreeNode, TreeNodeType} from './tree-table-editor'
+import type { TreeNode, TreeNodeType } from './tree-table-editor'
 
 // Helper to convert JSON Schema directly to TreeNode array
 function jsonSchemaToSchemaTable(schema: SimpleObjectSchema): TreeNode[] {
@@ -107,7 +108,7 @@ function jsonSchemaToSchemaTable(schema: SimpleObjectSchema): TreeNode[] {
   return result
 }
 
-export function JsonSchemaTable({data, className}: JsonSchemaTableProps) {
+export function JsonSchemaTable({ data, className }: JsonSchemaTableProps) {
   // Transform the schema data to tree nodes
   const schemaData = React.useMemo(() => {
     // Only transform if data is valid

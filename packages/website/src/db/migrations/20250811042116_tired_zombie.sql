@@ -1,1 +1,0 @@
-ALTER TABLE "projectCommit" ADD COLUMN "currentEditorUrl" text;

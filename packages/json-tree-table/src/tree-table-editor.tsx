@@ -1,14 +1,11 @@
 'use client'
 
 import React from 'react'
-import {ChevronDown} from './components/icons/chevron-down'
-import {ChevronRight} from './components/icons/chevron-right'
-import {Plus} from './components/icons/plus'
-import {Minus} from './components/icons/minus'
-// import {ChevronDown, ChevronRight, Plus, Minus} from 'lucide-react'
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table'
-import {Badge} from '@/components/ui/badge'
-import {Button} from '@/components/ui/button'
+import debug from 'debug'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -17,14 +14,18 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import {Input} from '@/components/ui/input'
+// import {ChevronDown, ChevronRight, Plus, Minus} from 'lucide-react'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 
-import {TooltipDescription} from './tooltip-description'
-import {cn} from '@/lib/utils'
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip'
-import {TreeTableValueField} from './tree-table-value-field'
-import {TreeTableCheckboxCell} from './tree-table-checkbox-cell'
-import debug from 'debug'
+import { ChevronDown } from './components/icons/chevron-down'
+import { ChevronRight } from './components/icons/chevron-right'
+import { Minus } from './components/icons/minus'
+import { Plus } from './components/icons/plus'
+import { TooltipDescription } from './tooltip-description'
+import { TreeTableCheckboxCell } from './tree-table-checkbox-cell'
+import { TreeTableValueField } from './tree-table-value-field'
 const log = debug('app:tree-table-editor')
 
 const nodeTypes = {
@@ -89,7 +90,12 @@ export type FlatNode = {
   badge?: string
 }
 
-export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...props}: TreeTableEditorProps) {
+export function TreeTableEditor({
+  schemaData,
+  onChange,
+  schemaPrefillValues,
+  ...props
+}: TreeTableEditorProps) {
   const enabledAddRootItemButton = props.enabledAddRootItemButton ?? false
   const enableArray = props.enableArray ?? false
   // const enableRequireField = props.enableRequireField ?? false
@@ -130,7 +136,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
   const [hoveredRow, setHoveredRow] = React.useState<string | null>(null)
   const [editingKey, setEditingKey] = React.useState<string | null>(null)
   const [editingKeyValue, setEditingKeyValue] = React.useState<string>('')
-  const [columnWidths, setColumnWidths] = React.useState({key: 150, type: 100, checkbox: 10, value: 300})
+  const [columnWidths, setColumnWidths] = React.useState({ key: 150, type: 100, checkbox: 10, value: 300 })
   const [openValueSelector, setOpenValueSelector] = React.useState<string | null>(null)
   const tableRef = React.useRef<HTMLDivElement>(null)
   const resizingRef = React.useRef<{
@@ -222,7 +228,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
 
   const toggleExpand = (path: string[]) => {
     const id = path.join('.')
-    setExpanded((prev) => ({...prev, [id]: !prev[id]}))
+    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))
   }
 
   // const getNodeAtPath = (path: string[]): TreeNode | null => {
@@ -273,13 +279,13 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
 
   const updateDescriptionValue = (path: string[], value: string) => {
     updateNodeAtPath(path, (node) => {
-      return {...node, description: value}
+      return { ...node, description: value }
     })
   }
 
   const updateCheckboxValue = (path: string[], value: boolean) => {
     updateNodeAtPath(path, (node) => {
-      return {...node, checkboxValue: value}
+      return { ...node, checkboxValue: value }
     })
   }
 
@@ -295,7 +301,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
         parsedValue = value
       }
 
-      return {...node, value: parsedValue}
+      return { ...node, value: parsedValue }
     })
   }
 
@@ -329,7 +335,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
 
     const id = path.join('.')
     if (newType === 'Array' || newType === 'Object') {
-      setExpanded((prev) => ({...prev, [id]: true}))
+      setExpanded((prev) => ({ ...prev, [id]: true }))
     }
   }
 
@@ -462,9 +468,9 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
         const parentNodePath_ = parentPath.slice(0, -1)
         updateNodeAtPath(parentNodePath_, (node) => {
           if (node.type === 'Array') {
-            return {...node, value: `(${node.children?.length ?? 0} items)`}
+            return { ...node, value: `(${node.children?.length ?? 0} items)` }
           } else if (node.type === 'Object') {
-            return {...node, value: '(Object)'}
+            return { ...node, value: '(Object)' }
           }
           return node
         })
@@ -542,7 +548,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
         // Update the parent node's value
         updateNodeAtPath(parentPath, (node) => {
           if (node.type === 'Array') {
-            return {...node, value: `(${node.children?.length ?? 0} items)`}
+            return { ...node, value: `(${node.children?.length ?? 0} items)` }
           }
           return node
         })
@@ -621,7 +627,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                     {...(disableResize
                       ? {}
                       : {
-                          style: {width: columnWidths.key}
+                          style: { width: columnWidths.key }
                         })}
                   >
                     <div className='flex items-center justify-between text-nowrap whitespace-nowrap'>
@@ -651,7 +657,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                     {...(disableResize
                       ? {}
                       : {
-                          style: {width: columnWidths.type}
+                          style: { width: columnWidths.type }
                         })}
                   >
                     <div className='flex items-center justify-between text-nowrap whitespace-nowrap'>
@@ -684,7 +690,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                       {...(disableResize
                         ? {}
                         : {
-                            style: {width: columnWidths.checkbox}
+                            style: { width: columnWidths.checkbox }
                           })}
                     >
                       {enableCheckboxTooltip ? (
@@ -751,7 +757,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                       {...(disableResize
                         ? {}
                         : {
-                            style: {width: columnWidths.value}
+                            style: { width: columnWidths.value }
                           })}
                     >
                       <div className='flex items-center justify-between text-nowrap whitespace-nowrap'>
@@ -765,7 +771,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                 {rows.map((row) => {
                   const id = row.path.join('.')
                   const isEditing = editingKey === id
-                  const {node} = row
+                  const { node } = row
 
                   return (
                     <TableRow
@@ -782,13 +788,13 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                         {...(disableResize
                           ? {}
                           : {
-                              style: {width: columnWidths.key}
+                              style: { width: columnWidths.key }
                             })}
                         className={cn('text-primary py-1', !enableDescriptionTooltip && 'px-4')}
                       >
                         <div
                           className='flex items-center'
-                          style={{paddingLeft: `${row.depth * 10}px`}}
+                          style={{ paddingLeft: `${row.depth * 10}px` }}
                         >
                           {enableDescriptionTooltip &&
                             (hoveredRow === id ? (
@@ -948,7 +954,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                         {...(disableResize
                           ? {}
                           : {
-                              style: {width: columnWidths.type}
+                              style: { width: columnWidths.type }
                             })}
                         className='text-primary px-4 py-1 text-nowrap'
                       >
@@ -1016,7 +1022,7 @@ export function TreeTableEditor({schemaData, onChange, schemaPrefillValues, ...p
                           {...(disableResize
                             ? {}
                             : {
-                                style: {width: columnWidths.value}
+                                style: { width: columnWidths.value }
                               })}
                           className={cn(
                             'px-4 py-1 text-zinc-400',

@@ -1,12 +1,13 @@
-import type {Context, MiddlewareHandler, Hono} from 'hono'
-// import {getFilePath, getFilePathWithoutDefaultDocument} from 'hono/utils/filepath'
-import {createReadStream, lstatSync} from 'node:fs'
-import type {ReadStream, Stats} from 'node:fs'
 // import {HttpStatusCode} from '@/lib/http-status-codes'
 import debug from 'debug'
+import type { Context } from 'hono'
+import type { ReadStream, Stats } from 'node:fs'
+// import {getFilePath, getFilePathWithoutDefaultDocument} from 'hono/utils/filepath'
+import { createReadStream, lstatSync } from 'node:fs'
+
 // import type {HonoServer} from '..'
-import {getContentDisposition, getMimeType, isCompressibleContentType} from './mime-utils'
-import type {FileMetadata, ServeOptions} from './storage-service'
+import { getContentDisposition, getMimeType, isCompressibleContentType } from './mime-utils'
+import type { FileMetadata, ServeOptions } from './storage-service'
 
 const log = debug('app:server:serve-static')
 
@@ -54,15 +55,15 @@ const getStats = (path: string) => {
 export function serveStatic(
   c: Context,
   filePath: string,
-  {filename, mimeType, filesize, lastModified, hash}: Partial<FileMetadata>,
-  {download, inline, cacheControl}: ServeOptions
-) {
+  { filename, mimeType, filesize, lastModified, hash }: Partial<FileMetadata>,
+  { download, inline, cacheControl }: ServeOptions
+): Response {
   log('serve static resp')
 
   // ---- 1. Get file stats ----
   const stats = getStats(filePath)
   if (!stats) {
-    return c.json({error: 'File not found'}, 404)
+    return c.json({ error: 'File not found' }, 404)
   }
 
   // ---- 2. Check for precompressed variant ----
@@ -184,7 +185,7 @@ export function serveStatic(
     }
 
     const chunksize = end - start + 1
-    const stream = createReadStream(filePath, {start, end})
+    const stream = createReadStream(filePath, { start, end })
 
     c.header('Content-Length', chunksize.toString())
     c.header('Content-Range', `bytes ${start}-${end}/${stats.size}`)

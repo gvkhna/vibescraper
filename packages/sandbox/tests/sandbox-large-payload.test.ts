@@ -1,18 +1,20 @@
-/* eslint-disable no-console */
-import {describe, it, expect, beforeAll, afterAll} from 'vitest'
-import {SandboxManager} from '../src/sandbox-manager'
-import process from 'node:process'
-import path from 'node:path'
+import debug from 'debug'
 import fs from 'node:fs/promises'
+import path from 'node:path'
+import process from 'node:process'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-describe('SandboxManager Large Payload Test', () => {
+import { SandboxManager } from '../src/sandbox-manager'
+const log = debug('test')
+
+describe('sandboxManager Large Payload Test', () => {
   let sandboxManager: SandboxManager | undefined
   const testTmpDir = path.join(process.cwd(), 'tmp')
 
   beforeAll(async () => {
-    await fs.mkdir(testTmpDir, {recursive: true})
+    await fs.mkdir(testTmpDir, { recursive: true })
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
-      console.log('[LARGE PAYLOAD TEST]', ...args)
+      log('[LARGE PAYLOAD TEST]', ...args)
     })
     // Wait for sandbox to be ready before running tests
     await sandboxManager.waitForReady()
@@ -21,22 +23,24 @@ describe('SandboxManager Large Payload Test', () => {
   afterAll(async () => {
     // Cleanup like other tests do
     try {
-      await fs.rm(testTmpDir, {recursive: true, force: true})
+      await fs.rm(testTmpDir, { recursive: true, force: true })
     } catch (e) {
-      console.error('Failed to cleanup test tmp directory:', e)
+      log('Failed to cleanup test tmp directory:', e)
     }
   })
 
   it('should handle large payloads with multiple arguments', async () => {
+    expect.assertions(2)
+
     // Create test data: one large string to trigger file IPC, plus other args
     const largeString = 'x'.repeat(10000) // 10KB - exceeds 8KB threshold
-    const secondArg = {test: 'object', value: 42}
+    const secondArg = { test: 'object', value: 42 }
     const thirdArg = [1, 2, 3, 'test']
 
-    console.log('Test inputs:')
-    console.log('  - Arg 1: Large string, length:', largeString.length)
-    console.log('  - Arg 2: Object:', JSON.stringify(secondArg))
-    console.log('  - Arg 3: Array:', JSON.stringify(thirdArg))
+    log('Test inputs:')
+    log('  - Arg 1: Large string, length:', largeString.length)
+    log('  - Arg 2: Object:', JSON.stringify(secondArg))
+    log('  - Arg 3: Array:', JSON.stringify(thirdArg))
 
     // Simple function that returns all arguments back
     const code = `
@@ -64,14 +68,14 @@ describe('SandboxManager Large Payload Test', () => {
 
     const result = executionResult.result as any
 
-    console.log('Test outputs:')
-    console.log('  - Result exists:', result !== undefined)
-    console.log('  - Arg 1 returned, length:', result?.firstArg?.length)
-    console.log('  - Arg 2 returned:', JSON.stringify(result?.secondArg))
-    console.log('  - Arg 3 returned:', JSON.stringify(result?.thirdArg))
-    console.log('  - Large payload round-trip successful:', result?.firstArg === largeString)
+    log('Test outputs:')
+    log('  - Result exists:', result !== undefined)
+    log('  - Arg 1 returned, length:', result?.firstArg?.length)
+    log('  - Arg 2 returned:', JSON.stringify(result?.secondArg))
+    log('  - Arg 3 returned:', JSON.stringify(result?.thirdArg))
+    log('  - Large payload round-trip successful:', result?.firstArg === largeString)
 
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       firstArg: largeString,
       secondArg: secondArg,
       thirdArg: thirdArg

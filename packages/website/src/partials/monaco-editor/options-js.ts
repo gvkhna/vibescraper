@@ -1,9 +1,9 @@
-import {monaco as monacoNS} from './monaco-namespace'
+import { monaco as monacoNS } from './monaco-namespace'
 
 export function options(readOnly = false): monacoNS.editor.IStandaloneEditorConstructionOptions {
   // Default editor options
   return {
-    minimap: {enabled: false},
+    minimap: { enabled: false },
     scrollBeyondLastLine: false,
     lineNumbers: 'on',
     wordWrap: 'on',

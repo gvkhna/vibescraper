@@ -1,4 +1,4 @@
-import {defineConfig} from 'vitest/config'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
@@ -15,6 +15,7 @@ export default defineConfig({
     testTimeout: 30000,
     hookTimeout: 60000,
     teardownTimeout: 10000,
+    reporters: ['verbose'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html']

@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import {defineConfig} from 'drizzle-kit'
+import { defineConfig } from 'drizzle-kit'
 
 const processEnv = (globalThis as any).process.env as Record<string, string>
 

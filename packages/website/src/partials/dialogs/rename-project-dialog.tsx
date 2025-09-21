@@ -1,17 +1,18 @@
-import {type PropsWithChildren, useState} from 'react'
+import { type PropsWithChildren, useState } from 'react'
+import { toast } from 'sonner'
+
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
-  DialogDescription,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
-import {Input} from '@/components/ui/input'
-import {Button} from '@/components/ui/button'
-import {useStore} from '@/store/use-store'
-import {toast} from 'sonner'
-import {nowait} from '@/lib/async-utils'
+import { Input } from '@/components/ui/input'
+import { nowait } from '@/lib/async-utils'
+import { useStore } from '@/store/use-store'
 
 export interface RenameProjectDialogProps {
   open: boolean
@@ -22,7 +23,7 @@ export function RenameProjectDialog(props: PropsWithChildren<RenameProjectDialog
   const currentProject = useStore((state) => state.projectSlice.project)
   const renameProject = useStore((state) => state.projectSlice.renameProject)
   const [projectName, setProjectName] = useState(currentProject?.project.name ?? '')
-  const {children, open, onOpenChange} = props
+  const { children, open, onOpenChange } = props
 
   const handleSubmit = async () => {
     try {

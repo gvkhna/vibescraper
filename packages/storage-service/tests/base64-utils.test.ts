@@ -1,8 +1,9 @@
-import {describe, it, expect} from 'vitest'
-import {encodeBase64, decodeBase64} from '../src/base64-utils'
 import fs from 'node:fs'
 import path from 'node:path'
-import {fileURLToPath} from 'node:url'
+import { fileURLToPath } from 'node:url'
+import { describe, expect, it } from 'vitest'
+
+import { decodeBase64, encodeBase64 } from '../src/base64-utils'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -21,7 +22,7 @@ describe('base64-utils', () => {
     const decodedBytes = decodeBase64(encoded)
 
     // Verify we get the exact same data back
-    expect(decodedBytes).toEqual(originalBytes)
-    expect(decodedBytes.length).toBe(originalBytes.length)
+    expect(decodedBytes).toStrictEqual(originalBytes)
+    expect(decodedBytes).toHaveLength(originalBytes.length)
   })
 })

@@ -1,16 +1,16 @@
-import {create} from 'zustand'
-import {immer} from 'zustand/middleware/immer'
-import {persist, devtools, createJSONStorage, subscribeWithSelector} from 'zustand/middleware'
-import {enablePatches} from 'immer'
-import type {StateCreator} from 'zustand'
+import { enablePatches } from 'immer'
 import mergeDeepLeft from 'ramda/es/mergeDeepLeft'
+import type { StateCreator } from 'zustand'
+import { create } from 'zustand'
+import { createJSONStorage, devtools, persist, subscribeWithSelector } from 'zustand/middleware'
+import { immer } from 'zustand/middleware/immer'
 
-import {createAssistantSlice, type AssistantSlice} from './assistant-slice'
-import {createEditorSlice, type EditorSlice} from './editor-slice'
-import {createProjectSlice, type ProjectSlice} from './project-slice'
-import {createRecentProjectsSlice, type RecentProjectsSlice} from './recent-projects-slice'
-import {createExtractorSlice, type ExtractorSlice} from './extractor-slice'
-import {createModelsSlice, type ModelsSlice} from './models-slice'
+import { type AssistantSlice, createAssistantSlice } from './assistant-slice'
+import { createEditorSlice, type EditorSlice } from './editor-slice'
+import { createExtractorSlice, type ExtractorSlice } from './extractor-slice'
+import { createModelsSlice, type ModelsSlice } from './models-slice'
+import { createProjectSlice, type ProjectSlice } from './project-slice'
+import { createRecentProjectsSlice, type RecentProjectsSlice } from './recent-projects-slice'
 
 // Do not use
 // enableMapSet() prefer to use json objects for clear serialization

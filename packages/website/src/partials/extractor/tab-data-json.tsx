@@ -1,11 +1,12 @@
 'use client'
 
 import * as React from 'react'
-import {Database, AlertCircle} from 'lucide-react'
-import {EmptyStateData} from '@/components/empty-state-data'
-import {useStore} from '@/store/use-store'
 import ReactJson from '@uiw/react-json-view'
-import {nordTheme} from '@uiw/react-json-view/nord'
+import { nordTheme } from '@uiw/react-json-view/nord'
+import { AlertCircle, Database } from 'lucide-react'
+
+import { EmptyStateData } from '@/components/empty-state-data'
+import { useStore } from '@/store/use-store'
 
 export function TabDataJson() {
   // Get extraction data from project commit cache

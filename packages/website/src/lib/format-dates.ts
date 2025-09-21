@@ -1,10 +1,11 @@
-import {formatDistanceToNow, toDate, parseISO} from 'date-fns'
-import {utc} from '@date-fns/utc'
-import type {SQLUTCTimestamp} from '@/db/schema/common'
+import { utc } from '@date-fns/utc'
+import { formatDistanceToNow, parseISO, toDate } from 'date-fns'
+
+import type { SQLUTCTimestamp } from '@/db/schema/common'
 
 export function sqlTimestampToDate(sqlTimestamp: SQLUTCTimestamp): Date {
   // Parse the PostgreSQL timestamp directly as UTC
-  return new Date(toDate(parseISO(sqlTimestamp, {in: utc})))
+  return new Date(toDate(parseISO(sqlTimestamp, { in: utc })))
 }
 
 export function dateToSqlTimestamp(date: Date): SQLUTCTimestamp {
@@ -32,5 +33,5 @@ export function sqlFormatTimestampUTC(sqlTimestamp: SQLUTCTimestamp): string {
 
 export function sqlFormatRelativeTimeFromUTC(sqlTimestamp: SQLUTCTimestamp): string {
   const utcDate = sqlTimestampToDate(sqlTimestamp)
-  return formatDistanceToNow(utcDate, {addSuffix: true})
+  return formatDistanceToNow(utcDate, { addSuffix: true })
 }

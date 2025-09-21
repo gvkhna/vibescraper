@@ -1,15 +1,16 @@
 'use client'
 
 import * as React from 'react'
-import {FileJson2, AlertTriangle, X, ChevronRight, AlertCircle} from 'lucide-react'
-import {EmptyStateData} from '@/components/empty-state-data'
-import {useStore} from '@/store/use-store'
-import {JsonSchemaTable} from '@vibescraper/json-tree-table'
-import {Button} from '@/components/ui/button'
-import {cn} from '@/lib/utils'
-import type {JsonObject} from 'type-fest'
-import {objectRootMetaSchema, validateDataAgainstSchema} from '@vibescraper/shared-types'
+import { objectRootMetaSchema, validateDataAgainstSchema } from '@vibescraper/json-schemas'
+import { JsonSchemaTable } from '@vibescraper/json-tree-table'
 import debug from 'debug'
+import { AlertCircle, AlertTriangle, ChevronRight, FileJson2, X } from 'lucide-react'
+import type { JsonObject } from 'type-fest'
+
+import { EmptyStateData } from '@/components/empty-state-data'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { useStore } from '@/store/use-store'
 
 const log = debug('app:tab-data-schema')
 
@@ -181,7 +182,7 @@ export function TabDataSchema() {
     <div className='relative h-full'>
       {/* Warning indicator button */}
       {warnings.length > 0 && (
-        <div className='absolute right-4 top-4 z-10'>
+        <div className='absolute top-4 right-4 z-10'>
           {!showWarnings ? (
             <Button
               variant='ghost'
@@ -204,7 +205,7 @@ export function TabDataSchema() {
             </Button>
           ) : (
             <div
-              className='min-w-[320px] max-w-md rounded-lg border border-amber-500/40 bg-amber-50/95 p-4
+              className='max-w-md min-w-[320px] rounded-lg border border-amber-500/40 bg-amber-50/95 p-4
                 shadow-lg backdrop-blur dark:border-amber-500/50 dark:bg-amber-950/90'
             >
               <div className='mb-3 flex items-start justify-between'>

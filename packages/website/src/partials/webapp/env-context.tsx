@@ -1,5 +1,6 @@
-import type {PUBLIC_VARS} from '@/vars.public'
-import {createContext, type PropsWithChildren, useContext, type FC, useMemo} from 'react'
+import { createContext, type FC, type PropsWithChildren, useContext, useMemo } from 'react'
+
+import type { PUBLIC_VARS } from '@/vars.public'
 
 // Define the shape of the environment variables your context will contain
 export type EnvContextValue = {
@@ -10,8 +11,8 @@ export type EnvContextValue = {
 export const EnvContext = createContext<EnvContextValue | null>(null)
 
 // Provide the context value to the subtree
-export const EnvProvider: FC<PropsWithChildren<EnvContextValue>> = ({publicEnv, children}) => {
-  const value = useMemo<EnvContextValue>(() => ({publicEnv}), [publicEnv])
+export const EnvProvider: FC<PropsWithChildren<EnvContextValue>> = ({ publicEnv, children }) => {
+  const value = useMemo<EnvContextValue>(() => ({ publicEnv }), [publicEnv])
   return <EnvContext.Provider value={value}>{children}</EnvContext.Provider>
 }
 

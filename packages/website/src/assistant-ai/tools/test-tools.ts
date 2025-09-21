@@ -1,6 +1,7 @@
-import {tool} from 'ai'
-import {z} from 'zod'
+import { tool } from 'ai'
 import debug from 'debug'
+import { z } from 'zod'
+
 import tools from '@/assistant-ai/tools'
 
 const log = debug('app:test-tools')
@@ -13,7 +14,7 @@ export function makeTestTools() {
     // Simple tool with no parameters
     ping: tool({
       ...tools.ping,
-      execute: async ({input}, opts) => {
+      execute: async ({ input }, opts) => {
         log('ping called')
         return {
           success: true,

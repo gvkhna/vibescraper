@@ -1,15 +1,16 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Textarea} from '@/components/ui/textarea'
-import {Label} from '@/components/ui/label'
-import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from '@/components/ui/select'
-import {Checkbox} from '@/components/ui/checkbox'
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table'
-import {Code2, Globe} from 'lucide-react'
-import {GlassCard} from '@/components/quick-stats'
+import { Code2, Globe } from 'lucide-react'
+
+import { GlassCard } from '@/components/quick-stats'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Textarea } from '@/components/ui/textarea'
 
 export function DataExplorer() {
   const [mode, setMode] = React.useState<'sql' | 'visual'>('sql')
@@ -136,7 +137,7 @@ export function DataExplorer() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Array.from({length: 10}).map((_, i) => (
+              {Array.from({ length: 10 }).map((_, i) => (
                 <TableRow
                   key={i}
                   className='hover:bg-[#3B82F6]/10'
@@ -149,8 +150,8 @@ export function DataExplorer() {
                   <TableCell>{i % 3 === 0 ? 'false' : 'true'}</TableCell>
                   <TableCell>
                     <pre
-                      className='max-w-[360px] overflow-hidden text-ellipsis whitespace-nowrap font-mono
-                        text-xs'
+                      className='max-w-[360px] overflow-hidden font-mono text-xs text-ellipsis
+                        whitespace-nowrap'
                     >
                       {'{ "colors": ["red","blue"], "sku": "ACME-' + String(1000 + i) + '" }'}
                     </pre>

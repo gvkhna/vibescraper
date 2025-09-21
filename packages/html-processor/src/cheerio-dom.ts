@@ -46,7 +46,7 @@ export class CheerioDOM {
    */
   xpath(expression: string): CheerioElement[] {
     // Basic XPath to CSS selector conversion
-    let cssSelector = expression
+    const cssSelector = expression
       .replace(/\/\//g, ' ') // descendant combinator
       .replace(/\//g, ' > ') // child combinator
       .replace(/\[@([^=]+)="([^"]+)"\]/g, '[$1="$2"]') // attribute selectors
@@ -346,7 +346,7 @@ export class CheerioElement {
   /**
    * Clone the element
    */
-  clone(deep: boolean = true): CheerioElement {
+  clone(deep = true): CheerioElement {
     const cloned = this.element.clone()
     return new CheerioElement(cloned, this.$)
   }

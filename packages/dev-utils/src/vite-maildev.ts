@@ -1,9 +1,10 @@
-import {spawn, type ChildProcess} from 'node:child_process'
+/* eslint-disable no-console */
+import debug from 'debug'
+import { type ChildProcess, spawn } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import type {Plugin, ViteDevServer} from 'vite'
-import debug from 'debug'
+import type { Plugin, ViteDevServer } from 'vite'
 
 const dbg = debug('vite-maildev')
 
@@ -14,7 +15,7 @@ let cleanupRegistered = false
 
 function getMaildevCommand(): [string, string[]] {
   const pkgPath = path.resolve(process.cwd(), 'package.json')
-  const {scripts = {}} = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as {
+  const { scripts = {} } = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as {
     scripts?: Record<string, string>
   }
 

@@ -1,6 +1,7 @@
-import {TableCell} from '@/components/ui/table'
-import {Checkbox} from '@/components/ui/checkbox'
-import type {TreeNode, FlatNode} from './tree-table-editor'
+import { Checkbox } from '@/components/ui/checkbox'
+import { TableCell } from '@/components/ui/table'
+
+import type { FlatNode, TreeNode } from './tree-table-editor'
 
 export interface TreeTableCheckboxCellProps {
   node: TreeNode
@@ -10,7 +11,7 @@ export interface TreeTableCheckboxCellProps {
 }
 
 export function TreeTableCheckboxCell(props: TreeTableCheckboxCellProps) {
-  const {node, row, updateCheckboxValue, disabled = false} = props
+  const { node, row, updateCheckboxValue, disabled = false } = props
 
   let isPrimitive = false
 

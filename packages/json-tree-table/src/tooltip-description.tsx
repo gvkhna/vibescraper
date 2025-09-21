@@ -1,8 +1,9 @@
 import React from 'react'
-import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover'
-import {Textarea} from '@/components/ui/textarea'
-import {Info} from 'lucide-react'
-import {Button} from '@/components/ui/button'
+import { Info } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Textarea } from '@/components/ui/textarea'
 
 export interface TooltipDescriptionProps {
   disabled?: boolean

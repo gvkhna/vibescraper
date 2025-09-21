@@ -1,13 +1,14 @@
-import type {Context, MiddlewareHandler} from 'hono'
 // import {getFilePath, getFilePathWithoutDefaultDocument} from 'hono/utils/filepath'
 // import {createReadStream, lstatSync} from 'node:fs'
 // import type {ReadStream, Stats} from 'node:fs'
 // import {HttpStatusCode} from '@/lib/http-status-codes'
 import debug from 'debug'
+import type { Context } from 'hono'
+import { stream as honoStream } from 'hono/streaming'
+
 // import type {HonoServer} from '..'
-import {getContentDisposition, getMimeType, isCompressibleContentType} from './mime-utils'
-import {stream as honoStream} from 'hono/streaming'
-import type {FileMetadata, ServeOptions} from './storage-service'
+import { getContentDisposition, getMimeType, isCompressibleContentType } from './mime-utils'
+import type { FileMetadata, ServeOptions } from './storage-service'
 
 const log = debug('app:server:serve-static')
 
@@ -51,9 +52,9 @@ const log = debug('app:server:serve-static')
 export function serveStream(
   c: Context,
   fileStream: ReadableStream,
-  {filename, mimeType, filesize, lastModified, hash}: Partial<FileMetadata>,
-  {download, inline, cacheControl}: ServeOptions
-) {
+  { filename, mimeType, filesize, lastModified, hash }: Partial<FileMetadata>,
+  { download, inline, cacheControl }: ServeOptions
+): Response {
   log('serve stream resp')
 
   // ---- 1. Get file stats ----

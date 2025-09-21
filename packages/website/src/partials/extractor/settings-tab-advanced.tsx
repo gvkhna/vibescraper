@@ -1,9 +1,10 @@
 'use client'
 
 import * as React from 'react'
-import {Label} from '@/components/ui/label'
-import {Input} from '@/components/ui/input'
-import type {ProjectCommitSettings, ExtractorSettings} from '@/db/schema/project'
+
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import type { ExtractorSettings, ProjectCommitSettings } from '@/db/schema/project'
 
 interface AdvancedTabContentProps {
   commitSettings: ProjectCommitSettings
@@ -34,7 +35,7 @@ export function AdvancedTabContent({
               type='number'
               value={commitSettings.maxRetries}
               onChange={(e) => {
-                setCommitSettings({...commitSettings, maxRetries: parseInt(e.target.value) || 3})
+                setCommitSettings({ ...commitSettings, maxRetries: parseInt(e.target.value) || 3 })
               }}
               className='mt-2 border-white/20 bg-[#0A0A0B]'
             />
@@ -77,8 +78,8 @@ export function AdvancedTabContent({
             id='user-agent'
             value={commitSettings.crawler.userAgent ?? ''}
             onChange={(e) => {
-              const crawler = {...commitSettings.crawler, userAgent: e.target.value}
-              setCommitSettings({...commitSettings, crawler})
+              const crawler = { ...commitSettings.crawler, userAgent: e.target.value }
+              setCommitSettings({ ...commitSettings, crawler })
             }}
             className='mt-2 border-white/20 bg-[#0A0A0B] font-mono text-xs'
             placeholder='Mozilla/5.0 (Windows NT 10.0; Win64; x64)...'
@@ -100,8 +101,8 @@ export function AdvancedTabContent({
                 .split(',')
                 .map((c) => parseInt(c.trim()))
                 .filter(Boolean)
-              const crawler = {...commitSettings.crawler, successStatusCodes: codes}
-              setCommitSettings({...commitSettings, crawler})
+              const crawler = { ...commitSettings.crawler, successStatusCodes: codes }
+              setCommitSettings({ ...commitSettings, crawler })
             }}
             className='mt-2 border-white/20 bg-[#0A0A0B]'
             placeholder='200, 201, 204'
@@ -125,7 +126,7 @@ export function AdvancedTabContent({
               value={extractorSettings.maxOutputSize === -1 ? '' : extractorSettings.maxOutputSize}
               onChange={(e) => {
                 const value = e.target.value ? parseInt(e.target.value) : -1
-                setExtractorSettings({...extractorSettings, maxOutputSize: value})
+                setExtractorSettings({ ...extractorSettings, maxOutputSize: value })
               }}
               className='border-white/20 bg-[#0A0A0B]'
               placeholder='Unlimited'

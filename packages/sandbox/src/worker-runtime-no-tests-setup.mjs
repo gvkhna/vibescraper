@@ -1,3 +1,4 @@
+/* eslint-disable */
 await (async function () {
   globalThis.___RUN_TESTS___ = undefined
   globalThis.___TESTS___ = undefined

@@ -1,8 +1,12 @@
 // spawn-server.ts
-import {type ChildProcess, spawn, execSync} from 'node:child_process'
+import { ESLint } from 'eslint'
+import { type ChildProcess, execSync, spawn } from 'node:child_process'
+import { constants } from 'node:fs'
 import fs from 'node:fs/promises'
+import { access, mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import {ESLint} from 'eslint'
+
+import { eslintDenoCompat } from './eslint-deno-compat'
 import {
   decodeMessage,
   encodeMessage,
@@ -11,19 +15,15 @@ import {
   type JobResultMessage,
   type JobStatusMessage,
   type JobTestMessage,
-  type NewJobMessage,
   type LargePayloadMessage,
+  type NewJobMessage,
   type SandboxMessage
 } from './sandbox-worker'
-import {nowait, simpleId} from './utils'
-import {access, mkdir, writeFile} from 'node:fs/promises'
-import {constants} from 'node:fs'
-import {rule as prefixRule} from './sandbox-eslint-prefix-imports'
-import {rule as nodeFetchRule} from './sandbox-eslint-node-fetch'
 import SandboxWorkerScriptRaw from './sandbox-worker.ts?raw'
+import { nowait, simpleId } from './utils'
+import WorkerRuntimeNoTestsSetupRaw from './worker-runtime-no-tests-setup.mjs?raw'
 import WorkerRuntimeSetupRaw from './worker-runtime-setup.mjs?raw'
 import WorkerRuntimeTestingSetupRaw from './worker-runtime-testing-setup.mjs?raw'
-import WorkerRuntimeNoTestsSetupRaw from './worker-runtime-no-tests-setup.mjs?raw'
 
 export type Logger = (...args: unknown[]) => void
 
@@ -58,7 +58,7 @@ export interface CodeExecutionResultMessage {
   messageId: string
   type: 'result'
   completedAt?: number
-  result: string | null
+  result: string | null | undefined
 }
 
 export interface CodeExecutionLogMessage {
@@ -197,18 +197,18 @@ export class SandboxManager extends EventTarget {
   private checkDenoAvailability(): void {
     try {
       // Try to get Deno version to verify it's installed
-      const result = execSync('deno --version', {encoding: 'utf8'})
+      const result = execSync('deno --version', { encoding: 'utf8' })
       this.log('Deno found:', result.split('\n')[0])
 
       // Try to get the path to Deno executable
       try {
-        const denoPath = execSync('which deno', {encoding: 'utf8'}).trim()
+        const denoPath = execSync('which deno', { encoding: 'utf8' }).trim()
         this.denoPath = denoPath
         this.log('Deno path:', denoPath)
       } catch {
         // On Windows, 'which' might not work, try 'where'
         try {
-          const denoPath = execSync('where deno', {encoding: 'utf8'}).split('\n')[0].trim()
+          const denoPath = execSync('where deno', { encoding: 'utf8' }).split('\n')[0].trim()
           this.denoPath = denoPath
           this.log('Deno path:', denoPath)
         } catch {
@@ -228,7 +228,7 @@ export class SandboxManager extends EventTarget {
 
   private async createIpcDirectory() {
     try {
-      await mkdir(this.ipcDir, {recursive: true})
+      await mkdir(this.ipcDir, { recursive: true })
       await this.cleanupOrphanedIpcFiles()
       this.log(`Created IPC directory: ${this.ipcDir}`)
     } catch (err) {
@@ -238,9 +238,9 @@ export class SandboxManager extends EventTarget {
 
   private async initialize() {
     // Create TMP_DIR if it doesn't exist
-    await mkdir(this.tmpDir, {recursive: true})
-    await mkdir(this.sandboxDir, {recursive: true})
-    await mkdir(this.ipcDir, {recursive: true})
+    await mkdir(this.tmpDir, { recursive: true })
+    await mkdir(this.sandboxDir, { recursive: true })
+    await mkdir(this.ipcDir, { recursive: true })
 
     // Cleanup any orphaned IPC files from previous runs
     await this.cleanupOrphanedIpcFiles()
@@ -387,7 +387,7 @@ export class SandboxManager extends EventTarget {
             error: job.error
           }
           // This triggers the generator's listener
-          this.dispatchEvent(new CustomEvent('job-status', {detail: msg}))
+          this.dispatchEvent(new CustomEvent('job-status', { detail: msg }))
 
           // Optionally do final cleanup
           nowait(this.cleanupJob(jobId), this.log)
@@ -401,7 +401,7 @@ export class SandboxManager extends EventTarget {
     })
   }
 
-  private pendingLargeResults = new Map<string, {filePath: string; timestamp: number}>()
+  private pendingLargeResults = new Map<string, { filePath: string; timestamp: number }>()
 
   private handleSandboxOutput(data: string) {
     const text = data
@@ -522,7 +522,7 @@ export class SandboxManager extends EventTarget {
 
   // Update status handler to trigger cleanup
   private updateJobStatus(message: JobStatusMessage) {
-    const {jobId, status, error} = message
+    const { jobId, status, error } = message
     // jobId: string, status: SandboxWorkerJob['status'], error?: string
     const job = this.jobs.get(jobId)
     if (job) {
@@ -546,39 +546,39 @@ export class SandboxManager extends EventTarget {
         completedAt: job.completedAt
       }
 
-      this.dispatchEvent(new CustomEvent('job-status', {detail: statusNotification}))
+      this.dispatchEvent(new CustomEvent('job-status', { detail: statusNotification }))
     }
   }
 
   private addJobLog(message: JobLogMessage) {
-    const {jobId} = message
+    const { jobId } = message
     const job = this.jobs.get(jobId)
     if (job) {
-      this.dispatchEvent(new CustomEvent('job-log', {detail: message}))
+      this.dispatchEvent(new CustomEvent('job-log', { detail: message }))
     }
   }
 
   private addJobException(message: JobExceptionMessage) {
-    const {jobId} = message
+    const { jobId } = message
     const job = this.jobs.get(jobId)
     if (job) {
-      this.dispatchEvent(new CustomEvent('job-exception', {detail: message}))
+      this.dispatchEvent(new CustomEvent('job-exception', { detail: message }))
     }
   }
 
   private addJobResult(message: JobResultMessage) {
-    const {jobId} = message
+    const { jobId } = message
     const job = this.jobs.get(jobId)
     if (job) {
-      this.dispatchEvent(new CustomEvent('job-result', {detail: message}))
+      this.dispatchEvent(new CustomEvent('job-result', { detail: message }))
     }
   }
 
   private addJobTest(message: JobTestMessage) {
-    const {jobId} = message
+    const { jobId } = message
     const job = this.jobs.get(jobId)
     if (job) {
-      this.dispatchEvent(new CustomEvent('job-test', {detail: message}))
+      this.dispatchEvent(new CustomEvent('job-test', { detail: message }))
     }
   }
 
@@ -592,7 +592,7 @@ export class SandboxManager extends EventTarget {
     const jobDir = path.join(this.sandboxDir, jobId)
     try {
       // Clean up the job directory
-      await fs.rm(jobDir, {recursive: true, force: true})
+      await fs.rm(jobDir, { recursive: true, force: true })
 
       // Clean up any IPC files for this job (input/output files)
       await this.cleanupIpcFilesForJob(jobId)
@@ -660,21 +660,25 @@ export class SandboxManager extends EventTarget {
             sourceType: 'module'
           }
         },
-        rules: {'deno-compat/prefix-imports': 'error'}
+        rules: {
+          ...eslintDenoCompat.rules
+        }
+        // rules: { 'deno-compat/prefix-imports': 'error' }
         // rules: {'deno-compat/prefix-imports': 'error', 'deno-compat/remove-legacy-fetch': 'error'}
       },
       plugins: {
-        'deno-compat': {
-          rules: {'prefix-imports': prefixRule}
-          // rules: {'prefix-imports': prefixRule, 'remove-legacy-fetch': nodeFetchRule}
-        }
+        ...eslintDenoCompat.plugins
+        // 'deno-compat': {
+        //   rules: { 'prefix-imports': prefixRule }
+        //   // rules: {'prefix-imports': prefixRule, 'remove-legacy-fetch': nodeFetchRule}
+        // }
       }
     })
 
     // const cfg = await eslint.calculateConfigForFile('virtual.js')
     // log('Effective ESLint config for this run ->', cfg)
 
-    const [result] = await eslint.lintText(code, {filePath: 'virtual.js'})
+    const [result] = await eslint.lintText(code, { filePath: 'virtual.js' })
     this.log('eslint error count', result.errorCount, result.warningCount)
     this.log('eslint fixable', result.fixableErrorCount, result.fixableWarningCount)
     this.log(
@@ -729,7 +733,7 @@ export class SandboxManager extends EventTarget {
       this.log('Large input detected, writing to file:', fileName, 'size:', inputSize)
 
       // Ensure IPC directory exists before writing
-      await mkdir(this.ipcDir, {recursive: true})
+      await mkdir(this.ipcDir, { recursive: true })
       // Write the JSON array directly to the file
       await writeFile(filePath, stringifiedInput, 'utf8')
 
@@ -868,7 +872,7 @@ export class SandboxManager extends EventTarget {
             break
           }
           case 'job-result': {
-            this.log('Listener received job-result, result length:', msg.result.length || 0)
+            this.log('Listener received job-result, result length:', msg.result?.length ?? 0)
             const resultNotification: CodeExecutionResultMessage = {
               codeExecutionId: jobId,
               messageId: simpleId(),
@@ -946,6 +950,8 @@ export class SandboxManager extends EventTarget {
 
     // Track if we've seen an exception (which means no result will come)
     let hasSeenException = false
+    let hasSeenResult = false
+    let hasSeenFinalStatus = false
 
     try {
       while (true) {
@@ -959,23 +965,37 @@ export class SandboxManager extends EventTarget {
             hasSeenException = true
           }
 
+          if (msg.type === 'result') {
+            hasSeenResult = true
+          }
+
+          if (msg.type === 'status' && ['completed', 'failed', 'timeout'].includes(msg.status)) {
+            hasSeenFinalStatus = true
+          }
+
           // Exit condition depends on whether we're executing a function or just code
           if (functionInput) {
             // For function execution, exit only when we get the result
             // The completed status will come before the result, so we just wait for result
-            if (msg.type === 'result' && msg.result) {
-              this.log('Function execution complete with result')
-              return
-            }
+            // if (msg.type === 'result' && msg.result) {
+            //   this.log('Function execution complete with result')
+            //   hasSeenResult = true
+            // }
             // Also exit on completed status if we've seen an exception (no result will come)
             // Or on failed/timeout status
-            if (msg.type === 'status' && ['completed', 'failed', 'timeout'].includes(msg.status)) {
-              if (hasSeenException || msg.status !== 'completed') {
-                this.log('Function execution ended:', msg.status, 'hasException:', hasSeenException)
-                return
-              }
-              // If completed but no exception, keep waiting for result
+            if (hasSeenFinalStatus && hasSeenResult) {
+              return
             }
+            if (hasSeenException && hasSeenFinalStatus) {
+              return
+            }
+            // if (msg.type === 'status' && ['completed', 'failed', 'timeout'].includes(msg.status)) {
+            //   if (hasSeenException || msg.status !== 'completed') {
+            //     this.log('Function execution ended:', msg.status, 'hasException:', hasSeenException)
+            //     return
+            //   }
+            //   // If completed but no exception, keep waiting for result
+            // }
           } else {
             // For regular code execution, exit on completion status
             if (msg.type === 'status' && ['completed', 'failed', 'timeout'].includes(msg.status)) {
@@ -1010,7 +1030,7 @@ export class SandboxManager extends EventTarget {
     code: string,
     input: unknown[],
     testing = false
-  ): Promise<{result?: unknown; messages: CodeExecutionMessage[]}> {
+  ): Promise<{ result?: unknown; messages: CodeExecutionMessage[] }> {
     const all: CodeExecutionMessage[] = []
     for await (const msg of this.executeCode(code, testing, input)) {
       all.push(msg)
@@ -1023,15 +1043,15 @@ export class SandboxManager extends EventTarget {
       try {
         // Try to parse as JSON - if successful, return with result
         const parsedResult = JSON.parse(resultMessage.result)
-        return {result: parsedResult, messages: all}
+        return { result: parsedResult, messages: all }
       } catch {
         // If JSON parsing fails, don't include result key
-        return {messages: all}
+        return { messages: all }
       }
     }
 
     // If no result message, don't include result key
-    return {messages: all}
+    return { messages: all }
   }
 
   // async executeCode(code: string): Promise<SandboxWorkerJob> {

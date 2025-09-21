@@ -1,8 +1,8 @@
-import {loadEnv} from 'vite'
-import {defineConfig} from 'vitest/config'
-
-import {fileURLToPath} from 'node:url'
-import {dirname, resolve} from 'node:path'
+import { dirname, resolve } from 'node:path'
+import process from 'node:process'
+import { fileURLToPath } from 'node:url'
+import { loadEnv } from 'vite'
+import { defineConfig } from 'vitest/config'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const projectRoot = resolve(__dirname, '../..')
@@ -14,6 +14,7 @@ export default defineConfig(() => {
 
   return {
     test: {
+      reporters: ['verbose'],
       globals: true,
       environment: 'node',
       testTimeout: 120000,

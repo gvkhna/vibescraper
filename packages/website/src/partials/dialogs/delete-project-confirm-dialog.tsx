@@ -1,8 +1,11 @@
 'use client'
 
-import {type ReactNode, useState} from 'react'
-import {Loader2, Trash2} from 'lucide-react'
-import {Button} from '@/components/ui/button'
+import { type ReactNode, useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
+import { Loader2, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
+
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -11,13 +14,11 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
-import {toast} from 'sonner'
-import {useNavigate} from '@tanstack/react-router'
-import {sqlFormatTimestamp} from '@/lib/format-dates'
+import type { SQLUTCTimestamp } from '@/db/schema/common'
+import type { ProjectPublicId } from '@/db/schema/project'
 import api from '@/lib/api-client'
-import {nowait} from '@/lib/async-utils'
-import type {ProjectPublicId} from '@/db/schema/project'
-import type {SQLUTCTimestamp} from '@/db/schema/common'
+import { nowait } from '@/lib/async-utils'
+import { sqlFormatTimestamp } from '@/lib/format-dates'
 
 interface DeleteProjectDialogProps {
   open: boolean

@@ -1,19 +1,20 @@
-import {createTransport} from 'nodemailer'
-import handlebars from 'handlebars'
-import mjml from 'mjml'
-import {PRIVATE_VARS} from '@/vars.private'
-import {htmlToText} from 'html-to-text'
 import debug from 'debug'
+import handlebars from 'handlebars'
+import { htmlToText } from 'html-to-text'
+import mjml from 'mjml'
+import { createTransport } from 'nodemailer'
+
+import { PRIVATE_VARS } from '@/vars.private'
 
 const log = debug('app:email')
 
+import { STRINGS } from '@/strings'
 import mjmlLayout from '../email-templates/app-mailer.layout.mjml?raw'
 import mjmlConfirmationInstructions from '../email-templates/confirmation-instructions.mjml?raw'
 import mjmlEmailMagicLink from '../email-templates/email-magic-link.mjml?raw'
 import mjmlNewEmailInstructions from '../email-templates/new-email-instructions.mjml?raw'
-import mjmlResetPasswordInstructions from '../email-templates/reset-password-instructions.mjml?raw'
 import mjmlPasswordChanged from '../email-templates/password-changed.mjml?raw'
-import {STRINGS} from '@/strings'
+import mjmlResetPasswordInstructions from '../email-templates/reset-password-instructions.mjml?raw'
 
 function safeMjml2html(mjmlTemplate: string, options = {}) {
   let output: ReturnType<typeof mjml> = {
@@ -41,10 +42,10 @@ function safeMjml2html(mjmlTemplate: string, options = {}) {
       typeof err === 'object' &&
       err !== null &&
       'code' in err &&
-      typeof (err as {code: unknown}).code === 'string' &&
-      (err as {path?: unknown}).path &&
-      typeof (err as {path?: unknown}).path === 'string' &&
-      (err as {code: unknown; path: string}).path.includes('.mjmlconfig')
+      typeof (err as { code: unknown }).code === 'string' &&
+      (err as { path?: unknown }).path &&
+      typeof (err as { path?: unknown }).path === 'string' &&
+      (err as { code: unknown; path: string }).path.includes('.mjmlconfig')
     ) {
       log('MJML Config file not found error silently ignored')
       // Silently ignore config file not found
@@ -81,7 +82,7 @@ function compileTemplate(templateString: string, context: Record<string, string>
   })
 
   // 2. Convert MJML to HTML
-  const {html, errors} = safeMjml2html(combinedMjml)
+  const { html, errors } = safeMjml2html(combinedMjml)
 
   if (errors.length > 0) {
     throw new Error(`MJML errors: ${errors.map((e) => e.formattedMessage).join('\n')}`)

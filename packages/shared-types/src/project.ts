@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import type { ID, Timestamp } from './common'
 
 // Project and estimation types
@@ -47,7 +48,7 @@ export const EstimateItemSchema = z.object({
   unit: z.string().min(1),
   unitPrice: z.number().min(0),
   totalPrice: z.number().min(0),
-  category: z.string().optional(),
+  category: z.string().optional()
 })
 
 export const ProjectSchema = z.object({
@@ -57,7 +58,7 @@ export const ProjectSchema = z.object({
   status: ProjectStatusSchema,
   createdAt: z.union([z.date(), z.string()]),
   updatedAt: z.union([z.date(), z.string()]),
-  ownerId: z.string(),
+  ownerId: z.string()
 })
 
 export const ProjectEstimateSchema = z.object({
@@ -68,5 +69,5 @@ export const ProjectEstimateSchema = z.object({
   tax: z.number().min(0).optional(),
   total: z.number().min(0),
   createdAt: z.union([z.date(), z.string()]),
-  updatedAt: z.union([z.date(), z.string()]),
+  updatedAt: z.union([z.date(), z.string()])
 })

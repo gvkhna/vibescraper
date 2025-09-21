@@ -1,4 +1,4 @@
-import type {ProjectCommitCacheData} from '@/db/schema'
+import type { ProjectCommitCacheData } from '@/db/schema'
 
 export type PipelineStepStatus = 'success' | 'success-cached' | 'error' | 'not-run'
 

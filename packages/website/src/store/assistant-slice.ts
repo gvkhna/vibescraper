@@ -1,37 +1,37 @@
-import type {StateSlice} from './use-store'
+import { differenceInMinutes } from 'date-fns'
+import debug from 'debug'
+
 import type {
-  ProjectChatDTOType,
-  ProjectChatMessageDTOType,
-  ProjectChatPublicId,
+  ProjectChatBlockIdempotencyKey,
   ProjectChatCursor,
+  ProjectChatDTOType,
   ProjectChatMessageCursor,
-  ProjectPublicId,
+  ProjectChatMessageDTOType,
   ProjectChatMessagePublicId,
-  ProjectChatBlockIdempotencyKey
+  ProjectChatPublicId,
+  ProjectPublicId
 } from '@/db/schema'
 import api from '@/lib/api-client'
-import debug from 'debug'
+import { asyncRetry } from '@/lib/async-utils'
+import { sqlTimestampToDate } from '@/lib/format-dates'
+import type {
+  ChatFileVersionBlockFileStatus,
+  ChatFileVersionBlockType
+} from '@/partials/assistant-ui/chat-message-schema'
+
 import {
+  type AsyncEntityState,
   failLoading,
   finishLoading,
   initialAsyncEntityState,
   isLoaded,
   isLoading,
-  startLoading,
-  type AsyncEntityState
-} from './async-entity-state'
+  startLoading } from './async-entity-state'
 import {
   initialPaginationEntityState,
-  updatePaginationEntityState,
-  type PaginationEntityState
-} from './pagination-entity-state'
-import {asyncRetry} from '@/lib/async-utils'
-import {sqlTimestampToDate} from '@/lib/format-dates'
-import {differenceInMinutes} from 'date-fns'
-import type {
-  ChatFileVersionBlockFileStatus,
-  ChatFileVersionBlockType
-} from '@/partials/assistant-ui/chat-message-schema'
+  type PaginationEntityState,
+  updatePaginationEntityState } from './pagination-entity-state'
+import type { StateSlice } from './use-store'
 const log = debug('app:assistant-slice')
 
 export const PROJECT_COMPONENT_IDEMPOTENCY_RECENT_WINDOW = 10 // minutes
@@ -164,7 +164,7 @@ export const createAssistantSlice: StateSlice<AssistantSlice> = (set, get) =>
                 throw new Error(body.message)
               }
             },
-            {retries: 1, minDelay: 500}
+            { retries: 1, minDelay: 500 }
           )
         }
       }
@@ -246,7 +246,7 @@ export const createAssistantSlice: StateSlice<AssistantSlice> = (set, get) =>
             throw new Error(body.message)
           }
         },
-        {retries: 1, minDelay: 500}
+        { retries: 1, minDelay: 500 }
       )
     },
     fetchProjectChatMessage: async (chatId, chatMessageId) => {
@@ -277,7 +277,7 @@ export const createAssistantSlice: StateSlice<AssistantSlice> = (set, get) =>
             throw new Error(body.message)
           }
         },
-        {retries: 1, minDelay: 500}
+        { retries: 1, minDelay: 500 }
       )
     },
     deleteProjectChat: async (projectPublicId, projectChatPublicId) => {

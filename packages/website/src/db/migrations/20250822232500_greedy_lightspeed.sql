@@ -1,1 +1,0 @@
-ALTER TABLE "projectCommit" ADD COLUMN "recentUrls" jsonb DEFAULT '{"urls":[]}'::jsonb NOT NULL;

@@ -1,9 +1,10 @@
+/* eslint-disable no-undefined */
 /* eslint-disable no-console */
 
-import path from 'node:path'
+import { Buffer } from 'node:buffer'
 import fs from 'node:fs/promises'
-import {Buffer} from 'node:buffer'
-import {pathToFileURL} from 'node:url'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 import util from 'node:util'
 
 interface DenoWorkerOptions extends WorkerOptions {
@@ -70,7 +71,7 @@ export interface JobExceptionMessage {
 export interface JobResultMessage {
   type: 'job-result'
   jobId: string
-  result: string // JSON stringified result
+  result: string | undefined // JSON stringified result
 }
 
 export interface LargePayloadMessage {
@@ -166,7 +167,7 @@ export function isMessage(obj: unknown): obj is SandboxMessage {
       return typeof data.exception === 'string' || typeof data.exception === 'object'
 
     case 'job-result':
-      return typeof data.result === 'string'
+      return !!data
 
     case 'large-payload':
       return (
@@ -201,7 +202,7 @@ async function main() {
   let buffer = ''
 
   // Track large payload state per job
-  const pendingLargePayloads = new Map<string, {filePath: string; timestamp: number}>()
+  const pendingLargePayloads = new Map<string, { filePath: string; timestamp: number }>()
 
   globalThis.process.stdin.setEncoding('utf8')
   globalThis.process.stdin.on('data', (chunk) => {
@@ -285,7 +286,7 @@ async function main() {
   // }
 }
 
-async function handleNewJob({jobId, code, testing, functionInput}: NewJobMessage) {
+async function handleNewJob({ jobId, code, testing, functionInput }: NewJobMessage) {
   // console.log('[worker] handle new job')
   const sandboxDir = Deno.env.get('SANDBOX_DIR')
   if (!sandboxDir) {
@@ -419,7 +420,7 @@ async function handleNewJob({jobId, code, testing, functionInput}: NewJobMessage
     } as DenoWorkerOptions)
 
     worker.onmessage = (e) => {
-      const {type, kind, payload, result} = e.data
+      const { type, kind, payload, result } = e.data
       // console.log('[worker event]', e)
       console.log(`[worker] ${JSON.stringify(e.data)}`)
       if (type === 'log') {
@@ -457,52 +458,63 @@ async function handleNewJob({jobId, code, testing, functionInput}: NewJobMessage
         sendMessage(msg)
       }
       if (type === 'result') {
-        if (typeof payload !== 'string') {
-          throw new Error(`Expected result payload to be string, got ${typeof payload}`)
-        }
-        const payloadMessage = payload
-
-        // Check if result is large and needs file-based IPC
-        if (payloadMessage.length >= LARGE_PAYLOAD_THRESHOLD) {
-          // Large result - write to file and send wrapper
-          writeLargePayload(jobId, payloadMessage)
-            .then((fileName) => {
-              const wrapperMsg: LargePayloadMessage = {
-                type: 'large-payload',
-                originalMessage: 'job-result',
-                filePath: fileName,
-                jobId,
-                timestamp: Date.now()
-              }
-              sendMessage(wrapperMsg)
-
-              // Send actual job result message without the large payload
-              const resultMsg: JobResultMessage = {
-                type: 'job-result',
-                jobId,
-                result: '' // Empty - actual result is in file
-              }
-              sendMessage(resultMsg)
-            })
-            .catch((err: unknown) => {
-              console.log('Error writing large result to file:', err)
-              // Fallback: send truncated result
-              const truncatedPayload = `${payloadMessage.slice(0, LARGE_PAYLOAD_THRESHOLD)}...[truncated due to error]`
-              const msg: JobResultMessage = {
-                type: 'job-result',
-                jobId,
-                result: truncatedPayload
-              }
-              sendMessage(msg)
-            })
-        } else {
-          // Small result - use existing direct approach
+        if (payload === undefined) {
           const msg: JobResultMessage = {
             type: 'job-result',
             jobId,
-            result: payloadMessage
+            result: undefined
           }
           sendMessage(msg)
+        } else {
+          if (typeof payload !== 'string') {
+            throw new Error(`Expected result payload to be string, got ${typeof payload}`)
+          }
+          console.log('[worker] result payload', payload, typeof payload)
+          // const payloadMessage = JSON.stringify(payload)
+
+          const payloadMessage = payload
+          // Check if result is large and needs file-based IPC
+          if (payloadMessage.length >= LARGE_PAYLOAD_THRESHOLD) {
+            // Large result - write to file and send wrapper
+            writeLargePayload(jobId, payloadMessage)
+              .then((fileName) => {
+                const wrapperMsg: LargePayloadMessage = {
+                  type: 'large-payload',
+                  originalMessage: 'job-result',
+                  filePath: fileName,
+                  jobId,
+                  timestamp: Date.now()
+                }
+                sendMessage(wrapperMsg)
+
+                // Send actual job result message without the large payload
+                const resultMsg: JobResultMessage = {
+                  type: 'job-result',
+                  jobId,
+                  result: '' // Empty - actual result is in file
+                }
+                sendMessage(resultMsg)
+              })
+              .catch((err: unknown) => {
+                console.log('Error writing large result to file:', err)
+                // Fallback: send truncated result
+                const truncatedPayload = `${payloadMessage.slice(0, LARGE_PAYLOAD_THRESHOLD)}...[truncated due to error]`
+                const msg: JobResultMessage = {
+                  type: 'job-result',
+                  jobId,
+                  result: truncatedPayload
+                }
+                sendMessage(msg)
+              })
+          } else {
+            // Small result - use existing direct approach
+            const msg: JobResultMessage = {
+              type: 'job-result',
+              jobId,
+              result: payloadMessage
+            }
+            sendMessage(msg)
+          }
         }
       }
       if (type === 'complete') {
@@ -566,7 +578,7 @@ async function handleNewJob({jobId, code, testing, functionInput}: NewJobMessage
       // worker.terminate()
     }
 
-    sendMessage({type: 'job-status', jobId, status: 'running'})
+    sendMessage({ type: 'job-status', jobId, status: 'running' })
 
     const timeout = setTimeout(() => {
       console.log('worker timedout')

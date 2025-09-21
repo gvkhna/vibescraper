@@ -1,11 +1,12 @@
 'use client'
 
-import {Globe, AlertTriangle, Loader2} from 'lucide-react'
-import {EmptyStatePreview} from '@/components/empty-state-preview'
-import {useStore} from '@/store/use-store'
-import {useEffect, useState, useMemo} from 'react'
-import {Alert, AlertDescription} from '@/components/ui/alert'
+import { useEffect, useMemo, useState } from 'react'
+import { AlertTriangle, Globe, Loader2 } from 'lucide-react'
+
+import { EmptyStatePreview } from '@/components/empty-state-preview'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import api from '@/lib/api-client'
+import { useStore } from '@/store/use-store'
 
 export function TabPreview() {
   const projectCommitPublicId = useStore((state) => state.extractorSlice.projectCommit?.publicId)

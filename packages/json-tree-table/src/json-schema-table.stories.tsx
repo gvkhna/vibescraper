@@ -1,5 +1,5 @@
-import type {Meta, StoryObj} from '@storybook/react'
-import {JsonSchemaTable} from './json-schema-table'
+import type { Meta, StoryObj } from '@storybook/react'
+import { JsonSchemaTable } from './json-schema-table'
 
 const meta = {
   title: 'JsonSchemaTable',
@@ -88,8 +88,8 @@ const complexSchema = {
       type: 'object' as const,
       description: 'Additional metadata',
       properties: {
-        author: {type: 'string'},
-        version: {type: 'number'}
+        author: { type: 'string' },
+        version: { type: 'number' }
       }
     },
     // Union types (multiple allowed types)
@@ -116,8 +116,8 @@ const nestedSchema = {
         profile: {
           type: 'object',
           properties: {
-            firstName: {type: 'string'},
-            lastName: {type: 'string'}
+            firstName: { type: 'string' },
+            lastName: { type: 'string' }
           }
         }
       }
@@ -126,8 +126,8 @@ const nestedSchema = {
       type: 'object' as const,
       description: 'Application settings',
       properties: {
-        theme: {type: 'string'},
-        notifications: {type: 'boolean'}
+        theme: { type: 'string' },
+        notifications: { type: 'boolean' }
       }
     },
     history: {
@@ -136,8 +136,8 @@ const nestedSchema = {
       items: {
         type: 'object',
         properties: {
-          action: {type: 'string'},
-          timestamp: {type: 'integer'}
+          action: { type: 'string' },
+          timestamp: { type: 'integer' }
         }
       }
     }
@@ -232,7 +232,7 @@ export const Dark: Story = {
     className: 'bg-gray-900'
   },
   parameters: {
-    backgrounds: {default: 'dark'}
+    backgrounds: { default: 'dark' }
   },
   decorators: [
     (Story) => (
@@ -246,7 +246,7 @@ export const Dark: Story = {
 // Test malformed schemas to ensure component doesn't crash
 const malformedSchema = {
   type: 'array',
-  items: {type: 'string'}
+  items: { type: 'string' }
 } as any
 
 export const InvalidSchema: Story = {
@@ -262,7 +262,7 @@ export const InvalidSchemaDark: Story = {
     className: 'bg-gray-900'
   },
   parameters: {
-    backgrounds: {default: 'dark'}
+    backgrounds: { default: 'dark' }
   },
   decorators: [
     (Story) => (

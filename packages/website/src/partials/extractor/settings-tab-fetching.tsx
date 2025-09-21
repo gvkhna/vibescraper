@@ -1,10 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import {Label} from '@/components/ui/label'
-import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from '@/components/ui/select'
-import {Input} from '@/components/ui/input'
-import type {ProjectCommitSettings, FetchType, ScheduleType} from '@/db/schema/project'
+
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import type { FetchType, ProjectCommitSettings, ScheduleType } from '@/db/schema/project'
 
 interface FetchingTabContentProps {
   commitSettings: ProjectCommitSettings
@@ -28,7 +29,7 @@ export function FetchingTabContent({
           <Select
             value={commitSettings.fetchType}
             onValueChange={(v: FetchType) => {
-              setCommitSettings({...commitSettings, fetchType: v})
+              setCommitSettings({ ...commitSettings, fetchType: v })
             }}
           >
             <SelectTrigger
@@ -93,7 +94,7 @@ export function FetchingTabContent({
           <Select
             value={commitSettings.schedule}
             onValueChange={(v: ScheduleType) => {
-              setCommitSettings({...commitSettings, schedule: v})
+              setCommitSettings({ ...commitSettings, schedule: v })
             }}
           >
             <SelectTrigger
@@ -154,7 +155,7 @@ export function FetchingTabContent({
                     ...commitSettings.crawler,
                     requestTimeout: parseInt(e.target.value) * 1000 || 30000
                   }
-                  setCommitSettings({...commitSettings, crawler})
+                  setCommitSettings({ ...commitSettings, crawler })
                 }}
                 className='border-white/20 bg-[#0A0A0B]'
               />
@@ -179,7 +180,7 @@ export function FetchingTabContent({
                     ...commitSettings.crawler,
                     waitBetweenRequests: parseInt(e.target.value) || 750
                   }
-                  setCommitSettings({...commitSettings, crawler})
+                  setCommitSettings({ ...commitSettings, crawler })
                 }}
                 className='border-white/20 bg-[#0A0A0B]'
               />

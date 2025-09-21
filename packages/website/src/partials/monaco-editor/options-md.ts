@@ -1,9 +1,9 @@
-import {monaco as monacoNS} from './monaco-namespace'
+import { monaco as monacoNS } from './monaco-namespace'
 
 export function options(readOnly = false): monacoNS.editor.IStandaloneEditorConstructionOptions {
   // Default editor options optimized for Markdown viewing/editing
   return {
-    minimap: {enabled: false},
+    minimap: { enabled: false },
     scrollBeyondLastLine: false,
     lineNumbers: 'off',
     // Minimal gutter for cleaner markdown view
@@ -108,7 +108,7 @@ export function beforeMount(monaco: typeof monacoNS, readOnly = false) {
   monaco.languages.registerCompletionItemProvider('markdown', {
     provideCompletionItems: (_model, position) => {
       if (readOnly) {
-        return {suggestions: []}
+        return { suggestions: [] }
       }
 
       const suggestions: monacoNS.languages.CompletionItem[] = []
@@ -151,7 +151,7 @@ export function beforeMount(monaco: typeof monacoNS, readOnly = false) {
       //   })
       // })
 
-      return {suggestions}
+      return { suggestions }
     }
   })
 

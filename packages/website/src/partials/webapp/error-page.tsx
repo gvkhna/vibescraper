@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import {AlertCircle} from 'lucide-react'
-import {Button} from '@/components/ui/button'
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
-import {Link} from '@/components/link'
-import {useEffect, useState} from 'react'
-import {LOCAL_STORAGE_PROJECT_STORE_KEY} from '@/store/use-store'
+import { useEffect, useState } from 'react'
+import { AlertCircle } from 'lucide-react'
+
+import { Link } from '@/components/link'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { LOCAL_STORAGE_PROJECT_STORE_KEY } from '@/store/use-store'
 
 interface ErrorPageProps {
   title?: string

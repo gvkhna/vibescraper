@@ -1,18 +1,19 @@
 'use client'
 
 import * as React from 'react'
-import {HoverCard, HoverCardContent, HoverCardTrigger} from '@/components/ui/hover-card'
-import {cn, tw} from '@/lib/utils'
-import {Check, Loader2, X, Circle} from 'lucide-react'
-import {useStore} from '@/store/use-store'
+import debug from 'debug'
+import { Check, Circle, Loader2, X } from 'lucide-react'
+
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import {
-  derivePipelineStatus,
-  getPipelineStepLabel,
-  getOverallPipelineStatus,
   type DerivedPipelineStatus,
+  derivePipelineStatus,
+  getOverallPipelineStatus,
+  getPipelineStepLabel,
   type PipelineStepStatus
 } from '@/lib/pipeline-status-utils'
-import debug from 'debug'
+import { cn, tw } from '@/lib/utils'
+import { useStore } from '@/store/use-store'
 
 const log = debug('app:pipeline-status')
 
@@ -21,7 +22,7 @@ interface PipelineStatusProps {
   onComplete?: () => void
 }
 
-export function PipelineStatus({onComplete}: PipelineStatusProps) {
+export function PipelineStatus({ onComplete }: PipelineStatusProps) {
   // Get scraping state from store (whether currently scraping)
   const projectPublicId = useStore((state) => state.projectSlice.project?.project.publicId)
   const projectScrapingState = useStore((state) => state.extractorSlice.projectScrapingState)

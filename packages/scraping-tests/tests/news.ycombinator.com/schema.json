@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "commentsCount": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "commentsUrl": {
+      "description": "Discussion link, typically relative like item?id=NNN.",
+      "format": "uri-reference",
+      "type": "string"
+    },
+    "id": {
+      "description": "Hacker News item id.",
+      "minimum": 1,
+      "type": "string"
+    },
+    "points": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "postedAt": {
+      "description": "Approximate post time if resolved; timezone optional.",
+      "format": "date-time",
+      "type": ["string", "null"]
+    },
+    "rank": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "submitter": {
+      "maxLength": 100,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "type": "string"
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "url": {
+      "description": "Target URL; may be relative for self/Ask/Show posts.",
+      "format": "uri-reference",
+      "type": "string"
+    }
+  },
+  "required": ["id", "rank", "title", "url", "submitter", "points", "commentsCount", "commentsUrl"],
+  "type": "object",
+  "x-primary-key": "id"
+}

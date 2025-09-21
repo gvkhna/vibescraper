@@ -1,14 +1,15 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {Copy, FileJson2} from 'lucide-react'
-import {nowait} from '@/lib/async-utils'
-import {EmptyStateData} from '@/components/empty-state-data'
-import {useStore} from '@/store/use-store'
-import {MonacoTextEditor} from '../monaco-editor/monaco-text-editor'
 import debug from 'debug'
-import {TextViewer} from '../monaco-editor/text-viewer'
+import { Copy, FileJson2 } from 'lucide-react'
+
+import { EmptyStateData } from '@/components/empty-state-data'
+import { Button } from '@/components/ui/button'
+import { nowait } from '@/lib/async-utils'
+import { useStore } from '@/store/use-store'
+import { MonacoTextEditor } from '../monaco-editor/monaco-text-editor'
+import { TextViewer } from '../monaco-editor/text-viewer'
 
 const log = debug('app:tab-schema-json')
 

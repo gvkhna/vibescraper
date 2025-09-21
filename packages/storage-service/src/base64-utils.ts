@@ -1,4 +1,4 @@
-import {base64} from '@scure/base'
+import { base64 } from '@scure/base'
 
 export function encodeBase64(bytes: Uint8Array): string {
   return base64.encode(bytes)

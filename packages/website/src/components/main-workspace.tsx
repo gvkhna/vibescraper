@@ -1,32 +1,32 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs'
-import {Badge} from '@/components/ui/badge'
-import {ScrollArea} from '@/components/ui/scroll-area'
 import {
+  BookOpen,
+  ChevronDown,
+  Code,
+  Copy,
+  Database,
+  FileText,
+  Globe,
   Play,
   RefreshCw,
   Settings,
-  Copy,
-  Globe,
-  Code,
-  FileText,
-  BookOpen,
-  Zap,
-  Database,
-  ChevronDown
-} from 'lucide-react'
+  Zap } from 'lucide-react'
+
+import { DataTable } from '@/components/data-table'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import {DataTable} from '@/components/data-table'
-import {nowait} from '@/lib/async-utils'
+import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { nowait } from '@/lib/async-utils'
 
 interface MainWorkspaceProps {
   currentUrl: string
@@ -34,7 +34,7 @@ interface MainWorkspaceProps {
   sidebarCollapsed: boolean
 }
 
-export function MainWorkspace({currentUrl, onUrlChange, sidebarCollapsed}: MainWorkspaceProps) {
+export function MainWorkspace({ currentUrl, onUrlChange, sidebarCollapsed }: MainWorkspaceProps) {
   const [activeTab, setActiveTab] = React.useState('rendered')
   const [isLoading, setIsLoading] = React.useState(false)
   const [hasData, setHasData] = React.useState(true)
@@ -256,7 +256,7 @@ Easy to use
   )
 }
 
-function RenderedPreview({url}: {url: string}) {
+function RenderedPreview({ url }: { url: string }) {
   return (
     <div className='h-full bg-[#151517] p-6'>
       <div className='h-full overflow-hidden rounded-lg bg-white shadow-2xl'>
@@ -274,7 +274,7 @@ function RenderedPreview({url}: {url: string}) {
   )
 }
 
-function CodePreview({content, language}: {content: string; language: string}) {
+function CodePreview({ content, language }: { content: string; language: string }) {
   return (
     <div className='relative h-full bg-[#0D1117]'>
       <div className='absolute right-4 top-4 z-10'>

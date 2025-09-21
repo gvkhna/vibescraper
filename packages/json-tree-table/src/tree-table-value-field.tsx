@@ -1,7 +1,7 @@
-import {ChevronsUpDown} from 'lucide-react'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover'
+import debug from 'debug'
+import { ChevronsUpDown } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -10,8 +10,10 @@ import {
   CommandItem,
   CommandList
 } from '@/components/ui/command'
-import {type TreeNode, type FlatNode, type TreeTableEditorProps, isPrimitive} from './tree-table-editor'
-import debug from 'debug'
+import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+
+import { type FlatNode, isPrimitive, type TreeNode, type TreeTableEditorProps } from './tree-table-editor'
 
 const log = debug('app:tree-table-value-field')
 

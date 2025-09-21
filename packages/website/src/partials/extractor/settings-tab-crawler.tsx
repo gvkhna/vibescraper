@@ -1,10 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import {Label} from '@/components/ui/label'
-import {Input} from '@/components/ui/input'
-import {Switch} from '@/components/ui/switch'
-import type {ProjectCommitSettings} from '@/db/schema/project'
+
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import type { ProjectCommitSettings } from '@/db/schema/project'
 
 interface CrawlerTabContentProps {
   commitSettings: ProjectCommitSettings
@@ -32,8 +33,8 @@ export function CrawlerTabContent({
             id='follow-links'
             checked={commitSettings.crawler.followLinks}
             onCheckedChange={(checked) => {
-              const crawler = {...commitSettings.crawler, followLinks: checked}
-              setCommitSettings({...commitSettings, crawler})
+              const crawler = { ...commitSettings.crawler, followLinks: checked }
+              setCommitSettings({ ...commitSettings, crawler })
             }}
             className='data-[state=checked]:bg-blue-500'
           />
@@ -54,8 +55,8 @@ export function CrawlerTabContent({
                   type='number'
                   value={commitSettings.crawler.maxDepth}
                   onChange={(e) => {
-                    const crawler = {...commitSettings.crawler, maxDepth: parseInt(e.target.value) || 3}
-                    setCommitSettings({...commitSettings, crawler})
+                    const crawler = { ...commitSettings.crawler, maxDepth: parseInt(e.target.value) || 3 }
+                    setCommitSettings({ ...commitSettings, crawler })
                   }}
                   className='mt-2 border-white/20 bg-[#0A0A0B]'
                 />
@@ -77,7 +78,7 @@ export function CrawlerTabContent({
                       ...commitSettings.crawler,
                       maxConcurrency: parseInt(e.target.value) || 1
                     }
-                    setCommitSettings({...commitSettings, crawler})
+                    setCommitSettings({ ...commitSettings, crawler })
                   }}
                   className='mt-2 border-white/20 bg-[#0A0A0B]'
                 />
@@ -96,8 +97,8 @@ export function CrawlerTabContent({
                 id='url-mask'
                 value={commitSettings.crawler.urlMask ?? ''}
                 onChange={(e) => {
-                  const crawler = {...commitSettings.crawler, urlMask: e.target.value}
-                  setCommitSettings({...commitSettings, crawler})
+                  const crawler = { ...commitSettings.crawler, urlMask: e.target.value }
+                  setCommitSettings({ ...commitSettings, crawler })
                 }}
                 className='mt-2 border-white/20 bg-[#0A0A0B] font-mono'
                 placeholder='/products/.*'
@@ -120,8 +121,8 @@ export function CrawlerTabContent({
             id='respect-robots'
             checked={commitSettings.crawler.respectRobotsTxt}
             onCheckedChange={(checked) => {
-              const crawler = {...commitSettings.crawler, respectRobotsTxt: checked}
-              setCommitSettings({...commitSettings, crawler})
+              const crawler = { ...commitSettings.crawler, respectRobotsTxt: checked }
+              setCommitSettings({ ...commitSettings, crawler })
             }}
             className='data-[state=checked]:bg-blue-500'
           />

@@ -1,12 +1,13 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
-import {HoverCard, HoverCardContent, HoverCardTrigger} from '@/components/ui/hover-card'
-import {Play, RefreshCw, Trash2, HardDrive, CheckCircle2, AlertCircle} from 'lucide-react'
-import {cn} from '@/lib/utils'
-import {nowait} from '@/lib/async-utils'
-import {useStore} from '@/store/use-store'
+import { AlertCircle, CheckCircle2, HardDrive, Play, RefreshCw, Trash2 } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
+import { nowait } from '@/lib/async-utils'
+import { cn } from '@/lib/utils'
+import { useStore } from '@/store/use-store'
 
 interface ScrapeButtonWithHoverProps {
   onScrape: () => Promise<void>
@@ -70,7 +71,7 @@ export function ScrapeButtonWithHover({
           ) : (
             <Play className='mr-2 h-4 w-4' />
           )}
-          {scrapeMode === 'crawlAndScrape' ? 'Crawl & Scrape' : 'Scrape'}
+          {scrapeMode === 'crawl-and-scrape' ? 'Crawl & Scrape' : 'Scrape'}
         </Button>
       </HoverCardTrigger>
 
@@ -139,10 +140,10 @@ export function ScrapeButtonWithHover({
               <RefreshCw className='h-4 w-4 flex-shrink-0' />
               <div className='flex-1'>
                 <div className='font-medium'>
-                  {scrapeMode === 'crawlAndScrape' ? 'Switch to Scrape Only' : 'Switch to Crawl & Scrape'}
+                  {scrapeMode === 'crawl-and-scrape' ? 'Switch to Scrape Only' : 'Switch to Crawl & Scrape'}
                 </div>
                 <div className='text-xs text-white/50'>
-                  {scrapeMode === 'crawlAndScrape'
+                  {scrapeMode === 'crawl-and-scrape'
                     ? 'Single-page fetch on click'
                     : 'Crawl site and then scrape'}
                 </div>

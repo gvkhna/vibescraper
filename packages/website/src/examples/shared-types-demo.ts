@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 // Demo file showing how to use shared types across packages
-import type {ContactFormData, Project, ProjectStatus} from '@vibescraper/shared-types'
-import {ContactFormSchema, ProjectSchema} from '@vibescraper/shared-types'
+import type { ContactFormData, Project, ProjectStatus } from '@vibescraper/shared-types'
+import { ContactFormSchema, ProjectSchema } from '@vibescraper/shared-types'
 
 // Example usage of shared types
 const exampleContact: ContactFormData = {
@@ -22,4 +22,4 @@ try {
   console.error('Validation failed:', error)
 }
 
-export {exampleContact}
+export { exampleContact }

@@ -1,15 +1,28 @@
-import {pgTable, text, integer, uniqueIndex, timestamp, jsonb, boolean} from 'drizzle-orm/pg-core'
-import {sql} from 'drizzle-orm'
-import {ulid, type ULID} from 'ulid'
-import {alphanumericShortPublicId} from '@/lib/short-id'
-import type {PaginationEntityState} from '@/store/pagination-entity-state'
-import {storage} from './storage'
-import {TIMESTAMPS_SCHEMA, type BrandedType, type SQLUTCTimestamp, type StrictOmit} from './common'
-import {type SubjectPolicyDTOType, type SubjectPolicyId, subjectPolicy} from './permissions'
-import {user, type UserId} from './better-auth'
-import type {ProjectChatDTOType, ProjectChatCursor} from './project-chat'
-import type {JsonObject, JsonValue} from 'type-fest'
-import type {CodeExecutionMessage} from '@vibescraper/sandbox'
+import type { CodeExecutionMessage } from '@vibescraper/sandbox'
+import { sql } from 'drizzle-orm'
+import { boolean, integer, jsonb, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
+import type { JsonObject, JsonValue } from 'type-fest'
+import { type ULID, ulid } from 'ulid'
+
+import { alphanumericShortPublicId } from '@/lib/short-id'
+import type { PaginationEntityState } from '@/store/pagination-entity-state'
+
+import { user, type UserId } from './better-auth'
+import { type BrandedType, type SQLUTCTimestamp, type StrictOmit, TIMESTAMPS_SCHEMA } from './common'
+import { subjectPolicy, type SubjectPolicyDTOType, type SubjectPolicyId } from './permissions'
+import type { ProjectChatCursor, ProjectChatDTOType } from './project-chat'
+import { storage } from './storage'
+
+// [project]
+//    ├── [projectCommit] (central config - stores active versions & settings)
+//    ├── [crawler] (versioned) - crawler script
+//    ├── [extractor] (versioned) - extractor script
+//    ├── [projectSchemas] (versioned) - data schema
+//    └── [crawlRun]
+//          ├─ crawlUrl
+//          └────└─ extractionRun
+//                     └─ extractionItem[]
+//
 
 export type ProjectId = BrandedType<ULID, 'ProjectId'>
 export type ProjectPublicId = BrandedType<ULID, 'ProjectPublicId'>
@@ -36,7 +49,9 @@ export type ProjectCommitSettings = {
   fetchType: FetchType
   crawler: CrawlerSettings
   maxRetries: number
-  retryDelay: number
+  retryDelayMs: number
+  maxRuntimeMs: number
+  maxCrawlurls: number
 }
 
 export type CleaningMethod = 'raw-html' | 'cleaned-html' | 'filtered-html' | 'markdown' | 'readability-html'
@@ -53,7 +68,7 @@ export type HtmlFilterSettings = {
 export type ExtractorSettings = {
   cleaningMethod: CleaningMethod
   htmlFilter: HtmlFilterSettings
-  timeout: number // in milliseconds
+  timeoutMs: number // in milliseconds
   maxOutputSize: number // -1 means unlimited
 }
 
@@ -103,18 +118,18 @@ export type ProjectCommitCacheData = {
   }> | null // Item-level validation errors for arrays (only populated when validation failed)
 }
 
-// [projects]
-//    ├── [projectCommit] (central config - stores active versions & settings)
-//    ├── [projectUrls]
-//    ├── [projectSchemas] (versioned)
-//    ├── [extractors] (versioned)
-//    └── [crawlRuns]
-//
-// [crawlRuns] + [projectUrls] → [httpResponses]
-//
-// [httpResponses] + [extractors] → [extractionRuns]
-//                                          ↓
-//                                   [extractionItems]
+export type CrawlUrlHttpLog = {
+  method: string
+  httpVersion: string | null
+  statusCode: number
+  responseTimeMs: number
+  requestHeaders: { [k: string]: string }
+  responseHeaders: { [k: string]: string }
+  remoteIp: string | null
+  fetchType: FetchType
+  redirectedFrom: string | null
+  responseSizeBytes: number
+}
 
 export const project = pgTable(
   'project',
@@ -130,11 +145,11 @@ export const project = pgTable(
       .$type<ProjectPublicId>(),
     subjectPolicyId: text()
       .notNull()
-      .references(() => subjectPolicy.id, {onDelete: 'cascade'})
+      .references(() => subjectPolicy.id, { onDelete: 'cascade' })
       .$type<SubjectPolicyId>(),
     userId: text()
       .notNull()
-      .references(() => user.id, {onDelete: 'cascade'})
+      .references(() => user.id, { onDelete: 'cascade' })
       .$type<UserId>(),
     name: text().notNull(),
     ...TIMESTAMPS_SCHEMA
@@ -167,11 +182,11 @@ export const projectCommit = pgTable(
       .$type<ProjectCommitPublicId>(),
     projectId: text()
       .notNull()
-      .references(() => project.id, {onDelete: 'cascade'})
+      .references(() => project.id, { onDelete: 'cascade' })
       .$type<ProjectId>(),
     userId: text()
       .notNull()
-      .references(() => user.id, {onDelete: 'cascade'})
+      .references(() => user.id, { onDelete: 'cascade' })
       .$type<UserId>(),
     type: text().notNull().default('initial').$type<'staged' | 'commit'>(),
     commitHash: text(),
@@ -195,12 +210,13 @@ export const projectCommit = pgTable(
       .$type<ProjectCommitSettings>(),
     activeSchemaVersion: integer(),
     activeExtractorVersion: integer(),
+    activeCrawlerVersion: integer(),
     currentEditorUrl: text(),
     // Cache for development/preview mode
     cachedData: jsonb().$type<ProjectCommitCacheData | null>(),
-    cachedAt: timestamp({mode: 'string'}).$type<SQLUTCTimestamp>(),
+    cachedAt: timestamp({ mode: 'string' }).$type<SQLUTCTimestamp>(),
     // Recent URLs for URL history
-    recentUrls: jsonb().notNull().default({urls: []}).$type<{
+    recentUrls: jsonb().notNull().default({ urls: [] }).$type<{
       urls: string[]
     }>(),
     ...TIMESTAMPS_SCHEMA
@@ -234,7 +250,7 @@ export const projectSchema = pgTable(
       .$type<ProjectSchemaPublicId>(),
     projectId: text()
       .notNull()
-      .references(() => project.id, {onDelete: 'cascade'})
+      .references(() => project.id, { onDelete: 'cascade' })
       .$type<ProjectId>(),
     version: integer().notNull(),
     schemaJson: jsonb().notNull().$type<SchemaJsonContent>(),
@@ -246,27 +262,37 @@ export const projectSchema = pgTable(
 
 export type ProjectSchemaDTOType = StrictOmit<typeof projectSchema.$inferSelect, 'id' | 'projectId'>
 
-// Project URLs
-export type ProjectUrlId = BrandedType<ULID, 'ProjectUrlId'>
+// Crawlers
+export type CrawlerId = BrandedType<ULID, 'CrawlerId'>
+export type CrawlerPublicId = BrandedType<ULID, 'CrawlerPublicId'>
 
-export const projectUrl = pgTable(
-  'projectUrl',
+export const crawler = pgTable(
+  'crawler',
   {
     id: text()
       .primaryKey()
       .$defaultFn(() => ulid())
-      .$type<ProjectUrlId>(),
+      .$type<CrawlerId>(),
+    publicId: text()
+      .unique()
+      .notNull()
+      .$defaultFn(() => alphanumericShortPublicId())
+      .$type<CrawlerPublicId>(),
     projectId: text()
       .notNull()
-      .references(() => project.id, {onDelete: 'cascade'})
+      .references(() => project.id, { onDelete: 'cascade' })
       .$type<ProjectId>(),
-    url: text().notNull(),
+    version: integer().notNull(),
+    message: text(),
+    script: text().notNull(),
+    scriptLanguage: text().notNull().default('javascript').$type<'javascript'>(),
+    isActive: boolean().notNull().default(true),
     ...TIMESTAMPS_SCHEMA
   },
-  (table) => [uniqueIndex().on(table.projectId, table.url)]
+  (table) => [uniqueIndex().on(table.projectId, table.version), uniqueIndex().on(table.publicId)]
 )
 
-export type ProjectUrlDTOType = StrictOmit<typeof projectUrl.$inferSelect, 'id' | 'projectId'>
+export type CrawlerDTOType = StrictOmit<typeof crawler.$inferSelect, 'id' | 'projectId'>
 
 // Crawl Runs
 export type CrawlRunId = BrandedType<ULID, 'CrawlRunId'>
@@ -278,61 +304,46 @@ export const crawlRun = pgTable('crawlRun', {
     .$type<CrawlRunId>(),
   projectId: text()
     .notNull()
-    .references(() => project.id, {onDelete: 'cascade'})
+    .references(() => project.id, { onDelete: 'cascade' })
     .$type<ProjectId>(),
   status: text()
     .notNull()
     .default('pending')
     .$type<'pending' | 'running' | 'success' | 'error' | 'cancelled'>(),
   errorMessage: text(),
-  startedAt: timestamp({mode: 'string'}).notNull().defaultNow().$type<SQLUTCTimestamp>(),
-  finishedAt: timestamp({mode: 'string'}).$type<SQLUTCTimestamp>(),
+  startedAt: timestamp({ mode: 'string' }).notNull().defaultNow().$type<SQLUTCTimestamp>(),
+  finishedAt: timestamp({ mode: 'string' }).$type<SQLUTCTimestamp>(),
   ...TIMESTAMPS_SCHEMA
 })
 
 export type CrawlRunDTOType = StrictOmit<typeof crawlRun.$inferSelect, 'id' | 'projectId'>
 
-// HTTP Responses
-export type HttpResponseId = BrandedType<ULID, 'HttpResponseId'>
+// Crawl URLs
+export type CrawlUrlId = BrandedType<ULID, 'CrawlUrlId'>
 
-export const httpResponse = pgTable(
-  'httpResponse',
+export const crawlUrl = pgTable(
+  'crawlUrl',
   {
     id: text()
       .primaryKey()
       .$defaultFn(() => ulid())
-      .$type<HttpResponseId>(),
+      .$type<CrawlUrlId>(),
     crawlRunId: text()
       .notNull()
-      .references(() => crawlRun.id, {onDelete: 'cascade'})
+      .references(() => project.id, { onDelete: 'cascade' })
       .$type<CrawlRunId>(),
-    projectUrlId: text()
-      .notNull()
-      .references(() => projectUrl.id, {onDelete: 'cascade'})
-      .$type<ProjectUrlId>(),
-    statusCode: integer(),
-    contentType: text().notNull(),
-    headers: jsonb(),
-
-    bodyHashAlgo: text().default('sha256').notNull().$type<'sha256'>(),
-    bodyHash: text(),
-
-    // TODO:
-    // for small and simple responses we'll store it in the db
-    // for larger responses we'll store it in external storage
-    storageType: text().notNull().$type<'text' | 'storage'>(),
+    url: text().notNull(),
+    status: text().notNull().$type<'ok' | 'failed'>(),
+    httpLog: jsonb().notNull().$type<CrawlUrlHttpLog>(),
+    storageType: text().notNull().$type<'db' | 'storage'>(),
     body: text().notNull(),
-    storageId: text().references(() => storage.id, {onDelete: 'set null'}),
-    responseTimeMs: integer(),
+    storageId: text().references(() => storage.id, { onDelete: 'set null' }),
     ...TIMESTAMPS_SCHEMA
   },
-  (table) => [uniqueIndex().on(table.crawlRunId, table.projectUrlId)]
+  (table) => [uniqueIndex().on(table.crawlRunId, table.url)]
 )
 
-export type HttpResponseDTOType = StrictOmit<
-  typeof httpResponse.$inferSelect,
-  'id' | 'crawlRunId' | 'projectUrlId'
->
+export type CrawlUrlDTOType = StrictOmit<typeof crawlUrl.$inferSelect, 'id' | 'crawlRunId'>
 
 // Extractors
 export type ExtractorId = BrandedType<ULID, 'ExtractorId'>
@@ -352,7 +363,7 @@ export const extractor = pgTable(
       .$type<ExtractorPublicId>(),
     projectId: text()
       .notNull()
-      .references(() => project.id, {onDelete: 'cascade'})
+      .references(() => project.id, { onDelete: 'cascade' })
       .$type<ProjectId>(),
     version: integer().notNull(),
     // name: text().notNull(),
@@ -439,30 +450,30 @@ export const extractionRun = pgTable(
       .primaryKey()
       .$defaultFn(() => ulid())
       .$type<ExtractionRunId>(),
-    httpResponseId: text()
+    crawlUrlId: text()
       .notNull()
-      .references(() => httpResponse.id, {onDelete: 'cascade'})
-      .$type<HttpResponseId>(),
+      .references(() => crawlUrl.id, { onDelete: 'cascade' })
+      .$type<CrawlUrlId>(),
     extractorId: text()
       .notNull()
-      .references(() => extractor.id, {onDelete: 'cascade'})
+      .references(() => extractor.id, { onDelete: 'cascade' })
       .$type<ExtractorId>(),
     status: text()
       .notNull()
       .default('pending')
       .$type<'pending' | 'running' | 'success' | 'error' | 'skipped'>(),
     errorMessage: text(),
-    extractedAt: timestamp({mode: 'string'}).notNull().defaultNow().$type<SQLUTCTimestamp>(),
+    extractedAt: timestamp({ mode: 'string' }).notNull().defaultNow().$type<SQLUTCTimestamp>(),
     durationMs: integer(),
     itemCount: integer().notNull().default(0),
     ...TIMESTAMPS_SCHEMA
   },
-  (table) => [uniqueIndex().on(table.httpResponseId, table.extractorId)]
+  (table) => [uniqueIndex().on(table.crawlUrlId, table.extractorId)]
 )
 
 export type ExtractionRunDTOType = StrictOmit<
   typeof extractionRun.$inferSelect,
-  'id' | 'httpResponseId' | 'extractorId'
+  'id' | 'crawlUrlId' | 'extractorId'
 >
 
 // Extraction Items
@@ -483,7 +494,7 @@ export const extractionItem = pgTable(
       .$type<ExtractionItemPublicId>(),
     extractionRunId: text()
       .notNull()
-      .references(() => extractionRun.id, {onDelete: 'cascade'})
+      .references(() => extractionRun.id, { onDelete: 'cascade' })
       .$type<ExtractionRunId>(),
     payload: jsonb().notNull(),
     itemKey: text(),

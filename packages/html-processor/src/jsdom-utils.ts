@@ -1,4 +1,4 @@
-import {JSDOM} from 'jsdom'
+import { JSDOM } from 'jsdom'
 
 /**
  * JSDOM wrapper for consistent API with CheerioDOM
@@ -187,7 +187,7 @@ export class JSDOMWrapper {
   /**
    * Wait for element to appear
    */
-  async waitForElement(selector: string, timeout: number = 5000): Promise<Element | null> {
+  async waitForElement(selector: string, timeout = 5000): Promise<Element | null> {
     const startTime = Date.now()
 
     return new Promise((resolve) => {
@@ -217,7 +217,7 @@ export function createJSDOM(html: string, options?: ConstructorParameters<typeof
  */
 export function parseWithJSDOM(
   html: string,
-  options?: {removeScripts?: boolean; removestyles?: boolean}
+  options?: { removeScripts?: boolean; removestyles?: boolean }
 ): string {
   const dom = new JSDOM(html)
   const document = dom.window.document

@@ -1,10 +1,11 @@
-import {pgTable, text, integer, uniqueIndex, index, timestamp, jsonb, boolean} from 'drizzle-orm/pg-core'
-import {ulid, type ULID} from 'ulid'
-import {alphanumericShortPublicId} from '@/lib/short-id'
-import {storage, type StorageId} from './storage'
+import { relations } from 'drizzle-orm'
+import { boolean, index, integer, jsonb, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
+import { type ULID, ulid } from 'ulid'
 
-import {TIMESTAMPS_SCHEMA, type BrandedType} from './common'
-import {relations} from 'drizzle-orm'
+import { alphanumericShortPublicId } from '@/lib/short-id'
+
+import { type BrandedType, TIMESTAMPS_SCHEMA } from './common'
+import { storage, type StorageId } from './storage'
 
 export type UserId = BrandedType<ULID, 'UserId'>
 export type UserPublicId = BrandedType<ULID, 'UserPublicId'>
@@ -36,7 +37,7 @@ export const user = pgTable(
     twoFactorEnabled: boolean(),
     stripeCustomerId: text(),
     avatarStorageId: text()
-      .references(() => storage.id, {onDelete: 'set null'})
+      .references(() => storage.id, { onDelete: 'set null' })
       .$type<StorageId>(),
 
     // Admin plugin
@@ -57,7 +58,7 @@ export const user = pgTable(
   ]
 )
 
-export const userAvatarRelation = relations(user, ({one}) => ({
+export const userAvatarRelation = relations(user, ({ one }) => ({
   avatar: one(storage, {
     fields: [user.avatarStorageId],
     references: [storage.id]
@@ -78,7 +79,7 @@ export const twoFactor = pgTable('twoFactor', {
     .$type<TwoFactorId>(),
   userId: text()
     .notNull()
-    .references(() => user.id, {onDelete: 'cascade'})
+    .references(() => user.id, { onDelete: 'cascade' })
     .$type<UserId>(),
   secret: text(),
   backupCodes: text()
@@ -94,7 +95,7 @@ export const session = pgTable(
       .$type<SessionId>(),
     userId: text()
       .notNull()
-      .references(() => user.id, {onDelete: 'cascade'})
+      .references(() => user.id, { onDelete: 'cascade' })
       .$type<UserId>(),
     activeOrganizationId: text()
       .references(() => organization.id, {
@@ -125,7 +126,7 @@ export const account = pgTable(
       .$type<AccountId>(),
     userId: text()
       .notNull()
-      .references(() => user.id, {onDelete: 'cascade'})
+      .references(() => user.id, { onDelete: 'cascade' })
       .$type<UserId>(),
     accountId: text().notNull(),
     providerId: text().notNull(), // 'google', 'github', etc
@@ -208,11 +209,11 @@ export const member = pgTable(
       .$type<MemberPublicId>(),
     userId: text()
       .notNull()
-      .references(() => user.id, {onDelete: 'cascade'})
+      .references(() => user.id, { onDelete: 'cascade' })
       .$type<UserId>(),
     organizationId: text()
       .notNull()
-      .references(() => organization.id, {onDelete: 'cascade'})
+      .references(() => organization.id, { onDelete: 'cascade' })
       .$type<OrganizationId>(),
     role: text().notNull().$type<ORG_MEMBER_ROLE>(), // e.g., 'admin', 'member'
     createdAt: timestamp().notNull().defaultNow()
@@ -237,7 +238,7 @@ export const team = pgTable(
     name: text().notNull(),
     organizationId: text()
       .notNull()
-      .references(() => organization.id, {onDelete: 'cascade'})
+      .references(() => organization.id, { onDelete: 'cascade' })
       .$type<OrganizationId>(),
     createdAt: timestamp().notNull().defaultNow(),
     updatedAt: timestamp()
@@ -258,11 +259,11 @@ export const invitation = pgTable('invitation', {
   email: text().notNull(),
   inviterId: text()
     .notNull()
-    .references(() => user.id, {onDelete: 'cascade'})
+    .references(() => user.id, { onDelete: 'cascade' })
     .$type<UserId>(), // Assuming you have a `user` table
   organizationId: text()
     .notNull()
-    .references(() => organization.id, {onDelete: 'cascade'})
+    .references(() => organization.id, { onDelete: 'cascade' })
     .$type<OrganizationId>(),
   role: text().notNull(), // e.g., 'admin', 'member'
   status: text().notNull(), // e.g., 'pending', 'accepted', 'expired'
@@ -290,7 +291,7 @@ export const apiKey = pgTable(
     key: text().notNull(),
     userId: text()
       .notNull()
-      .references(() => user.id, {onDelete: 'cascade'})
+      .references(() => user.id, { onDelete: 'cascade' })
       .$type<UserId>(),
     refillInterval: integer(),
     refillAmount: integer(),

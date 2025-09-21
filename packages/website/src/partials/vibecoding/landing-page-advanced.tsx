@@ -1,7 +1,10 @@
 'use client'
 
-import {useState} from 'react'
-import {useNavigate} from '@tanstack/react-router'
+import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
+import { GlobeIcon, Sparkles, Zap } from 'lucide-react'
+import { toast } from 'sonner'
+
 import {
   PromptInput,
   PromptInputButton,
@@ -15,15 +18,13 @@ import {
   PromptInputToolbar,
   PromptInputTools
 } from '@/components/ai-elements/prompt-input'
-import {Sparkles, GlobeIcon, Zap} from 'lucide-react'
-import {nowait} from '@/lib/async-utils'
 import api from '@/lib/api-client'
-import {toast} from 'sonner'
+import { nowait } from '@/lib/async-utils'
 
 const models = [
-  {id: 'gpt-4o', name: 'GPT 4o'},
-  {id: 'claude-3-5-sonnet', name: 'Claude 3.5 Sonnet'},
-  {id: 'deepseek-r1', name: 'Deepseek R1'}
+  { id: 'gpt-4o', name: 'GPT 4o' },
+  { id: 'claude-3-5-sonnet', name: 'Claude 3.5 Sonnet' },
+  { id: 'deepseek-r1', name: 'Deepseek R1' }
 ]
 
 export function VibecodingLandingPageAdvanced() {

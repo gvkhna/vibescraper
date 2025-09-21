@@ -1,11 +1,12 @@
-import {useState} from 'react'
+import { useState } from 'react'
+import { AlertCircle, Check, ChevronDown, ChevronUp, Loader2 } from 'lucide-react'
 
-import {Check, ChevronDown, ChevronUp, Loader2, AlertCircle} from 'lucide-react'
-import {Button} from '@/components/ui/button'
-import {Card, CardContent, CardHeader} from '@/components/ui/card'
-import {Badge} from '@/components/ui/badge'
-import {cn} from '@/lib/utils'
-import type {ChatFileVersionBlockFileStatus, ChatFileVersionBlockType} from './chat-message-schema'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+
+import type { ChatFileVersionBlockFileStatus, ChatFileVersionBlockType } from './chat-message-schema'
 
 export type ChatFileVersionControlProps = {
   versionBlock: ChatFileVersionBlockType
@@ -20,7 +21,7 @@ export function ChatFileVersionBlock({
   isViewing = true,
   onRestore = () => {}
 }: ChatFileVersionControlProps) {
-  const {version, changes, overallStatus} = versionBlock
+  const { version, changes, overallStatus } = versionBlock
   // version = 'Version 2',
   // changes = [],
   // isLoading = false,

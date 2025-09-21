@@ -1,17 +1,20 @@
-/* eslint-disable no-console */
-import {describe, it, expect, beforeAll, afterAll} from 'vitest'
-import {SandboxManager} from '../src/sandbox-manager'
-import process from 'node:process'
-import path from 'node:path'
+import debug from 'debug'
 import fs from 'node:fs/promises'
+import path from 'node:path'
+import process from 'node:process'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-describe('SandboxManager Security & Environment Tests', () => {
+import { SandboxManager } from '../src/sandbox-manager'
+const log = debug('test')
+
+describe('sandboxManager Security & Environment Tests', () => {
   let sandboxManager: SandboxManager
   const testTmpDir = path.join(process.cwd(), 'tmp')
+
   beforeAll(async () => {
-    await fs.mkdir(testTmpDir, {recursive: true})
+    await fs.mkdir(testTmpDir, { recursive: true })
     sandboxManager = new SandboxManager(testTmpDir, (...args) => {
-      console.log('[SECURITY TEST]', ...args)
+      log('[SECURITY TEST]', ...args)
     })
     // Wait for sandbox to be ready before running tests
     await sandboxManager.waitForReady()
@@ -21,8 +24,10 @@ describe('SandboxManager Security & Environment Tests', () => {
     // Cleanup handled by SandboxManager
   })
 
-  describe('Security - File System Access', () => {
+  describe('security - File System Access', () => {
     it('should NOT allow reading system files like /etc/passwd', async () => {
+      expect.assertions(2)
+
       const code = `
         try {
           const fs = await import('node:fs/promises')
@@ -37,14 +42,16 @@ describe('SandboxManager Security & Environment Tests', () => {
       const logs = messages.filter((msg) => msg.type === 'log')
 
       // Should have caught an error, not read the file
-      const errorLog = logs.find((log) => log.log.includes('EXPECTED_ERROR'))
-      const breachLog = logs.find((log) => log.log.includes('SECURITY_BREACH'))
+      const errorLog = logs.find((l) => l.log.includes('EXPECTED_ERROR'))
+      const breachLog = logs.find((l) => l.log.includes('SECURITY_BREACH'))
 
       expect(errorLog).toBeDefined()
       expect(breachLog).toBeUndefined()
     }, 15000)
 
     it('should NOT allow executing system commands via child_process', async () => {
+      expect.assertions(2)
+
       const code = `
         try {
           const {exec} = await import('node:child_process')
@@ -63,14 +70,16 @@ describe('SandboxManager Security & Environment Tests', () => {
       const messages = await sandboxManager.executeCodeBuffered(code, false)
       const logs = messages.filter((msg) => msg.type === 'log')
 
-      const errorLog = logs.find((log) => log.log.includes('EXPECTED_ERROR'))
-      const breachLog = logs.find((log) => log.log.includes('SECURITY_BREACH'))
+      const errorLog = logs.find((l) => l.log.includes('EXPECTED_ERROR'))
+      const breachLog = logs.find((l) => l.log.includes('SECURITY_BREACH'))
 
       expect(errorLog).toBeDefined()
       expect(breachLog).toBeUndefined()
     }, 15000)
 
     it('should allow reading/writing files in sandbox directory only', async () => {
+      expect.assertions(2)
+
       const code = `
         const url = new URL('.', location.href)
         const cwd = decodeURIComponent(url.pathname)
@@ -93,16 +102,18 @@ describe('SandboxManager Security & Environment Tests', () => {
       const messages = await sandboxManager.executeCodeBuffered(code, false)
       const logs = messages.filter((msg) => msg.type === 'log')
 
-      const successLog = logs.find((log) => log.log.includes('READ_SUCCESS: true'))
-      const filesLog = logs.find((log) => log.log.includes('FILES_COUNT:'))
+      const successLog = logs.find((l) => l.log.includes('READ_SUCCESS: true'))
+      const filesLog = logs.find((l) => l.log.includes('FILES_COUNT:'))
 
       expect(successLog).toBeDefined()
       expect(filesLog).toBeDefined()
     }, 15000)
   })
 
-  describe('Module Imports', () => {
+  describe('module Imports', () => {
     it('should support importing Node built-in modules with node: prefix', async () => {
+      expect.assertions(3)
+
       const code = `
         const path = await import('node:path')
         const crypto = await import('node:crypto')
@@ -116,12 +127,14 @@ describe('SandboxManager Security & Environment Tests', () => {
       const messages = await sandboxManager.executeCodeBuffered(code, false)
       const logs = messages.filter((msg) => msg.type === 'log')
 
-      expect(logs.find((log) => log.log.includes('PATH_JOIN: function'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('CRYPTO_RANDOM: function'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('UTIL_FORMAT: function'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('PATH_JOIN: function'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('CRYPTO_RANDOM: function'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('UTIL_FORMAT: function'))).toBeDefined()
     }, 15000)
 
     it('should support importing npm packages with npm: prefix', async () => {
+      expect.assertions(1)
+
       const code = `
         try {
           const ulid = await import('npm:ulid')
@@ -135,13 +148,15 @@ describe('SandboxManager Security & Environment Tests', () => {
       const logs = messages.filter((msg) => msg.type === 'log')
 
       // Either successfully imports or fails gracefully
-      const successLog = logs.find((log) => log.log.includes('NPM_ULID:'))
-      const errorLog = logs.find((log) => log.log.includes('NPM_ERROR:'))
+      const successLog = logs.find((l) => l.log.includes('NPM_ULID:'))
+      const errorLog = logs.find((l) => l.log.includes('NPM_ERROR:'))
 
       expect(successLog ?? errorLog).toBeDefined()
     }, 20000)
 
     it('should support importing jsr packages with jsr: prefix', async () => {
+      expect.assertions(1)
+
       const code = `
         try {
           const stdUlid = await import('jsr:@std/ulid')
@@ -154,15 +169,17 @@ describe('SandboxManager Security & Environment Tests', () => {
       const messages = await sandboxManager.executeCodeBuffered(code, false)
       const logs = messages.filter((msg) => msg.type === 'log')
 
-      const successLog = logs.find((log) => log.log.includes('JSR_ULID:'))
-      const errorLog = logs.find((log) => log.log.includes('JSR_ERROR:'))
+      const successLog = logs.find((l) => l.log.includes('JSR_ULID:'))
+      const errorLog = logs.find((l) => l.log.includes('JSR_ERROR:'))
 
       expect(successLog ?? errorLog).toBeDefined()
     }, 20000)
   })
 
-  describe('Environment & Globals', () => {
+  describe('environment & Globals', () => {
     it('should have process.env available', async () => {
+      expect.assertions(2)
+
       const code = `
         console.log('PROCESS_ENV_EXISTS:', typeof process.env === 'object')
         console.log('PROCESS_ENV_NODE_ENV:', process.env.NODE_ENV || 'not set')
@@ -171,10 +188,11 @@ describe('SandboxManager Security & Environment Tests', () => {
       const messages = await sandboxManager.executeCodeBuffered(code, false)
       const logs = messages.filter((msg) => msg.type === 'log')
 
-      expect(logs.find((log) => log.log.includes('PROCESS_ENV_EXISTS: true'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('PROCESS_ENV_NODE_ENV:'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('PROCESS_ENV_EXISTS: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('PROCESS_ENV_NODE_ENV:'))).toBeDefined()
     }, 10000)
 
+    // eslint-disable-next-line vitest/no-commented-out-tests
     // it('should have import.meta.env available in testing mode', async () => {
     //   if (!denoAvailable) {
     //     return
@@ -198,6 +216,8 @@ describe('SandboxManager Security & Environment Tests', () => {
     // }, 10000)
 
     it('should have exit() and terminate() functions', async () => {
+      expect.assertions(3)
+
       const code = `
         console.log('EXIT_FUNCTION:', typeof exit === 'function')
         console.log('TERMINATE_FUNCTION:', typeof terminate === 'function')
@@ -207,12 +227,14 @@ describe('SandboxManager Security & Environment Tests', () => {
       const messages = await sandboxManager.executeCodeBuffered(code, false)
       const logs = messages.filter((msg) => msg.type === 'log')
 
-      expect(logs.find((log) => log.log.includes('EXIT_FUNCTION: true'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('TERMINATE_FUNCTION: true'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('PROCESS_EXIT: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('EXIT_FUNCTION: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('TERMINATE_FUNCTION: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('PROCESS_EXIT: true'))).toBeDefined()
     }, 10000)
 
     it('should have Deno.env available with limited access', async () => {
+      expect.assertions(2)
+
       const code = `
         console.log('DENO_ENV_EXISTS:', typeof Deno?.env === 'object')
         console.log('DENO_ENV_GET:', typeof Deno?.env?.get === 'function')
@@ -223,11 +245,13 @@ describe('SandboxManager Security & Environment Tests', () => {
       const messages = await sandboxManager.executeCodeBuffered(code, false)
       const logs = messages.filter((msg) => msg.type === 'log')
 
-      expect(logs.find((log) => log.log.includes('DENO_ENV_EXISTS: true'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('DENO_ENV_GET: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('DENO_ENV_EXISTS: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('DENO_ENV_GET: true'))).toBeDefined()
     }, 10000)
 
     it('should have location.href pointing to worker file', async () => {
+      expect.assertions(4)
+
       const code = `
         console.log('LOCATION_EXISTS:', typeof location === 'object')
         console.log('LOCATION_HREF_EXISTS:', typeof location.href === 'string')
@@ -238,15 +262,17 @@ describe('SandboxManager Security & Environment Tests', () => {
       const messages = await sandboxManager.executeCodeBuffered(code, false)
       const logs = messages.filter((msg) => msg.type === 'log')
 
-      expect(logs.find((log) => log.log.includes('LOCATION_EXISTS: true'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('LOCATION_HREF_EXISTS: true'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('LOCATION_IS_FILE: true'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('LOCATION_HAS_WORKER: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('LOCATION_EXISTS: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('LOCATION_HREF_EXISTS: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('LOCATION_IS_FILE: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('LOCATION_HAS_WORKER: true'))).toBeDefined()
     }, 10000)
   })
 
-  describe('Console Methods', () => {
+  describe('console Methods', () => {
     it('should support all console methods', async () => {
+      expect.assertions(5)
+
       const code = `
         // Test various console methods
         console.log('LOG_TEST')
@@ -282,11 +308,11 @@ describe('SandboxManager Security & Environment Tests', () => {
       const logs = messages.filter((msg) => msg.type === 'log')
 
       // Check for different log types
-      const logTest = logs.find((log) => log.kind === 'log' && log.log.includes('LOG_TEST'))
-      const infoTest = logs.find((log) => log.kind === 'info' && log.log.includes('INFO_TEST'))
-      const warnTest = logs.find((log) => log.kind === 'warn' && log.log.includes('WARN_TEST'))
-      const errorTest = logs.find((log) => log.kind === 'error' && log.log.includes('ERROR_TEST'))
-      const debugTest = logs.find((log) => log.kind === 'debug' && log.log.includes('DEBUG_TEST'))
+      const logTest = logs.find((l) => l.kind === 'log' && l.log.includes('LOG_TEST'))
+      const infoTest = logs.find((l) => l.kind === 'info' && l.log.includes('INFO_TEST'))
+      const warnTest = logs.find((l) => l.kind === 'warn' && l.log.includes('WARN_TEST'))
+      const errorTest = logs.find((l) => l.kind === 'error' && l.log.includes('ERROR_TEST'))
+      const debugTest = logs.find((l) => l.kind === 'debug' && l.log.includes('DEBUG_TEST'))
 
       expect(logTest).toBeDefined()
       expect(infoTest).toBeDefined()
@@ -296,8 +322,10 @@ describe('SandboxManager Security & Environment Tests', () => {
     }, 15000)
   })
 
-  describe('Memory & Resource Limits', () => {
+  describe('memory & Resource Limits', () => {
     it('should handle memory allocation within limits', async () => {
+      expect.assertions(1)
+
       const code = `
         try {
           // Allocate 10MB (should be fine)
@@ -318,13 +346,16 @@ describe('SandboxManager Security & Environment Tests', () => {
       const messages = await sandboxManager.executeCodeBuffered(code, false)
       const logs = messages.filter((msg) => msg.type === 'log')
 
-      const successLog = logs.find((log) => log.log.includes('MEMORY_ALLOC_SUCCESS:'))
+      const successLog = logs.find((l) => l.log.includes('MEMORY_ALLOC_SUCCESS:'))
+
       expect(successLog).toBeDefined()
     }, 15000)
   })
 
-  describe('Network Access', () => {
+  describe('network Access', () => {
     it('should allow fetch requests to external URLs', async () => {
+      expect.assertions(1)
+
       const code = `
         try {
           const response = await fetch('https://httpbin.org/get')
@@ -340,15 +371,17 @@ describe('SandboxManager Security & Environment Tests', () => {
       const logs = messages.filter((msg) => msg.type === 'log')
 
       // Network requests might succeed or fail depending on environment
-      const successLog = logs.find((log) => log.log.includes('FETCH_SUCCESS:'))
-      const errorLog = logs.find((log) => log.log.includes('FETCH_ERROR:'))
+      const successLog = logs.find((l) => l.log.includes('FETCH_SUCCESS:'))
+      const errorLog = logs.find((l) => l.log.includes('FETCH_ERROR:'))
 
       expect(successLog ?? errorLog).toBeDefined()
     }, 20000)
   })
 
-  describe('Process & Worker Control', () => {
+  describe('process & Worker Control', () => {
     it('should handle process.cwd() correctly', async () => {
+      expect.assertions(3)
+
       const code = `
         const cwd = process.cwd()
         console.log('CWD_EXISTS:', typeof cwd === 'string')
@@ -359,12 +392,14 @@ describe('SandboxManager Security & Environment Tests', () => {
       const messages = await sandboxManager.executeCodeBuffered(code, false)
       const logs = messages.filter((msg) => msg.type === 'log')
 
-      expect(logs.find((log) => log.log.includes('CWD_EXISTS: true'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('CWD_NOT_EMPTY: true'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('CWD_IS_PATH: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('CWD_EXISTS: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('CWD_NOT_EMPTY: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('CWD_IS_PATH: true'))).toBeDefined()
     }, 10000)
 
     it('should handle process.hrtime correctly', async () => {
+      expect.assertions(4)
+
       const code = `
         const start = process.hrtime()
         console.log('HRTIME_IS_ARRAY:', Array.isArray(start))
@@ -388,10 +423,10 @@ describe('SandboxManager Security & Environment Tests', () => {
       const messages = await sandboxManager.executeCodeBuffered(code, false)
       const logs = messages.filter((msg) => msg.type === 'log')
 
-      expect(logs.find((log) => log.log.includes('HRTIME_IS_ARRAY: true'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('HRTIME_LENGTH: 2'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('HRTIME_ELAPSED: true'))).toBeDefined()
-      expect(logs.find((log) => log.log.includes('HRTIME_BIGINT: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('HRTIME_IS_ARRAY: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('HRTIME_LENGTH: 2'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('HRTIME_ELAPSED: true'))).toBeDefined()
+      expect(logs.find((l) => l.log.includes('HRTIME_BIGINT: true'))).toBeDefined()
     }, 10000)
   })
 })

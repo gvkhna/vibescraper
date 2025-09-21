@@ -4,7 +4,7 @@
  * Converts HTML strings or elements to Markdown format
  * using the HTMLarkdown library.
  */
-import {NodeHtmlMarkdown, type NodeHtmlMarkdownOptions} from 'node-html-markdown'
+import { NodeHtmlMarkdown, type NodeHtmlMarkdownOptions } from 'node-html-markdown'
 
 export type HtmlMarkdownOptions = NodeHtmlMarkdownOptions
 

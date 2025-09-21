@@ -1,8 +1,9 @@
 /* eslint-disable no-undefined */
 import React from 'react'
-import type {JsonValue} from 'type-fest'
-import {TreeTableEditor} from './tree-table-editor'
-import {jsonObjectToSchemaTable} from './json-object-to-schema-table'
+import type { JsonValue } from 'type-fest'
+
+import { jsonObjectToSchemaTable } from './json-object-to-schema-table'
+import { TreeTableEditor } from './tree-table-editor'
 
 export interface JsonTreeTableProps {
   data: JsonValue | undefined
@@ -10,7 +11,7 @@ export interface JsonTreeTableProps {
   expandLevel?: number
 }
 
-export function JsonTreeTable({data, className, expandLevel = 1}: JsonTreeTableProps) {
+export function JsonTreeTable({ data, className, expandLevel = 1 }: JsonTreeTableProps) {
   const schemaData = React.useMemo(() => {
     // Handle cases where data can't be converted to schema table
     if (data === undefined || typeof data !== 'object' || data === null) {

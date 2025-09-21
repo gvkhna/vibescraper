@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* eslint-disable no-console */
 
 /**
  * Utility script to convert HTML test assets to Markdown
@@ -6,11 +7,12 @@
  * Usage: bun run src/markdown-utility.ts
  */
 
-import {readdir, readFile, writeFile} from 'node:fs/promises'
-import {resolve, dirname} from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {htmlMarkdown} from './html-markdown'
+import { readdir, readFile, writeFile } from 'node:fs/promises'
+import { dirname, resolve } from 'node:path'
 import process from 'node:process'
+import { fileURLToPath } from 'node:url'
+
+import { htmlMarkdown } from './html-markdown'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

@@ -1,14 +1,17 @@
-import {Hono} from 'hono'
-import {type HonoServer} from '.'
-import * as schema from '@/db/schema'
-import {count, inArray} from 'drizzle-orm'
-import {z} from 'zod'
-import {eq, desc, and, getTableColumns, sql} from 'drizzle-orm'
+import { subject } from '@casl/ability'
+import { generateText } from 'ai'
 import debug from 'debug'
-import {validator} from 'hono/validator'
+import { and, count, desc, eq, getTableColumns, inArray, sql } from 'drizzle-orm'
+import { Hono } from 'hono'
+import { validator } from 'hono/validator'
+import { produceWithPatches } from 'immer'
+import { z } from 'zod'
 
-import {subject} from '@casl/ability'
-import {produceWithPatches} from 'immer'
+import { getModelBySize } from '@/assistant-ai'
+import * as schema from '@/db/schema'
+import { asyncForEach } from '@/lib/async-utils'
+import { HttpStatusCode } from '@/lib/http-status-codes'
+import { abilityForActor } from '@/lib/permission-policy-schema'
 import {
   createDefaultPolicy,
   projectSubjectPolicy,
@@ -16,13 +19,9 @@ import {
   userActor,
   userCannotProjectAction
 } from '@/lib/permissions-helper'
-import {abilityForActor} from '@/lib/permission-policy-schema'
-import {HttpStatusCode} from '@/lib/http-status-codes'
-import {asyncForEach} from '@/lib/async-utils'
-import {createPaginationEntity, DEFAULT_PAGE_SIZE} from '@/store/pagination-entity-state'
-import {generateText} from 'ai'
-import {getModelBySize} from '@/assistant-ai'
-import {extractUrlFromPrompt} from '@/lib/url-utils'
+import { extractUrlFromPrompt } from '@/lib/url-utils'
+import { createPaginationEntity, DEFAULT_PAGE_SIZE } from '@/store/pagination-entity-state'
+import type { HonoServer } from '.'
 
 const log = debug('app:server:projects')
 
@@ -32,12 +31,12 @@ const app = new Hono<HonoServer>()
     const db = c.get('db')
 
     if (!user) {
-      return c.json({message: 'Invalid auth'}, HttpStatusCode.Forbidden)
+      return c.json({ message: 'Invalid auth' }, HttpStatusCode.Forbidden)
     }
 
-    const {id, ...projectColumns} = getTableColumns(schema.project)
+    const { id, ...projectColumns } = getTableColumns(schema.project)
     const allProjects = await db
-      .select({...projectColumns})
+      .select({ ...projectColumns })
       .from(schema.project)
       .orderBy(desc(schema.project.updatedAt))
       .where(eq(schema.project.userId, user.id))
@@ -55,12 +54,12 @@ const app = new Hono<HonoServer>()
     const db = c.get('db')
 
     if (!user) {
-      return c.json({message: 'Invalid auth'}, HttpStatusCode.Forbidden)
+      return c.json({ message: 'Invalid auth' }, HttpStatusCode.Forbidden)
     }
 
-    const {id, ...projectColumns} = getTableColumns(schema.project)
+    const { id, ...projectColumns } = getTableColumns(schema.project)
     const recentProjects = await db
-      .select({...projectColumns})
+      .select({ ...projectColumns })
       .from(schema.project)
       .orderBy(desc(schema.project.updatedAt))
       .limit(5)
@@ -77,11 +76,11 @@ const app = new Hono<HonoServer>()
     const db = c.get('db')
 
     if (!user) {
-      return c.json({message: 'Invalid auth'}, HttpStatusCode.Forbidden)
+      return c.json({ message: 'Invalid auth' }, HttpStatusCode.Forbidden)
     }
 
     const [projectCount] = await db
-      .select({count: count()})
+      .select({ count: count() })
       .from(schema.project)
       .where(eq(schema.project.userId, user.id))
     const name = `Project #${projectCount.count + 1}`
@@ -100,17 +99,17 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectPublicId} = c.req.valid('json')
+      const { projectPublicId } = c.req.valid('json')
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       const actor = await userActor(db, user)
@@ -142,7 +141,7 @@ const app = new Hono<HonoServer>()
           })
           .where(eq(schema.project.id, project.id))
 
-        const {id: _, ...restOfSubjectPolicy} = newSubjectPolicy
+        const { id: _, ...restOfSubjectPolicy } = newSubjectPolicy
         const subjectPolicyDTO: schema.SubjectPolicyDTOType = restOfSubjectPolicy
 
         return c.json(
@@ -155,7 +154,7 @@ const app = new Hono<HonoServer>()
         )
       }
 
-      return c.json({message: 'Failed to update project permissions'}, HttpStatusCode.BadRequest)
+      return c.json({ message: 'Failed to update project permissions' }, HttpStatusCode.BadRequest)
     }
   )
   .post(
@@ -166,17 +165,17 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectPublicId} = c.req.valid('json')
+      const { projectPublicId } = c.req.valid('json')
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       const actor = await userActor(db, user)
@@ -206,7 +205,7 @@ const app = new Hono<HonoServer>()
           })
           .where(eq(schema.project.id, project.id))
 
-        const {id: _, ...restOfSubjectPolicy} = newSubjectPolicy
+        const { id: _, ...restOfSubjectPolicy } = newSubjectPolicy
         const subjectPolicyDTO: schema.SubjectPolicyDTOType = restOfSubjectPolicy
         return c.json(
           {
@@ -218,7 +217,7 @@ const app = new Hono<HonoServer>()
         )
       }
 
-      return c.json({message: 'Failed to update project permissions'}, HttpStatusCode.BadRequest)
+      return c.json({ message: 'Failed to update project permissions' }, HttpStatusCode.BadRequest)
     }
   )
   .post(
@@ -229,21 +228,21 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectPublicId} = c.req.valid('json')
+      const { projectPublicId } = c.req.valid('json')
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       const [userData] = await db.select().from(schema.user).where(eq(schema.user.id, project.userId))
@@ -374,25 +373,25 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectPublicId, projectName} = c.req.valid('json')
+      const { projectPublicId, projectName } = c.req.valid('json')
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       if (!projectName) {
-        return c.json({message: 'Project name must be valid'}, HttpStatusCode.BadRequest)
+        return c.json({ message: 'Project name must be valid' }, HttpStatusCode.BadRequest)
       }
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'update', user, project.subjectPolicyId)) {
-        return c.json({message: 'Access unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Access unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       await db
@@ -421,21 +420,21 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectPublicId} = c.req.valid('json')
+      const { projectPublicId } = c.req.valid('json')
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'delete', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       try {
@@ -445,7 +444,7 @@ const app = new Hono<HonoServer>()
           const deleteResult = await tx
             .delete(schema.project)
             .where(eq(schema.project.publicId, projectPublicId))
-            .returning({deletedId: schema.project.id})
+            .returning({ deletedId: schema.project.id })
 
           // If no rows were affected, the project wasn't found
           if (!deleteResult.length) {
@@ -474,7 +473,7 @@ const app = new Hono<HonoServer>()
         log('Error deleting project:', error)
 
         return c.json(
-          {message: `Failed to delete project: ${error instanceof Error ? error.message : 'Unknown error'}`},
+          { message: `Failed to delete project: ${error instanceof Error ? error.message : 'Unknown error'}` },
           HttpStatusCode.BadRequest
         )
       }
@@ -488,17 +487,17 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectPublicId} = c.req.valid('json')
+      const { projectPublicId } = c.req.valid('json')
       const user = c.get('user')
       const session = c.get('session')
       const db = c.get('db')
 
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       const actor = await userActor(db, user)
@@ -506,10 +505,10 @@ const app = new Hono<HonoServer>()
       const abilities = abilityForActor(actor)
 
       if (abilities.cannot('read', subject('Policy', subjectPolicy.policy))) {
-        return c.json({message: 'Access unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Access unauthorized' }, HttpStatusCode.Forbidden)
       }
 
-      const {id: _, userId: _9, projectId: _10, ...stagedCommitCols} = getTableColumns(schema.projectCommit)
+      const { id: _, userId: _9, projectId: _10, ...stagedCommitCols } = getTableColumns(schema.projectCommit)
       const [stagedCommit] = await db
         .select(stagedCommitCols)
         .from(schema.projectCommit)
@@ -529,7 +528,7 @@ const app = new Hono<HonoServer>()
       //   })
       // }
 
-      const {id: _15, projectId: _16, ...projectChatCols} = getTableColumns(schema.projectChat)
+      const { id: _15, projectId: _16, ...projectChatCols } = getTableColumns(schema.projectChat)
       const chats = await db
         .select(projectChatCols)
         .from(schema.projectChat)
@@ -543,26 +542,26 @@ const app = new Hono<HonoServer>()
         .limit(DEFAULT_PAGE_SIZE + 1)
 
       const paginateProjectChats = createPaginationEntity<schema.ProjectChatCursor>()
-      const {items: projectChats, pageInfo} = paginateProjectChats(chats, DEFAULT_PAGE_SIZE)
+      const { items: projectChats, pageInfo } = paginateProjectChats(chats, DEFAULT_PAGE_SIZE)
 
       // Get all schemas for this project
       const schemas = await db.query.projectSchema.findMany({
-        where: (table, {eq: tableEq}) => tableEq(table.projectId, project.id),
-        orderBy: (table, {desc: tableDesc}) => [tableDesc(table.version)]
+        where: (table, { eq: tableEq }) => tableEq(table.projectId, project.id),
+        orderBy: (table, { desc: tableDesc }) => [tableDesc(table.version)]
       })
 
       // Convert to DTOs (remove id and projectId)
       const schemaDTOs: schema.ProjectSchemaDTOType[] = schemas.map((s) => {
-        const {id: _schemaId, projectId: _schemaProjectId, ...dto} = s
+        const { id: _schemaId, projectId: _schemaProjectId, ...dto } = s
         return dto
       })
 
-      const {id: _11, userId: _12, subjectPolicyId: _13, ...restOfProject} = project
+      const { id: _11, userId: _12, subjectPolicyId: _13, ...restOfProject } = project
       const projectDTO: schema.ProjectDTOType['project'] = restOfProject
-      const {id: _14, ...restOfSubjectPolicy} = subjectPolicy
+      const { id: _14, ...restOfSubjectPolicy } = subjectPolicy
       const subjectPolicyDTO: schema.SubjectPolicyDTOType = restOfSubjectPolicy
 
-      const result: {project: schema.ProjectDTOType; stagedCommit: schema.ProjectCommitDTOType} = {
+      const result: { project: schema.ProjectDTOType; stagedCommit: schema.ProjectCommitDTOType } = {
         project: {
           project: {
             ...projectDTO
@@ -592,24 +591,24 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {prompt} = c.req.valid('json')
+      const { prompt } = c.req.valid('json')
       const user = c.get('user')
       const db = c.get('db')
 
       if (!user) {
-        return c.json({message: 'Invalid auth'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Invalid auth' }, HttpStatusCode.Forbidden)
       }
 
       if (!prompt) {
-        return c.json({message: 'Prompt cannot be blank'}, HttpStatusCode.UnprocessableEntity)
+        return c.json({ message: 'Prompt cannot be blank' }, HttpStatusCode.UnprocessableEntity)
       }
 
       const actor = await db.query.actor.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.userId, user.id)
+        where: (table, { eq: tableEq }) => tableEq(table.userId, user.id)
       })
 
       if (!actor) {
-        return c.json({message: 'Permissions invalid'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Permissions invalid' }, HttpStatusCode.Forbidden)
       }
 
       // Extract URL from prompt
@@ -759,7 +758,7 @@ const app = new Hono<HonoServer>()
             role: 'user',
             index: 0,
             content: {
-              parts: [{type: 'text', state: 'done', text: prompt}]
+              parts: [{ type: 'text', state: 'done', text: prompt }]
             },
             status: 'done'
           })
@@ -774,10 +773,10 @@ const app = new Hono<HonoServer>()
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!result) {
-        return c.json({message: 'Failed to create project'}, HttpStatusCode.BadRequest)
+        return c.json({ message: 'Failed to create project' }, HttpStatusCode.BadRequest)
       }
 
-      const {id: _, ...restOfProject} = result.project
+      const { id: _, ...restOfProject } = result.project
       return c.json(
         {
           project: {
@@ -797,24 +796,24 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectName} = c.req.valid('json')
+      const { projectName } = c.req.valid('json')
       const user = c.get('user')
       const db = c.get('db')
 
       if (!user) {
-        return c.json({message: 'Invalid auth'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Invalid auth' }, HttpStatusCode.Forbidden)
       }
 
       if (!projectName) {
-        return c.json({message: 'Name cannot be blank'}, HttpStatusCode.UnprocessableEntity)
+        return c.json({ message: 'Name cannot be blank' }, HttpStatusCode.UnprocessableEntity)
       }
 
       const actor = await db.query.actor.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.userId, user.id)
+        where: (table, { eq: tableEq }) => tableEq(table.userId, user.id)
       })
 
       if (!actor) {
-        return c.json({message: 'Permissions invalid'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Permissions invalid' }, HttpStatusCode.Forbidden)
       }
 
       const result = await db.transaction(async (tx) => {
@@ -847,10 +846,10 @@ const app = new Hono<HonoServer>()
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!result) {
-        return c.json({message: 'Failed to create project'}, HttpStatusCode.BadRequest)
+        return c.json({ message: 'Failed to create project' }, HttpStatusCode.BadRequest)
       }
 
-      const {id: _, ...restOfResult} = result
+      const { id: _, ...restOfResult } = result
       return c.json(
         {
           project: {
@@ -869,32 +868,32 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectPublicId} = c.req.valid('json')
+      const { projectPublicId } = c.req.valid('json')
       const user = c.get('user')
       const db = c.get('db')
 
       // Get project to verify access
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       // Get all schemas for this project
       const schemas = await db.query.projectSchema.findMany({
-        where: (table, {eq: tableEq}) => tableEq(table.projectId, project.id),
-        orderBy: (table, {desc: tableDesc}) => [tableDesc(table.version)]
+        where: (table, { eq: tableEq }) => tableEq(table.projectId, project.id),
+        orderBy: (table, { desc: tableDesc }) => [tableDesc(table.version)]
       })
 
       // Convert to DTOs
       const schemaDTOs: schema.ProjectSchemaDTOType[] = schemas.map((s) => {
-        const {id: _schemaId, projectId: _schemaProjectId, ...dto} = s
+        const { id: _schemaId, projectId: _schemaProjectId, ...dto } = s
         return dto
       })
 
@@ -915,35 +914,35 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectPublicId, schemaPublicId} = c.req.valid('json')
+      const { projectPublicId, schemaPublicId } = c.req.valid('json')
       const user = c.get('user')
       const db = c.get('db')
 
       // Get project to verify access
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       // Get the specific schema version
       const schemaData = await db.query.projectSchema.findFirst({
-        where: (table, {eq: tableEq, and: tableAnd}) =>
+        where: (table, { eq: tableEq, and: tableAnd }) =>
           tableAnd(tableEq(table.projectId, project.id), tableEq(table.publicId, schemaPublicId))
       })
 
       if (!schemaData) {
-        return c.json({message: 'Schema not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Schema not found' }, HttpStatusCode.NotFound)
       }
 
       // Return the DTO (omitting id and projectId)
-      const {id: _, projectId: _p, ...schemaDTO} = schemaData
+      const { id: _, projectId: _p, ...schemaDTO } = schemaData
 
       return c.json(
         {
@@ -962,35 +961,35 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectPublicId, version} = c.req.valid('json')
+      const { projectPublicId, version } = c.req.valid('json')
       const user = c.get('user')
       const db = c.get('db')
 
       // Get project to verify access
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       // Get the specific schema version
       const schemaData = await db.query.projectSchema.findFirst({
-        where: (table, {eq: tableEq, and: tableAnd}) =>
+        where: (table, { eq: tableEq, and: tableAnd }) =>
           tableAnd(tableEq(table.projectId, project.id), tableEq(table.version, version))
       })
 
       if (!schemaData) {
-        return c.json({message: 'Schema not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Schema not found' }, HttpStatusCode.NotFound)
       }
 
       // Return the DTO (omitting id and projectId)
-      const {id: _, projectId: _p, ...schemaDTO} = schemaData
+      const { id: _, projectId: _p, ...schemaDTO } = schemaData
 
       return c.json(
         {
@@ -1008,32 +1007,32 @@ const app = new Hono<HonoServer>()
       }
     }),
     async (c) => {
-      const {projectPublicId} = c.req.valid('json')
+      const { projectPublicId } = c.req.valid('json')
       const user = c.get('user')
       const db = c.get('db')
 
       // Get project to verify access
       const project = await db.query.project.findFirst({
-        where: (table, {eq: tableEq}) => tableEq(table.publicId, projectPublicId)
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
       })
 
       if (!project) {
-        return c.json({message: 'Project not found'}, HttpStatusCode.NotFound)
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
       }
 
       if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
-        return c.json({message: 'Unauthorized'}, HttpStatusCode.Forbidden)
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
       // Get all extractors for this project
       const extractors = await db.query.extractor.findMany({
-        where: (table, {eq: tableEq}) => tableEq(table.projectId, project.id),
-        orderBy: (table, {desc: tableDesc}) => [tableDesc(table.version)]
+        where: (table, { eq: tableEq }) => tableEq(table.projectId, project.id),
+        orderBy: (table, { desc: tableDesc }) => [tableDesc(table.version)]
       })
 
       // Convert to DTOs
       const extractorDTOs: schema.ExtractorDTOType[] = extractors.map((e) => {
-        const {id: _extractorId, projectId: _extractorProjectId, ...dto} = e
+        const { id: _extractorId, projectId: _extractorProjectId, ...dto } = e
         return dto
       })
 

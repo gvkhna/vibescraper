@@ -709,7 +709,6 @@ export class StorageService {
 
     const download = options?.download ?? !(queryDownload === '0' || queryDownload === 'false')
     const inline = options?.inline ?? !(queryInline === '0' || queryInline === 'false')
-    const decompress = options?.enc ?? !(queryEnc === '0' || queryEnc === 'false')
 
     const filename =
       typeof metadata?.filename === 'string' && metadata.filename
@@ -721,19 +720,35 @@ export class StorageService {
     const mimeType = metadata?.mimeType
     const hash = metadata?.hash
     const lastModified = metadata?.lastModified
+
     const encoding =
       metadata?.encoding === 'br' || metadata?.encoding === 'gzip'
         ? metadata.encoding
         : options?.enc === 'br' || options?.enc === 'gzip'
           ? options.enc
-          : queryEnc === 'br' || queryEnc === 'gzip'
-            ? queryEnc
-            : typeof queryEnc === 'string' && !(queryEnc === '0' || queryEnc === 'false')
-              ? 'br'
-              : null
+          : null
+
+    const acceptEncodingSet = new Set(
+      (c.req.header('accept-encoding') ?? '').split(',').map((enc) => enc.trim())
+    )
+    const requestAcceptsEncoding = typeof encoding === 'string' && acceptEncodingSet.has(encoding)
+
+    const queryOverrideDecode =
+      queryEnc === 'br' || queryEnc === 'gzip'
+        ? queryEnc
+        : typeof queryEnc === 'string' && !(queryEnc === '0' || queryEnc === 'false')
+          ? 'br'
+          : null
+
+    const decompress =
+      typeof queryOverrideDecode === 'string' && queryOverrideDecode === encoding
+        ? false
+        : requestAcceptsEncoding
+          ? encoding
+          : false
 
     if (this.config.STORAGE_PROVIDER === 'bucket') {
-      const result = await this.stream(key, encoding)
+      const result = await this.stream(key, decompress)
       if (result.success) {
         return serveStream(
           c,
@@ -744,7 +759,7 @@ export class StorageService {
             mimeType,
             lastModified,
             hash,
-            encoding
+            encoding: decompress ? null : encoding
           },
           {
             download,
@@ -781,7 +796,7 @@ export class StorageService {
             mimeType,
             lastModified,
             hash,
-            encoding
+            encoding: decompress ? null : encoding
           },
           {
             download,

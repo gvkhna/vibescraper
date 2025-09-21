@@ -1,48 +1,14 @@
-// import {getFilePath, getFilePathWithoutDefaultDocument} from 'hono/utils/filepath'
-// import {createReadStream, lstatSync} from 'node:fs'
-// import type {ReadStream, Stats} from 'node:fs'
-// import {HttpStatusCode} from '@/lib/http-status-codes'
 import debug from 'debug'
 import type { Context } from 'hono'
 import { stream as honoStream } from 'hono/streaming'
 
-// import type {HonoServer} from '..'
-import { getContentDisposition, getMimeType, isCompressibleContentType } from './mime-utils'
+import { getContentDisposition } from './mime-utils'
 import type { FileMetadata, ServeOptions } from './storage-service'
 
 const log = debug('app:server:serve-static')
 
-// const createStreamBody = (stream: ReadStream) => {
-//   const body = new ReadableStream({
-//     start(controller) {
-//       stream.on('data', (chunk) => {
-//         controller.enqueue(chunk)
-//       })
-//       stream.on('end', () => {
-//         controller.close()
-//       })
-//     },
-
-//     cancel() {
-//       stream.destroy()
-//     }
-//   })
-//   return body
-// }
-
-// const getStats = (path: string) => {
-//   let stats: Stats | undefined
-//   try {
-//     stats = lstatSync(path)
-//   } catch (error) {
-//     //
-//   }
-//   return stats
-// }
-
 /*
-  1.Stat & locate the file
-  2.Check for precompressed file
+  2.Check for precompressed encoding
   3.Handle If-None-Match -> 304
   4.Set headers (content-type, etag, cache-control, etc)
   5.Handle HEAD/OPTIONS
@@ -52,7 +18,7 @@ const log = debug('app:server:serve-static')
 export function serveStream(
   c: Context,
   fileStream: ReadableStream,
-  { filename, mimeType, filesize, lastModified, hash }: Partial<FileMetadata>,
+  { filename, mimeType, filesize, lastModified, hash, encoding }: Partial<FileMetadata>,
   { download, inline, cacheControl }: ServeOptions
 ): Response {
   log('serve stream resp')
@@ -62,6 +28,12 @@ export function serveStream(
   // if (!stats) {
   //   return c.json({error: 'File not found'}, HttpStatusCode.NotFound)
   // }
+
+  // ---- 2. Set for encoding ----
+  if (encoding) {
+    c.header('Content-Encoding', encoding)
+    c.header('Vary', 'Accept-Encoding', { append: true })
+  }
 
   // ---- 3. Check If-None-Match for 304 ----
   const etag = hash
@@ -74,11 +46,6 @@ export function serveStream(
     if (lastModified instanceof Date) {
       c.header('Last-Modified', lastModified.toUTCString())
     }
-
-    // if (contentEncoding) {
-    //   c.header('Content-Encoding', contentEncoding)
-    // }
-    // c.header('Vary', 'Accept-Encoding')
     return c.body(null, 304)
   }
 
@@ -105,12 +72,6 @@ export function serveStream(
     c.header('Last-Modified', lastModified.toUTCString())
   }
   c.header('Accept-Ranges', 'bytes')
-  // if (contentEncoding) {
-  //   c.header('Content-Encoding', contentEncoding)
-  // }
-  // if (isCompressible) {
-  //   c.header('Vary', 'Accept-Encoding')
-  // }
 
   // ---- 5. HEAD/OPTIONS special case ----
   if (c.req.method === 'HEAD' || c.req.method === 'OPTIONS') {

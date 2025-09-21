@@ -1,11 +1,8 @@
-// import {HttpStatusCode} from '@/lib/http-status-codes'
 import debug from 'debug'
 import type { Context } from 'hono'
 import type { ReadStream, Stats } from 'node:fs'
-// import {getFilePath, getFilePathWithoutDefaultDocument} from 'hono/utils/filepath'
 import { createReadStream, lstatSync } from 'node:fs'
 
-// import type {HonoServer} from '..'
 import { getContentDisposition, getMimeType, isCompressibleContentType } from './mime-utils'
 import type { FileMetadata, ServeOptions } from './storage-service'
 
@@ -56,7 +53,7 @@ export function serveStatic(
   c: Context,
   filePath: string,
   { filename, mimeType, filesize, lastModified, hash, encoding }: Partial<FileMetadata>,
-  { download, inline, cacheControl, enc }: ServeOptions
+  { download, inline, cacheControl }: ServeOptions
 ): Response {
   log('serve static resp')
 
@@ -66,55 +63,11 @@ export function serveStatic(
     return c.json({ error: 'File not found' }, 404)
   }
 
-  // ---- 2. Check for precompressed variant ----
-  // let selectedEncoding: keyof typeof ENCODINGS | undefined
-  // let selectedFilePath = filePath
-  // let contentEncoding: string | undefined
-
-  // const resolvedMimeType = mimeType ?? getMimeType(filename) ?? 'application/octet-stream'
-  // const isCompressible = isCompressibleContentType(resolvedMimeType)
-
-  // if (isCompressible) {
-  //   const acceptEncodingSet = new Set(
-  //     (c.req.header('accept-encoding') || '').split(',').map((enc) => enc.trim())
-  //   )
-  //   for (const encoding of ENCODINGS_ORDERED_KEYS) {
-  //     if (acceptEncodingSet.has(encoding)) {
-  //       const testPath = filePath + ENCODINGS[encoding]
-  //       const testStats = getStats(testPath)
-  //       if (testStats) {
-  //         selectedFilePath = testPath
-  //         stats = testStats
-  //         contentEncoding = encoding
-  //         selectedEncoding = encoding
-  //         break
-  //       }
-  //     }
-  //   }
-  // }
-
-  // if (options.precompressed && (!defaultMimeType || COMPRESSIBLE_CONTENT_TYPE_REGEX.test(defaultMimeType))) {
-  //   const acceptEncodingSet = new Set(
-  //     c.req
-  //       .header('Accept-Encoding')
-  //       ?.split(',')
-  //       .map((encoding) => encoding.trim())
-  //   )
-
-  //   for (const encoding of ENCODINGS_ORDERED_KEYS) {
-  //     if (!acceptEncodingSet.has(encoding)) {
-  //       continue
-  //     }
-  //     const precompressedStats = getStats(path + ENCODINGS[encoding])
-  //     if (precompressedStats) {
-  //       c.header('Content-Encoding', encoding)
-  //       c.header('Vary', 'Accept-Encoding', {append: true})
-  //       stats = precompressedStats
-  //       path = path + ENCODINGS[encoding]
-  //       break
-  //     }
-  //   }
-  // }
+  // ---- 2. Set for encoding ----
+  if (encoding) {
+    c.header('Content-Encoding', encoding)
+    c.header('Vary', 'Accept-Encoding', { append: true })
+  }
 
   // ---- 3. Check If-None-Match for 304 ----
   const etag = hash
@@ -127,11 +80,6 @@ export function serveStatic(
     if (lastModified instanceof Date) {
       c.header('Last-Modified', lastModified.toUTCString())
     }
-
-    // if (contentEncoding) {
-    //   c.header('Content-Encoding', contentEncoding)
-    // }
-    // c.header('Vary', 'Accept-Encoding')
     return c.body(null, 304)
   }
 
@@ -157,12 +105,6 @@ export function serveStatic(
     c.header('Last-Modified', lastModified.toUTCString())
   }
   c.header('Accept-Ranges', 'bytes')
-  // if (contentEncoding) {
-  //   c.header('Content-Encoding', contentEncoding)
-  // }
-  // if (isCompressible) {
-  //   c.header('Vary', 'Accept-Encoding')
-  // }
 
   // ---- 5. HEAD/OPTIONS special case ----
   const size = stats.size

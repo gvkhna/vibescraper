@@ -473,7 +473,15 @@ export class StorageService {
           return err(StorageErrorCode.FAILED, 'No body in S3 response')
         }
         this.log(`Storage: Created stream <- ${key} (S3)`)
-        return ok(response.Body.transformToWebStream())
+        let returnStream: ReadableStream | null = null
+        if (decompress === true || decompress === 'br') {
+
+        } else if (decompress === 'gzip') {
+          returnStream =
+        } else {
+          returnStream = response.Body.transformToWebStream()
+        }
+        return ok(returnStream)
       } catch (error) {
         // Check for S3 NotFound using instanceof and status code
         if (error instanceof S3ServiceException && error.$response?.statusCode === 404) {

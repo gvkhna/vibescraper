@@ -1,13 +1,18 @@
+import { Readable } from 'node:stream'
 import {
   brotliCompress,
   brotliCompressSync,
   brotliDecompress,
   brotliDecompressSync,
+  type BrotliOptions,
   constants,
+  createBrotliDecompress,
+  createGunzip,
   gunzip,
   gunzipSync,
   gzip,
-  gzipSync
+  gzipSync,
+  type ZlibOptions
 } from 'node:zlib'
 
 export type CompressionParam = 'max' | 'min' | 'default' | number
@@ -161,4 +166,32 @@ export function gzipDecompressBytes(input: Uint8Array): Promise<Uint8Array> {
       resolve(new Uint8Array(buffer))
     })
   })
+}
+
+/**
+ * Streaming Brotli decompression.
+ * Accepts a Web ReadableStream<Uint8Array> and returns a Web ReadableStream<Uint8Array>.
+ */
+export function brotliDecompressStream(
+  input: ReadableStream,
+  options?: BrotliOptions
+): ReadableStream<Uint8Array> {
+  const brotliDecompress = createBrotliDecompress(options)
+  return input.pipeThrough(brotliDecompress)
+  // const nodeIn = Readable.fromWeb(input)
+  // const transformed = nodeIn.pipe(createBrotliDecompress(options))
+  // return Readable.toWeb(transformed) as unknown as ReadableStream<Uint8Array>
+}
+
+/**
+ * Streaming Gzip decompression.
+ * Accepts a Web ReadableStream<Uint8Array> and returns a Web ReadableStream<Uint8Array>.
+ */
+export function gzipDecompressStream(
+  input: ReadableStream<Uint8Array>,
+  options?: ZlibOptions
+): ReadableStream<Uint8Array> {
+  const nodeIn = Readable.fromWeb(input as unknown as ReadableStream)
+  const transformed = nodeIn.pipe(createGunzip(options))
+  return Readable.toWeb(transformed) as unknown as ReadableStream<Uint8Array>
 }

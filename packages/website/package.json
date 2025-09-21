@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "build": "bun --env-file=../../.env astro build",
-    "clean": "rimraf dist .astro .turbo node_modules/.cache node_modules/.vite-temp *.tsbuildinfo",
+    "clean": "rimraf --glob .astro dist .turbo node_modules/.cache node_modules/.vite* *.tsbuildinfo",
     "db:generate": "bun --env-file=../../.env ./node_modules/drizzle-kit/bin.cjs generate",
     "db:migrate": "bun --env-file=../../.env ./node_modules/drizzle-kit/bin.cjs migrate",
     "db:seed": "bun --env-file=../../.env src/db/seed.ts",

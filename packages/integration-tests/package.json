@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "clean": "rimraf dist .turbo node_modules/.cache *.tsbuildinfo",
-    "format": "bun eslint --quiet --config ../../eslint.config.mjs . --fix && bun prettier --write .",
+    "format": "bun eslint --quiet --config ../../eslint.config.mjs . --fix && bun prettier --write . --ignore-path ../../.prettierignore",
     "lint": "bun eslint --config ../../eslint.config.mjs .",
     "test": "vitest run",
     "typecheck": "bun tsc --noEmit"

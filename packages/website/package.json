@@ -12,7 +12,7 @@
     "db:seed": "bun --env-file=../../.env src/db/seed.ts",
     "dev": "bun --env-file=../../.env astro dev",
     "drizzle-kit": "bun --env-file=../../.env ./node_modules/drizzle-kit/bin.cjs",
-    "format": "bun eslint --quiet --config ./eslint.config.mjs . --fix && bun prettier --write .",
+    "format": "bun eslint --quiet --config ./eslint.config.mjs . --fix && bun prettier --write . --ignore-path ../../.prettierignore",
     "lint": "bun eslint --config ./eslint.config.mjs .",
     "maildev": "maildev -v --hide-extensions STARTTLS --mail-directory tmp/maildev/",
     "preview": "bun --env-file=../../.env astro preview",

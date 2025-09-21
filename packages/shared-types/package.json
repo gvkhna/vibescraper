@@ -14,7 +14,7 @@
     "build": "vite build",
     "clean": "rimraf dist .turbo node_modules/.cache node_modules/.vite-temp *.tsbuildinfo",
     "dev": "vite build --watch",
-    "format": "bun eslint --quiet --config ../../eslint.config.mjs . --fix && bun prettier --write .",
+    "format": "bun eslint --quiet --config ../../eslint.config.mjs . --fix && bun prettier --write . --ignore-path ../../.prettierignore",
     "lint": "bun eslint --config ../../eslint.config.mjs .",
     "typecheck": "bun tsc --noEmit && bun eslint --quiet ."
   },

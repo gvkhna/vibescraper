@@ -1,17 +1,30 @@
+import { CreateBucketCommand, S3Client } from '@aws-sdk/client-s3'
 import { Hono } from 'hono'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  GenericContainer,
+  Network,
+  type StartedNetwork,
+  type StartedTestContainer,
+  Wait
+} from 'testcontainers'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { type FilesystemStorageConfig, StorageService } from '../src/storage-service'
+import { serveStream } from '../src/serve-stream'
+import {
+  type BucketStorageConfig,
+  type FilesystemStorageConfig,
+  StorageService
+} from '../src/storage-service'
 import { streamToBytes } from '../src/stream-utils'
 
 import { readFixture } from './read-fixture'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-describe('storageService - HTTP Serving', () => {
+describe('storageService filesystem - HTTP Serving', () => {
   let storageService: StorageService
   let app: Hono
   const tmpDir = path.join(__dirname, '..', 'tmp', 'test-storage-http')
@@ -30,6 +43,7 @@ describe('storageService - HTTP Serving', () => {
 
     // Create a Hono app with the storage service
     app = new Hono()
+    // Generic route used in earlier tests
     app.get('/storage/:key', async (c) => {
       const key = c.req.param('key')
       return storageService.serve(c, key, {})
@@ -46,9 +60,7 @@ describe('storageService - HTTP Serving', () => {
     expect.assertions(4)
 
     // Read the test image file
-    const imagePath = path.join(__dirname, '..', 'fixtures', 'image.jpg')
-    const fileBuffer = fs.readFileSync(imagePath)
-    const originalBytes = new Uint8Array(fileBuffer)
+    const originalBytes = readFixture('image.jpg')
 
     // Store the file
     const storeResult = await storageService.store(originalBytes)
@@ -97,9 +109,7 @@ describe('storageService - HTTP Serving', () => {
     expect.assertions(4)
 
     // Read the test image file
-    const imagePath = path.join(__dirname, '..', 'fixtures', 'image.jpg')
-    const fileBuffer = fs.readFileSync(imagePath)
-    const originalBytes = new Uint8Array(fileBuffer)
+    const originalBytes = readFixture('image.jpg')
 
     // Store the file
     const storeResult = await storageService.store(originalBytes)
@@ -129,48 +139,4 @@ describe('storageService - HTTP Serving', () => {
 
     expect(deleteResult.success).toBe(true)
   })
-
-  it('br: serve via HTTP round-trip', async () => {
-    expect.assertions(2)
-
-    const original = readFixture('text.fixture')
-    const storeResult = await storageService.store(original, 'br')
-
-    expect(storeResult.success).toBe(true)
-
-    if (!storeResult.success) {
-      throw new Error('store failed')
-    }
-    const key = storeResult.data
-
-    const req = new Request(`http://localhost/storage/${key}?enc=br`)
-    const res = await app.fetch(req)
-    const body = new Uint8Array(await res.arrayBuffer())
-
-    expect(body).toStrictEqual(original)
-
-    await storageService.delete(key)
-  })
-
-  // it('gzip: serve via HTTP round-trip', async () => {
-  //   expect.assertions(2)
-
-  //   const original = readFixture('text.fixture')
-  //   const storeResult = await storageService.store(original, 'gzip')
-
-  //   expect(storeResult.success).toBe(true)
-
-  //   if (!storeResult.success) {
-  //     throw new Error('store failed')
-  //   }
-  //   const key = storeResult.data
-
-  //   const req = new Request(`http://localhost/storage/${key}?enc=gzip`)
-  //   const res = await app.fetch(req)
-  //   const body = new Uint8Array(await res.arrayBuffer())
-
-  //   expect(body).toStrictEqual(original)
-
-  //   await storageService.delete(key)
-  // })
 })

@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import { dirname, resolve } from 'node:path'
+import { dirname, resolve, isAbsolute } from 'node:path'
 
 import { loadEnv } from 'vite'
 import { defineConfig } from 'astro/config'
@@ -11,7 +11,9 @@ import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import { viteMaildev } from '@vibescraper/dev-utils'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
+import debug from 'debug'
 
+const log = debug('react-compiler')
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const projectRoot = resolve(__dirname, '../..')
 
@@ -55,9 +57,9 @@ export default defineConfig({
           options.updateConfig({
             vite: {
               envDir: projectRoot,
-              // ssr: {
-              //   external: ['@vibescraper/html-processor']
-              // },
+              ssr: {
+                external: ['@vibescraper/html-processor']
+              },
               plugins: [
                 tanstackRouter({
                   target: 'react',
@@ -88,8 +90,8 @@ export default defineConfig({
               // panicThreshold: 'none',
               logger: {
                 logEvent(filename: string, event: any) {
-                  if (event.kind === 'CompileSuccess') {
-                    console.log('Compiled:', filename)
+                  if (event.kind !== 'CompileSuccess') {
+                    log(`react-compiler: ${JSON.stringify(event)}`)
                   }
                 }
               }

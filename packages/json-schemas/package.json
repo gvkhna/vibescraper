@@ -27,7 +27,6 @@
   "devDependencies": {},
   "peerDependencies": {
     "@types/node": "*",
-    "vite": "*",
     "vitest": "*"
   }
 }

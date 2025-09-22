@@ -25,7 +25,7 @@ export function asyncTimeout(timeoutMs?: number) {
 
 /**
  * Run some work with two UI yields:
- *  1. Yield to the event‑loop before `work` starts (macrotask + microtask).
+ *  1. Yield to the event-loop before `work` starts (macrotask + microtask).
  *  2. Yield again when `work` finishes.
  *
  * If you just want the yields and no work, call `await uiYield()` with no args.
@@ -56,7 +56,7 @@ export async function asyncFor(length: number, callback: (index: number) => Prom
 }
 
 /**
- * Retry an async function with exponential back‑off.
+ * Retry an async function with exponential back-off.
  *
  * ```ts
  * const data = await asyncRetry(() => fetchJson(url), {
@@ -115,7 +115,7 @@ export async function asyncRetry<T>(
       onRetry?.(err, { attempt, delay: wait })
 
       await new Promise((res) => setTimeout(res, wait))
-      delay *= factor // exponential back‑off
+      delay *= factor // exponential back-off
     }
   }
 }

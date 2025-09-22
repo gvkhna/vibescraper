@@ -23,8 +23,7 @@ describe('storageService - Bucket (MinIO)', () => {
   let storageService: StorageService
 
   beforeAll(async () => {
-    // eslint-disable-next-line no-console
-    console.log('Starting MinIO container...')
+    log('Starting MinIO container...')
 
     // Start MinIO container
     minio = await new GenericContainer('minio/minio:latest')
@@ -64,8 +63,7 @@ describe('storageService - Bucket (MinIO)', () => {
       )
       log(`Created bucket: ${bucketName}`)
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('Bucket creation error (may already exist):', error)
+      log('Bucket creation error (may already exist):', error)
     }
 
     // Initialize storage service with MinIO config
@@ -113,11 +111,9 @@ describe('storageService - Bucket (MinIO)', () => {
       if (minio) {
         await minio.stop()
       }
-      // eslint-disable-next-line no-console
-      console.log('Cleanup complete')
+      log('Cleanup complete')
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Cleanup error:', error)
+      log('Cleanup error:', error)
     }
   }, 30000)
 

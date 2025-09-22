@@ -897,37 +897,7 @@ export class SandboxManager extends EventTarget {
           }
         }
       }
-      // if (msg.type === 'job-status' && msg.jobId === jobId) {
-      //   const statusNotification: CodeExecutionStatusMessage = {
-      //     messageId: ulid(),
-      //     type: 'status',
-      //     status: msg.status,
-      //     codeExecutionId: jobId,
-      //     completedAt: msg.completedAt,
-      //     error: msg.error
-      //   }
-      //   queue.push(statusNotification)
-      // }
-      // if (msg.type === 'job-log' && msg.jobId === jobId) {
-      //   const logNotification: CodeExecutionLogMessage = {
-      //     messageId: ulid(),
-      //     timestamp: Date.now(),
-      //     type: 'log',
-      //     codeExecutionId: jobId,
-      //     kind: msg.kind,
-      //     log: msg.log
-      //   }
-      //   queue.push(logNotification)
-      // }
       resolveQueue?.()
-      // if (
-      //   (msg.type === 'job-status' && msg.jobId === jobId) ||
-      //   (msg.type === 'job-log' && msg.jobId === jobId)
-      // ) {
-      //   if (msg.type === )
-      //   queue.push(msg)
-      //   resolveQueue?.()
-      // }
     }
 
     this.addEventListener('job-log', listener)
@@ -975,27 +945,12 @@ export class SandboxManager extends EventTarget {
 
           // Exit condition depends on whether we're executing a function or just code
           if (functionInput) {
-            // For function execution, exit only when we get the result
-            // The completed status will come before the result, so we just wait for result
-            // if (msg.type === 'result' && msg.result) {
-            //   this.log('Function execution complete with result')
-            //   hasSeenResult = true
-            // }
-            // Also exit on completed status if we've seen an exception (no result will come)
-            // Or on failed/timeout status
             if (hasSeenFinalStatus && hasSeenResult) {
               return
             }
             if (hasSeenException && hasSeenFinalStatus) {
               return
             }
-            // if (msg.type === 'status' && ['completed', 'failed', 'timeout'].includes(msg.status)) {
-            //   if (hasSeenException || msg.status !== 'completed') {
-            //     this.log('Function execution ended:', msg.status, 'hasException:', hasSeenException)
-            //     return
-            //   }
-            //   // If completed but no exception, keep waiting for result
-            // }
           } else {
             // For regular code execution, exit on completion status
             if (msg.type === 'status' && ['completed', 'failed', 'timeout'].includes(msg.status)) {
@@ -1053,36 +1008,4 @@ export class SandboxManager extends EventTarget {
     // If no result message, don't include result key
     return { messages: all }
   }
-
-  // async executeCode(code: string): Promise<SandboxWorkerJob> {
-  //   const jobId = ulid()
-  //   const job: SandboxWorkerJob = {
-  //     id: jobId,
-  //     code,
-  //     status: 'pending',
-  //     logs: [],
-  //     createdAt: Date.now()
-  //   }
-
-  //   const message: Message = {
-  //     type: 'new-job',
-  //     jobId,
-  //     code
-  //   }
-
-  //   log('writing encoded message: ', jobId)
-  //   this.child?.stdin?.write(encodeMessage(message))
-
-  //   return new Promise((resolve) => {
-  //     const listener = (updatedJob: SandboxWorkerJob) => {
-  //       if (updatedJob.id === jobId && ['completed', 'failed', 'timeout'].includes(updatedJob.status)) {
-  //         this.off('job-update', listener)
-  //         resolve(updatedJob)
-  //       }
-  //     }
-  //     this.on('job-update', listener)
-  //   })
-  // }
 }
-
-// export const sandboxManager = new SandboxManager()

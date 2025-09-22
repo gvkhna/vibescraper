@@ -9,6 +9,7 @@ import { FetchHttpHandler } from '@smithy/fetch-http-handler'
 import type { BrowserClient } from '@smithy/types'
 import type { Context } from 'hono'
 import fs from 'node:fs'
+import fsAsync from 'node:fs/promises'
 import { dirname as pathDirname, isAbsolute, join as pathJoin, resolve as pathResolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -299,17 +300,17 @@ export class StorageService {
       try {
         let saveBytes: Uint8Array | null = null
         if (compress === true || compress === 'br') {
-          this.log(`Store: brotli fs-sync`)
-          saveBytes = brotliCompressBytesSync(bytes)
+          this.log(`Store: brotli fs-async`)
+          saveBytes = await brotliCompressBytes(bytes)
         } else if (compress === 'gzip') {
-          this.log(`Store: gzip fs-sync`)
-          saveBytes = gzipCompressBytesSync(bytes)
+          this.log(`Store: gzip fs-async`)
+          saveBytes = await gzipCompressBytes(bytes)
         } else {
-          this.log(`Store: fs-sync`)
+          this.log(`Store: fs-async`)
           saveBytes = bytes
         }
-        fs.mkdirSync(pathDirname(filePath), { recursive: true })
-        fs.writeFileSync(filePath, saveBytes)
+        await fsAsync.mkdir(pathDirname(filePath), { recursive: true })
+        await fsAsync.writeFile(filePath, saveBytes)
         this.log(`Storage: Stored ${saveBytes.length} bytes -> ${key}`)
         return ok(key)
       } catch (error) {
@@ -450,13 +451,13 @@ export class StorageService {
       const filePath = pathJoin(this.basePath, storagePath)
 
       try {
-        const buffer = fs.readFileSync(filePath)
+        const buffer = await fsAsync.readFile(filePath)
         const bytes = new Uint8Array(buffer)
         let returnBytes: Uint8Array | null = null
         if (decompress === true || decompress === 'br') {
-          returnBytes = brotliDecompressBytesSync(bytes)
+          returnBytes = await brotliDecompressBytes(bytes)
         } else if (decompress === 'gzip') {
-          returnBytes = gzipDecompressBytesSync(bytes)
+          returnBytes = await gzipDecompressBytes(bytes)
         } else {
           returnBytes = bytes
         }
@@ -545,7 +546,7 @@ export class StorageService {
       const filePath = pathJoin(this.basePath, storagePath)
 
       try {
-        fs.unlinkSync(filePath)
+        await fsAsync.unlink(filePath)
         this.log(`Storage: Deleted ${key}`)
         // eslint-disable-next-line no-undefined
         return ok(undefined)
@@ -643,7 +644,7 @@ export class StorageService {
       const filePath = pathJoin(this.basePath, storagePath)
 
       try {
-        const buffer = fs.readFileSync(filePath)
+        const buffer = await fsAsync.readFile(filePath)
         const bytes = new Uint8Array(buffer)
         let offset = 0
         // const stream = bytesToStream(bytes)
@@ -802,14 +803,8 @@ export class StorageService {
     } else if (this.basePath) {
       const filePath = pathJoin(this.basePath, storagePath)
 
-      // Check if file exists first for better error handling
-      if (!fs.existsSync(filePath)) {
-        this.log(`Storage: HTTP 404 - ${key} not found (filesystem)`)
-        return c.notFound()
-      }
-
       try {
-        return serveStatic(
+        return await serveStatic(
           c,
           filePath,
           {

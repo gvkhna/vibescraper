@@ -96,13 +96,19 @@ function validateExtractionResult(
  * - If script fails or returns non-JSON, extractionResult key will be missing entirely
  * - This pattern ensures we only store valid results and can detect presence via key existence
  */
-async function runExtraction(
-  sandbox: SandboxManager,
-  cleanedHtml: string,
-  url: string,
-  script: string,
+async function runExtraction({
+  sandbox,
+  cleanedHtml,
+  url,
+  script,
+  schemaObject
+}: {
+  sandbox: SandboxManager
+  cleanedHtml: string
+  url: string
+  script: string
   schemaObject: JsonObject
-): Promise<ExtractionStage> {
+}): Promise<ExtractionStage> {
   log('Starting extraction script execution for URL:', url)
 
   try {
@@ -190,14 +196,21 @@ async function runExtraction(
 /**
  * Helper function to try running extraction if schema and script exist
  */
-async function tryExtraction(
-  db: typeof database,
-  sandbox: SandboxManager,
-  projectId: schema.ProjectId,
-  projectCommit: typeof schema.projectCommit.$inferSelect,
-  cleanedHtml: string | null,
+async function tryExtraction({
+  db,
+  sandbox,
+  projectId,
+  projectCommit,
+  cleanedHtml,
+  url
+}: {
+  db: typeof database
+  sandbox: SandboxManager
+  projectId: schema.ProjectId
+  projectCommit: typeof schema.projectCommit.$inferSelect
+  cleanedHtml: string | null
   url: string
-): Promise<ExtractionStage | null> {
+}): Promise<ExtractionStage | null> {
   log(
     'Checking for extraction prerequisites - schema version:',
     projectCommit.activeSchemaVersion,
@@ -234,7 +247,13 @@ async function tryExtraction(
 
     log('Found active extractor and schema, proceeding with extraction')
     // Run the extraction
-    return await runExtraction(sandbox, cleanedHtml, url, activeExtractor.script, activeSchema.schemaJson)
+    return await runExtraction({
+      sandbox,
+      cleanedHtml,
+      url,
+      script: activeExtractor.script,
+      schemaObject: activeSchema.schemaJson
+    })
   } catch (error) {
     log('tryExtraction error:', error)
     return {
@@ -676,14 +695,14 @@ export async function scrapeProcess({
     log('Running extraction if schema and script exist')
     const cleanedHtmlForExtraction = cacheData.cleanedHtml ?? html
     if (cleanedHtmlForExtraction) {
-      extractionStage = await tryExtraction(
+      extractionStage = await tryExtraction({
         db,
         sandbox,
-        project.id,
-        projectCommit,
-        cleanedHtmlForExtraction,
-        urlToScrape
-      )
+        projectId: project.id,
+        projectCommit: projectCommit,
+        cleanedHtml: cleanedHtmlForExtraction,
+        url: urlToScrape
+      })
 
       if (extractionStage) {
         cacheData.extractionScriptStatus = extractionStage.extractionScriptStatus

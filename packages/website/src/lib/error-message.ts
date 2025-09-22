@@ -1,5 +1,5 @@
 /**
- * Safely extract a human‐readable message from any error-like value.
+ * Safely extract a human-readable message from any error-like value.
  * @param error The thrown value (could be string, Error, object, etc.)
  * @param fallback A default message if nothing else can be found
  */

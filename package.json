@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "bun turbo run build",
-    "clean": "bun turbo run clean && rimraf --glob dist .turbo node_modules/.cache node_modules/.vite* *.tsbuildinfo",
+    "clean": "bun turbo run clean && rimraf --glob build dist .turbo node_modules/.cache node_modules/.vite* *.tsbuildinfo",
     "dev": "bun turbo run dev --filter=@vibescraper/website",
     "dev:all": "bun turbo run dev",
     "format": "bun turbo run format",

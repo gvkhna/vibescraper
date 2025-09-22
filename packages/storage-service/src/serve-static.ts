@@ -1,7 +1,8 @@
 import debug from 'debug'
 import type { Context } from 'hono'
 import type { ReadStream, Stats } from 'node:fs'
-import { createReadStream, lstatSync } from 'node:fs'
+import { createReadStream } from 'node:fs'
+import { lstat } from 'node:fs/promises'
 
 import { getContentDisposition, getMimeType, isCompressibleContentType } from './mime-utils'
 import type { FileMetadata, ServeOptions } from './storage-service'
@@ -31,15 +32,25 @@ const createStreamBody = (stream: ReadStream) => {
   return body
 }
 
-const getStats = (path: string) => {
-  let stats: Stats | undefined
+async function getStats(path: string) {
+  let stats: Stats | null = null
   try {
-    stats = lstatSync(path)
+    stats = await lstat(path)
   } catch (error) {
     //
   }
   return stats
 }
+
+// const getStats = (path: string) => {
+//   let stats: Stats | undefined
+//   try {
+//     stats = lstatSync(path)
+//   } catch (error) {
+//     //
+//   }
+//   return stats
+// }
 
 /*
   1.Stat & locate the file
@@ -50,17 +61,17 @@ const getStats = (path: string) => {
   6.Range request handling
   7.Send file stream or buffer
   */
-export function serveStatic(
+export async function serveStatic(
   c: Context,
   filePath: string,
   { filename, mimeType, filesize, lastModified, hash, encoding }: Partial<FileMetadata>,
   { download, inline, cacheControl }: ServeOptions,
   decompress: 'gzip' | 'br' | false
-): Response {
+): Promise<Response> {
   log('serve static resp')
 
   // ---- 1. Get file stats ----
-  const stats = getStats(filePath)
+  const stats = await getStats(filePath)
   if (!stats) {
     return c.json({ error: 'File not found' }, 404)
   }

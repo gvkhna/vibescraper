@@ -194,8 +194,7 @@ describe('compression - Bucket (MinIO)', () => {
   let app: Hono
 
   beforeAll(async () => {
-    // eslint-disable-next-line no-console
-    console.log('Starting MinIO container (compression tests)...')
+    log('Starting MinIO container (compression tests)...')
     minio = await new GenericContainer('minio/minio:latest')
       .withCommand(['server', '/data'])
       .withEnvironment({
@@ -254,11 +253,9 @@ describe('compression - Bucket (MinIO)', () => {
       if (minio) {
         await minio.stop()
       }
-      // eslint-disable-next-line no-console
-      console.log('Cleanup complete')
+      log('Cleanup complete')
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Cleanup error (compression tests):', error)
+      log('Cleanup error (compression tests):', error)
     }
   }, 30000)
 

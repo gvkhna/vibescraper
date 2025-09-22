@@ -22,7 +22,7 @@ export function TabSchemaJson() {
   const projectSchemas = useStore((state) => state.extractorSlice.projectSchemas)
 
   // Derive schemas from projectSchemas
-  const schemas = projectPublicId ? projectSchemas[projectPublicId]?.schemas ?? null : null
+  const schemas = projectPublicId ? (projectSchemas[projectPublicId]?.schemas ?? null) : null
 
   // Get the active schema version from project commit
   const activeSchemaVersion = useStore((state) => state.extractorSlice.projectCommit?.activeSchemaVersion)
@@ -81,7 +81,7 @@ export function TabSchemaJson() {
 
   return (
     <div className='relative flex h-full bg-[#0D1117]'>
-      <div className='absolute right-4 top-4 z-10 flex items-center gap-2'>
+      <div className='absolute top-4 right-4 z-10 flex items-center gap-2'>
         {activeSchema?.version && <span className='text-xs text-white/60'>v{activeSchema.version}</span>}
         <Button
           variant='ghost'

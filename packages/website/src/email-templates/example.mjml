@@ -2,8 +2,19 @@
   <mj-body>
     <mj-section>
       <mj-column>
-        <mj-text font-size="20px" color="#444" align="center"> Password Reset Request </mj-text>
-        <mj-button href="{{url}}" background-color="#007bff"> Reset Password </mj-button>
+        <mj-text
+          font-size="20px"
+          color="#444"
+          align="center"
+        >
+          Password Reset Request
+        </mj-text>
+        <mj-button
+          href="{{url}}"
+          background-color="#007bff"
+        >
+          Reset Password
+        </mj-button>
         <mj-text color="#666"> If you didn't request this, please ignore this email. </mj-text>
       </mj-column>
     </mj-section>

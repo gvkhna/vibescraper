@@ -1,27 +1,27 @@
 {
-  "version": "7",
   "dialect": "postgresql",
   "entries": [
     {
+      "breakpoints": false,
       "idx": 0,
-      "version": "7",
-      "when": 1758318762095,
       "tag": "20250919215242_ambiguous_stranger",
-      "breakpoints": false
+      "version": "7",
+      "when": 1758318762095
     },
     {
+      "breakpoints": false,
       "idx": 1,
-      "version": "7",
-      "when": 1758320539588,
       "tag": "20250919222219_pale_reptil",
-      "breakpoints": false
+      "version": "7",
+      "when": 1758320539588
     },
     {
+      "breakpoints": false,
       "idx": 2,
-      "version": "7",
-      "when": 1758482806563,
       "tag": "20250921192646_fantastic_lady_deathstrike",
-      "breakpoints": false
+      "version": "7",
+      "when": 1758482806563
     }
-  ]
+  ],
+  "version": "7"
 }

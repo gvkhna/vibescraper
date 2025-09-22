@@ -55,9 +55,9 @@ export default defineConfig({
           options.updateConfig({
             vite: {
               envDir: projectRoot,
-              ssr: {
-                external: ['@vibescraper/html-processor']
-              },
+              // ssr: {
+              //   external: ['@vibescraper/html-processor']
+              // },
               plugins: [
                 tanstackRouter({
                   target: 'react',

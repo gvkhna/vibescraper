@@ -1,16 +1,33 @@
 <mj-text>
   <h3>Sign in with your magic link</h3>
-  <p>Someone requested a magic login link for your email on {{ public_brand_name }}. If this was you, click the button below to sign in. If you didn't make this request, you can safely ignore this email.</p>
+  <p>
+    Someone requested a magic login link for your email on {{ public_brand_name }}. If this was you, click the
+    button below to sign in. If you didn't make this request, you can safely ignore this email.
+  </p>
 </mj-text>
 
-<mj-button align="left" background-color="#033FFF" color="#FFFFFF" href="{{ magic_link_url }}"> Sign in </mj-button>
+<mj-button
+  align="left"
+  background-color="#033FFF"
+  color="#FFFFFF"
+  href="{{ magic_link_url }}"
+>
+  Sign in
+</mj-button>
 
-<mj-divider border-width="1px" border-color="#d1d5db" />
+<mj-divider
+  border-width="1px"
+  border-color="#d1d5db"
+/>
 
 <mj-text>
   <p>Or you can copy and paste the link below into your browser:</p>
   <p>
-    <a href="{{ magic_link_url }}" alt="magic login link">{{ magic_link_url }}</a>
+    <a
+      href="{{ magic_link_url }}"
+      alt="magic login link"
+      >{{ magic_link_url }}</a
+    >
   </p>
   <p>- {{ public_brand_name }} Team</p>
 </mj-text>

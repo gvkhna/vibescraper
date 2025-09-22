@@ -10,7 +10,8 @@ import {
   type PromptInputMessage,
   PromptInputSubmit,
   PromptInputTextarea,
-  PromptInputToolbar } from '@/components/ai-elements/prompt-input'
+  PromptInputToolbar
+} from '@/components/ai-elements/prompt-input'
 import { GitHubStarsButton } from '@/components/animate-ui/buttons/github-stars'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

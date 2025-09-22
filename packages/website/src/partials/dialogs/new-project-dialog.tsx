@@ -10,7 +10,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle } from '@/components/ui/dialog'
+  DialogTitle
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { nowait } from '@/lib/async-utils'
 
@@ -36,7 +37,7 @@ export function NewProjectDialog({
     if (!projectName.trim()) {
       return
     }
-    
+
     setIsCreating(true)
     try {
       await createProject(projectName)
@@ -66,7 +67,7 @@ export function NewProjectDialog({
             Create a new web scraping project to get started
           </DialogDescription>
         </DialogHeader>
-        
+
         <form
           onSubmit={(e) => {
             e.preventDefault()

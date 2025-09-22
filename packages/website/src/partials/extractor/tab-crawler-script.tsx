@@ -21,12 +21,10 @@ export function TabCrawlerScript() {
   const projectCrawlers = useStore((state) => state.extractorSlice.projectCrawlers)
 
   // Derive crawlers from projectCrawlers
-  const crawlers = projectPublicId ? projectCrawlers[projectPublicId]?.crawlers ?? null : null
+  const crawlers = projectPublicId ? (projectCrawlers[projectPublicId]?.crawlers ?? null) : null
 
   // Get the active crawler version from project commit
-  const activeCrawlerVersion = useStore(
-    (state) => state.extractorSlice.projectCommit?.activeCrawlerVersion
-  )
+  const activeCrawlerVersion = useStore((state) => state.extractorSlice.projectCommit?.activeCrawlerVersion)
 
   // Get the active crawler from the reactive crawlers array
   const currentCrawler = React.useMemo(() => {
@@ -71,7 +69,7 @@ export function TabCrawlerScript() {
 
   return (
     <div className='relative flex h-full flex-col bg-[#0D1117]'>
-      <div className='absolute right-4 top-4 z-10 flex items-center gap-2'>
+      <div className='absolute top-4 right-4 z-10 flex items-center gap-2'>
         {currentCrawler.version && (
           <span className='rounded bg-white/10 px-2 py-1 text-xs text-white/60'>
             v{currentCrawler.version}
@@ -96,4 +94,3 @@ export function TabCrawlerScript() {
     </div>
   )
 }
-

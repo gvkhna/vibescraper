@@ -3,7 +3,7 @@
     "composite": false,
     "declaration": false,
     "declarationMap": false,
-    "types": ["vitest/globals", "node"]
+    "types": ["vite/client", "vitest/globals", "node"]
   },
   "exclude": ["node_modules", "dist"],
   "extends": "../../tsconfig.base.json",

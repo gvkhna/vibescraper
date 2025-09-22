@@ -10,7 +10,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 
 interface ProjectHeaderProps {
@@ -31,7 +32,7 @@ export function ProjectHeader({ name, onNameChange, onRun }: ProjectHeaderProps)
             }}
             className={cn(
               'w-full border-none bg-transparent text-2xl font-semibold outline-none md:text-3xl',
-              'focus-visible:ring-0 text-white'
+              'text-white focus-visible:ring-0'
             )}
             aria-label='Project Name'
           />
@@ -66,7 +67,10 @@ export function ProjectHeader({ name, onNameChange, onRun }: ProjectHeaderProps)
                 <MoreHorizontal className='h-5 w-5' />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align='end' className='border-white/10 bg-[#1a1a1b]'>
+            <DropdownMenuContent
+              align='end'
+              className='border-white/10 bg-[#1a1a1b]'
+            >
               <DropdownMenuItem className='cursor-pointer text-white/90 hover:bg-white/10'>
                 Duplicate
               </DropdownMenuItem>

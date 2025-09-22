@@ -18,8 +18,8 @@ export function ProjectNotFoundDialog({ open, onOpenChange }: ProjectNotFoundDia
     >
       <DialogContent className='sm:max-w-md'>
         <DialogHeader className='gap-1'>
-          <div className='mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-destructive/10'>
-            <AlertTriangle className='h-10 w-10 text-destructive' />
+          <div className='bg-destructive/10 mx-auto flex h-20 w-20 items-center justify-center rounded-full'>
+            <AlertTriangle className='text-destructive h-10 w-10' />
           </div>
           <DialogTitle className='pt-4 text-center text-xl'>Error: Project Not Found</DialogTitle>
           <DialogDescription className='text-center'>

@@ -25,9 +25,9 @@ interface SplitButtonDropdownProps<T extends string> {
 }
 
 export function SplitButtonDropdown<T extends string>({
-  tabs, 
-  activeTab, 
-  lastDropdownTab, 
+  tabs,
+  activeTab,
+  lastDropdownTab,
   onTabChange
 }: SplitButtonDropdownProps<T>) {
   // Check if the active tab is one of the dropdown tabs
@@ -36,8 +36,9 @@ export function SplitButtonDropdown<T extends string>({
 
   // Get the display info for the trigger
   // Use: active dropdown tab if one is selected, otherwise last selected, otherwise first tab
-  const displayTab = activeDropdownTab ?? 
-    (lastDropdownTab ? tabs.find(tab => tab.value === lastDropdownTab) : null) ?? 
+  const displayTab =
+    activeDropdownTab ??
+    (lastDropdownTab ? tabs.find((tab) => tab.value === lastDropdownTab) : null) ??
     tabs[0]
   const DisplayIcon = displayTab.icon
 
@@ -80,7 +81,7 @@ export function SplitButtonDropdown<T extends string>({
     <div className='inline-flex h-full'>
       {/* Main button - directly activates the last selected tab */}
       <button
-        type="button"
+        type='button'
         role='tab'
         onClick={() => {
           onTabChange(displayTab.value)
@@ -100,17 +101,15 @@ export function SplitButtonDropdown<T extends string>({
       </button>
 
       {/* Divider line */}
-      <div className={cn(
-        'w-px self-stretch',
-        'bg-white/20',
-        isDropdownTabActive ? 'opacity-60' : 'opacity-30'
-      )} />
+      <div
+        className={cn('w-px self-stretch', 'bg-white/20', isDropdownTabActive ? 'opacity-60' : 'opacity-30')}
+      />
 
       {/* Dropdown trigger button */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
-            type="button"
+            type='button'
             className={cn(
               baseButtonClasses,
               'px-2',

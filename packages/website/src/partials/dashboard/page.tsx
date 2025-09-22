@@ -25,37 +25,49 @@ export function DashboardPage() {
         />
 
         <div className='rounded-lg border border-white/10 bg-[#0f0f10] p-4'>
-          <Tabs defaultValue='overview' className='w-full'>
-            <TabsList className='grid w-full grid-cols-3 bg-transparent p-0 h-auto'>
-              <TabsTrigger 
-                value='overview' 
-                className='data-[state=active]:bg-white/10 data-[state=active]:text-white rounded-md py-2'
+          <Tabs
+            defaultValue='overview'
+            className='w-full'
+          >
+            <TabsList className='grid h-auto w-full grid-cols-3 bg-transparent p-0'>
+              <TabsTrigger
+                value='overview'
+                className='rounded-md py-2 data-[state=active]:bg-white/10 data-[state=active]:text-white'
               >
                 Overview
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value='monitoring'
-                className='data-[state=active]:bg-white/10 data-[state=active]:text-white rounded-md py-2'
+                className='rounded-md py-2 data-[state=active]:bg-white/10 data-[state=active]:text-white'
               >
                 Monitoring
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value='api-access'
-                className='data-[state=active]:bg-white/10 data-[state=active]:text-white rounded-md py-2'
+                className='rounded-md py-2 data-[state=active]:bg-white/10 data-[state=active]:text-white'
               >
                 API Access
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value='overview' className='mt-4'>
+            <TabsContent
+              value='overview'
+              className='mt-4'
+            >
               <OverviewTab />
             </TabsContent>
 
-            <TabsContent value='monitoring' className='mt-4'>
+            <TabsContent
+              value='monitoring'
+              className='mt-4'
+            >
               <MonitoringTab />
             </TabsContent>
 
-            <TabsContent value='api-access' className='mt-4'>
+            <TabsContent
+              value='api-access'
+              className='mt-4'
+            >
               <APIAccessTab />
             </TabsContent>
           </Tabs>
@@ -65,7 +77,8 @@ export function DashboardPage() {
   )
 }
 
-{/* 
+{
+  /* 
   Commented out components for potential future use:
   
   - CrawlerConfig: Full crawler configuration with URLs, browser settings, proxy, etc.
@@ -74,9 +87,11 @@ export function DashboardPage() {
   - DataExplorer: SQL/visual data exploration with export
   
   These components are preserved below but not imported/used.
-*/}
+*/
+}
 
-{/* 
+{
+  /* 
 // Preserved component definitions (commented out)
 
 function CrawlerConfig() {
@@ -133,4 +148,5 @@ function AIActionButtons() {
     </div>
   )
 }
-*/}
+*/
+}

@@ -14,7 +14,7 @@
     "build": "vite build",
     "clean": "rimraf --glob dist .turbo node_modules/.cache node_modules/.vite* *.tsbuildinfo",
     "dev": "vite build --watch",
-    "format": "bun eslint --quiet --config ../../eslint.config.mjs . --fix && bun prettier --write . --ignore-path ../../.prettierignore",
+    "format": "bun eslint --quiet --config ../../eslint.config.mjs . --fix && bun prettier --write .",
     "lint": "bun eslint --config ../../eslint.config.mjs .",
     "run:html-cleaner": "bun run src/html-cleaner-run.ts",
     "run:html-format": "bun run src/html-format-run.ts",
@@ -31,8 +31,11 @@
     "node-html-markdown": "^1.3.0"
   },
   "devDependencies": {
-    "@types/jsdom": "^21.1.7",
-    "@types/node": "24.5.2"
+    "@types/jsdom": "^21.1.7"
   },
-  "peerDependencies": {}
+  "peerDependencies": {
+    "@types/node": "*",
+    "vite": "*",
+    "vitest": "*"
+  }
 }

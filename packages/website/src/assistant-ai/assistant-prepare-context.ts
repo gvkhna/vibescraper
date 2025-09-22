@@ -6,7 +6,8 @@ import {
   type ChatMessagePersistanceType,
   convertChatMessageToUIMessage,
   isDataKey,
-  isToolKey } from '@/partials/assistant-ui/chat-message-schema'
+  isToolKey
+} from '@/partials/assistant-ui/chat-message-schema'
 
 const log = debug('app:prepare-context')
 /**

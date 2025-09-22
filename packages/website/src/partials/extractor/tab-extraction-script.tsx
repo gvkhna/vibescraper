@@ -21,7 +21,7 @@ export function TabExtractionScript() {
   const projectExtractors = useStore((state) => state.extractorSlice.projectExtractors)
 
   // Derive extractors from projectExtractors
-  const extractors = projectPublicId ? projectExtractors[projectPublicId]?.extractors ?? null : null
+  const extractors = projectPublicId ? (projectExtractors[projectPublicId]?.extractors ?? null) : null
 
   // Get the active extractor version from project commit
   const activeExtractorVersion = useStore(
@@ -71,7 +71,7 @@ export function TabExtractionScript() {
 
   return (
     <div className='relative flex h-full flex-col bg-[#0D1117]'>
-      <div className='absolute right-4 top-4 z-10 flex items-center gap-2'>
+      <div className='absolute top-4 right-4 z-10 flex items-center gap-2'>
         {currentExtractor.version && (
           <span className='rounded bg-white/10 px-2 py-1 text-xs text-white/60'>
             v{currentExtractor.version}

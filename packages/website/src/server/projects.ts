@@ -518,7 +518,9 @@ const app = new Hono<HonoServer>()
         log('Error deleting project:', error)
 
         return c.json(
-          { message: `Failed to delete project: ${error instanceof Error ? error.message : 'Unknown error'}` },
+          {
+            message: `Failed to delete project: ${error instanceof Error ? error.message : 'Unknown error'}`
+          },
           HttpStatusCode.BadRequest
         )
       }

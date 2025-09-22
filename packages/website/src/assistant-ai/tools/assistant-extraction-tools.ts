@@ -350,11 +350,154 @@ export function makeExtractionTools(
     //     }
     //   }
     // }),
+    currentState: tool({
+      ...tools.currentState,
+      execute: async (_input, _opts) => {
+        try {
+          const projectCommit = await db.query.projectCommit.findFirst({
+            where: (table, { eq }) => eq(table.publicId, projectCommitPublicId)
+          })
+
+          if (!projectCommit) {
+            return { overview: 'No project commit found for this session.' }
+          }
+
+          // Load artifacts for counts and active versions
+          const [schemas, extractors, crawlers] = await Promise.all([
+            db.query.projectSchema.findMany({
+              where: (table, { eq }) => eq(table.projectId, project.id),
+              orderBy: (table, { desc }) => [desc(table.version)]
+            }),
+            db.query.extractor.findMany({
+              where: (table, { eq }) => eq(table.projectId, project.id),
+              orderBy: (table, { desc }) => [desc(table.version)]
+            }),
+            db.query.crawler.findMany({
+              where: (table, { eq }) => eq(table.projectId, project.id),
+              orderBy: (table, { desc }) => [desc(table.version)]
+            })
+          ])
+
+          const activeSchemaVersion = projectCommit.activeSchemaVersion
+          const activeExtractorVersion = projectCommit.activeExtractorVersion
+          const activeCrawlerVersion = projectCommit.activeCrawlerVersion
+
+          const activeSchema =
+            typeof activeSchemaVersion === 'number'
+              ? (schemas.find((s) => s.version === activeSchemaVersion) ?? null)
+              : null
+          const activeExtractor =
+            typeof activeExtractorVersion === 'number'
+              ? (extractors.find((e) => e.version === activeExtractorVersion) ?? null)
+              : null
+          const activeCrawler =
+            typeof activeCrawlerVersion === 'number'
+              ? (crawlers.find((c) => c.version === activeCrawlerVersion) ?? null)
+              : null
+
+          // Derive schema summary
+          let schemaSummary = 'none'
+          if (activeSchema) {
+            // Try compiling to confirm basic validity
+            const compiled = compileJsonSchema(activeSchema.schemaJson)
+            const schemaObj = activeSchema.schemaJson as Record<string, unknown>
+            const declaredType = (schemaObj?.type as string | undefined) ?? 'unknown'
+            let keyCount = 0
+            if (declaredType === 'object') {
+              const props = schemaObj?.properties as Record<string, unknown> | undefined
+              keyCount = props ? Object.keys(props).length : 0
+            } else if (declaredType === 'array') {
+              const items = schemaObj?.items as Record<string, unknown> | undefined
+              const itemsProps = (items?.properties as Record<string, unknown> | undefined) ?? undefined
+              keyCount = itemsProps ? Object.keys(itemsProps).length : 0
+            }
+            schemaSummary = `v${activeSchema.version} (type:${declaredType}, keys:${keyCount}, valid:${compiled.success ? 'yes' : 'no'})`
+          }
+
+          // Derive script summaries
+          const extractorSummary = activeExtractor ? `v${activeExtractor.version}` : 'none'
+          const crawlerSummary = activeCrawler ? `v${activeCrawler.version}` : 'none'
+
+          // Cached data overview
+          const cd = projectCommit.cachedData
+          const cachedAtIso = projectCommit.cachedAt
+            ? sqlTimestampToDate(projectCommit.cachedAt).toISOString()
+            : null
+          const url = cd?.url ?? projectCommit.currentEditorUrl ?? null
+          const fetchStatus = cd?.fetchStatus ?? 'initial'
+          const processingStatus = cd?.processingStatus ?? 'initial'
+          const extractStatus = cd?.extractionScriptStatus ?? 'initial'
+          const validationStatus = cd?.schemaValidationStatus ?? 'initial'
+
+          // Sizes (no content)
+          const htmlLen = cd?.html ? cd.html.length : 0
+          const cleanedLen = cd?.cleanedHtml ? cd.cleanedHtml.length : 0
+          const textLen = cd?.text ? cd.text.length : 0
+          const mdLen = cd?.markdown ? cd.markdown.length : 0
+
+          // Results and logs
+          const extractionResult = cd?.extractionResult
+          const isArray = Array.isArray(extractionResult)
+          const itemCount = isArray ? extractionResult.length : extractionResult ? 1 : 0
+          const validationErrorsCount = cd?.schemaValidationErrors?.length ?? 0
+          const itemErrorsCount = cd?.schemaValidationItemErrors?.length ?? 0
+
+          const logs = cd?.extractionMessages ?? []
+          const exceptionCount = logs.filter((l) => l.type === 'exception').length
+          const logCount = logs.length
+
+          // Recent URLs (show up to 3)
+          const recent = projectCommit.recentUrls?.urls ?? []
+          const recentPreview = recent.slice(0, 3)
+
+          // Settings snapshot (concise)
+          const settings = projectCommit.settingsJson
+          const settingsSummary = `fetch:${settings.fetchType}, schedule:${settings.schedule}, retries:${settings.maxRetries}, retryDelayMs:${settings.retryDelayMs}, crawler: followLinks:${settings.crawler.followLinks}, depth:${settings.crawler.maxDepth}, conc:${settings.crawler.maxConcurrency}, timeoutMs:${settings.crawler.requestTimeout}, waitMs:${settings.crawler.waitBetweenRequests}, robots:${settings.crawler.respectRobotsTxt}`
+
+          const lines: string[] = []
+          lines.push(`Project: ${project.name}`)
+          lines.push(
+            `Commit: ${projectCommit.type}, active versions - schema:${activeSchemaVersion ?? 'none'}, extractor:${activeExtractorVersion ?? 'none'}, crawler:${activeCrawlerVersion ?? 'none'}`
+          )
+          lines.push(
+            `Artifacts: schemas:${schemas.length}, extractors:${extractors.length}, crawlers:${crawlers.length}`
+          )
+          lines.push(`Active Schema: ${schemaSummary}`)
+          lines.push(`Active Extractor: ${extractorSummary}`)
+          lines.push(`Active Crawler: ${crawlerSummary}`)
+          lines.push(`URL: ${url ?? 'none'}`)
+          lines.push(`Recent URLs (${recent.length}): ${recentPreview.join(', ') || 'none'}`)
+          lines.push(`Settings: ${settingsSummary}`)
+          if (!cd) {
+            lines.push('Cache: none (no scrape run yet)')
+          } else {
+            lines.push(
+              `Cache: cachedAt:${cachedAtIso ?? 'unknown'}, fetch:${fetchStatus}${cd.statusCode ? `(${cd.statusCode})` : ''}${cd.contentType ? ` ${cd.contentType}` : ''}, processing:${processingStatus}`
+            )
+            lines.push(
+              `Content sizes: html:${htmlLen}, cleaned:${cleanedLen}, text:${textLen}, markdown:${mdLen}`
+            )
+            lines.push(
+              `Extraction: status:${extractStatus}, result:${isArray ? `array(${itemCount})` : itemCount === 1 ? 'object(1)' : 'none'}`
+            )
+            lines.push(
+              `Validation: status:${validationStatus}, errors:${validationErrorsCount}, itemErrors:${itemErrorsCount}`
+            )
+            lines.push(`Logs: total:${logCount}, exceptions:${exceptionCount}`)
+          }
+
+          return { overview: lines.join('\n') }
+        } catch (error) {
+          log('currentState error:', error)
+          return { overview: 'Unable to compute current state.' }
+        }
+      }
+    }),
     fileGet: tool({
       ...tools.fileGet,
       execute: async (input, _opts) => {
         try {
-          switch (input.type) {
+          switch (input.file) {
             case 'schema.json': {
               // Get the activeSchemaVersion from projectCommit
               const projectCommit = await db.query.projectCommit.findFirst({
@@ -472,7 +615,7 @@ export function makeExtractionTools(
               }
             }
             default: {
-              log('incorrect file type given: ', input.type)
+              log('incorrect file type given: ', input.file)
               return {
                 success: false,
                 error: 'Unknown error'
@@ -492,9 +635,9 @@ export function makeExtractionTools(
       ...tools.fileSet,
       execute: async (input, _opts) => {
         try {
-          switch (input.type) {
+          switch (input.file) {
             case 'schema.json': {
-              const schemaValidation = compileJsonSchema(input.file)
+              const schemaValidation = compileJsonSchema(input.content)
               if (!schemaValidation.success) {
                 return {
                   success: false,
@@ -513,7 +656,7 @@ export function makeExtractionTools(
               await db.insert(dbSchema.projectSchema).values({
                 projectId: project.id,
                 version: newVersion,
-                schemaJson: input.file,
+                schemaJson: input.content,
                 message: input.message
               })
 
@@ -794,8 +937,8 @@ export function makeExtractionTools(
         }
       }
     }),
-    runScrape: tool({
-      ...tools.runScrape,
+    scraperRun: tool({
+      ...tools.scraperRun,
       execute: async (input) => {
         try {
           // Use the extracted scraping processor directly
@@ -920,7 +1063,7 @@ export function makeExtractionTools(
         }
       }
     })
-    //  meta‑tools
+    //  meta-tools
     // listTools: tool({
     //   description: 'List all available tools with their short descriptions and version hashes',
     //   parameters: z.object({}),

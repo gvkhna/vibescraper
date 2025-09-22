@@ -1,18 +1,18 @@
 ---
 import MainLayout from './main-layout.astro'
-import {SEO, type Props as SEOProps} from 'astro-seo'
+import { SEO, type Props as SEOProps } from 'astro-seo'
 // import Header from '@/partials/home/header.astro'
 // import Footer from '@/partials/home/footer.astro'
 // import CTA from '@/partials/home/cta.astro'
 export interface Props {
   title: string
-  seo?: (attrs: {brand: string; hostname: string}) => SEOProps
-  schema?: (attrs: {brand: string; hostname: string}) => Record<string, any>
+  seo?: (attrs: { brand: string; hostname: string }) => SEOProps
+  schema?: (attrs: { brand: string; hostname: string }) => Record<string, any>
 }
-import {PUBLIC_VARS} from '@/vars.public'
+import { PUBLIC_VARS } from '@/vars.public'
 // import GoogleAdsense from '@/partials/analytics/google-adsense.astro'
 const brandName = 'Vibescraper'
-const {title, seo, schema} = Astro.props
+const { title, seo, schema } = Astro.props
 // category='Blog'
 // categoryHref='/blog/'
 // name='Blog'
@@ -25,7 +25,7 @@ console.log('hostname', Astro.site?.toString())
 <MainLayout
   {title}
   seo={seo && PUBLIC_VARS.PUBLIC_HOSTNAME
-    ? seo({brand: brandName, hostname: PUBLIC_VARS.PUBLIC_HOSTNAME})
+    ? seo({ brand: brandName, hostname: PUBLIC_VARS.PUBLIC_HOSTNAME })
     : undefined}
 >
   {
@@ -34,7 +34,7 @@ console.log('hostname', Astro.site?.toString())
         is:inline
         type='application/ld+json'
         set:html={JSON.stringify(
-          schema({brand: brandName, hostname: PUBLIC_VARS.PUBLIC_HOSTNAME}),
+          schema({ brand: brandName, hostname: PUBLIC_VARS.PUBLIC_HOSTNAME }),
           null,
           2
         )}

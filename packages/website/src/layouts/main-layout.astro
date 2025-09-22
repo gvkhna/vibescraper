@@ -1,10 +1,10 @@
 ---
 // import PixelHead from '@/partials/analytics/pixel-head.astro'
 // import PixelBody from '@/partials/analytics/pixel-body.astro'
-import {SEO, type Props as SEOProps} from 'astro-seo'
-import {PUBLIC_VARS} from '@/vars.public'
+import { SEO, type Props as SEOProps } from 'astro-seo'
+import { PUBLIC_VARS } from '@/vars.public'
 import '@/global.css'
-import {STRINGS} from '@/strings'
+import { STRINGS } from '@/strings'
 export interface Props {
   title: string
   description?: string
@@ -12,7 +12,7 @@ export interface Props {
   seo?: SEOProps
 }
 
-const {title, description, shortDescription, seo} = Astro.props
+const { title, description, shortDescription, seo } = Astro.props
 ---
 
 <!doctype html>
@@ -53,16 +53,16 @@ const {title, description, shortDescription, seo} = Astro.props
       canonical={Astro.locals.canonical}
       extend={{
         link: [
-          {rel: 'icon', href: '/favicon-96x96.png', type: 'image/png', sizes: '96x96'},
-          {rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml'},
-          {rel: 'shortcut icon', href: '/favicon.ico'},
-          {rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png'},
-          {rel: 'manifest', href: '/site.webmanifest'},
-          {rel: 'sitemap', href: '/sitemap-index.xml'}
+          { rel: 'icon', href: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+          { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+          { rel: 'shortcut icon', href: '/favicon.ico' },
+          { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+          { rel: 'manifest', href: '/site.webmanifest' },
+          { rel: 'sitemap', href: '/sitemap-index.xml' }
         ],
         meta: [
-          {name: 'apple-mobile-web-app-title', content: 'Vibescraper'},
-          {name: 'viewport', content: 'width=device-width'}
+          { name: 'apple-mobile-web-app-title', content: 'Vibescraper' },
+          { name: 'viewport', content: 'width=device-width' }
         ]
       }}
       {...seo ?? {}}

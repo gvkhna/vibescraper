@@ -1,12 +1,12 @@
-import {useEffect} from 'react'
+import { useEffect } from 'react'
 import debug from 'debug'
-import {differenceInMinutes} from 'date-fns'
-import {PROJECT_COMPONENT_IDEMPOTENCY_RECENT_WINDOW} from '@/store/assistant-slice'
-import {useStore} from '@/store/use-store'
-import type {ProjectChatMessagePublicId, ProjectComponentIdempotencyKey} from '@/db/schema'
-import {nowait} from '@/lib/async-utils'
-import {parseCodeBlocksWithMeta} from './remark-meta-code-attrs'
-import {ChatFileProjectVersionBlock} from './chat-file-version-block'
+import { differenceInMinutes } from 'date-fns'
+import { PROJECT_COMPONENT_IDEMPOTENCY_RECENT_WINDOW } from '@/store/assistant-slice'
+import { useStore } from '@/store/use-store'
+import type { ProjectChatMessagePublicId, ProjectComponentIdempotencyKey } from '@/db/schema'
+import { nowait } from '@/lib/async-utils'
+import { parseCodeBlocksWithMeta } from './remark-meta-code-attrs'
+import { ChatFileProjectVersionBlock } from './chat-file-version-block'
 // import { runAssistantBlocks } from './assistant-project-controller'
 
 const log = debug('app:project-comp')
@@ -24,7 +24,7 @@ export interface AssistantProjectComponentProps {
 }
 
 export function AssistantProjectComponent(props: AssistantProjectComponentProps) {
-  const {messageId, createdAt, blockIndex, partIndex, source} = props
+  const { messageId, createdAt, blockIndex, partIndex, source } = props
 
   const idempotencyKey = `Project/${messageId}/${partIndex}/${blockIndex}` as ProjectComponentIdempotencyKey
 

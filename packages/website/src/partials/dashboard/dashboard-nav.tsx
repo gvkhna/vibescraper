@@ -11,7 +11,8 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { authReactClient } from '@/lib/auth-react-client'
 import { cn } from '@/lib/utils'
 import { BetterAuthUserButton } from '@/partials/webapp/better-auth-user-button'

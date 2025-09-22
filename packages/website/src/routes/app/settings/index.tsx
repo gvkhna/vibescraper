@@ -9,7 +9,8 @@ import {
   SessionsCard,
   UpdateAvatarCard,
   UpdateNameCard,
-  UpdateUsernameCard } from '@daveyplate/better-auth-ui'
+  UpdateUsernameCard
+} from '@daveyplate/better-auth-ui'
 import { createFileRoute } from '@tanstack/react-router'
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowLeft } from 'lucide-react'

@@ -26,12 +26,8 @@ export function EmptyStatePreview({
           <div className='space-y-4 p-8 text-center'>
             <Icon className='mx-auto h-16 w-16 text-gray-400' />
             <div className='text-lg font-medium text-gray-700'>{title}</div>
-            {description && (
-              <div className='max-w-md text-sm text-gray-500'>{description}</div>
-            )}
-            {details && (
-              <div className='text-xs text-gray-400'>{details}</div>
-            )}
+            {description && <div className='max-w-md text-sm text-gray-500'>{description}</div>}
+            {details && <div className='text-xs text-gray-400'>{details}</div>}
           </div>
         </div>
       </div>

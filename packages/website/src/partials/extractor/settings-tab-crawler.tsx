@@ -12,10 +12,7 @@ interface CrawlerTabContentProps {
   setCommitSettings: React.Dispatch<React.SetStateAction<ProjectCommitSettings>>
 }
 
-export function CrawlerTabContent({
-  commitSettings,
-  setCommitSettings
-}: CrawlerTabContentProps) {
+export function CrawlerTabContent({ commitSettings, setCommitSettings }: CrawlerTabContentProps) {
   return (
     <div className='space-y-6'>
       <div className='space-y-4'>

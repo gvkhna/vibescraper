@@ -41,7 +41,7 @@ export function TabReadabilityHtml() {
 
   return (
     <div className='relative flex h-full flex-col bg-[#0D1117]'>
-      <div className='absolute right-4 top-4 z-10 flex gap-2'>
+      <div className='absolute top-4 right-4 z-10 flex gap-2'>
         {/* {readabilityResult?.title && (
           <div className='rounded bg-white/10 px-3 py-1 text-sm text-white'>
             {readabilityResult.title}

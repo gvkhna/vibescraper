@@ -5,12 +5,15 @@
   "type": "module",
   "scripts": {
     "clean": "rimraf --glob dist .turbo node_modules/.cache node_modules/.vite* *.tsbuildinfo",
-    "format": "bun eslint --quiet --config ../../eslint.config.mjs . --fix && bun prettier --write . --ignore-path ../../.prettierignore",
+    "format": "bun eslint --quiet --config ../../eslint.config.mjs . --fix && bun prettier --write .",
     "lint": "bun eslint --config ../../eslint.config.mjs .",
     "test": "vitest run",
     "typecheck": "bun tsc --noEmit"
   },
-  "devDependencies": {
-    "@types/node": "^24.5.2"
+  "devDependencies": {},
+  "peerDependencies": {
+    "@types/node": "*",
+    "vite": "*",
+    "vitest": "*"
   }
 }

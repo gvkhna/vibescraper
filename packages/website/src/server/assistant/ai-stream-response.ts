@@ -78,6 +78,9 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
           reasoningSummary: 'auto'
         }
       },
+      experimental_repairToolCall: async () => {
+        return null
+      },
       // toolChoice: 'required',
       // tools: makeTools(db, project, projectCommitPublicId as schema.ProjectCommitPublicId),
 

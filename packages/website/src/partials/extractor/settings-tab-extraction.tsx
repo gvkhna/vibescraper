@@ -13,10 +13,7 @@ interface ExtractionTabContentProps {
   setExtractorSettings: React.Dispatch<React.SetStateAction<ExtractorSettings>>
 }
 
-export function ExtractionTabContent({
-  extractorSettings,
-  setExtractorSettings
-}: ExtractionTabContentProps) {
+export function ExtractionTabContent({ extractorSettings, setExtractorSettings }: ExtractionTabContentProps) {
   return (
     <div className='space-y-6'>
       <div className='space-y-4'>

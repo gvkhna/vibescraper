@@ -14,7 +14,8 @@ import {
   finishSaving,
   initialAsyncEntityState,
   startLoading,
-  startSaving } from './async-entity-state'
+  startSaving
+} from './async-entity-state'
 import { initialPaginationEntityState, updatePaginationEntityState } from './pagination-entity-state'
 import type { StateSlice } from './use-store'
 
@@ -34,7 +35,9 @@ export interface ProjectSlice {
   duplicateProject: () => Promise<{ success: boolean; newProjectPublicId: ProjectPublicId | null }>
   renameProject: (newProjectName: string) => Promise<{ success: boolean }>
   deleteProject: () => Promise<{ success: boolean }>
-  createProject: (projectName: string) => Promise<{ success: boolean; projectPublicId: ProjectPublicId | null }>
+  createProject: (
+    projectName: string
+  ) => Promise<{ success: boolean; projectPublicId: ProjectPublicId | null }>
 }
 
 export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>

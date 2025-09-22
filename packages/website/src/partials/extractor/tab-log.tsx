@@ -111,12 +111,12 @@ export function TabLog() {
                 <Icon className={cn('mt-0.5 h-4 w-4 flex-shrink-0', style.iconColor)} />
                 <div className='min-w-0 flex-1'>
                   <div className='mb-1 flex items-center gap-2'>
-                    <span className='text-xs font-medium uppercase text-white/80'>{message.type}</span>
+                    <span className='text-xs font-medium text-white/80 uppercase'>{message.type}</span>
                     {'timestamp' in message && (
                       <span className='text-xs text-white/60'>{formatTimestamp(message.timestamp)}</span>
                     )}
                   </div>
-                  <div className='whitespace-pre-wrap break-words font-mono text-sm text-white'>
+                  <div className='font-mono text-sm break-words whitespace-pre-wrap text-white'>
                     {getMessageContent(message)}
                   </div>
                   {message.type === 'exception' &&
@@ -126,7 +126,7 @@ export function TabLog() {
                         <summary className='cursor-pointer text-xs text-white/60 hover:text-white/80'>
                           Stack trace
                         </summary>
-                        <pre className='mt-1 whitespace-pre-wrap text-xs text-white/60'>
+                        <pre className='mt-1 text-xs whitespace-pre-wrap text-white/60'>
                           {message.exception.stack}
                         </pre>
                       </details>

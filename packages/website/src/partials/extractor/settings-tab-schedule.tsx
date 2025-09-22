@@ -15,7 +15,7 @@ interface ScheduleTabContentProps {
 
 export function ScheduleTabContent({ commitSettings, setCommitSettings }: ScheduleTabContentProps) {
   const [enableDailySchedule, setEnableDailySchedule] = React.useState(false)
-  
+
   // Track which days are enabled (all enabled by default)
   const [enabledDays, setEnabledDays] = React.useState<Record<string, boolean>>({
     sunday: true,
@@ -188,7 +188,10 @@ export function ScheduleTabContent({ commitSettings, setCommitSettings }: Schedu
           </Label>
         </div>
 
-        <div className={`space-y-4 transition-opacity duration-200 ${enableDailySchedule ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
+        <div
+          className={`space-y-4 transition-opacity duration-200
+            ${enableDailySchedule ? 'opacity-100' : 'pointer-events-none opacity-30'}`}
+        >
           <div>
             <Label
               htmlFor='timezone'
@@ -237,7 +240,7 @@ export function ScheduleTabContent({ commitSettings, setCommitSettings }: Schedu
                     checked={enabledDays[day.toLowerCase()]}
                     disabled={!enableDailySchedule}
                     onCheckedChange={(checked) => {
-                      setEnabledDays(prev => ({
+                      setEnabledDays((prev) => ({
                         ...prev,
                         [day.toLowerCase()]: !!checked
                       }))

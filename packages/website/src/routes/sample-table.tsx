@@ -47,7 +47,7 @@ const ShadcnDataTable: FC = () => {
     {
       id: 'rowNumber',
       header: '#',
-      cell: ({ row }) => <div className='w-6 text-center text-xs text-muted-foreground'>{row.index + 1}</div>,
+      cell: ({ row }) => <div className='text-muted-foreground w-6 text-center text-xs'>{row.index + 1}</div>,
       enableSorting: false
     },
     // Text column

@@ -28,7 +28,11 @@ export function mockTestToolsModel() {
     return [
       // First tool: schema-update
       { type: 'tool-input-start', toolName: 'schema-update', id: 'schema-1' },
-      { type: 'tool-input-delta', delta: '{"filename":"schema.json","content":"{}","version":"v2"}', id: 'schema-1' },
+      {
+        type: 'tool-input-delta',
+        delta: '{"filename":"schema.json","content":"{}","version":"v2"}',
+        id: 'schema-1'
+      },
       { type: 'tool-input-end', id: 'schema-1' },
       {
         type: 'tool-call',
@@ -45,7 +49,11 @@ export function mockTestToolsModel() {
       },
       // Second tool: code-update
       { type: 'tool-input-start', toolName: 'code-update', id: 'code-1' },
-      { type: 'tool-input-delta', delta: '{"filename":"extractor.js","content":"// code","version":"v2"}', id: 'code-1' },
+      {
+        type: 'tool-input-delta',
+        delta: '{"filename":"extractor.js","content":"// code","version":"v2"}',
+        id: 'code-1'
+      },
       { type: 'tool-input-end', id: 'code-1' },
       {
         type: 'tool-call',

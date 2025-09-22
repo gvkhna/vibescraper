@@ -2,7 +2,7 @@
 import app from '@/server/index'
 const response = await app.request('/api')
 
-let healthStatus = {message: 'Server is not healthy'}
+let healthStatus = { message: 'Server is not healthy' }
 
 if (response.ok) {
   healthStatus = await response.json()

@@ -2,16 +2,16 @@
 import * as React from 'react'
 import * as RechartsPrimitive from 'recharts'
 
-import {cn} from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 // Format: { THEME_NAME: CSS_SELECTOR }
-const THEMES = {light: '', dark: '.dark'} as const
+const THEMES = { light: '', dark: '.dark' } as const
 
 export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode
     icon?: React.ComponentType
-  } & ({color?: string; theme?: never} | {color?: never; theme: Record<keyof typeof THEMES, string>})
+  } & ({ color?: string; theme?: never } | { color?: never; theme: Record<keyof typeof THEMES, string> })
 }
 
 type ChartContextProps = {
@@ -44,7 +44,7 @@ function ChartContainer({
   const chartId = `chart-${id || uniqueId.replace(/:/g, '')}`
 
   return (
-    <ChartContext.Provider value={{config}}>
+    <ChartContext.Provider value={{ config }}>
       <div
         data-slot='chart'
         data-chart={chartId}
@@ -55,10 +55,10 @@ function ChartContainer({
           [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border
           [&_.recharts-radial-bar-background-sector]:fill-muted
           [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted
-          [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border [&_.recharts-layer]:outline-hidden
-          [&_.recharts-sector]:outline-hidden [&_.recharts-surface]:outline-hidden flex aspect-video
-          justify-center text-xs [&_.recharts-dot[stroke='#fff']]:stroke-transparent
-          [&_.recharts-sector[stroke='#fff']]:stroke-transparent`,
+          [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border flex aspect-video justify-center text-xs
+          [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-hidden
+          [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent
+          [&_.recharts-surface]:outline-hidden`,
           className
         )}
         {...props}
@@ -73,7 +73,7 @@ function ChartContainer({
   )
 }
 
-const ChartStyle = ({id, config}: {id: string; config: ChartConfig}) => {
+const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(([, config]) => config.theme || config.color)
 
   if (!colorConfig.length) {
@@ -126,7 +126,7 @@ function ChartTooltipContent({
     nameKey?: string
     labelKey?: string
   }) {
-  const {config} = useChart()
+  const { config } = useChart()
 
   const tooltipLabel = React.useMemo(() => {
     if (hideLabel || !payload?.length) {
@@ -136,10 +136,7 @@ function ChartTooltipContent({
     const [item] = payload
     const key = `${labelKey || item?.dataKey || item?.name || 'value'}`
     const itemConfig = getPayloadConfigFromPayload(config, item, key)
-    const value =
-      !labelKey && typeof label === 'string'
-        ? config[label]?.label || label
-        : itemConfig?.label
+    const value = !labelKey && typeof label === 'string' ? config[label]?.label || label : itemConfig?.label
 
     if (labelFormatter) {
       return <div className={cn('font-medium', labelClassName)}>{labelFormatter(value, payload)}</div>
@@ -191,7 +188,7 @@ function ChartTooltipContent({
                   ) : (
                     !hideIndicator && (
                       <div
-                        className={cn('border-(--color-border) bg-(--color-bg) shrink-0 rounded-[2px]', {
+                        className={cn('shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)', {
                           'h-2.5 w-2.5': indicator === 'dot',
                           'w-1': indicator === 'line',
                           'w-0 border-[1.5px] border-dashed bg-transparent': indicator === 'dashed',
@@ -245,7 +242,7 @@ function ChartLegendContent({
     hideIcon?: boolean
     nameKey?: string
   }) {
-  const {config} = useChart()
+  const { config } = useChart()
 
   if (!payload?.length) {
     return null
@@ -312,4 +309,4 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
   return configLabelKey in config ? config[configLabelKey] : config[key]
 }
 
-export {ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartStyle}
+export { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartStyle }

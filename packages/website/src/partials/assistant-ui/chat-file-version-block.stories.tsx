@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import type {Meta, StoryObj} from '@storybook/react'
-import {type FC, type PropsWithChildren, useEffect, useState} from 'react'
-import {ChatFileProjectVersionBlock} from './chat-file-version-block'
-import type {ChatFileVersionBlockFileChange} from './chat-message-schema'
+import type { Meta, StoryObj } from '@storybook/react'
+import { type FC, type PropsWithChildren, useEffect, useState } from 'react'
+import { ChatFileProjectVersionBlock } from './chat-file-version-block'
+import type { ChatFileVersionBlockFileChange } from './chat-message-schema'
 
 const meta = {
   title: 'Assistant/ExtractorVersion',

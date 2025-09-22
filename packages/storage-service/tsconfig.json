@@ -4,7 +4,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["node", "web"]
+    "types": ["vite/client", "vitest/globals", "node", "web"]
   },
   "exclude": ["node_modules", "dist"],
   "extends": "../../tsconfig.base.json",

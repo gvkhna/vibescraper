@@ -26,11 +26,13 @@ import {
   initialAsyncEntityState,
   isLoaded,
   isLoading,
-  startLoading } from './async-entity-state'
+  startLoading
+} from './async-entity-state'
 import {
   initialPaginationEntityState,
   type PaginationEntityState,
-  updatePaginationEntityState } from './pagination-entity-state'
+  updatePaginationEntityState
+} from './pagination-entity-state'
 import type { StateSlice } from './use-store'
 const log = debug('app:assistant-slice')
 

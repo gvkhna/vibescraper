@@ -18,7 +18,8 @@ import {
   initialAsyncEntityState,
   isLoaded,
   isLoading,
-  startLoading } from './async-entity-state'
+  startLoading
+} from './async-entity-state'
 import type { StateSlice } from './use-store'
 
 const log = debug('app:extractor-slice')

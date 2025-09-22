@@ -27,13 +27,15 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar,
-  PromptInputTools } from '@/components/ai-elements/prompt-input'
+  PromptInputTools
+} from '@/components/ai-elements/prompt-input'
 import type {
   ProjectChatDTOType,
   ProjectChatMessagePublicId,
   ProjectChatPublicId,
   ProjectCommitPublicId,
-  ProjectPublicId } from '@/db/schema'
+  ProjectPublicId
+} from '@/db/schema'
 import api from '@/lib/api-client'
 import { nowait } from '@/lib/async-utils'
 import { useStore } from '@/store/use-store'

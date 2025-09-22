@@ -14,7 +14,8 @@ import {
   Settings,
   Zap,
   ZoomIn,
-  ZoomOut } from 'lucide-react'
+  ZoomOut
+} from 'lucide-react'
 
 import { DataTable } from '@/components/data-table'
 import { Badge } from '@/components/ui/badge'
@@ -347,7 +348,7 @@ function RenderedPreview({ url }: { url: string }) {
 function CodePreview({ content, language }: { content: string; language: string }) {
   return (
     <div className='relative h-full'>
-      <div className='absolute right-4 top-4 z-10'>
+      <div className='absolute top-4 right-4 z-10'>
         <Button
           variant='ghost'
           size='sm'

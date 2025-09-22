@@ -1,5 +1,5 @@
 ---
-import {SEO} from 'astro-seo'
+import { SEO } from 'astro-seo'
 import '@/global.css'
 
 export interface Props {
@@ -8,7 +8,7 @@ export interface Props {
   ogimageUrl?: string
 }
 
-const {title, desc, ogimageUrl} = Astro.props
+const { title, desc, ogimageUrl } = Astro.props
 ---
 
 <!doctype html>
@@ -28,15 +28,15 @@ const {title, desc, ogimageUrl} = Astro.props
       }}
       extend={{
         link: [
-          {rel: 'icon', href: '/favicon-96x96.png', type: 'image/png', sizes: '96x96'},
-          {rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml'},
-          {rel: 'shortcut icon', href: '/favicon.ico'},
-          {rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png'},
-          {rel: 'manifest', href: '/site.webmanifest'}
+          { rel: 'icon', href: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+          { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+          { rel: 'shortcut icon', href: '/favicon.ico' },
+          { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+          { rel: 'manifest', href: '/site.webmanifest' }
         ],
         meta: [
-          {name: 'apple-mobile-web-app-title', content: 'Vibescraper'},
-          {name: 'viewport', content: 'width=device-width'}
+          { name: 'apple-mobile-web-app-title', content: 'Vibescraper' },
+          { name: 'viewport', content: 'width=device-width' }
         ]
       }}
     />

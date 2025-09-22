@@ -1,5 +1,5 @@
 /* eslint-disable */
-import {z} from 'zod'
+import { z } from 'zod'
 
 export function resolveEnvironment<T extends z.ZodType>(schema: T): z.infer<T> {
   // Prevent this function from being called in the browser

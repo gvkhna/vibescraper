@@ -12,10 +12,7 @@ interface FetchingTabContentProps {
   setCommitSettings: React.Dispatch<React.SetStateAction<ProjectCommitSettings>>
 }
 
-export function FetchingTabContent({
-  commitSettings,
-  setCommitSettings
-}: FetchingTabContentProps) {
+export function FetchingTabContent({ commitSettings, setCommitSettings }: FetchingTabContentProps) {
   return (
     <div className='space-y-6'>
       <div className='space-y-4'>

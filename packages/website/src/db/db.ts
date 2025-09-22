@@ -24,7 +24,9 @@ class AppDebugLogWriter implements LogWriter {
 }
 const logger = new DefaultLogger({ writer: new AppDebugLogWriter() })
 
-const sqlNeonPool = new Pool({ connectionString: PRIVATE_VARS.DATABASE_POOL_URL ?? PRIVATE_VARS.DATABASE_URL })
+const sqlNeonPool = new Pool({
+  connectionString: PRIVATE_VARS.DATABASE_POOL_URL ?? PRIVATE_VARS.DATABASE_URL
+})
 const dbNeon = drizzleNeon({ client: sqlNeonPool, schema, logger, casing: 'camelCase' })
 
 /**

@@ -1,12 +1,12 @@
 'use client'
 
-import {useControllableState} from '@radix-ui/react-use-controllable-state'
-import {Collapsible, CollapsibleContent, CollapsibleTrigger} from '@/components/ui/collapsible'
-import {cn} from '@/lib/utils'
-import {BrainIcon, ChevronDownIcon} from 'lucide-react'
-import type {ComponentProps} from 'react'
-import {createContext, memo, useContext, useEffect, useState} from 'react'
-import {Response} from './response'
+import { useControllableState } from '@radix-ui/react-use-controllable-state'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { cn } from '@/lib/utils'
+import { BrainIcon, ChevronDownIcon } from 'lucide-react'
+import type { ComponentProps } from 'react'
+import { createContext, memo, useContext, useEffect, useState } from 'react'
+import { Response } from './response'
 
 type ReasoningContextValue = {
   isStreaming: boolean
@@ -91,7 +91,7 @@ export const Reasoning = memo(
     }
 
     return (
-      <ReasoningContext.Provider value={{isStreaming, isOpen, setIsOpen, duration}}>
+      <ReasoningContext.Provider value={{ isStreaming, isOpen, setIsOpen, duration }}>
         <Collapsible
           className={cn('not-prose mb-4', className)}
           onOpenChange={handleOpenChange}
@@ -117,8 +117,8 @@ const getThinkingMessage = (isStreaming: boolean, duration?: number) => {
   return <p>Thought for {duration} seconds</p>
 }
 
-export const ReasoningTrigger = memo(({className, children, ...props}: ReasoningTriggerProps) => {
-  const {isStreaming, isOpen, duration} = useReasoning()
+export const ReasoningTrigger = memo(({ className, children, ...props }: ReasoningTriggerProps) => {
+  const { isStreaming, isOpen, duration } = useReasoning()
 
   return (
     <CollapsibleTrigger
@@ -145,7 +145,7 @@ export type ReasoningContentProps = ComponentProps<typeof CollapsibleContent> & 
   children: string
 }
 
-export const ReasoningContent = memo(({className, children, ...props}: ReasoningContentProps) => (
+export const ReasoningContent = memo(({ className, children, ...props }: ReasoningContentProps) => (
   <CollapsibleContent
     className={cn(
       'mt-4 text-sm',

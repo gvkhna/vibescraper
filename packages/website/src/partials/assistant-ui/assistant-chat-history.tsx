@@ -60,7 +60,7 @@ export function AssistantChatHistory({ className }: AssistantChatHistoryProps) {
       </div>
 
       {/* Chat List */}
-      <div className='flex-1 overflow-y-auto overflow-x-hidden'>
+      <div className='flex-1 overflow-x-hidden overflow-y-auto'>
         <div className='space-y-1 p-3'>
           {displayChats.length === 0 ? (
             <div className='flex h-32 items-center justify-center px-2 text-center'>

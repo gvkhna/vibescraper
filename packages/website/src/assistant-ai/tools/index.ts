@@ -83,11 +83,19 @@ const tools = {
   //   })
   // },
 
+  currentState: {
+    description: 'Get information about the current state of the scraper',
+    inputSchema: z.object({}),
+    outputSchema: z.object({
+      overview: z.string()
+    })
+  },
+
   fileGet: {
     description:
       'Read the current file version, schema - data validation schema, crawler - crawling script, extractor - extraction script',
     inputSchema: z.object({
-      type: z.literal(['schema.json', 'crawler.js', 'extractor.js'])
+      file: z.literal(['schema.json', 'crawler.js', 'extractor.js'])
     }),
     outputSchema: z.object({
       success: z.boolean(),
@@ -103,13 +111,13 @@ const tools = {
       'Replace the current file version, schema - data validation schema, crawler - crawling script, extractor - extraction script',
     inputSchema: z.union([
       z.object({
-        type: z.literal(['crawler.js', 'extractor.js']),
-        file: z.string().describe('Complete script contents'),
+        file: z.literal(['crawler.js', 'extractor.js']),
+        content: z.string().describe('Complete file contents'),
         message: z.string().optional().describe('Commit message for this version')
       }),
       z.object({
-        type: z.literal(['schema.json']),
-        file: JsonSchema.describe('Complete schema contents'),
+        file: z.literal(['schema.json']),
+        content: JsonSchema.describe('Complete file contents'),
         message: z.string().optional().describe('Commit message for this version')
       })
     ]),
@@ -220,9 +228,10 @@ const tools = {
 
   /* ── Run: fetch/process/extract/validate in one step ──────────────────── */
 
-  runScrape: {
+  // TODO: Add ability to switch to crawl and scrape
+  scraperRun: {
     description:
-      'Run the scrape pipeline: fetch, process, execute extraction script, and validate against the schema',
+      'Run the scraping pipeline: fetch, process, execute extraction script, and validate against the schema',
     inputSchema: z.object(),
     // inputSchema: z
     //   .object({
@@ -256,6 +265,7 @@ const tools = {
 
   /* ── Inspect last run: results/validation/logs (compact surfaces) ─────── */
 
+  // TODO: Add some pagination and better adapt to working like the API
   resultsGet: {
     description: 'Read extracted data and validation summary from the last run',
     inputSchema: z.object(),

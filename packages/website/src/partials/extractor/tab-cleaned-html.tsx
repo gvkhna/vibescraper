@@ -40,7 +40,7 @@ export function TabCleanedHtml() {
 
   return (
     <div className='relative flex h-full flex-col bg-[#0D1117]'>
-      <div className='absolute right-4 top-4 z-10'>
+      <div className='absolute top-4 right-4 z-10'>
         <Button
           variant='ghost'
           size='sm'

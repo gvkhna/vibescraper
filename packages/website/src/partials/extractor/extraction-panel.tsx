@@ -39,6 +39,7 @@ import {
 } from './extraction-tabs'
 import { PipelineStatus } from './pipeline-status'
 import { TabCleanedHtml } from './tab-cleaned-html'
+import { TabCrawlerScript } from './tab-crawler-script'
 import { TabData } from './tab-data'
 import { TabDataJson } from './tab-data-json'
 import { TabDataSchema } from './tab-data-schema'
@@ -71,6 +72,7 @@ const CONFIGURATION_DROPDOWN_TABS: SplitButtonDropdownTab<ExtractionPanelTabType
   { value: 'data-schema', label: 'Data Schema', icon: FileJson2 },
   { value: 'schema-json', label: 'Schema JSON', icon: FileJson },
   { value: 'extraction-script', label: 'Extraction Script', icon: SquareFunction },
+  { value: 'crawler-script', label: 'Crawler Script', icon: SquareFunction },
   { value: 'log', label: 'Log', icon: FileText }
 ]
 
@@ -324,6 +326,13 @@ export function ExtractionPanel() {
           className='flex min-h-0 flex-col'
         >
           <TabExtractionScript />
+        </ExtractionTabsContent>
+
+        <ExtractionTabsContent
+          value='crawler-script'
+          className='flex min-h-0 flex-col'
+        >
+          <TabCrawlerScript />
         </ExtractionTabsContent>
 
         <ExtractionTabsContent

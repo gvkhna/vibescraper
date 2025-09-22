@@ -2,7 +2,7 @@
 
 import React, { Fragment, useEffect, useState } from 'react'
 import { useChat } from '@ai-sdk/react'
-import { DefaultChatTransport } from 'ai'
+import { DefaultChatTransport, isToolUIPart } from 'ai'
 import debug from 'debug'
 import { CopyIcon, GlobeIcon, RefreshCcwIcon } from 'lucide-react'
 import { toast } from 'sonner'
@@ -179,11 +179,7 @@ export function AssistantChat({
 
         // Check if message contains any write tool calls that completed successfully
         const hasWriteToolCall = opts.message.parts.some((part) => {
-          // Check for any write tool completion
-          if (
-            (part.type === 'tool-schemaSet' || part.type === 'tool-scriptSet') &&
-            part.state === 'output-available'
-          ) {
+          if (isToolUIPart(part) && part.type === 'tool-fileSet' && part.state === 'output-available') {
             log(`Found successful tool call in message part:`, part)
             return true
           }

@@ -1,6 +1,7 @@
 import debug from 'debug'
 
 import type {
+  CrawlerDTOType,
   ExtractorDTOType,
   ProjectCommitDTOType,
   ProjectCommitPublicId,
@@ -34,6 +35,12 @@ export interface ProjectExtractorsState {
   asyncEntityState: AsyncEntityState
 }
 
+// State for a project's crawlers (scripts)
+export interface ProjectCrawlersState {
+  crawlers: CrawlerDTOType[]
+  asyncEntityState: AsyncEntityState
+}
+
 // Per-project scraping state
 export interface ProjectScrapingState {
   isScrapingActive: boolean
@@ -53,6 +60,9 @@ export interface ExtractorSlice {
   // Project extractors (scripts) state
   projectExtractors: Record<ProjectPublicId, ProjectExtractorsState | undefined>
 
+  // Project crawlers (scripts) state
+  projectCrawlers: Record<ProjectPublicId, ProjectCrawlersState | undefined>
+
   // Per-project scraping activity state
   projectScrapingState: Record<ProjectPublicId, ProjectScrapingState | undefined>
 
@@ -66,6 +76,9 @@ export interface ExtractorSlice {
 
   // Load all extractors for a project
   loadExtractors: (projectPublicId: ProjectPublicId) => Promise<void>
+
+  // Load all crawlers for a project
+  loadCrawlers: (projectPublicId: ProjectPublicId) => Promise<void>
 
   // Reload project commit and sync all configuration
   reloadProjectCommit: (projectCommitPublicId: ProjectCommitPublicId) => Promise<void>
@@ -93,6 +106,7 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
     projectCommitAsyncState: initialAsyncEntityState(),
     projectSchemas: {},
     projectExtractors: {},
+    projectCrawlers: {},
     projectScrapingState: {},
     scrapeMode: 'scrape',
 
@@ -277,6 +291,89 @@ export const createExtractorSlice: StateSlice<ExtractorSlice> = (set, get) =>
           },
           true,
           'extractor/loadExtractors:error'
+        )
+      }
+    },
+
+    loadCrawlers: async (projectPublicId) => {
+      const currentState = get().extractorSlice.projectCrawlers[projectPublicId]
+
+      // Don't reload if already loading or already loaded
+      if (
+        currentState &&
+        (isLoading(currentState.asyncEntityState) || isLoaded(currentState.asyncEntityState))
+      ) {
+        return
+      }
+
+      // Initialize state if needed
+      if (!currentState) {
+        set(
+          (draft) => {
+            draft.extractorSlice.projectCrawlers[projectPublicId] = {
+              crawlers: [],
+              asyncEntityState: initialAsyncEntityState()
+            }
+          },
+          true,
+          'extractor/initCrawlerState'
+        )
+      }
+
+      set(
+        (draft) => {
+          const state = draft.extractorSlice.projectCrawlers[projectPublicId]
+          if (state) {
+            startLoading(state.asyncEntityState)
+          }
+        },
+        true,
+        'extractor/loadCrawlers:start'
+      )
+
+      try {
+        await asyncRetry(
+          async () => {
+            const resp = await api.projects.crawlers.$post({
+              json: {
+                projectPublicId
+              }
+            })
+
+            if (resp.ok) {
+              const body = (await resp.json()) as { crawlers: CrawlerDTOType[] }
+
+              set(
+                (draft) => {
+                  const state = draft.extractorSlice.projectCrawlers[projectPublicId]
+                  if (state) {
+                    Object.assign(state, {
+                      crawlers: body.crawlers
+                    })
+                    finishLoading(state.asyncEntityState)
+                  }
+                },
+                true,
+                'extractor/loadCrawlers:done'
+              )
+            } else {
+              const body = (await resp.json()) as { message: string }
+              throw new Error(body.message)
+            }
+          },
+          { retries: 2, minDelay: 500 }
+        )
+      } catch (e) {
+        log('Error loading crawlers:', e)
+        set(
+          (draft) => {
+            const state = draft.extractorSlice.projectCrawlers[projectPublicId]
+            if (state) {
+              failLoading(state.asyncEntityState)
+            }
+          },
+          true,
+          'extractor/loadCrawlers:error'
         )
       }
     },

@@ -25,10 +25,16 @@ export type ExtractionPanelTabType =
   | 'data-schema'
   | 'schema-json'
   | 'extraction-script'
+  | 'crawler-script'
   | 'log'
 
 // New type for the configuration dropdown (schema/script/log)
-export type ConfigurationTabType = 'data-schema' | 'schema-json' | 'extraction-script' | 'log'
+export type ConfigurationTabType =
+  | 'data-schema'
+  | 'schema-json'
+  | 'extraction-script'
+  | 'crawler-script'
+  | 'log'
 
 // New type for the data dropdown (data table/json)
 export type DataTabType = 'data-table' | 'data-json'

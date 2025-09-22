@@ -53,7 +53,9 @@ export function ScraperSettingsContent({
         respectRobotsTxt: true
       },
       maxRetries: 3,
-      retryDelay: 5000
+      retryDelayMs: 5000,
+      maxRuntimeMs: 300000,
+      maxCrawlurls: 100
     }
   )
 
@@ -68,7 +70,7 @@ export function ScraperSettingsContent({
         removeComments: true,
         removeHead: false
       },
-      timeout: 30000,
+      timeoutMs: 30000,
       maxOutputSize: -1
     }
   )

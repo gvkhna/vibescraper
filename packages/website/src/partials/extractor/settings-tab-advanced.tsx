@@ -52,11 +52,11 @@ export function AdvancedTabContent({
               <Input
                 id='retry-delay'
                 type='number'
-                value={commitSettings.retryDelay / 1000}
+                value={commitSettings.retryDelayMs / 1000}
                 onChange={(e) => {
                   setCommitSettings({
                     ...commitSettings,
-                    retryDelay: parseInt(e.target.value) * 1000 || 5000
+                    retryDelayMs: parseInt(e.target.value) * 1000 || 5000
                   })
                 }}
                 className='border-white/20 bg-[#0A0A0B]'

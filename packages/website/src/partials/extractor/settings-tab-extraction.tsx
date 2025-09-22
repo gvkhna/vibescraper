@@ -141,11 +141,11 @@ export function ExtractionTabContent({
             <Input
               id='extractor-timeout'
               type='number'
-              value={extractorSettings.timeout / 1000}
+              value={extractorSettings.timeoutMs / 1000}
               onChange={(e) => {
                 setExtractorSettings({
                   ...extractorSettings,
-                  timeout: parseInt(e.target.value) * 1000 || 30000
+                  timeoutMs: parseInt(e.target.value) * 1000 || 30000
                 })
               }}
               className='border-white/20 bg-[#0A0A0B]'

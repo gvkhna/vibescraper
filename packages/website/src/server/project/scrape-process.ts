@@ -391,175 +391,88 @@ export async function scrapeProcess({
       cacheData.markdown = projectCommit.cachedData.markdown
     } else {
       // Find or create projectUrl entry for fresh fetch
-      log('Finding or creating projectUrl entry')
-      let projectUrl = await db.query.projectUrl.findFirst({
-        where: (table, { and, eq }) => and(eq(table.projectId, project.id), eq(table.url, urlToScrape))
-      })
+      // log('Finding or creating projectUrl entry')
+      // let projectUrl = await db.query.projectUrl.findFirst({
+      //   where: (table, { and, eq }) => and(eq(table.projectId, project.id), eq(table.url, urlToScrape))
+      // })
 
-      if (!projectUrl) {
-        log('Creating new projectUrl entry')
-        const [newProjectUrl] = await db
-          .insert(schema.projectUrl)
-          .values({
-            projectId: project.id,
-            url: urlToScrape
-          })
-          .returning()
-        projectUrl = newProjectUrl
-      }
-      log('ProjectUrl ID:', projectUrl.id)
+      // if (!projectUrl) {
+      //   log('Creating new projectUrl entry')
+      //   const [newProjectUrl] = await db
+      //     .insert(schema.projectUrl)
+      //     .values({
+      //       projectId: project.id,
+      //       url: urlToScrape
+      //     })
+      //     .returning()
+      //   projectUrl = newProjectUrl
+      // }
+      // log('ProjectUrl ID:', projectUrl.id)
 
       // Check for existing HTTP response if not forcing refresh
-      let existingResponse: typeof schema.httpResponse.$inferSelect | undefined
-      if (!forceRefresh) {
-        log('Checking for existing successful crawl run')
-        const recentCrawlRun = await db.query.crawlRun.findFirst({
-          where: (table, { and, eq }) => and(eq(table.projectId, project.id), eq(table.status, 'success')),
-          orderBy: (table, { desc }) => desc(table.startedAt)
-        })
+      // let existingResponse: typeof schema.httpResponse.$inferSelect | undefined
+      // if (!forceRefresh) {
+      //   log('Checking for existing successful crawl run')
+      //   const recentCrawlRun = await db.query.crawlRun.findFirst({
+      //     where: (table, { and, eq }) => and(eq(table.projectId, project.id), eq(table.status, 'success')),
+      //     orderBy: (table, { desc }) => desc(table.startedAt)
+      //   })
 
-        if (recentCrawlRun) {
-          log('Found recent crawl run:', recentCrawlRun.id, '- checking for HTTP response')
-          existingResponse = await db.query.httpResponse.findFirst({
-            where: (table, { and, eq }) =>
-              and(eq(table.crawlRunId, recentCrawlRun.id), eq(table.projectUrlId, projectUrl.id))
-          })
-          log('Existing response found:', !!existingResponse)
-        }
-      }
+      //   if (recentCrawlRun) {
+      //     log('Found recent crawl run:', recentCrawlRun.id, '- checking for HTTP response')
+      //     existingResponse = await db.query.httpResponse.findFirst({
+      //       where: (table, { and, eq }) =>
+      //         and(eq(table.crawlRunId, recentCrawlRun.id), eq(table.projectUrlId, projectUrl.id))
+      //     })
+      //     log('Existing response found:', !!existingResponse)
+      //   }
+      // }
 
       // STAGE 1: FETCH EXECUTION
-      if (existingResponse && !forceRefresh) {
-        log('Using existing HTTP response from database')
-        cacheData.fetchStatus = 'cached'
-        cacheData.statusCode = existingResponse.statusCode
-        cacheData.contentType = existingResponse.contentType
-        cacheData.responseTimeMs = existingResponse.responseTimeMs
-        cacheData.headers = existingResponse.headers as Record<string, string>
-        html = existingResponse.body
-        httpResponseCreatedAt = existingResponse.createdAt
-      } else {
-        log('Performing fresh HTTP fetch')
-        // Create new crawl run
-        const [newCrawlRun] = await db
-          .insert(schema.crawlRun)
-          .values({
-            projectId: project.id,
-            status: 'running'
-          })
-          .returning()
-        log('Created crawl run:', newCrawlRun.id)
+      // if (existingResponse && !forceRefresh) {
+      //   log('Using existing HTTP response from database')
+      //   cacheData.fetchStatus = 'cached'
+      //   cacheData.statusCode = existingResponse.statusCode
+      //   cacheData.contentType = existingResponse.contentType
+      //   cacheData.responseTimeMs = existingResponse.responseTimeMs
+      //   cacheData.headers = existingResponse.headers as Record<string, string>
+      //   html = existingResponse.body
+      //   httpResponseCreatedAt = existingResponse.createdAt
+      // } else {
+      log('Performing fresh HTTP fetch')
+      // Create new crawl run
+      const [newCrawlRun] = await db
+        .insert(schema.crawlRun)
+        .values({
+          projectId: project.id,
+          status: 'running'
+        })
+        .returning()
+      log('Created crawl run:', newCrawlRun.id)
 
-        const startTime = Date.now()
-        log('Starting HTTP fetch for:', urlToScrape)
+      const startTime = Date.now()
+      log('Starting HTTP fetch for:', urlToScrape)
 
-        try {
-          const response = await fetch(urlToScrape, {
-            method: 'GET',
-            headers: {
-              'User-Agent':
-                projectCommit.settingsJson.crawler.userAgent ??
-                'Mozilla/5.0 (compatible; Vibescraper/1.0; +https://aivibescraper.com)'
-            },
-            signal: AbortSignal.timeout(projectCommit.settingsJson.crawler.requestTimeout || 30000)
-          })
+      try {
+        const response = await fetch(urlToScrape, {
+          method: 'GET',
+          headers: {
+            'User-Agent':
+              projectCommit.settingsJson.crawler.userAgent ??
+              'Mozilla/5.0 (compatible; Vibescraper/1.0; +https://aivibescraper.com)'
+          },
+          signal: AbortSignal.timeout(projectCommit.settingsJson.crawler.requestTimeout || 30000)
+        })
 
-          const responseTimeMs = Date.now() - startTime
+        const responseTimeMs = Date.now() - startTime
 
-          // Check if response is OK (status 200-299)
-          if (!response.ok) {
-            cacheData.fetchStatus = 'failed'
-            cacheData.fetchError = `HTTP ${response.status} ${response.statusText}`
-            log('Fetch failed with non-OK status:', response.status, response.statusText)
-
-            // Update crawl run and save cache data with fetch error
-            await db
-              .update(schema.crawlRun)
-              .set({
-                status: 'error',
-                finishedAt: sqlNow()
-              })
-              .where(sqlEq(schema.crawlRun.id, newCrawlRun.id))
-
-            await db
-              .update(schema.projectCommit)
-              .set({
-                cachedData: cacheData,
-                cachedAt: sqlNow()
-              })
-              .where(sqlEq(schema.projectCommit.id, projectCommit.id))
-
-            return {
-              success: false,
-              cached: false,
-              error: cacheData.fetchError
-            }
-          }
-
-          // Successful fetch
-          cacheData.fetchStatus = 'completed'
-          cacheData.statusCode = response.status
-          cacheData.contentType = response.headers.get('content-type')
-          cacheData.responseTimeMs = responseTimeMs
-
-          // Extract headers
-          const headers: Record<string, string> = {}
-          response.headers.forEach((value, key) => {
-            headers[key] = value
-          })
-          cacheData.headers = headers
-
-          html = await response.text()
-          log('HTML content length:', html.length, 'chars')
-
-          // Store the HTTP response
-          log('Storing HTTP response in database')
-          const bodyHash = hashString(html)
-          const [httpResponse] = await db
-            .insert(schema.httpResponse)
-            .values({
-              crawlRunId: newCrawlRun.id,
-              projectUrlId: projectUrl.id,
-              statusCode: response.status,
-              contentType: response.headers.get('content-type') ?? 'text/html',
-              headers: headers,
-              bodyHashAlgo: 'sha256' as const,
-              bodyHash: bodyHash,
-              storageType: 'text' as const,
-              body: html,
-              responseTimeMs: responseTimeMs
-            })
-            .returning()
-          log('Stored HTTP response:', httpResponse.id)
-          httpResponseCreatedAt = httpResponse.createdAt
-
-          // Update crawl run status
-          await db
-            .update(schema.crawlRun)
-            .set({
-              status: 'success',
-              finishedAt: sqlNow()
-            })
-            .where(sqlEq(schema.crawlRun.id, newCrawlRun.id))
-        } catch (error) {
-          const responseTimeMs = Date.now() - startTime
+        // Check if response is OK (status 200-299)
+        if (!response.ok) {
           cacheData.fetchStatus = 'failed'
+          cacheData.fetchError = `HTTP ${response.status} ${response.statusText}`
+          log('Fetch failed with non-OK status:', response.status, response.statusText)
 
-          if (error instanceof Error) {
-            if (error.name === 'TimeoutError') {
-              cacheData.fetchError = `Request timeout after ${responseTimeMs}ms`
-            } else if (error.name === 'TypeError') {
-              cacheData.fetchError = `Network error: ${error.message}`
-            } else {
-              cacheData.fetchError = `Fetch error: ${error.message}`
-            }
-          } else {
-            cacheData.fetchError = 'Unknown fetch error'
-          }
-
-          log('Fetch failed with error:', cacheData.fetchError)
-
-          // Update crawl run status to error and save cache data
+          // Update crawl run and save cache data with fetch error
           await db
             .update(schema.crawlRun)
             .set({
@@ -582,7 +495,94 @@ export async function scrapeProcess({
             error: cacheData.fetchError
           }
         }
+
+        // Successful fetch
+        cacheData.fetchStatus = 'completed'
+        cacheData.statusCode = response.status
+        cacheData.contentType = response.headers.get('content-type')
+        cacheData.responseTimeMs = responseTimeMs
+
+        // Extract headers
+        const headers: Record<string, string> = {}
+        response.headers.forEach((value, key) => {
+          headers[key] = value
+        })
+        cacheData.headers = headers
+
+        html = await response.text()
+        log('HTML content length:', html.length, 'chars')
+
+        // Store the HTTP response
+        log('Storing HTTP response in database')
+        // const bodyHash = hashString(html)
+        // const [httpResponse] = await db
+        //   .insert(schema.httpResponse)
+        //   .values({
+        //     crawlRunId: newCrawlRun.id,
+        //     projectUrlId: projectUrl.id,
+        //     statusCode: response.status,
+        //     contentType: response.headers.get('content-type') ?? 'text/html',
+        //     headers: headers,
+        //     bodyHashAlgo: 'sha256' as const,
+        //     bodyHash: bodyHash,
+        //     storageType: 'text' as const,
+        //     body: html,
+        //     responseTimeMs: responseTimeMs
+        //   })
+        //   .returning()
+        // log('Stored HTTP response:', httpResponse.id)
+        // httpResponseCreatedAt = httpResponse.createdAt
+
+        // Update crawl run status
+        await db
+          .update(schema.crawlRun)
+          .set({
+            status: 'success',
+            finishedAt: sqlNow()
+          })
+          .where(sqlEq(schema.crawlRun.id, newCrawlRun.id))
+      } catch (error) {
+        const responseTimeMs = Date.now() - startTime
+        cacheData.fetchStatus = 'failed'
+
+        if (error instanceof Error) {
+          if (error.name === 'TimeoutError') {
+            cacheData.fetchError = `Request timeout after ${responseTimeMs}ms`
+          } else if (error.name === 'TypeError') {
+            cacheData.fetchError = `Network error: ${error.message}`
+          } else {
+            cacheData.fetchError = `Fetch error: ${error.message}`
+          }
+        } else {
+          cacheData.fetchError = 'Unknown fetch error'
+        }
+
+        log('Fetch failed with error:', cacheData.fetchError)
+
+        // Update crawl run status to error and save cache data
+        await db
+          .update(schema.crawlRun)
+          .set({
+            status: 'error',
+            finishedAt: sqlNow()
+          })
+          .where(sqlEq(schema.crawlRun.id, newCrawlRun.id))
+
+        await db
+          .update(schema.projectCommit)
+          .set({
+            cachedData: cacheData,
+            cachedAt: sqlNow()
+          })
+          .where(sqlEq(schema.projectCommit.id, projectCommit.id))
+
+        return {
+          success: false,
+          cached: false,
+          error: cacheData.fetchError
+        }
       }
+      // }
     }
 
     // STAGE 2: PROCESSING EXECUTION

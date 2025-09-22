@@ -158,6 +158,51 @@ const app = new Hono<HonoServer>()
     }
   )
   .post(
+    '/crawlers',
+    validator('json', (value) => {
+      return value as {
+        projectPublicId: schema.ProjectPublicId
+      }
+    }),
+    async (c) => {
+      const { projectPublicId } = c.req.valid('json')
+      const user = c.get('user')
+      const db = c.get('db')
+
+      // Get project to verify access
+      const project = await db.query.project.findFirst({
+        where: (table, { eq: tableEq }) => tableEq(table.publicId, projectPublicId)
+      })
+
+      if (!project) {
+        return c.json({ message: 'Project not found' }, HttpStatusCode.NotFound)
+      }
+
+      if (await userCannotProjectAction(db, 'read', user, project.subjectPolicyId)) {
+        return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
+      }
+
+      // Get all crawlers for this project
+      const crawlers = await db.query.crawler.findMany({
+        where: (table, { eq: tableEq }) => tableEq(table.projectId, project.id),
+        orderBy: (table, { desc: tableDesc }) => [tableDesc(table.version)]
+      })
+
+      // Convert to DTOs
+      const crawlerDTOs: schema.CrawlerDTOType[] = crawlers.map((e) => {
+        const { id: _crawlerId, projectId: _crawlerProjectId, ...dto } = e
+        return dto
+      })
+
+      return c.json(
+        {
+          crawlers: crawlerDTOs
+        },
+        HttpStatusCode.Ok
+      )
+    }
+  )
+  .post(
     '/setPublic',
     validator('json', async (value) => {
       return value as {

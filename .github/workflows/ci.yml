@@ -117,8 +117,38 @@ jobs:
       DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
       DOKPLOY_APPLICATION_ID: ${{ secrets.DOKPLOY_APPLICATION_ID }}
       DOKPLOY_API_HOSTNAME: ${{ secrets.DOKPLOY_API_HOSTNAME }}
+      DOKPLOY_BACKUP_ID: ${{ secrets.DOKPLOY_BACKUP_ID }}
       PUBLIC_HOSTNAME: ${{ vars.PUBLIC_HOSTNAME }}
     steps:
+      - name: Backup database via Dokploy API
+        if: ${{ env.DOKPLOY_API_HOSTNAME != '' }}
+        run: |
+          # Mask sensitive values
+          echo "::add-mask::$DOKPLOY_API_HOSTNAME"
+          echo "::add-mask::$DOKPLOY_APPLICATION_ID"
+          echo "::add-mask::$DOKPLOY_API_KEY"
+          echo "::add-mask::$DOKPLOY_BACKUP_ID"
+
+          echo "Triggering Postgres backup..."
+
+          set +e
+          curl --fail --silent -X POST \
+            -H 'accept: application/json' \
+            -H 'Content-Type: application/json' \
+            -d '{"backupId": "'"$DOKPLOY_BACKUP_ID"'"}' \
+            "$DOKPLOY_API_HOSTNAME/backup.manualBackupPostgres" \
+            > /dev/null 2>&1
+
+          BACKUP_EXIT_CODE=$?
+          set -e
+
+          if [ $BACKUP_EXIT_CODE -eq 0 ]; then
+            echo "✓ Backup triggered successfully"
+          else
+            echo "✗ Failed to trigger backup (error code: $BACKUP_EXIT_CODE)"
+            exit 1
+          fi
+
       - name: Trigger redeploy via Dokploy API
         if: ${{ env.DOKPLOY_API_HOSTNAME != '' }}
         run: |
@@ -126,6 +156,7 @@ jobs:
           echo "::add-mask::$DOKPLOY_API_HOSTNAME"
           echo "::add-mask::$DOKPLOY_APPLICATION_ID"
           echo "::add-mask::$DOKPLOY_API_KEY"
+          echo "::add-mask::$DOKPLOY_BACKUP_ID"
 
           echo "Triggering container redeploy..."
 

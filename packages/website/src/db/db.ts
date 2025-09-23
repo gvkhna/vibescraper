@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
 import debug from 'debug'
 import { drizzle as drizzlePostgres } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 
+import { nowait } from '@/lib/async-utils'
 import { PRIVATE_VARS } from '@/vars.private'
 import { PUBLIC_VARS } from '@/vars.public'
 
@@ -82,40 +84,83 @@ const postgresClient = postgres(PRIVATE_VARS.DATABASE_POOL_URL ?? PRIVATE_VARS.D
   }
 })
 
-if (PUBLIC_VARS.DEV) {
-  /*
-   * Sometimes postgres.app requires reindexing due to MacOS
-   * See: https://postgresapp.com/documentation/reindex-warning.html
-   */
-  log(`Database - Running sql\`reindex database\``)
-  postgresClient
-    .unsafe('reindex database')
-    .execute()
-    .then((res) => {
-      log('Reindexing complete')
+async function initialize() {
+  try {
+    const res = await postgresClient
+      .unsafe(
+        `
+      SELECT current_database()     AS database,
+       current_user                 AS user,
+       version()                    AS version,
+       now()                        AS now,
+       current_setting('TimeZone')  AS timezone;
+      `
+      )
+      .execute()
+    if (res.length === 0) {
+      throw new Error('Failed to get Database Connection')
+    }
+    const row = res[0]
+    console.log(`Database Connection: ${row.user}@${row.database}`)
+    console.log(`Database Time: ${row.now} (${row.timezone})`)
+    console.log(`Database Version: ${row.version}`)
+  } catch (e) {
+    console.log('\n\nDATABASE NOT RUNNING!\n')
+    console.log('-> Did you forget to start your database?')
+    console.log('-> Make sure Postgres is running on the expected host and port\n')
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+    ;(globalThis as any).process.exit(1)
+  }
 
-      if (PRIVATE_VARS.DEBUG?.includes('db')) {
-        postgresClient
-          .unsafe(`set log_statement = 'all';set log_min_duration_statement = 0;`)
-          .then((logRes) => {
-            dbLog('debug database logging all statements')
-          })
-          .catch((e: unknown) => {
-            dbLog('error turning on debug log all statements', e)
-          })
+  if (PRIVATE_VARS.DEBUG?.includes('db')) {
+    try {
+      log(`Database - Enabling debug log all statements`)
+      await postgresClient.unsafe("set log_statement = 'all';set log_min_duration_statement = 0;").execute()
+    } catch (e) {
+      log(`Database Error: Unable to turn on log all statements`, e)
+    }
+  }
+
+  try {
+    // check collation version mismatch
+    const res = await postgresClient
+      .unsafe(
+        `
+      SELECT datcollversion,pg_database_collation_actual_version(oid) AS current_version
+      FROM pg_database
+      WHERE datname = current_database();
+      `
+      )
+      .execute()
+    if (res.length === 0) {
+      throw new Error('Failed to get collation version')
+    } else {
+      const row = res[0]
+      if (row.datcollversion !== row.current_version) {
+        console.log('Database Collation: Collation version mismatch detected!', row)
+      } else {
+        console.log('Database Collation: Up-to-date')
       }
-    })
-    .catch((e: unknown) => {
-      // eslint-disable-next-line no-console
-      console.log('\n\nDATABASE NOT RUNNING!\n')
-      // eslint-disable-next-line no-console
-      console.log('-> Did you forget to start your database?')
-      // eslint-disable-next-line no-console
-      console.log('-> Make sure Postgres is running on the expected host and port\n')
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
-      ;(globalThis as any).process.exit(1)
-    })
+    }
+  } catch (e) {
+    console.log('Error checking collation version', e)
+  }
+
+  if (PUBLIC_VARS.DEV) {
+    /*
+     * Sometimes postgres requires reindexing due to MacOS
+     * See: https://postgresapp.com/documentation/reindex-warning.html
+     */
+    log(`Database - Running sql\`reindex database\``)
+    try {
+      const res = await postgresClient.unsafe('reindex database').execute()
+      log('Database Reindex: Reindexing complete')
+    } catch (e) {
+      log('Database Error: Unable to reindex database! ', e)
+    }
+  }
 }
+nowait(initialize())
 
 const dbPostgres = drizzlePostgres({ client: postgresClient, schema, casing: 'camelCase' })
 

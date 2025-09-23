@@ -1,5 +1,5 @@
-import { sha256 } from '@noble/hashes/sha2'
-import { bytesToHex } from '@noble/hashes/utils'
+import { sha256 } from '@noble/hashes/sha2.js'
+import { bytesToHex } from '@noble/hashes/utils.js'
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 export function shortid<T = string>(length = 6): T {

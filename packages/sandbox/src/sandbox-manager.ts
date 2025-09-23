@@ -353,14 +353,13 @@ export class SandboxManager extends EventTarget {
     this.child.stderr?.setEncoding('utf8')
 
     this.child.stdout?.on('data', (data) => {
-      this.log('child stdout data', data)
+      this.log('[stdout]', data)
       if (typeof data === 'string') {
         this.handleSandboxOutput(data)
       }
     })
     this.child.stderr?.on('data', (data) => {
-      this.log('child stderr data', data)
-      this.log('[Sandbox Error]', data)
+      this.log('[stderr]', data)
     })
 
     this.child.on('close', (code) => {
@@ -651,6 +650,7 @@ export class SandboxManager extends EventTarget {
     const eslint = new ESLint({
       fix: true,
       overrideConfigFile: true,
+      baseConfig: null,
       ignore: false,
       allowInlineConfig: false,
       overrideConfig: {
@@ -663,20 +663,11 @@ export class SandboxManager extends EventTarget {
         rules: {
           ...eslintDenoCompat.rules
         }
-        // rules: { 'deno-compat/prefix-imports': 'error' }
-        // rules: {'deno-compat/prefix-imports': 'error', 'deno-compat/remove-legacy-fetch': 'error'}
       },
       plugins: {
         ...eslintDenoCompat.plugins
-        // 'deno-compat': {
-        //   rules: { 'prefix-imports': prefixRule }
-        //   // rules: {'prefix-imports': prefixRule, 'remove-legacy-fetch': nodeFetchRule}
-        // }
       }
     })
-
-    // const cfg = await eslint.calculateConfigForFile('virtual.js')
-    // log('Effective ESLint config for this run ->', cfg)
 
     const [result] = await eslint.lintText(code, { filePath: 'virtual.js' })
     this.log('eslint error count', result.errorCount, result.warningCount)

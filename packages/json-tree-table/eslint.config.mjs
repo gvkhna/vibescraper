@@ -1,6 +1,8 @@
+import { defineConfig } from 'eslint/config';
+
 import rootConfig from '../../eslint.config.mjs';
 
-export default [
+export default defineConfig([
   ...rootConfig,
   {
     ignores: [
@@ -11,4 +13,4 @@ export default [
       'src/components/ui/**'
     ]
   }
-];
+]);

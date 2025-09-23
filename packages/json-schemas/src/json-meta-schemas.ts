@@ -1,5 +1,3 @@
-import Ajv from 'ajv'
-import addFormats from 'ajv-formats'
 import type { JsonObject } from 'type-fest'
 
 import { validateDataAgainstSchema } from './json-schema'

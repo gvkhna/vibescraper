@@ -25,6 +25,38 @@ import type { HonoServer } from '.'
 
 const log = debug('app:server:projects')
 
+// Compute a unique project name given existing names for a user and a proposed name.
+export function dedupeProjectName(existingNames: readonly string[], proposedName: string): string {
+  const target = proposedName.trim()
+  const names = new Set(existingNames)
+  if (!names.has(target)) {
+    return target
+  }
+
+  const re = /^(.*) \((\d+)\)$/
+  let base = target
+  let start = 1
+  const m = re.exec(target)
+  if (m?.[1]) {
+    base = m[1].trim()
+    if (m[2]) {
+      const parsed = Number.parseInt(m[2], 10)
+      if (Number.isFinite(parsed) && parsed >= 1) {
+        start = parsed + 1
+      }
+    }
+  }
+
+  for (let i = start; i < 10000; i++) {
+    const candidate = `${base} (${i})`
+    if (!names.has(candidate)) {
+      return candidate
+    }
+  }
+
+  return `${target} (1)`
+}
+
 const app = new Hono<HonoServer>()
   .get('/userProjects', async (c) => {
     const user = c.get('user')
@@ -761,10 +793,19 @@ const app = new Hono<HonoServer>()
           .returning()
 
         // Insert the project
+        // Deduplicate project name for this user
+        const rows = await tx
+          .select({ name: schema.project.name })
+          .from(schema.project)
+          .where(eq(schema.project.userId, user.id))
+        const dedupedName = dedupeProjectName(
+          rows.map((r) => r.name),
+          projectName
+        )
         const [project] = await tx
           .insert(schema.project)
           .values({
-            name: projectName,
+            name: dedupedName,
             subjectPolicyId: subjectPolicy.id,
             userId: user.id
           })
@@ -783,7 +824,7 @@ const app = new Hono<HonoServer>()
           .insert(schema.projectChat)
           .values({
             projectId: project.id,
-            title: projectName,
+            title: dedupedName,
             chatType: 'chat',
             titleStatus: 'generated'
           })
@@ -872,10 +913,19 @@ const app = new Hono<HonoServer>()
           .returning()
 
         // Insert the project
+        // Deduplicate project name for this user
+        const rows = await tx
+          .select({ name: schema.project.name })
+          .from(schema.project)
+          .where(eq(schema.project.userId, user.id))
+        const dedupedName = dedupeProjectName(
+          rows.map((r) => r.name),
+          projectName
+        )
         const [project] = await tx
           .insert(schema.project)
           .values({
-            name: projectName,
+            name: dedupedName,
             subjectPolicyId: subjectPolicy.id,
             userId: user.id
           })

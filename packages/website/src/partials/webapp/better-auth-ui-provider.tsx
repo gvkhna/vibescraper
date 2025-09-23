@@ -8,6 +8,7 @@ import api from '@/lib/api-client'
 import { apiFetchClient } from '@/lib/api-fetch-client'
 import { nowait } from '@/lib/async-utils'
 import { authReactClient } from '@/lib/auth-react-client'
+import { LOCAL_STORAGE_PROJECT_STORE_KEY, useStore } from '@/store/use-store'
 
 import { useEnvContext } from './env-context'
 
@@ -21,13 +22,17 @@ export function BetterAuthUIProvider({ children }: { children: ReactNode }) {
   return (
     <AuthUIProvider
       authClient={authReactClient}
-      navigate={(path) => {
-        nowait(navigate({ to: path }))
+      onSessionChange={async () => {
+        const auth = await authReactClient.getSession()
+        if (!auth.data?.session) {
+          log('cleaning up for signout...')
+          const initialState = useStore.getInitialState()
+          useStore.persist.clearStorage()
+          useStore.setState(initialState, true)
+          await useStore.persist.rehydrate()
+        }
+        await router.invalidate()
       }}
-      replace={(path) => {
-        nowait(navigate({ to: path, replace: true }))
-      }}
-      onSessionChange={() => router.invalidate()}
       magicLink={true}
       Link={Link}
       basePath='/'

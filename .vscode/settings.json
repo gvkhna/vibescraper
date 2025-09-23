@@ -38,6 +38,8 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[plaintext]": {
+    "editor.defaultFormatter": "GlenBuktenica.unicode-substitutions",
+    "editor.formatOnSave": true,
     "editor.unicodeHighlight.ambiguousCharacters": true,
     "editor.unicodeHighlight.invisibleCharacters": true,
     "editor.wordWrap": "bounded"

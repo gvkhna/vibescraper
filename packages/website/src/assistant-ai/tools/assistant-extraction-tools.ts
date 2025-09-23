@@ -1,4 +1,10 @@
-import { compileJsonSchema } from '@vibescraper/json-schemas'
+import {
+  compileJsonSchema,
+  objectRootMetaSchema,
+  primaryKeyInRequiredMetaSchema,
+  rootPrimaryKeyMetaSchema,
+  validateDataAgainstSchema
+} from '@vibescraper/json-schemas'
 import { SandboxManager } from '@vibescraper/sandbox'
 import { tool } from 'ai'
 import debug from 'debug'
@@ -127,229 +133,7 @@ export function makeExtractionTools(
     //     }
     //   }
     // }),
-    // getContent: tool({
-    //   description: 'Return page content in a chosen view',
-    //   inputSchema: z.object({
-    //     url: z.url().describe('The URL to get content for'),
-    //     view: z.enum(['raw', 'clean', 'filtered', 'readability', 'md']).describe('Content view format'),
-    //     filter: z
-    //       .object({
-    //         mode: z.enum(['css', 'xpath']).default('css').describe('Selector mode'),
-    //         query: z.string().min(1).describe('CSS selector or XPath query'),
-    //         ret: z.enum(['outer', 'inner']).default('outer').describe('Return outer or inner HTML'),
-    //         limit: z.number().int().min(1).max(50).default(20).describe('Max elements to return')
-    //       })
-    //       .optional()
-    //       .describe('Optional filtering configuration')
-    //   }),
-    //   outputSchema: z.object({
-    //     success: z.boolean(),
-    //     content: z.string().optional(),
-    //     elements: z.array(z.string()).optional(),
-    //     error: z.string().optional()
-    //   }),
-    //   execute: async (input) => {
-    //     try {
-    //       // 1. Find the project URL
-    //       const projectUrl = await db.query.projectUrl.findFirst({
-    //         where: (table, {and, eq}) => and(eq(table.projectId, project.id), eq(table.url, input.url))
-    //       })
-    //       if (!projectUrl) {
-    //         return {
-    //           success: false,
-    //           error: 'URL not found in project'
-    //         }
-    //       }
-    //       // 2. Find the latest httpResponse
-    //       const httpResponse = await db.query.httpResponse.findFirst({
-    //         where: (table, {eq}) => eq(table.projectUrlId, projectUrl.id),
-    //         orderBy: (table) => [sqlDesc(table.createdAt)]
-    //       })
-    //       if (!httpResponse) {
-    //         return {
-    //           success: false,
-    //           error: 'No content found for URL. Please trigger a scrape first.'
-    //         }
-    //       }
-    //       // 3. Get the content based on storage type
-    //       let content = ''
-    //       const storageId = httpResponse.storageId
-    //       if (httpResponse.storageType === 'text') {
-    //         content = httpResponse.body
-    //       } else if (storageId) {
-    //         // TODO: Fetch from storage service
-    //         const storageItem = await db.query.storage.findFirst({
-    //           where: (table, {eq}) => eq(table.id, storageId as dbSchema.StorageId)
-    //         })
-    //         if (storageItem) {
-    //           // TODO: Actually fetch from S3/storage
-    //           content = httpResponse.body // Fallback for now
-    //         }
-    //       }
-    //       // 4. Apply view transformation
-    //       // TODO: Implement actual transformations
-    //       // For now, just return the raw content
-    //       const processedContent = content
-    //       // 5. Apply filter if provided
-    //       if (input.filter) {
-    //         // TODO: Implement CSS/XPath filtering
-    //         // Would use libraries like cheerio for CSS or xpath for XPath
-    //         return {
-    //           success: true,
-    //           elements: [processedContent] // Placeholder
-    //         }
-    //       }
-    //       return {
-    //         success: true,
-    //         content: processedContent
-    //       }
-    //     } catch (error) {
-    //       log('getContent error:', error)
-    //       return {
-    //         success: false,
-    //         error: error instanceof Error ? error.message : 'Unknown error'
-    //       }
-    //     }
-    //   }
-    // }),
-    // readScript: tool({
-    //   description: 'Read current script and diagnostics',
-    //   // inputSchema: z.object({}),
-    //   outputSchema: z.object({
-    //     success: z.boolean(),
-    //     script: z.string().optional(),
-    //     language: z.enum(['ts', 'js', 'python']).optional(),
-    //     version: z.number().optional(),
-    //     diagnostics: z
-    //       .array(
-    //         z.object({
-    //           type: z.enum(['error', 'warning', 'info']),
-    //           message: z.string(),
-    //           line: z.number().optional(),
-    //           column: z.number().optional()
-    //         })
-    //       )
-    //       .optional(),
-    //     error: z.string().optional()
-    //   }),
-    //   execute: async (inputs, opts) => {
-    //     try {
-    //       // 1. Get the active extractor version from projectCommit
-    //       const projectCommit = await db.query.projectCommit.findFirst({
-    //         where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
-    //       })
-    //       if (!projectCommit?.activeExtractorVersion) {
-    //         return {
-    //           success: true,
-    //           script: '',
-    //           language: 'js',
-    //           version: 0
-    //         }
-    //       }
-    //       // 2. Fetch the extractor script from database
-    //       const extractor = await db.query.extractor.findFirst({
-    //         where: (table, {and, eq}) =>
-    //           and(
-    //             eq(table.projectId, project.id),
-    //             eq(table.version, projectCommit.activeExtractorVersion ?? 0)
-    //           )
-    //       })
-    //       if (!extractor) {
-    //         return {
-    //           success: false,
-    //           error: 'Active extractor not found'
-    //         }
-    //       }
-    //       // 3. TODO: Run validation/linting to generate diagnostics
-    //       const diagnostics: Array<{
-    //         type: 'error' | 'warning' | 'info'
-    //         message: string
-    //         line?: number
-    //         column?: number
-    //       }> = []
-    //       return {
-    //         success: true,
-    //         script: extractor.script,
-    //         language: 'js' as const,
-    //         version: extractor.version,
-    //         diagnostics: diagnostics.length > 0 ? diagnostics : undefined
-    //       }
-    //     } catch (error) {
-    //       log('readScript error:', error)
-    //       return {
-    //         success: false,
-    //         error: error instanceof Error ? error.message : 'Unknown error'
-    //       }
-    //     }
-    //   }
-    // }),
-    // writeScript: tool({
-    //   description: 'Replace entire script; server validates',
-    //   inputSchema: z.object({
-    //     language: z.enum(['ts', 'js', 'python']).describe('Script language'),
-    //     code: z.string().min(1).describe('The complete script code'),
-    //     message: z.string().optional().describe('Commit message for this version')
-    //   }),
-    //   outputSchema: z.object({
-    //     success: z.boolean(),
-    //     version: z.number().optional(),
-    //     diagnostics: z
-    //       .array(
-    //         z.object({
-    //           type: z.enum(['error', 'warning', 'info']),
-    //           message: z.string(),
-    //           line: z.number().optional(),
-    //           column: z.number().optional()
-    //         })
-    //       )
-    //       .optional(),
-    //     error: z.string().optional()
-    //   }),
-    //   execute: async (input) => {
-    //     try {
-    //       // 1. Get current version number
-    //       const latestExtractor = await db.query.extractor.findFirst({
-    //         where: (table, {eq}) => eq(table.projectId, project.id),
-    //         orderBy: (table, {desc}) => [desc(table.version)]
-    //       })
-    //       const newVersion = (latestExtractor?.version ?? 0) + 1
-    //       // 2. TODO: Validate the script syntax
-    //       const diagnostics: Array<{
-    //         type: 'error' | 'warning' | 'info'
-    //         message: string
-    //         line?: number
-    //         column?: number
-    //       }> = []
-    //       // 3. Create new extractor version in database
-    //       await db.insert(dbSchema.extractor).values({
-    //         projectId: project.id,
-    //         version: newVersion,
-    //         name: input.message ?? `Version ${newVersion}`,
-    //         description: input.message,
-    //         script: input.code,
-    //         scriptLanguage: 'javascript', // TODO: Support other languages based on input.language
-    //         isActive: true
-    //       })
-    //       // 4. Update projectCommit.activeExtractorVersion
-    //       await db
-    //         .update(dbSchema.projectCommit)
-    //         .set({activeExtractorVersion: newVersion})
-    //         .where(sqlEq(dbSchema.projectCommit.publicId, projectCommitPublicId))
-    //       // 5. TODO: Optionally trigger re-extraction if httpResponse exists
-    //       return {
-    //         success: true,
-    //         version: newVersion,
-    //         diagnostics: diagnostics.length > 0 ? diagnostics : undefined
-    //       }
-    //     } catch (error) {
-    //       log('writeScript error:', error)
-    //       return {
-    //         success: false,
-    //         error: error instanceof Error ? error.message : 'Unknown error'
-    //       }
-    //     }
-    //   }
-    // }),
+
     currentState: tool({
       ...tools.currentState,
       execute: async (_input, _opts) => {
@@ -401,14 +185,14 @@ export function makeExtractionTools(
             // Try compiling to confirm basic validity
             const compiled = compileJsonSchema(activeSchema.schemaJson)
             const schemaObj = activeSchema.schemaJson as Record<string, unknown>
-            const declaredType = (schemaObj?.type as string | undefined) ?? 'unknown'
+            const declaredType = (schemaObj.type as string | undefined) ?? 'unknown'
             let keyCount = 0
             if (declaredType === 'object') {
-              const props = schemaObj?.properties as Record<string, unknown> | undefined
+              const props = schemaObj.properties as Record<string, unknown> | undefined
               keyCount = props ? Object.keys(props).length : 0
             } else if (declaredType === 'array') {
-              const items = schemaObj?.items as Record<string, unknown> | undefined
-              const itemsProps = (items?.properties as Record<string, unknown> | undefined) ?? undefined
+              const items = schemaObj.items as Record<string, unknown> | undefined
+              const itemsProps = (items?.properties as Record<string, unknown> | undefined) ?? null
               keyCount = itemsProps ? Object.keys(itemsProps).length : 0
             }
             schemaSummary = `v${activeSchema.version} (type:${declaredType}, keys:${keyCount}, valid:${compiled.success ? 'yes' : 'no'})`
@@ -447,7 +231,7 @@ export function makeExtractionTools(
           const logCount = logs.length
 
           // Recent URLs (show up to 3)
-          const recent = projectCommit.recentUrls?.urls ?? []
+          const recent = projectCommit.recentUrls.urls
           const recentPreview = recent.slice(0, 3)
 
           // Settings snapshot (concise)
@@ -525,7 +309,7 @@ export function makeExtractionTools(
               if (!activeSchema) {
                 return {
                   success: true,
-                  file: null,
+                  content: null,
                   version: null,
                   message: null
                 }
@@ -534,7 +318,7 @@ export function makeExtractionTools(
               // Return the active schema with all relevant info
               return {
                 success: true,
-                file: activeSchema.schemaJson,
+                content: activeSchema.schemaJson,
                 version: activeSchema.version,
                 message: activeSchema.message
               }
@@ -563,7 +347,7 @@ export function makeExtractionTools(
               if (!activeExtractor) {
                 return {
                   success: true,
-                  file: null,
+                  content: null,
                   version: null,
                   message: null
                 }
@@ -571,7 +355,7 @@ export function makeExtractionTools(
               // Return the active extractor with all relevant info
               return {
                 success: true,
-                file: activeExtractor.script,
+                content: activeExtractor.script,
                 version: activeExtractor.version,
                 message: activeExtractor.message
                 // updatedAt: sqlTimestampToDate(activeExtractor.createdAt).toISOString()
@@ -600,7 +384,7 @@ export function makeExtractionTools(
               if (!activeCrawler) {
                 return {
                   success: true,
-                  file: null,
+                  content: null,
                   version: null,
                   message: null
                 }
@@ -608,7 +392,7 @@ export function makeExtractionTools(
               // Return the active extractor with all relevant info
               return {
                 success: true,
-                file: activeCrawler.script,
+                content: activeCrawler.script,
                 version: activeCrawler.version,
                 message: activeCrawler.message
                 // updatedAt: sqlTimestampToDate(activeExtractor.createdAt).toISOString()
@@ -637,11 +421,25 @@ export function makeExtractionTools(
         try {
           switch (input.file) {
             case 'schema.json': {
+              if (typeof input.content !== 'object') {
+                return {
+                  success: false,
+                  problems: "Incorrect 'content' key type, expected typeof object"
+                }
+              }
               const schemaValidation = compileJsonSchema(input.content)
               if (!schemaValidation.success) {
                 return {
                   success: false,
-                  error: `Invalid JSON Schema: ${schemaValidation.message}`
+                  problems: `Error: Invalid JSON Schema - ${schemaValidation.message}`
+                }
+              }
+
+              const objectRootValidation = validateDataAgainstSchema(objectRootMetaSchema, input.content)
+              if (!objectRootValidation.success) {
+                return {
+                  success: false,
+                  problems: `Error: Invalid JSON Schema - ${objectRootValidation.message}`
                 }
               }
 
@@ -666,13 +464,38 @@ export function makeExtractionTools(
                 .set({ activeSchemaVersion: newVersion })
                 .where(sqlEq(dbSchema.projectCommit.publicId, projectCommitPublicId))
 
+              let warnings = ''
+
+              const primaryKeyRequiredValidation = validateDataAgainstSchema(
+                primaryKeyInRequiredMetaSchema,
+                input.content
+              )
+              if (!primaryKeyRequiredValidation.success) {
+                warnings += `Warning: ${primaryKeyRequiredValidation.message}\n`
+              }
+              const rootPrimaryKeyValidation = validateDataAgainstSchema(
+                rootPrimaryKeyMetaSchema,
+                input.content
+              )
+              if (!rootPrimaryKeyValidation.success) {
+                warnings += `Warning: ${rootPrimaryKeyValidation.message}\n`
+              }
+
               return {
+                problems: warnings,
                 success: true,
                 version: newVersion
               }
             }
 
             case 'extractor.js': {
+              if (typeof input.content !== 'string') {
+                return {
+                  success: false,
+                  problems: "Error: Incorrect 'content' key type, expected typeof string"
+                }
+              }
+
               // Get the latest extractor version
               const latestExtractor = await db.query.extractor.findFirst({
                 where: (table, { eq }) => eq(table.projectId, project.id),
@@ -687,7 +510,7 @@ export function makeExtractionTools(
                 version: newVersion,
                 // name: input.name ?? 'Main Extractor',
                 message: input.message,
-                script: input.file
+                script: input.content
                 // scriptLanguage: 'javascript' as const
               })
 
@@ -705,6 +528,12 @@ export function makeExtractionTools(
               }
             }
             case 'crawler.js': {
+              if (typeof input.content !== 'string') {
+                return {
+                  success: false,
+                  problems: "Error: Incorrect 'content' key type, expected typeof string"
+                }
+              }
               // Get the latest crawler version
               const latestCrawler = await db.query.crawler.findFirst({
                 where: (table, { eq }) => eq(table.projectId, project.id),
@@ -718,7 +547,7 @@ export function makeExtractionTools(
                 projectId: project.id,
                 version: newVersion,
                 message: input.message,
-                script: input.file
+                script: input.content
               })
 
               log('Created new crawler version:', newVersion)
@@ -737,7 +566,7 @@ export function makeExtractionTools(
             default: {
               return {
                 success: false,
-                error: 'Unknown error'
+                problems: 'Error: Unknown file selected'
               }
             }
           }
@@ -745,139 +574,15 @@ export function makeExtractionTools(
           log('writeScript error:', error)
           return {
             success: false,
-            error: error instanceof Error ? error.message : 'Unknown error'
+            problems: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
           }
+        }
+        return {
+          success: false,
+          problems: `Error: 'Unknown error'`
         }
       }
     }),
-    // schemaGet: tool({
-    //   ...tools.schemaGet,
-    //   execute: async (_input, _opts) => {
-    //     try {
-    //       // Get the activeSchemaVersion from projectCommit
-    //       const projectCommit = await db.query.projectCommit.findFirst({
-    //         where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
-    //       })
-
-    //       const schemaVersion = projectCommit?.activeSchemaVersion
-    //       if (typeof schemaVersion !== 'number') {
-    //         return {
-    //           success: true,
-    //           schema: null,
-    //           version: null,
-    //           message: null
-    //         }
-    //       }
-
-    //       // Get the specific schema version
-    //       const activeSchema = await db.query.projectSchema.findFirst({
-    //         where: (table, {and, eq}) =>
-    //           and(eq(table.projectId, project.id), eq(table.version, schemaVersion))
-    //       })
-
-    //       // If no schema exists at that version, return nulls
-    //       if (!activeSchema) {
-    //         return {
-    //           success: true,
-    //           schema: null,
-    //           version: null,
-    //           message: null
-    //         }
-    //       }
-
-    //       // Return the active schema with all relevant info
-    //       return {
-    //         success: true,
-    //         schema: activeSchema.schemaJson,
-    //         version: activeSchema.version,
-    //         message: activeSchema.message
-    //       }
-    //     } catch (error) {
-    //       log('readSchema error:', error)
-    //       return {
-    //         success: false,
-    //         error: error instanceof Error ? error.message : 'Unknown error'
-    //       }
-    //     }
-    //   }
-    // }),
-    // schemaSet: tool({
-    //   ...tools.schemaSet,
-    //   execute: async (input) => {
-    // try {
-    // 1. Validate the JSON Schema format
-
-    //     } catch (error) {
-    //       log('writeSchema error:', error)
-    //       return {
-    //         success: false,
-    //         error: error instanceof Error ? error.message : 'Unknown error'
-    //       }
-    //     }
-    //   }
-    // }),
-    // scriptGet: tool({
-    //   ...tools.scriptGet,
-    //   execute: async (_input, _opts) => {
-    //     try {
-    // // Get the activeExtractorVersion from projectCommit
-    // const projectCommit = await db.query.projectCommit.findFirst({
-    //   where: (table, {eq}) => eq(table.publicId, projectCommitPublicId)
-    // })
-    // const extractorVersion = projectCommit?.activeExtractorVersion
-    // if (typeof extractorVersion !== 'number') {
-    //   return {
-    //     success: true,
-    //     script: null,
-    //     version: null,
-    //     message: null
-    //     // name: null,
-    //     // description: null,
-    //     // scriptLanguage: null
-    //   }
-    // }
-    // // Get the specific extractor version
-    // const activeExtractor = await db.query.extractor.findFirst({
-    //   where: (table, {and, eq}) =>
-    //     and(eq(table.projectId, project.id), eq(table.version, extractorVersion))
-    // })
-    // // If no extractor exists at that version, return nulls
-    // if (!activeExtractor) {
-    //   return {
-    //     success: true,
-    //     script: null,
-    //     version: null,
-    //     message: null
-    //     // name: null,
-    //     // description: null,
-    //     // scriptLanguage: null
-    //   }
-    // }
-    // // Return the active extractor with all relevant info
-    // return {
-    //   success: true,
-    //   script: activeExtractor.script,
-    //   version: activeExtractor.version,
-    //   message: activeExtractor.message,
-    //   updatedAt: sqlTimestampToDate(activeExtractor.createdAt).toISOString()
-    //   // name: activeExtractor.name,
-    //   // description: activeExtractor.description,
-    //   // scriptLanguage: activeExtractor.scriptLanguage
-    // }
-    //     } catch (error) {
-    //       log('readScript error:', error)
-    //       return {
-    //         success: false,
-    //         error: error instanceof Error ? error.message : 'Unknown error'
-    //       }
-    //     }
-    //   }
-    // }),
-    // scriptSet: tool({
-    //   ...tools.scriptSet,
-    //   execute: async (input) => {
-
-    // }),
     htmlGet: tool({
       ...tools.htmlGet,
       execute: async (input) => {

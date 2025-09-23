@@ -62,7 +62,7 @@ import * as cheerio from 'cheerio';
 
 export default function extract(html, url) {
   const $ = cheerio.load(html);
-  
+
   // Extract multiple items
   const items = [];
   $('.item-selector').each((i, element) => {
@@ -70,11 +70,30 @@ export default function extract(html, url) {
       // properties matching your schema
     });
   });
-  
+
   // Return array if multiple items, single object if one item
   return items.length === 1 ? items[0] : items;
 }
 ```
+
+In the context of web scraping, each item you extract should have a stable unique identifier that does not change even if other properties (like price or description) are updated. To mark this identifier in your JSON Schema, add the root-level key "x-primary-key". Its value should be the name of the property that uniquely identifies each item, such as "id". Using "x-primary-key" is highly recommended whenever a unique identifier is available.
+
+Add a root-level field "x-primary-key" that follows these rules:
+
+1. "x-primary-key" must exist at the root and be a string naming one of the schema's properties.
+2. The property named by "x-primary-key" must also appear in the "required" array.
+
+Example:
+
+{
+  "type": "object",
+  "x-primary-key": "id",
+  "properties": {
+    "id": { "type": "string" },
+    "title": { "type": "string" }
+  },
+  "required": ["title", "id"]
+}
 
 ### 5. Testing and Validation
 - After writing schema and script, use **triggerScrape** to test the complete flow

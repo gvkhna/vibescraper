@@ -548,7 +548,7 @@ async function handleNewJob({ jobId, code, testing, functionInput }: NewJobMessa
         return ev.error.stack
       }
 
-      // Otherwise, build a single‑line fallback:
+      // Otherwise, build a single-line fallback:
       return `${ev.message}\n    at ${ev.filename}:${ev.lineno}:${ev.colno}`
     }
 

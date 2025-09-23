@@ -14,7 +14,7 @@
     "dev:all": "bun turbo run dev",
     "format": "bun turbo run format",
     "lint": "bun turbo run lint",
-    "pnpm:nuke": "pnpm -r exec rimraf node_modules && rimraf pnpm-lock.yaml",
+    "pnpm:nuke": "pnpm -r exec rimraf node_modules && rimraf pnpm-lock.yaml node_modules",
     "pnpm:upgrade-version": "pnpm uninstall corepack;pnpm install -D corepack;corepack prepare pnpm@latest --activate;corepack use pnpm@latest",
     "test": "bun turbo run test",
     "test:integration": "bun turbo run test --filter=@vibescraper/integration-tests",

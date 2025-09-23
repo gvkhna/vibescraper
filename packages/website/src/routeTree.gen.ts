@@ -18,6 +18,7 @@ import { Route as MagicLinkRouteImport } from './routes/magic-link'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as DatasetDatasetPublicIdRouteImport } from './routes/dataset/$dataset-public-id'
 import { Route as AppSettingsIndexRouteImport } from './routes/app/settings/index'
 import { Route as AppScrapersIndexRouteImport } from './routes/app/scrapers/index'
@@ -69,6 +70,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
 const DatasetDatasetPublicIdRoute = DatasetDatasetPublicIdRouteImport.update({
   id: '/dataset/$dataset-public-id',
   path: '/dataset/$dataset-public-id',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/signout': typeof SignoutRoute
   '/signup': typeof SignupRoute
   '/dataset/$dataset-public-id': typeof DatasetDatasetPublicIdRoute
+  '/app/': typeof AppIndexRoute
   '/app/dashboard': typeof AppDashboardIndexRoute
   '/app/scrapers': typeof AppScrapersIndexRoute
   '/app/settings': typeof AppSettingsIndexRoute
@@ -114,7 +121,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/magic-link': typeof MagicLinkRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -123,6 +129,7 @@ export interface FileRoutesByTo {
   '/signout': typeof SignoutRoute
   '/signup': typeof SignupRoute
   '/dataset/$dataset-public-id': typeof DatasetDatasetPublicIdRoute
+  '/app': typeof AppIndexRoute
   '/app/dashboard': typeof AppDashboardIndexRoute
   '/app/scrapers': typeof AppScrapersIndexRoute
   '/app/settings': typeof AppSettingsIndexRoute
@@ -140,6 +147,7 @@ export interface FileRoutesById {
   '/signout': typeof SignoutRoute
   '/signup': typeof SignupRoute
   '/dataset/$dataset-public-id': typeof DatasetDatasetPublicIdRoute
+  '/app/': typeof AppIndexRoute
   '/app/dashboard/': typeof AppDashboardIndexRoute
   '/app/scrapers/': typeof AppScrapersIndexRoute
   '/app/settings/': typeof AppSettingsIndexRoute
@@ -158,6 +166,7 @@ export interface FileRouteTypes {
     | '/signout'
     | '/signup'
     | '/dataset/$dataset-public-id'
+    | '/app/'
     | '/app/dashboard'
     | '/app/scrapers'
     | '/app/settings'
@@ -165,7 +174,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/app'
     | '/forgot-password'
     | '/magic-link'
     | '/reset-password'
@@ -174,6 +182,7 @@ export interface FileRouteTypes {
     | '/signout'
     | '/signup'
     | '/dataset/$dataset-public-id'
+    | '/app'
     | '/app/dashboard'
     | '/app/scrapers'
     | '/app/settings'
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/signout'
     | '/signup'
     | '/dataset/$dataset-public-id'
+    | '/app/'
     | '/app/dashboard/'
     | '/app/scrapers/'
     | '/app/settings/'
@@ -274,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/dataset/$dataset-public-id': {
       id: '/dataset/$dataset-public-id'
       path: '/dataset/$dataset-public-id'
@@ -313,6 +330,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppIndexRoute: typeof AppIndexRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
   AppScrapersIndexRoute: typeof AppScrapersIndexRoute
   AppSettingsIndexRoute: typeof AppSettingsIndexRoute
@@ -320,6 +338,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppIndexRoute: AppIndexRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
   AppScrapersIndexRoute: AppScrapersIndexRoute,
   AppSettingsIndexRoute: AppSettingsIndexRoute,

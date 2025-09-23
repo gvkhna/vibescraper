@@ -48,7 +48,7 @@ export function AuthPageTemplate({ pathname, redirectTo }: AuthPageTemplateProps
       <div className='w-full max-w-sm'>
         <AuthView
           pathname={pathname}
-          redirectTo={redirectTo || config.redirectTo}
+          redirectTo={redirectTo ?? config.redirectTo}
           cardHeader={
             <div className='text-center'>
               <h1 className='mb-2 text-2xl font-bold text-white'>{config.title}</h1>

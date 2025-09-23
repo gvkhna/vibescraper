@@ -9,7 +9,7 @@ import {
   isToolKey
 } from '@/partials/assistant-ui/chat-message-schema'
 
-const log = debug('app:prepare-context')
+const logContextSummary = debug('app:prepare-context')
 /**
  * Roughly estimate tokens from characters.
  * (OpenAI guidance: 1 token ≈ 4 characters in English)
@@ -106,51 +106,55 @@ export function prepareContext(
     finalMessages = convertToModelMessages(contextWindow)
   }
 
-  debugContextWindow(finalMessages, maxTokens, budget)
+  debugContextWindowSummary(finalMessages, maxTokens, budget)
 
   return finalMessages
 }
 
-function debugContextWindow(messages: ModelMessage[], maxTokens: number, budget: number) {
+function debugContextWindowSummary(messages: ModelMessage[], maxTokens: number, budget: number) {
   // Debug logging for context window
-  log('=== LLM Context Window ===')
-  log('Total messages:', messages.length)
-  log('Estimated tokens used:', maxTokens - budget, '/', maxTokens)
+  logContextSummary('--- LLM Context Window Summary ---')
+  logContextSummary(
+    `Total messages: ${messages.length}, Estimated Tokens: ${maxTokens - budget}/${maxTokens}`
+  )
+
+  const messageTrimToLength = 100
 
   messages.forEach((msg, index) => {
     const role = msg.role
-    const contentPreview =
-      typeof msg.content === 'string'
-        ? msg.content.slice(0, 100) + (msg.content.length > 100 ? '...' : '')
-        : Array.isArray(msg.content)
-          ? `[${msg.content.length} parts]`
-          : '[complex content]'
+    // msg.
+    // const contentPreview =
+    //   typeof msg.content === 'string'
+    //     ? msg.content.slice(0, messageTrimToLength) + (msg.content.length > messageTrimToLength ? '...' : '')
+    //     : Array.isArray(msg.content)
+    //       ? `[${msg.content.length} parts]`
+    //       : '[complex content]'
 
-    log(`[${index}] ${role}:`, contentPreview)
+    // logContextSummary(`[${index}] ${role}:`, contentPreview)
 
-    // Log full content if it's not too long
-    if (typeof msg.content === 'string' && msg.content.length <= 500) {
-      log('  Full:', msg.content)
-    } else if (typeof msg.content === 'string') {
-      log('  Length:', msg.content.length, 'chars')
-    } else if (Array.isArray(msg.content)) {
-      msg.content.forEach((part, partIndex) => {
-        if (typeof part === 'object' && 'type' in part) {
-          if (part.type === 'text') {
-            const preview = part.text.slice(0, 80) + (part.text.length > 80 ? '...' : '')
-            log(`    Part ${partIndex} [text]:`, preview)
-          } else if (part.type === 'tool-call') {
-            log(`    Part ${partIndex} [tool-call]:`, part.toolName, '- args:', JSON.stringify(part.input))
-          } else if (part.type === 'tool-result') {
-            const resultPreview = JSON.stringify(part.output)
-            log(`    Part ${partIndex} [tool-result]:`, part.toolName, '-', resultPreview)
-          } else {
-            log(`    Part ${partIndex} [${part.type}]`)
-          }
-        }
-      })
-    }
+    // // Log full content if it's not too long
+    // if (typeof msg.content === 'string' && msg.content.length <= messageTrimToLength) {
+    //   logContextSummary('  Full:', msg.content)
+    // } else if (typeof msg.content === 'string') {
+    //   logContextSummary('  Length:', msg.content.length, 'chars')
+    // } else if (Array.isArray(msg.content)) {
+    //   msg.content.forEach((part, partIndex) => {
+    //     if (typeof part === 'object' && 'type' in part) {
+    //       if (part.type === 'text') {
+    //         const preview = part.text.slice(0, messageTrimToLength) + (part.text.length > messageTrimToLength ? '...' : '')
+    //         logContextSummary(`    Part ${partIndex} [text]:`, preview)
+    //       } else if (part.type === 'tool-call') {
+    //         logContextSummary(`    Part ${partIndex} [tool-call]:`, part.toolName, '- args:', JSON.stringify(part.input))
+    //       } else if (part.type === 'tool-result') {
+    //         const resultPreview = JSON.stringify(part.output)
+    //         logContextSummary(`    Part ${partIndex} [tool-result]:`, part.toolName, '-', resultPreview)
+    //       } else {
+    //         logContextSummary(`    Part ${partIndex} [${part.type}]`)
+    //       }
+    //     }
+    //   })
+    // }
   })
 
-  log('=== End Context Window ===')
+  logContextSummary('--- End Context Window Summary ---')
 }

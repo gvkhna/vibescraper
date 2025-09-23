@@ -1,7 +1,4 @@
-import { Pool } from '@neondatabase/serverless'
 import debug from 'debug'
-import { DefaultLogger, type LogWriter } from 'drizzle-orm/logger'
-import { drizzle as drizzleNeon } from 'drizzle-orm/neon-serverless'
 import { drizzle as drizzlePostgres } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 
@@ -16,18 +13,6 @@ const dbLog = debug('db:log')
 if (PUBLIC_VARS.DEV) {
   log(`Database - ${PRIVATE_VARS.DATABASE_URL}`)
 }
-
-class AppDebugLogWriter implements LogWriter {
-  write(message: string) {
-    dbLog(message)
-  }
-}
-const logger = new DefaultLogger({ writer: new AppDebugLogWriter() })
-
-const sqlNeonPool = new Pool({
-  connectionString: PRIVATE_VARS.DATABASE_POOL_URL ?? PRIVATE_VARS.DATABASE_URL
-})
-const dbNeon = drizzleNeon({ client: sqlNeonPool, schema, logger, casing: 'camelCase' })
 
 /**
  * Universal batch function that works with both batch-enabled databases (Neon, LibSQL, D1)
@@ -52,96 +37,86 @@ export async function dbBatch<T extends readonly unknown[]>(
   }
 
   // Fallback to Promise.all for regular PostgreSQL
-  // This is exactly how Promise.all works - natural inference
   const results = await Promise.all(queries)
   return results as { -readonly [P in keyof T]: Awaited<T[P]> }
 }
+const postgresClient = postgres(PRIVATE_VARS.DATABASE_POOL_URL ?? PRIVATE_VARS.DATABASE_URL, {
+  // Log notices from the database server
+  onnotice: (notice) => {
+    log('Database Notice:')
+    log(`Severity: ${notice.severity}`)
+    log(`Code: ${notice.code}`)
+    log(`Message: ${notice.message}`)
+    log(`Detail: ${notice.detail}`)
+    log(`Hint: ${notice.hint}`)
+    log(`Position: ${notice.position}`)
+    log(`Where: ${notice.where}`)
+    log(`File: ${notice.file}`)
+    log(`Line: ${notice.line}`)
+    log(`Routine: ${notice.routine}`)
+  },
 
-export const db: typeof dbNeon = (() => {
-  if (PUBLIC_VARS.PROD) {
-    return dbNeon
-  } else {
-    const postgresClient = postgres(PRIVATE_VARS.DATABASE_URL, {
-      // Log notices from the database server
-      onnotice: (notice) => {
-        log('Database Notice:')
-        log(`Severity: ${notice.severity}`)
-        log(`Code: ${notice.code}`)
-        log(`Message: ${notice.message}`)
-        log(`Detail: ${notice.detail}`)
-        log(`Hint: ${notice.hint}`)
-        log(`Position: ${notice.position}`)
-        log(`Where: ${notice.where}`)
-        log(`File: ${notice.file}`)
-        log(`Line: ${notice.line}`)
-        log(`Routine: ${notice.routine}`)
-      },
+  // Log protocol parameters
+  onparameter: (key, value) => {
+    log(`Database Parameter: ${key} = ${value}`)
+  },
 
-      // Log protocol parameters
-      onparameter: (key, value) => {
-        log(`Database Parameter: ${key} = ${value}`)
-      },
+  // Debug queries - log everything about query execution
+  debug: (connection, query, params, types) => {
+    dbLog(`\nQuery (conn: ${connection}): ${query}`)
+    dbLog(`Parameters: ${params}`)
+    dbLog(`Parameter Types: ${types}`)
+  },
 
-      // Debug queries - log everything about query execution
-      debug: (connection, query, params, types) => {
-        dbLog(`\nDEBUG: Query Execution [${connection}]`)
-        dbLog(`Query: ${query}`)
-        dbLog(`Parameters: ${params}`)
-        dbLog(`Parameter Types: ${types}`)
-      },
+  onclose: (connId) => {
+    dbLog(`Connection ${connId} closed`)
+  },
 
-      onclose: (connId) => {
-        dbLog(`Connection ${connId} closed`)
-      },
+  // Additional options to improve error reporting
+  connect_timeout: 5, // 5 second timeout (default is 30)
 
-      // Additional options to improve error reporting
-      connect_timeout: 5, // 5 second timeout (default is 30)
+  // Optional: Set idle timeout for connections to detect dead connections
+  idle_timeout: 10, // 10 second idle timeout,
+  connection: {
+    TimeZone: 'UTC'
+  }
+})
 
-      // Optional: Set idle timeout for connections to detect dead connections
-      idle_timeout: 10, // 10 second idle timeout,
-      connection: {
-        TimeZone: 'UTC'
+if (PUBLIC_VARS.DEV) {
+  /*
+   * Sometimes postgres.app requires reindexing due to MacOS
+   * See: https://postgresapp.com/documentation/reindex-warning.html
+   */
+  log(`Database - Running sql\`reindex database\``)
+  postgresClient
+    .unsafe('reindex database')
+    .execute()
+    .then((res) => {
+      log('Reindexing complete')
+
+      if (PRIVATE_VARS.DEBUG?.includes('db')) {
+        postgresClient
+          .unsafe(`set log_statement = 'all';set log_min_duration_statement = 0;`)
+          .then((logRes) => {
+            dbLog('debug database logging all statements')
+          })
+          .catch((e: unknown) => {
+            dbLog('error turning on debug log all statements', e)
+          })
       }
     })
+    .catch((e: unknown) => {
+      // eslint-disable-next-line no-console
+      console.log('\n\nDATABASE NOT RUNNING!\n')
+      // eslint-disable-next-line no-console
+      console.log('-> Did you forget to start your database?')
+      // eslint-disable-next-line no-console
+      console.log('-> Make sure Postgres is running on the expected host and port\n')
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+      ;(globalThis as any).process.exit(1)
+    })
+}
 
-    if (PUBLIC_VARS.DEV) {
-      /*
-       * Sometimes postgres.app requires reindexing due to MacOS
-       * See: https://postgresapp.com/documentation/reindex-warning.html
-       */
-      log(`Database - Running sql\`reindex database\``)
-      postgresClient
-        .unsafe('reindex database')
-        .execute()
-        .then((res) => {
-          log('Reindexing complete')
+const dbPostgres = drizzlePostgres({ client: postgresClient, schema, casing: 'camelCase' })
 
-          if (PRIVATE_VARS.DEBUG?.includes('db')) {
-            postgresClient
-              .unsafe(`set log_statement = 'all';set log_min_duration_statement = 0;`)
-              .then((logRes) => {
-                dbLog('debug database logging all statements')
-              })
-              .catch((e: unknown) => {
-                dbLog('error turning on debug log all statements', e)
-              })
-          }
-        })
-        .catch((e: unknown) => {
-          // eslint-disable-next-line no-console
-          console.log('\n\nDATABASE NOT RUNNING!\n')
-          // eslint-disable-next-line no-console
-          console.log('-> Did you forget to start your database?')
-          // eslint-disable-next-line no-console
-          console.log('-> Make sure Postgres is running on the expected host and port\n')
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
-          ;(globalThis as any).process.exit(1)
-        })
-    }
-
-    const dbPostgres = drizzlePostgres({ client: postgresClient, schema, casing: 'camelCase' })
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-explicit-any
-    return dbPostgres as any
-  }
-})()
+export const db = dbPostgres

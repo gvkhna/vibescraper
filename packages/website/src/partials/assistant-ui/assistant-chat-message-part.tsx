@@ -48,7 +48,7 @@ export function AssistantChatMessagePart(props: AssistantChatMessagePartProps) {
             <ToolContent>
               <ToolInput input={part.input} />
               <ToolOutput
-                output={<Response>{JSON.stringify(part.output)}</Response>}
+                output={part.output}
                 errorText={part.errorText}
               />
             </ToolContent>

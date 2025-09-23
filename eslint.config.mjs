@@ -405,6 +405,7 @@ export default defineConfig([
     plugins: {
       react: react,
       'react-hooks': reactHooks,
+      // TODO: Remove react-compiler plugin when react-hooks release v6
       'react-compiler': reactCompiler,
       '@stylistic': stylistic
     },
@@ -423,6 +424,7 @@ export default defineConfig([
       }
     },
     rules: {
+      ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
 
       // this is enforced in react files because sometimes llms add

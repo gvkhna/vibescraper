@@ -14,9 +14,11 @@ import { Route as SignoutRouteImport } from './routes/signout'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SampleTableRouteImport } from './routes/sample-table'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RecoverAccountRouteImport } from './routes/recover-account'
 import { Route as MagicLinkRouteImport } from './routes/magic-link'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as AcceptInviteRouteImport } from './routes/accept-invite'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as DatasetDatasetPublicIdRouteImport } from './routes/dataset/$dataset-public-id'
@@ -50,6 +52,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecoverAccountRoute = RecoverAccountRouteImport.update({
+  id: '/recover-account',
+  path: '/recover-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MagicLinkRoute = MagicLinkRouteImport.update({
   id: '/magic-link',
   path: '/magic-link',
@@ -63,6 +70,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcceptInviteRoute = AcceptInviteRouteImport.update({
+  id: '/accept-invite',
+  path: '/accept-invite',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -104,9 +116,11 @@ const AppScraperProjectPublicIdEditRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accept-invite': typeof AcceptInviteRoute
   '/app': typeof AppRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/magic-link': typeof MagicLinkRoute
+  '/recover-account': typeof RecoverAccountRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sample-table': typeof SampleTableRoute
   '/signin': typeof SigninRoute
@@ -121,8 +135,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accept-invite': typeof AcceptInviteRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/magic-link': typeof MagicLinkRoute
+  '/recover-account': typeof RecoverAccountRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sample-table': typeof SampleTableRoute
   '/signin': typeof SigninRoute
@@ -138,9 +154,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/accept-invite': typeof AcceptInviteRoute
   '/app': typeof AppRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/magic-link': typeof MagicLinkRoute
+  '/recover-account': typeof RecoverAccountRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sample-table': typeof SampleTableRoute
   '/signin': typeof SigninRoute
@@ -157,9 +175,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/accept-invite'
     | '/app'
     | '/forgot-password'
     | '/magic-link'
+    | '/recover-account'
     | '/reset-password'
     | '/sample-table'
     | '/signin'
@@ -174,8 +194,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/accept-invite'
     | '/forgot-password'
     | '/magic-link'
+    | '/recover-account'
     | '/reset-password'
     | '/sample-table'
     | '/signin'
@@ -190,9 +212,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/accept-invite'
     | '/app'
     | '/forgot-password'
     | '/magic-link'
+    | '/recover-account'
     | '/reset-password'
     | '/sample-table'
     | '/signin'
@@ -208,9 +232,11 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcceptInviteRoute: typeof AcceptInviteRoute
   AppRoute: typeof AppRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   MagicLinkRoute: typeof MagicLinkRoute
+  RecoverAccountRoute: typeof RecoverAccountRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SampleTableRoute: typeof SampleTableRoute
   SigninRoute: typeof SigninRoute
@@ -256,6 +282,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recover-account': {
+      id: '/recover-account'
+      path: '/recover-account'
+      fullPath: '/recover-account'
+      preLoaderRoute: typeof RecoverAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/magic-link': {
       id: '/magic-link'
       path: '/magic-link'
@@ -275,6 +308,13 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accept-invite': {
+      id: '/accept-invite'
+      path: '/accept-invite'
+      fullPath: '/accept-invite'
+      preLoaderRoute: typeof AcceptInviteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -349,9 +389,11 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcceptInviteRoute: AcceptInviteRoute,
   AppRoute: AppRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
   MagicLinkRoute: MagicLinkRoute,
+  RecoverAccountRoute: RecoverAccountRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SampleTableRoute: SampleTableRoute,
   SigninRoute: SigninRoute,

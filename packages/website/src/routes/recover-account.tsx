@@ -4,6 +4,6 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { BetterAuthViewTemplate } from '@/partials/webapp/better-auth-view-template'
 
-export const Route = createFileRoute('/forgot-password')({
-  component: () => <BetterAuthViewTemplate view='FORGOT_PASSWORD' />
+export const Route = createFileRoute('/recover-account')({
+  component: () => <BetterAuthViewTemplate view='RECOVER_ACCOUNT' />
 })

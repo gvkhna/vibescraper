@@ -42,7 +42,9 @@ export function BetterAuthUIProvider({ children }: { children: ReactNode }) {
         SIGN_UP: 'signup',
         FORGOT_PASSWORD: 'forgot-password',
         RESET_PASSWORD: 'reset-password',
-        MAGIC_LINK: 'magic-link'
+        MAGIC_LINK: 'magic-link',
+        ACCEPT_INVITATION: 'accept-invite',
+        RECOVER_ACCOUNT: 'recover-account'
       }}
       account={{
         basePath: '/app',

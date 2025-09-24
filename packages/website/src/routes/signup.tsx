@@ -2,8 +2,8 @@
 
 import { createFileRoute } from '@tanstack/react-router'
 
-import { AuthPageTemplate } from '@/partials/webapp/better-auth-ui'
+import { BetterAuthViewTemplate } from '@/partials/webapp/better-auth-view-template'
 
 export const Route = createFileRoute('/signup')({
-  component: () => <AuthPageTemplate pathname='signup' />
+  component: () => <BetterAuthViewTemplate view='SIGN_UP' />
 })

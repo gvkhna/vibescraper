@@ -91,13 +91,7 @@ export function VibecodingLandingPage() {
             <Sparkles className='h-6 w-6 text-blue-500' />
             <span className='text-lg font-bold text-white'>Vibescraper</span>
           </div>
-          <div>
-            <GitHubStarsButton
-              username='gvkhna'
-              repo='vibescraper'
-              className='h-8 px-2 py-1'
-            />
-          </div>
+
           <div className='flex items-center gap-6'>
             {!session.isPending && (
               <>
@@ -147,8 +141,15 @@ export function VibecodingLandingPage() {
       </nav>
 
       {/* Main Content */}
-      <div className='flex min-h-[calc(100vh-80px)] items-center justify-center px-4'>
+      <div className='flex min-h-[calc(100vh-80px)] items-center justify-center p-4'>
         <div className='w-full max-w-2xl'>
+          <div className='mb-4 flex justify-center'>
+            <GitHubStarsButton
+              username='gvkhna'
+              repo='vibescraper'
+              className='h-8 px-2 py-1'
+            />
+          </div>
           {/* Beta Badge */}
           <div className='mb-6 flex justify-center'>
             <Badge
@@ -158,7 +159,7 @@ export function VibecodingLandingPage() {
                 hover:shadow-[0_0_16px_rgba(251,191,36,0.4)]'
             >
               <AlertTriangle className='mr-1.5 h-3.5 w-3.5' />
-              Early Beta - Things may be unstable
+              Early Beta* - Things may be unstable
               <div
                 className='ml-2 h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400
                   shadow-[0_0_6px_rgba(251,191,36,0.8)]'
@@ -166,10 +167,17 @@ export function VibecodingLandingPage() {
             </Badge>
           </div>
 
+          {/* Support status note */}
+          <div className='-mt-2 mb-8 text-center'>
+            <p className='text-sm text-white/70'>
+              *Currently only static websites are supported. Headless browser support coming soon.
+            </p>
+          </div>
+
           {/* Logo/Brand */}
           <div className='mb-8 text-center'>
             <h1 className='mb-4 text-3xl font-bold text-white'>Claude code for scraping</h1>
-            <p className='text-lg text-white/80'>Create an easily accessible API from most websites</p>
+            <p className='text-lg text-white/80'>Create an easily accessible API from websites</p>
           </div>
 
           {/* Prompt Input */}
@@ -201,10 +209,11 @@ export function VibecodingLandingPage() {
             <p className='mb-3 text-center text-sm text-white/60'>Try these examples:</p>
             <div className='flex flex-wrap justify-center gap-2'>
               {[
-                'Scrape product prices from amazon.com',
+                // 'Scrape product prices from amazon.com',
                 'Extract articles from news.ycombinator.com',
-                'Get real estate listings from zillow.com',
-                'Monitor price changes on bestbuy.com'
+                'Extract the first page of links from https://old.reddit.com/'
+                // 'Get real estate listings from zillow.com',
+                // 'Monitor price changes on bestbuy.com'
               ].map((example) => (
                 <button
                   key={example}

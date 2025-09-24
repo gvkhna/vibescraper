@@ -3,7 +3,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 
-import { AuthPageTemplate } from '@/partials/webapp/better-auth-ui'
+import { BetterAuthViewTemplate } from '@/partials/webapp/better-auth-view-template'
 
 const searchSchema = z.object({
   redirect: z.string().optional()
@@ -18,8 +18,8 @@ function SignInPage() {
   const { redirect } = Route.useSearch()
 
   return (
-    <AuthPageTemplate
-      pathname='signin'
+    <BetterAuthViewTemplate
+      view='SIGN_IN'
       redirectTo={redirect ?? '/'}
     />
   )

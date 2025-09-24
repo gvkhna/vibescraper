@@ -1,53 +1,59 @@
 'use client'
 
-import { AuthView } from '@daveyplate/better-auth-ui'
+import { AuthView, type AuthViewPaths, type AuthViewProps } from '@daveyplate/better-auth-ui'
 
-interface AuthPageTemplateProps {
-  pathname: string
+export interface BetterAuthViewTemplateProps {
+  view: Exclude<AuthViewProps['view'], undefined>
   redirectTo?: string
 }
 
+interface AuthPathConfig {
+  title: string
+  subtitle: string
+  redirectTo: string
+}
+
 const authConfig = {
-  signin: {
+  SIGN_IN: {
     title: 'Welcome to Vibescraper',
     subtitle: 'Sign in to continue to your dashboard.',
     redirectTo: '/'
   },
-  signup: {
+  SIGN_UP: {
     title: 'Create your account',
     subtitle: 'Join Vibescraper to start vibe scraping.',
     redirectTo: '/'
   },
-  signout: {
+  SIGN_OUT: {
     title: 'Sign out',
     subtitle: 'Are you sure you want to sign out?',
     redirectTo: '/'
   },
-  forgot: {
+  FORGOT_PASSWORD: {
     title: 'Forgot password',
     subtitle: 'Enter your email to receive a reset link.',
     redirectTo: '/signin'
   },
-  reset: {
+  RESET_PASSWORD: {
     title: 'Reset password',
     subtitle: 'Enter your new password below.',
     redirectTo: '/signin'
   },
-  magic: {
+  MAGIC_LINK: {
     title: 'Magic link sign in',
     subtitle: 'Check your email for the magic link.',
     redirectTo: '/'
   }
-}
+} satisfies Partial<Record<BetterAuthViewTemplateProps['view'], AuthPathConfig>>
 
-export function AuthPageTemplate({ pathname, redirectTo }: AuthPageTemplateProps) {
-  const config = authConfig[pathname as keyof typeof authConfig]
+export function BetterAuthViewTemplate({ view, redirectTo }: BetterAuthViewTemplateProps) {
+  const config = authConfig[view as keyof typeof authConfig]
 
   return (
     <div className='flex min-h-screen items-center justify-center bg-[#0A0A0B] p-4'>
       <div className='w-full max-w-sm'>
         <AuthView
-          pathname={pathname}
+          view={view}
           redirectTo={redirectTo ?? config.redirectTo}
           cardHeader={
             <div className='text-center'>

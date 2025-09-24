@@ -63,13 +63,13 @@ async function fetchAndWrite() {
         tabWidth: 2,
         printWidth: 120
       })
-      console.log(`Formatted to ${(formattedHtml.length / 1024).toFixed(2)} KB`)
+      console.log(`Formatted to ${(formattedHtml.html.length / 1024).toFixed(2)} KB`)
 
       const formattedOutputPath = resolve(fixturesDir, `${ts}-page-${page}.format.fixture`)
 
       // Write the formatted HTML
       console.log('Writing formatted HTML to:', formattedOutputPath)
-      writeFileSync(formattedOutputPath, formattedHtml, 'utf-8')
+      writeFileSync(formattedOutputPath, formattedHtml.html, 'utf-8')
     } else {
       throw new Error('Failed to get page html')
     }

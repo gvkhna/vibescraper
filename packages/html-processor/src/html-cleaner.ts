@@ -2,27 +2,6 @@
 import * as cheerio from 'cheerio'
 import { ElementType } from 'domelementtype'
 import type { ChildNode, Element, Text } from 'domhandler'
-import prettier from 'prettier'
-
-export interface HtmlCleanerOptions {
-  /**
-   * Enable/disable debug output
-   */
-  debug?: boolean
-  /**
-   * Tags to completely remove (including content)
-   */
-  tagsToRemove?: string[]
-
-  /**
-   * Attributes to preserve by element type
-   */
-  preserveAttributes?: {
-    global?: string[]
-    byElement?: Record<string, string[]>
-    ariaPrefix?: string
-  }
-}
 
 export interface HtmlCleanerResult {
   html: string
@@ -36,6 +15,9 @@ export interface HtmlCleanerResult {
 
 // Default configuration
 const DEFAULT_TAGS_TO_REMOVE = [
+  ElementType.Directive,
+  ElementType.Comment,
+  ElementType.CDATA,
   'script',
   'style',
   'noscript',
@@ -123,15 +105,13 @@ function cleanElementAttributes(
   element: Element,
   preserveAttributes: HtmlCleanerOptions['preserveAttributes']
 ): void {
-  preserveAttributes ??= DEFAULT_ACCESSIBILITY_ATTRIBUTES
-
   const tagName = element.tagName.toLowerCase()
   const $el = $(element)
   const currentAttribs = { ...element.attribs }
 
   // Get allowed attributes for this element
-  const globalAttrs = preserveAttributes.global ?? []
-  const elementSpecificAttrs = preserveAttributes.byElement?.[tagName] ?? []
+  const globalAttrs = preserveAttributes.global
+  const elementSpecificAttrs = preserveAttributes.byElement[tagName] ?? []
   const allowedAttrs = [...globalAttrs, ...elementSpecificAttrs]
 
   // Remove all attributes first
@@ -151,17 +131,39 @@ function cleanElementAttributes(
   })
 }
 
-function traverseAndClean(
-  $: cheerio.CheerioAPI,
-  node: ChildNode,
-  elementsToRemove: ChildNode[],
-  preserveAttributes: HtmlCleanerOptions['preserveAttributes'],
-  debug = false
-): void {
+function traverseAndClean(args: {
+  api: cheerio.CheerioAPI
+  node: ChildNode
+  elementsToRemove: ChildNode[]
+  tagsToRemove: string[]
+  stripAttributes: HtmlCleanerOptions['stripAttributes']
+  stripEmptyWhitespace: HtmlCleanerOptions['stripEmptyWhitespace']
+  preserveAttributes: HtmlCleanerOptions['preserveAttributes']
+  debug: HtmlCleanerOptions['debug']
+}): void {
+  const {
+    api: $,
+    node,
+    elementsToRemove,
+    tagsToRemove,
+    stripAttributes,
+    stripEmptyWhitespace,
+    preserveAttributes,
+    debug
+  } = args
   switch (node.type) {
     case ElementType.Root:
       node.children.forEach((child) => {
-        traverseAndClean($, child, elementsToRemove, preserveAttributes, debug)
+        traverseAndClean({
+          api: $,
+          node: child,
+          elementsToRemove,
+          tagsToRemove,
+          stripAttributes,
+          preserveAttributes,
+          stripEmptyWhitespace,
+          debug
+        })
       })
       break
 
@@ -169,30 +171,46 @@ function traverseAndClean(
     case ElementType.Script:
     case ElementType.Style:
     case ElementType.Comment:
-    case ElementType.CDATA:
-      elementsToRemove.push(node)
+    case ElementType.CDATA: {
+      const tag = node.type
+      if (tagsToRemove.includes(tag)) {
+        elementsToRemove.push(node)
+      }
       break
-
+    }
     case ElementType.Tag: {
       const element = node
       if (debug) {
         console.log(`Processing tag: <${element.tagName}>`)
       }
 
-      cleanElementAttributes($, element, preserveAttributes)
+      if (stripAttributes) {
+        cleanElementAttributes($, element, preserveAttributes)
+      }
 
       // Process children recursively
       element.childNodes.forEach((child) => {
-        traverseAndClean($, child, elementsToRemove, preserveAttributes, debug)
+        traverseAndClean({
+          api: $,
+          node: child,
+          elementsToRemove,
+          stripAttributes,
+          tagsToRemove,
+          preserveAttributes,
+          stripEmptyWhitespace,
+          debug
+        })
       })
       break
     }
     case ElementType.Text: {
-      const textNode = node
-      const analysis = analyzeTextNode(textNode)
+      if (stripEmptyWhitespace) {
+        const textNode = node
+        const analysis = analyzeTextNode(textNode)
 
-      if (analysis.isWhitespaceOnly) {
-        elementsToRemove.push(node)
+        if (analysis.isWhitespaceOnly) {
+          elementsToRemove.push(node)
+        }
       }
       break
     }
@@ -217,27 +235,37 @@ function parseLooseHTML(html: string): string | null {
 
 function cleanHtmlCore(
   html: string,
-  tagsToRemove: string[],
-  preserveAttributes: HtmlCleanerOptions['preserveAttributes'],
-  debug = false
+  options: HtmlCleanerOptions
 ): { loaded: string; cleaned: string } | null {
-  const parsedHtml = parseLooseHTML(html)
-  if (!parsedHtml) {
-    if (debug) {
-      console.log('Unable to parse HTML with loose parser')
-    }
-    return null
+  const { tagsToRemove, emptyHead, stripAttributes, stripEmptyWhitespace, preserveAttributes, debug } =
+    options
+  if (debug) {
+    console.log('cleanHtmlCore: ', options)
   }
 
-  const $ = cheerio.load(html, {})
+  // console.log('tags to remove', tagsToRemove)
+  // const parsedHtml = parseLooseHTML(html)
+  // if (!parsedHtml) {
+  //   if (debug) {
+  //     console.log('Unable to parse HTML with loose parser')
+  //   }
+  //   return null
+  // }
+
+  const $ = cheerio.load(html, {
+    xml: false,
+    xmlMode: false
+  })
   const loaded = $.html()
 
-  // Remove directives
+  // Remove root directives
   const doc = $.root()[0].children
-  for (let i = 0; i < doc.length; i++) {
-    const elem = doc[i]
-    if (elem.type === ElementType.Directive) {
-      $(elem).remove()
+  if (tagsToRemove.includes(ElementType.Directive)) {
+    for (let i = 0; i < doc.length; i++) {
+      const elem = doc[i]
+      if (elem.type === ElementType.Directive) {
+        $(elem).remove()
+      }
     }
   }
 
@@ -246,7 +274,16 @@ function cleanHtmlCore(
   for (let i = 0; i < doc.length; i++) {
     const elem = doc[i]
     if (elem.type === ElementType.Tag && elem.tagName.toLowerCase() === 'html') {
-      traverseAndClean($, elem, nodesToRemove, preserveAttributes, debug)
+      traverseAndClean({
+        api: $,
+        node: elem,
+        tagsToRemove,
+        elementsToRemove: nodesToRemove,
+        stripAttributes,
+        stripEmptyWhitespace,
+        preserveAttributes,
+        debug
+      })
     }
   }
 
@@ -261,9 +298,51 @@ function cleanHtmlCore(
   })
 
   // Clean head but keep the element
-  $('head').empty()
+  if (emptyHead) {
+    $('head').empty()
+  }
 
   return { loaded, cleaned: $.html() }
+}
+
+export interface HtmlCleanerOptions {
+  /**
+   * Enable/disable debug output
+   * @default false
+   */
+  debug: boolean
+  /**
+   * Tags to completely remove (including content)
+   * @default `DEFAULT_TAGS_TO_REMOVE`
+   */
+  tagsToRemove: string[]
+
+  /**
+   * Empty Head
+   * @default true
+   */
+  emptyHead: boolean
+
+  /**
+   * Remove empty/whitespace only text nodes
+   * @default true
+   */
+  stripEmptyWhitespace: boolean
+
+  /**
+   * Enable stripping element attributes
+   * @default true
+   */
+  stripAttributes: boolean
+  /**
+   * Attributes to preserve by element type
+   * @default `DEFAULT_ACCESSIBILITY_ATTRIBUTES`
+   */
+  preserveAttributes: {
+    global: string[]
+    byElement: Record<string, string[] | undefined>
+    ariaPrefix: string
+  }
 }
 
 /**
@@ -271,16 +350,26 @@ function cleanHtmlCore(
  */
 export async function htmlCleaner(
   html: string,
-  options: HtmlCleanerOptions = {}
+  options: Partial<HtmlCleanerOptions> = {}
 ): Promise<HtmlCleanerResult | null> {
   const {
     debug = false,
+    emptyHead = true,
+    stripAttributes = true,
+    stripEmptyWhitespace = true,
     tagsToRemove = DEFAULT_TAGS_TO_REMOVE,
     preserveAttributes = DEFAULT_ACCESSIBILITY_ATTRIBUTES
   } = options
 
   // Clean the HTML
-  const cleanResult = cleanHtmlCore(html, tagsToRemove, preserveAttributes, debug)
+  const cleanResult = cleanHtmlCore(html, {
+    debug,
+    emptyHead,
+    stripAttributes,
+    tagsToRemove,
+    stripEmptyWhitespace,
+    preserveAttributes
+  })
   if (!cleanResult) {
     return null
   }

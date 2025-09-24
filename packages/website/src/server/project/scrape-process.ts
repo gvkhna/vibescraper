@@ -605,7 +605,14 @@ export async function scrapeProcess({
 
           // Format HTML
           try {
-            cacheData.formattedHtml = await htmlFormat(html)
+            const formattedResult = await htmlFormat(html)
+            if (formattedResult.html) {
+              cacheData.formattedHtml = formattedResult.html
+            } else if (formattedResult.error) {
+              throw formattedResult.error
+            } else {
+              throw new Error('Unknown error - Failed to format html')
+            }
           } catch (error) {
             log('Failed to format HTML:', error)
             processingError = `HTML formatting failed: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -618,7 +625,14 @@ export async function scrapeProcess({
               cacheData.text = cleanerResult.text || null
               if (cleanerResult.html) {
                 try {
-                  cacheData.cleanedHtml = await htmlFormat(cleanerResult.html)
+                  const cleanedResult = await htmlFormat(cleanerResult.html)
+                  if (cleanedResult.html) {
+                    cacheData.cleanedHtml = cleanedResult.html
+                  } else if (cleanedResult.error) {
+                    throw cleanedResult.error
+                  } else {
+                    throw new Error('Unknown error - Failed to clean html')
+                  }
                 } catch (formatError) {
                   log('Failed to format cleaned HTML, using unformatted:', formatError)
                   cacheData.cleanedHtml = cleanerResult.html
@@ -633,23 +647,23 @@ export async function scrapeProcess({
           }
 
           // Extract readability
-          try {
-            const result = htmlReadability(html, urlToScrape)
-            if (result) {
-              let formattedContent = result.content
-              if (result.content) {
-                try {
-                  formattedContent = await htmlFormat(result.content)
-                } catch (formatError) {
-                  log('Failed to format readability HTML, using unformatted:', formatError)
-                  formattedContent = result.content
-                }
-              }
-              cacheData.readabilityResult = { ...result, content: formattedContent }
-            }
-          } catch (error) {
-            log('Failed to extract readability:', error)
-          }
+          // try {
+          //   const result = htmlReadability(html, urlToScrape)
+          //   if (result) {
+          //     let formattedContent = result.content
+          //     if (result.content) {
+          //       try {
+          //         formattedContent = await htmlFormat(result.content)
+          //       } catch (formatError) {
+          //         log('Failed to format readability HTML, using unformatted:', formatError)
+          //         formattedContent = result.content
+          //       }
+          //     }
+          //     cacheData.readabilityResult = { ...result, content: formattedContent }
+          //   }
+          // } catch (error) {
+          //   log('Failed to extract readability:', error)
+          // }
 
           // Convert to markdown
           try {

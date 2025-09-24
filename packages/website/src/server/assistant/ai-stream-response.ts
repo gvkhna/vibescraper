@@ -76,6 +76,7 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
       providerOptions: {
         openai: {
           reasoningSummary: 'auto'
+          // reasoningEffort: 'medium'
         }
       },
       experimental_repairToolCall: async () => {
@@ -322,6 +323,7 @@ export function aiStreamResponse(args: AIStreamArgs): Response {
     c.header('Connection', 'keep-alive')
 
     const dataStream = result.toUIMessageStream<VSUIMessage>({
+      sendReasoning: true,
       generateMessageId: () => {
         return assistantMessage.publicId
       },

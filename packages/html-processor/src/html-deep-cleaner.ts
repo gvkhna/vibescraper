@@ -7,6 +7,8 @@ import { join } from 'node:path'
 // import {encoding_for_model} from 'tiktoken'
 import prettier from 'prettier'
 
+import { formatPrettierError } from './prettier-utils'
+
 export interface CleanerOptions {
   /**
    * Base directory for file outputs (usually __dirname of caller)
@@ -383,10 +385,11 @@ export async function cleanHtml(html: string, options: CleanerOptions = {}): Pro
         trailingComma: 'none',
         endOfLine: 'lf'
       })
-    } catch (error) {
-      if (enableLogging) {
-        console.warn('Failed to format HTML:', error)
-      }
+    } catch (e) {
+      throw formatPrettierError(e)
+      // if (enableLogging) {
+      //   console.warn('Failed to format HTML:', error)
+      // }
     }
   }
 

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
 import formattedHtml from './fixtures/format-html.test.hackernews-formatted.fixture?raw'
-// Import raw HTML files
 import rawHtml from './fixtures/format-html.test.hackernews-raw.fixture?raw'
 import { htmlFormat } from './html-format'
 
@@ -13,6 +12,6 @@ describe('test formatHtml()', () => {
     const result = await htmlFormat(rawHtml)
 
     // Compare with the pre-formatted version
-    expect(result).toBe(formattedHtml)
+    expect(result.html).toBe(formattedHtml)
   })
 })

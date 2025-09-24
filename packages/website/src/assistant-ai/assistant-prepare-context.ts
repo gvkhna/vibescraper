@@ -1,15 +1,19 @@
-import { convertToModelMessages, type ModelMessage, type UIMessage } from 'ai'
+import { convertToModelMessages, isToolUIPart, type ModelMessage, type UIMessage } from 'ai'
 import debug from 'debug'
+import truncate from 'lodash-es/truncate'
 
 import * as schema from '@/db/schema'
 import {
   type ChatMessagePersistanceType,
   convertChatMessageToUIMessage,
   isDataKey,
-  isToolKey
+  isToolKey,
+  type VSUIMessage
 } from '@/partials/assistant-ui/chat-message-schema'
 
-const logContextSummary = debug('app:prepare-context')
+import { debugContextWindowSummary } from './debug-context-summary'
+import { debugContextWindow } from './debug-context-window'
+
 /**
  * Roughly estimate tokens from characters.
  * (OpenAI guidance: 1 token ≈ 4 characters in English)
@@ -27,12 +31,41 @@ function estimateMessageTokens(message: ChatMessagePersistanceType): number {
         break
       }
       case isToolKey(type): {
+        if (isToolUIPart(part)) {
+          let toolCallInput = ''
+          try {
+            toolCallInput = JSON.stringify(part.input)
+          } catch (e) {
+            //
+          }
+          let toolCallOutput = ''
+          try {
+            toolCallOutput = JSON.stringify(part.output)
+          } catch (e) {
+            //
+          }
+          outputTokens += estimateTokens(`${part.toolCallId}${toolCallInput}${toolCallOutput}`)
+        }
         break
       }
       case type === 'file': {
+        outputTokens += estimateTokens(part.url)
         break
       }
       case type === 'dynamic-tool': {
+        let toolCallInput = ''
+        try {
+          toolCallInput = JSON.stringify(part.input)
+        } catch (e) {
+          //
+        }
+        let toolCallOutput = ''
+        try {
+          toolCallOutput = JSON.stringify(part.output)
+        } catch (e) {
+          //
+        }
+        outputTokens += estimateTokens(`${part.toolCallId}${toolCallInput}${toolCallOutput}`)
         break
       }
       case type === 'source-url': {
@@ -48,6 +81,7 @@ function estimateMessageTokens(message: ChatMessagePersistanceType): number {
         outputTokens += estimateTokens(part.text)
         break
       case type === 'reasoning':
+        outputTokens += estimateTokens(part.text)
         break
       default: {
         const _exhaustive: never = type
@@ -56,6 +90,52 @@ function estimateMessageTokens(message: ChatMessagePersistanceType): number {
     }
   })
   return outputTokens
+}
+
+function sanitizeUIMessageForModel(message: VSUIMessage): VSUIMessage {
+  const sanitizePartsIndicies: number[] = []
+  message.parts.forEach((part, partIndex) => {
+    const type = part.type
+    switch (true) {
+      case type === 'reasoning': {
+        // currently setting provider metadata to empty
+        // due to itemId errors with openai api
+        // https://github.com/vercel/ai/issues/7099
+        part.providerMetadata = {}
+        break
+      }
+      case type === 'dynamic-tool': {
+        break
+      }
+      case isDataKey(type): {
+        sanitizePartsIndicies.push(partIndex)
+        break
+      }
+      case isToolKey(type): {
+        if (isToolUIPart(part)) {
+          if (part.state === 'output-available') {
+            // currently setting provider metadata to empty
+            // due to itemId errors with openai api
+            // https://github.com/vercel/ai/issues/7099
+            part.callProviderMetadata = {}
+          }
+        }
+        break
+      }
+      // default: {
+      //   const _exhaustive: never = type
+      //   break
+      // }
+    }
+  })
+
+  // Remove flagged parts in reverse order to avoid index shifting
+  for (let i = sanitizePartsIndicies.length - 1; i >= 0; i--) {
+    const idx = sanitizePartsIndicies[i]
+    message.parts.splice(idx, 1)
+  }
+
+  return message
 }
 
 /**
@@ -69,7 +149,7 @@ function estimateMessageTokens(message: ChatMessagePersistanceType): number {
 export function prepareContext(
   systemPrompt: string | null | undefined,
   history: ChatMessagePersistanceType[],
-  maxTokens = 4000
+  maxTokens = 8_000
 ): ModelMessage[] {
   // Start token count with the system message
   const systemTokens = systemPrompt ? estimateTokens(systemPrompt) : 0
@@ -88,7 +168,9 @@ export function prepareContext(
       break
     }
     if (msg.status === 'done') {
-      contextWindow.push(convertChatMessageToUIMessage(msg))
+      const uiMessage = convertChatMessageToUIMessage(msg)
+      const sanitizedMessage = sanitizeUIMessageForModel(uiMessage)
+      contextWindow.push(sanitizedMessage)
       budget -= tok
     }
   }
@@ -101,60 +183,20 @@ export function prepareContext(
 
   // Prepend the system prompt only if it's a valid string
   if (typeof systemPrompt === 'string') {
-    finalMessages = [{ role: 'system', content: systemPrompt }, ...convertToModelMessages(contextWindow)]
+    finalMessages = [
+      { role: 'system', content: systemPrompt },
+      ...convertToModelMessages(contextWindow, {
+        // ignoreIncompleteToolCalls: true
+      })
+    ]
   } else {
-    finalMessages = convertToModelMessages(contextWindow)
+    finalMessages = convertToModelMessages(contextWindow, {
+      // ignoreIncompleteToolCalls: true
+    })
   }
 
   debugContextWindowSummary(finalMessages, maxTokens, budget)
+  debugContextWindow(finalMessages, maxTokens, budget)
 
   return finalMessages
-}
-
-function debugContextWindowSummary(messages: ModelMessage[], maxTokens: number, budget: number) {
-  // Debug logging for context window
-  logContextSummary('--- LLM Context Window Summary ---')
-  logContextSummary(
-    `Total messages: ${messages.length}, Estimated Tokens: ${maxTokens - budget}/${maxTokens}`
-  )
-
-  const messageTrimToLength = 100
-
-  messages.forEach((msg, index) => {
-    const role = msg.role
-    // msg.
-    // const contentPreview =
-    //   typeof msg.content === 'string'
-    //     ? msg.content.slice(0, messageTrimToLength) + (msg.content.length > messageTrimToLength ? '...' : '')
-    //     : Array.isArray(msg.content)
-    //       ? `[${msg.content.length} parts]`
-    //       : '[complex content]'
-
-    // logContextSummary(`[${index}] ${role}:`, contentPreview)
-
-    // // Log full content if it's not too long
-    // if (typeof msg.content === 'string' && msg.content.length <= messageTrimToLength) {
-    //   logContextSummary('  Full:', msg.content)
-    // } else if (typeof msg.content === 'string') {
-    //   logContextSummary('  Length:', msg.content.length, 'chars')
-    // } else if (Array.isArray(msg.content)) {
-    //   msg.content.forEach((part, partIndex) => {
-    //     if (typeof part === 'object' && 'type' in part) {
-    //       if (part.type === 'text') {
-    //         const preview = part.text.slice(0, messageTrimToLength) + (part.text.length > messageTrimToLength ? '...' : '')
-    //         logContextSummary(`    Part ${partIndex} [text]:`, preview)
-    //       } else if (part.type === 'tool-call') {
-    //         logContextSummary(`    Part ${partIndex} [tool-call]:`, part.toolName, '- args:', JSON.stringify(part.input))
-    //       } else if (part.type === 'tool-result') {
-    //         const resultPreview = JSON.stringify(part.output)
-    //         logContextSummary(`    Part ${partIndex} [tool-result]:`, part.toolName, '-', resultPreview)
-    //       } else {
-    //         logContextSummary(`    Part ${partIndex} [${part.type}]`)
-    //       }
-    //     }
-    //   })
-    // }
-  })
-
-  logContextSummary('--- End Context Window Summary ---')
 }

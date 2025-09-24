@@ -28,6 +28,23 @@ async function processHtmlFiles() {
 
   await writeFile(mediumOutputPath, result ? result.html : '', 'utf-8')
   await writeFile(mediumOutputTextPath, result ? result.text : '', 'utf-8')
+
+  const hackerNewsRawPath = resolve(__dirname, 'fixtures', 'html-cleaner.test.hackernews-raw.fixture')
+  const hackerNewsRaw = await readFile(hackerNewsRawPath, 'utf-8')
+  const hackerNewsRawCleanedPath = resolve(
+    __dirname,
+    'fixtures',
+    'html-cleaner.test.hackernews-passthrough.fixture'
+  )
+
+  const hackerNewsResult = await htmlCleaner(hackerNewsRaw, {
+    stripAttributes: false,
+    emptyHead: false,
+    stripEmptyWhitespace: false,
+    tagsToRemove: []
+  })
+
+  await writeFile(hackerNewsRawCleanedPath, hackerNewsResult ? hackerNewsResult.html : '', 'utf-8')
 }
 
 // Run the utility

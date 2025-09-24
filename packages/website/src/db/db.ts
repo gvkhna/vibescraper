@@ -162,6 +162,10 @@ async function initialize() {
 }
 nowait(initialize())
 
+export async function dbEnd() {
+  await postgresClient.end({ timeout: 5 })
+}
+
 const dbPostgres = drizzlePostgres({ client: postgresClient, schema, casing: 'camelCase' })
 
 export const db = dbPostgres

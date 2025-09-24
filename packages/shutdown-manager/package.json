@@ -1,0 +1,26 @@
+{
+  "name": "@vibescraper/shutdown-manager",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "module": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "clean": "rimraf --glob dist .turbo node_modules/.cache node_modules/.vite* *.tsbuildinfo",
+    "dev": "vite build --watch",
+    "format": "bun eslint --quiet --config ../../eslint.config.mjs . --fix && bun prettier --write .",
+    "lint": "bun eslint --config ../../eslint.config.mjs .",
+    "typecheck": "bun tsc --noEmit && bun eslint --quiet ."
+  },
+  "devDependencies": {},
+  "peerDependencies": {
+    "@types/node": "*",
+    "vitest": "*"
+  }
+}

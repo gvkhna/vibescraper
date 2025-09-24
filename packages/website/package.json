@@ -91,6 +91,7 @@
     "@vibescraper/json-tree-table": "workspace:*",
     "@vibescraper/sandbox": "workspace:*",
     "@vibescraper/shared-types": "workspace:*",
+    "@vibescraper/shutdown-manager": "workspace:*",
     "@vibescraper/storage-service": "workspace:*",
     "ai": "5.0.30",
     "astro": "^5.13.7",

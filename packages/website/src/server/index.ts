@@ -1,18 +1,16 @@
 import { SandboxManager } from '@vibescraper/sandbox'
+import { ShutdownManager } from '@vibescraper/shutdown-manager'
 import { StorageService } from '@vibescraper/storage-service'
 import debug from 'debug'
 import type { Runner } from 'graphile-worker'
 import { type Context, Hono } from 'hono'
 
-// import {fileURLToPath} from 'node:url'
 import * as schema from '@/db/schema'
-// import {dirname as pathDirname} from 'node:path'
 import { nowait } from '@/lib/async-utils'
 import { addJob, startWorker } from '@/task-queue/graphile.config'
 import { PRIVATE_VARS } from '@/vars.private'
-// import sandbox from './sandbox'
 import { PUBLIC_VARS } from '@/vars.public'
-import { db } from '../db/db'
+import { db, dbEnd } from '../db/db'
 import { auth } from '../lib/auth'
 
 import account from './account'
@@ -24,13 +22,11 @@ import whoami from './whoami'
 
 const log = debug('app:server:index')
 
-// const __filename = fileURLToPath(import.meta.url)
-// const __dirname = pathDirname(__filename)
-// const __cwd = globalThis.process.cwd()
-
 const sandboxWorkerLogger = debug('app:sandbox:worker')
 
 const sandboxManager = new SandboxManager(PRIVATE_VARS.TMP_DIR, sandboxWorkerLogger, PUBLIC_VARS.NODE_ENV)
+
+const shutdownManager = new ShutdownManager(debug('app:shutdown'))
 
 const storageService = new StorageService(
   PRIVATE_VARS.STORAGE_PROVIDER === 'bucket'
@@ -185,18 +181,15 @@ const routes = app
 
 // Worker management
 let workerRunner: Runner | null = null
-// let isShuttingDown = false
 
 async function initializeWorker() {
-  // try {
   workerRunner = await startWorker()
   log('Worker started in server process')
-  // } catch (error) {
-  //   log('Failed to start worker:', error)
-  // }
 }
 
-async function stopWorker() {
+nowait(initializeWorker())
+
+shutdownManager.add('graphile', async () => {
   if (workerRunner) {
     try {
       await workerRunner.stop()
@@ -206,66 +199,11 @@ async function stopWorker() {
       log('Failed to stop worker:', error)
     }
   }
-}
+})
 
-// Graceful shutdown handling
-// async function gracefulShutdown(signal: string) {
-//   if (isShuttingDown) {
-//     log('Shutdown already in progress...')
-//     return
-//   }
-
-//   isShuttingDown = true
-//   log(`\n${signal} received, starting graceful shutdown...`)
-
-//   // Give ongoing requests 10 seconds to complete
-//   const shutdownTimeout = setTimeout(() => {
-//     log('Forceful shutdown after timeout')
-//     process.exit(1)
-//   }, 10000)
-
-//   try {
-//     // Stop accepting new jobs and finish current ones
-//     await stopWorker()
-
-//     // Clean shutdown
-//     clearTimeout(shutdownTimeout)
-//     log('Graceful shutdown complete')
-//     process.exit(0)
-//   } catch (error) {
-//     log('Error during shutdown:', error)
-//     clearTimeout(shutdownTimeout)
-//     process.exit(1)
-//   }
-// }
-
-// // Initialize worker on server start
-// if (typeof process !== 'undefined') {
-//   // Start worker
-nowait(initializeWorker())
-
-//   // Register shutdown handlers
-//   process.once('SIGTERM', () => {
-//     nowait(gracefulShutdown('SIGTERM'))
-//   })
-//   process.once('SIGINT', () => {
-//     nowait(gracefulShutdown('SIGINT'))
-//   })
-//   process.once('SIGHUP', () => {
-//     nowait(gracefulShutdown('SIGHUP'))
-//   })
-
-//   // Handle uncaught errors
-//   process.once('uncaughtException', (error) => {
-//     log('Uncaught exception:', error)
-//     nowait(gracefulShutdown('uncaughtException'))
-//   })
-
-//   process.once('unhandledRejection', (reason, promise) => {
-//     log('Unhandled rejection at:', promise, 'reason:', reason)
-//     nowait(gracefulShutdown('unhandledRejection'))
-//   })
-// }
+shutdownManager.add('postgres', async () => {
+  await dbEnd()
+})
 
 export default app
 export type AppType = typeof routes

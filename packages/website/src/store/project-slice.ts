@@ -268,7 +268,7 @@ export const createProjectSlice: StateSlice<ProjectSlice> = (set, get) =>
       )
       let success = false
       try {
-        const response = await api.projects.delete.$post({
+        const response = await api.projects.deleteProject.$post({
           json: {
             projectPublicId
           }

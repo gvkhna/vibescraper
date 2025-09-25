@@ -1,5 +1,5 @@
 import { subject } from '@casl/ability'
-import { eq, sql } from 'drizzle-orm'
+import { eq as sqlEq, sql } from 'drizzle-orm'
 import type { Patch, WritableDraft } from 'immer'
 
 import * as schema from '@/db/schema'
@@ -32,16 +32,22 @@ export async function userActor(
   if (!user) {
     return { actorType: 'anonymous' }
   }
-  const [actor] = await db.select().from(schema.actor).where(eq(schema.actor.userId, user.id))
+  const actor = await db.query.actor.findFirst({
+    where: (table, { eq }) => eq(table.userId, user.id)
+  })
+  if (!actor) {
+    throw new Error('User actor not found!')
+  }
   return { actorType: 'actor', actorId: actor.publicId }
 }
 
 export async function projectSubjectPolicy(db: typeof database, subjectPolicyId: schema.SubjectPolicyId) {
-  const [subjectPolicy] = await db
-    .select()
-    .from(schema.subjectPolicy)
-    .where(eq(schema.subjectPolicy.id, subjectPolicyId))
-    .limit(1)
+  const subjectPolicy = await db.query.subjectPolicy.findFirst({
+    where: (table, { eq }) => eq(table.id, subjectPolicyId)
+  })
+  if (!subjectPolicy) {
+    throw new Error('Project subjectPolicy not found!')
+  }
   return subjectPolicy
 }
 
@@ -74,7 +80,7 @@ export async function updatePolicy(args: updatePolicyArgs) {
       policy,
       updatedAt: sql`now()`
     })
-    .where(eq(schema.subjectPolicy.id, subjectPolicyId))
+    .where(sqlEq(schema.subjectPolicy.id, subjectPolicyId))
     .returning()
 
   await db.insert(schema.policyAuditEntry).values({

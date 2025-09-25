@@ -78,7 +78,7 @@ describe('compression - Filesystem', () => {
 
       expect(decomp).toStrictEqual(original)
 
-      const del = await storageService.delete(key)
+      const del = await storageService.deleteKey(key)
 
       expect(del.success).toBe(true)
     })
@@ -107,7 +107,7 @@ describe('compression - Filesystem', () => {
 
       expect(bytes).toStrictEqual(original)
 
-      const del = await storageService.delete(key)
+      const del = await storageService.deleteKey(key)
 
       expect(del.success).toBe(true)
     })
@@ -152,7 +152,7 @@ describe('compression - Filesystem', () => {
 
       expect(decomp).toStrictEqual(original)
 
-      const del = await storageService.delete(key)
+      const del = await storageService.deleteKey(key)
 
       expect(del.success).toBe(true)
     })
@@ -181,7 +181,7 @@ describe('compression - Filesystem', () => {
 
       expect(bytes).toStrictEqual(original)
 
-      const del = await storageService.delete(key)
+      const del = await storageService.deleteKey(key)
 
       expect(del.success).toBe(true)
     })
@@ -296,7 +296,7 @@ describe('compression - Bucket (MinIO)', () => {
 
       expect(decomp).toStrictEqual(original)
 
-      const del = await storageService.delete(key)
+      const del = await storageService.deleteKey(key)
 
       expect(del.success).toBe(true)
     })
@@ -325,7 +325,7 @@ describe('compression - Bucket (MinIO)', () => {
 
       expect(bytes).toStrictEqual(original)
 
-      const del = await storageService.delete(key)
+      const del = await storageService.deleteKey(key)
 
       expect(del.success).toBe(true)
     })
@@ -368,7 +368,7 @@ describe('compression - Bucket (MinIO)', () => {
 
       expect(decomp).toStrictEqual(original)
 
-      const del = await storageService.delete(key)
+      const del = await storageService.deleteKey(key)
 
       expect(del.success).toBe(true)
     })
@@ -397,7 +397,7 @@ describe('compression - Bucket (MinIO)', () => {
 
       expect(bytes).toStrictEqual(original)
 
-      const del = await storageService.delete(key)
+      const del = await storageService.deleteKey(key)
 
       expect(del.success).toBe(true)
     })

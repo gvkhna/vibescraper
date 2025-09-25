@@ -72,7 +72,7 @@ describe('storageService filesystem - HTTP Serving', () => {
     expect(responseBytes).toStrictEqual(originalBytes)
 
     // Clean up
-    const deleteResult = await storageService.delete(key)
+    const deleteResult = await storageService.deleteKey(key)
 
     expect(deleteResult.success).toBe(true)
   })
@@ -121,7 +121,7 @@ describe('storageService filesystem - HTTP Serving', () => {
     expect(contentDisposition).toContain('attachment')
 
     // Clean up
-    const deleteResult = await storageService.delete(key)
+    const deleteResult = await storageService.deleteKey(key)
 
     expect(deleteResult.success).toBe(true)
   })

@@ -1,7 +1,15 @@
 import { subject } from '@casl/ability'
 import { generateText } from 'ai'
 import debug from 'debug'
-import { and, count, desc, eq, getTableColumns, inArray, sql } from 'drizzle-orm'
+import {
+  and as sqlAnd,
+  count as sqlCount,
+  desc as sqlDesc,
+  eq as sqlEq,
+  getTableColumns,
+  inArray as sqlInArray,
+  sql
+} from 'drizzle-orm'
 import { Hono } from 'hono'
 import { validator } from 'hono/validator'
 import { produceWithPatches } from 'immer'
@@ -70,8 +78,8 @@ const app = new Hono<HonoServer>()
     const allProjects = await db
       .select({ ...projectColumns })
       .from(schema.project)
-      .orderBy(desc(schema.project.updatedAt))
-      .where(eq(schema.project.userId, user.id))
+      .orderBy(sqlDesc(schema.project.updatedAt))
+      .where(sqlEq(schema.project.userId, user.id))
 
     return c.json(
       {
@@ -93,9 +101,9 @@ const app = new Hono<HonoServer>()
     const recentProjects = await db
       .select({ ...projectColumns })
       .from(schema.project)
-      .orderBy(desc(schema.project.updatedAt))
+      .orderBy(sqlDesc(schema.project.updatedAt))
       .limit(5)
-      .where(eq(schema.project.userId, user.id))
+      .where(sqlEq(schema.project.userId, user.id))
     return c.json(
       {
         projects: recentProjects
@@ -112,9 +120,9 @@ const app = new Hono<HonoServer>()
     }
 
     const [projectCount] = await db
-      .select({ count: count() })
+      .select({ count: sqlCount() })
       .from(schema.project)
-      .where(eq(schema.project.userId, user.id))
+      .where(sqlEq(schema.project.userId, user.id))
     const name = `Project #${projectCount.count + 1}`
     return c.json(
       {
@@ -171,7 +179,7 @@ const app = new Hono<HonoServer>()
           .set({
             updatedAt: sql`now()`
           })
-          .where(eq(schema.project.id, project.id))
+          .where(sqlEq(schema.project.id, project.id))
 
         const { id: _, ...restOfSubjectPolicy } = newSubjectPolicy
         const subjectPolicyDTO: schema.SubjectPolicyDTOType = restOfSubjectPolicy
@@ -280,7 +288,7 @@ const app = new Hono<HonoServer>()
           .set({
             updatedAt: sql`now()`
           })
-          .where(eq(schema.project.id, project.id))
+          .where(sqlEq(schema.project.id, project.id))
 
         const { id: _, ...restOfSubjectPolicy } = newSubjectPolicy
         const subjectPolicyDTO: schema.SubjectPolicyDTOType = restOfSubjectPolicy
@@ -322,7 +330,13 @@ const app = new Hono<HonoServer>()
         return c.json({ message: 'Unauthorized' }, HttpStatusCode.Forbidden)
       }
 
-      const [userData] = await db.select().from(schema.user).where(eq(schema.user.id, project.userId))
+      const userData = await db.query.user.findFirst({
+        where: (table, { eq }) => eq(table.id, project.userId)
+      })
+
+      if (!userData) {
+        return c.json({ message: 'Project Owner not found' }, HttpStatusCode.NotFound)
+      }
 
       return c.json(
         {
@@ -476,7 +490,7 @@ const app = new Hono<HonoServer>()
         .set({
           name: projectName
         })
-        .where(eq(schema.project.id, project.id))
+        .where(sqlEq(schema.project.id, project.id))
 
       return c.json(
         {
@@ -490,7 +504,7 @@ const app = new Hono<HonoServer>()
     }
   )
   .post(
-    '/delete',
+    '/deleteProject',
     validator('json', async (value) => {
       return value as {
         projectPublicId: schema.ProjectPublicId
@@ -520,7 +534,7 @@ const app = new Hono<HonoServer>()
           // Perform the delete operation within the transaction
           const deleteResult = await tx
             .delete(schema.project)
-            .where(eq(schema.project.publicId, projectPublicId))
+            .where(sqlEq(schema.project.publicId, projectPublicId))
             .returning({ deletedId: schema.project.id })
 
           // If no rows were affected, the project wasn't found
@@ -591,7 +605,12 @@ const app = new Hono<HonoServer>()
       const [stagedCommit] = await db
         .select(stagedCommitCols)
         .from(schema.projectCommit)
-        .where(and(eq(schema.projectCommit.projectId, project.id), eq(schema.projectCommit.type, 'staged')))
+        .where(
+          sqlAnd(
+            sqlEq(schema.projectCommit.projectId, project.id),
+            sqlEq(schema.projectCommit.type, 'staged')
+          )
+        )
         .limit(1)
 
       // const emptyChat = await db.query.projectChat.findFirst({
@@ -612,12 +631,12 @@ const app = new Hono<HonoServer>()
         .select(projectChatCols)
         .from(schema.projectChat)
         .where(
-          and(
-            eq(schema.projectChat.projectId, project.id),
-            inArray(schema.projectChat.chatType, ['empty', 'chat'])
+          sqlAnd(
+            sqlEq(schema.projectChat.projectId, project.id),
+            sqlInArray(schema.projectChat.chatType, ['empty', 'chat'])
           )
         )
-        .orderBy(desc(schema.projectChat.createdAt))
+        .orderBy(sqlDesc(schema.projectChat.createdAt))
         .limit(DEFAULT_PAGE_SIZE + 1)
 
       const paginateProjectChats = createPaginationEntity<schema.ProjectChatCursor>()
@@ -797,7 +816,7 @@ const app = new Hono<HonoServer>()
         const rows = await tx
           .select({ name: schema.project.name })
           .from(schema.project)
-          .where(eq(schema.project.userId, user.id))
+          .where(sqlEq(schema.project.userId, user.id))
         const dedupedName = dedupeProjectName(
           rows.map((r) => r.name),
           projectName
@@ -917,7 +936,7 @@ const app = new Hono<HonoServer>()
         const rows = await tx
           .select({ name: schema.project.name })
           .from(schema.project)
-          .where(eq(schema.project.userId, user.id))
+          .where(sqlEq(schema.project.userId, user.id))
         const dedupedName = dedupeProjectName(
           rows.map((r) => r.name),
           projectName

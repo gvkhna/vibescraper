@@ -137,7 +137,7 @@ describe('storageService - Bucket (MinIO)', () => {
     log(`Retrieved ${retrievedBytes.length} bytes successfully`)
 
     // Clean up the test file
-    const deleteResult = await storageService.delete(key)
+    const deleteResult = await storageService.deleteKey(key)
 
     expect(deleteResult.success).toBe(true)
 
@@ -171,7 +171,7 @@ describe('storageService - Bucket (MinIO)', () => {
     const nonExistentKey = 'b'.repeat(32) // Valid key format but doesn't exist
 
     // Try to delete the non-existent file
-    const result = await storageService.delete(nonExistentKey)
+    const result = await storageService.deleteKey(nonExistentKey)
 
     // Verify delete returns NOT_FOUND error
     expect(result.success).toBe(false)
@@ -299,7 +299,7 @@ describe('storageService - Bucket (MinIO)', () => {
     log('Stream retrieval working correctly')
 
     // Clean up
-    const deleteResult = await storageService.delete(key)
+    const deleteResult = await storageService.deleteKey(key)
 
     expect(deleteResult.success).toBe(true)
   })
@@ -361,7 +361,7 @@ describe('storageService - Bucket (MinIO)', () => {
     log('streamToBytes utility working correctly')
 
     // Clean up
-    const deleteResult = await storageService.delete(key)
+    const deleteResult = await storageService.deleteKey(key)
 
     expect(deleteResult.success).toBe(true)
   })

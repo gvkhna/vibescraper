@@ -884,10 +884,7 @@ export function TreeTableEditor({
                                       }
                                     }
                                   }}
-                                  className={cn(
-                                    'text-primary w-full text-left text-sm',
-                                    !disableValueFieldEdit && 'hover:underline'
-                                  )}
+                                  className={cn('text-primary w-full text-left text-sm hover:underline')}
                                 >
                                   <div className='flex items-center gap-2'>
                                     <span>

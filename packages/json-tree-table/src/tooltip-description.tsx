@@ -15,11 +15,11 @@ export const TooltipDescription = (props: TooltipDescriptionProps) => {
   const [description, setDescription] = React.useState(props.description ?? '')
   const [isOpen, setIsOpen] = React.useState(false)
 
-  const handleDescriptionChange = (e: any) => {
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue: string | null = e.target.value
-    setDescription(newValue ?? '')
+    setDescription(newValue)
     // if (props.onDescriptionChange) {
-    props.onDescriptionChange(newValue ?? '')
+    props.onDescriptionChange(newValue)
     // }
   }
 

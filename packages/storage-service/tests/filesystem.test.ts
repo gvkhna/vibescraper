@@ -81,7 +81,7 @@ describe('storageService - Filesystem', () => {
     expect(fs.existsSync(fullPath)).toBe(true)
 
     // Clean up the test file
-    const deleteResult = await storageService.delete(key)
+    const deleteResult = await storageService.deleteKey(key)
 
     expect(deleteResult.success).toBe(true)
     expect(fs.existsSync(fullPath)).toBe(false)
@@ -113,7 +113,7 @@ describe('storageService - Filesystem', () => {
     const nonExistentKey = 'b'.repeat(32) // Valid key format but doesn't exist
 
     // Try to delete the non-existent file
-    const result = await storageService.delete(nonExistentKey)
+    const result = await storageService.deleteKey(nonExistentKey)
 
     // Verify delete returns NOT_FOUND error
     expect(result.success).toBe(false)
@@ -236,7 +236,7 @@ describe('storageService - Filesystem', () => {
     expect(retrievedBytes).toHaveLength(originalBytes.length)
 
     // Clean up
-    const deleteResult = await storageService.delete(key)
+    const deleteResult = await storageService.deleteKey(key)
 
     expect(deleteResult.success).toBe(true)
   })
@@ -295,7 +295,7 @@ describe('storageService - Filesystem', () => {
     expect(retrievedBytes).toHaveLength(originalBytes.length)
 
     // Clean up
-    const deleteResult = await storageService.delete(key)
+    const deleteResult = await storageService.deleteKey(key)
 
     expect(deleteResult.success).toBe(true)
   })
@@ -308,7 +308,7 @@ describe('storageService - Filesystem', () => {
     const fileBuffer = fs.readFileSync(imagePath)
 
     // Create a File-like object (since we're in Node.js, we'll create a compatible object)
-    const file = new File([fileBuffer], 'test-image.jpg', {
+    const file = new File([fileBuffer as BlobPart], 'test-image.jpg', {
       type: 'image/jpeg',
       lastModified: Date.now()
     })
@@ -353,7 +353,7 @@ describe('storageService - Filesystem', () => {
     expect(retrievedBytes).toHaveLength(fileBuffer.length)
 
     // Clean up
-    const deleteResult = await storageService.delete(metadata.key)
+    const deleteResult = await storageService.deleteKey(metadata.key)
 
     expect(deleteResult.success).toBe(true)
   })

@@ -1,0 +1,9 @@
+- Fix double initial message on new chat
+- Get crawling to work reliably and show url queue
+- Consolidate postgres collation version mismatch logic https://gist.github.com/troykelly/616df024050dd50744dde4a9579e152e
+- Hook up scrapers to graphile worker for schedule
+- Add settings for adjusting html cleaning options for which tags, attributes, etc to remove
+- Give llm option to work on raw html
+- Add html compaction for better html reference
+- Add selection in any view to be given to llm as part of message context (show in message ui selection)
+- Remove db.select queries unless needed, use regex: db\s*\r?\n\s*\.select

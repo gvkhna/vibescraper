@@ -498,7 +498,7 @@ export class StorageService {
   // }
 
   /** Delete stored bytes using a storage key */
-  public async delete(key: string): Promise<StorageResult<void>> {
+  public async deleteKey(key: string): Promise<StorageResult<void>> {
     const storagePath = this.keyToPath(key)
 
     if (this.config.STORAGE_PROVIDER === 'bucket') {

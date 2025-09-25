@@ -16,7 +16,7 @@ export async function storageDeleteEntry(
   const db = c.get('db')
   const key = storageEntry.key
 
-  const result = await c.get('storageService').delete(key)
+  const result = await c.get('storageService').deleteKey(key)
   if (result.success) {
     // Delete the row from the database
     await db.delete(schema.storage).where(sqlEq(schema.storage.key, key))

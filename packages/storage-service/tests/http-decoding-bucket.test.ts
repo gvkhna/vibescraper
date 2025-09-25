@@ -148,7 +148,7 @@ describe('storageService - Bucket (MinIO)', () => {
     expect(responseBytes).toStrictEqual(originalBytes)
 
     // Clean up
-    const deleteResult = await storageService.delete(key)
+    const deleteResult = await storageService.deleteKey(key)
 
     expect(deleteResult.success).toBe(true)
   })
@@ -190,7 +190,7 @@ describe('storageService - Bucket (MinIO)', () => {
     expect(responseBytes).toStrictEqual(compressedBytes)
 
     // Clean up
-    const deleteResult = await storageService.delete(key)
+    const deleteResult = await storageService.deleteKey(key)
 
     expect(deleteResult.success).toBe(true)
   })
@@ -226,7 +226,7 @@ describe('storageService - Bucket (MinIO)', () => {
     expect(responseBytes).toStrictEqual(originalBytes)
 
     // Clean up
-    const deleteResult = await storageService.delete(key)
+    const deleteResult = await storageService.deleteKey(key)
 
     expect(deleteResult.success).toBe(true)
   })
@@ -268,7 +268,7 @@ describe('storageService - Bucket (MinIO)', () => {
     expect(responseBytes).toStrictEqual(compressedBytes)
 
     // Clean up
-    const deleteResult = await storageService.delete(key)
+    const deleteResult = await storageService.deleteKey(key)
 
     expect(deleteResult.success).toBe(true)
   })

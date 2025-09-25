@@ -10,7 +10,7 @@ import { PUBLIC_VARS } from '@/vars.public'
 import * as schema from './schema'
 
 const log = debug('app:db')
-const dbLog = debug('db:log')
+const dbLog = debug('db')
 
 if (PUBLIC_VARS.DEV) {
   log(`Database - ${PRIVATE_VARS.DATABASE_URL}`)

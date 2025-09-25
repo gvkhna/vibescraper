@@ -1,5 +1,6 @@
 /* eslint-disable no-undefined */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type {
   TAny,
   TArray,

@@ -119,7 +119,7 @@ const app = new Hono<HonoServer>().post(
     let pendingChatMessage: typeof schema.projectChatMessage.$inferSelect | null | undefined = null
 
     log('message', message)
-    if (message.id && message.role === 'user' && message.parts.length === 0) {
+    if (message.id && message.role === 'user') {
       // We need to look up this message from the database
       pendingChatMessage = await db.query.projectChatMessage.findFirst({
         where: (table, { eq: tableEq }) =>
@@ -167,10 +167,10 @@ const app = new Hono<HonoServer>().post(
         .from(schema.projectChatMessage)
         .where(sqlEq(schema.projectChatMessage.projectChatId, projectChat.id))
         .orderBy(sqlAsc(schema.projectChatMessage.index))
-        .limit(100)
+        .limit(50)
 
       // Convert previous messages to UIMessage format for LLM
-      llmConversationMessages = previousMessages.map((msg) => msg)
+      llmConversationMessages = previousMessages
     }
 
     const assistantMessageIndex = userMessageIndex + 1

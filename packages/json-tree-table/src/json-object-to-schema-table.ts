@@ -1,3 +1,5 @@
+/* eslint-disable no-undefined */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // assuming your types are defined in a separate file
 
 import type { JsonArray, JsonObject } from 'type-fest'

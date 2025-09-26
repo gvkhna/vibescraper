@@ -5,7 +5,7 @@ import { validator } from 'hono/validator'
 import { z } from 'zod'
 
 import { getModelBySize, type ModelSize } from '@/assistant-ai'
-import { AssistantPrompt, SchemaToolsPrompt, TestPingPrompt, TestPrompt } from '@/assistant-ai/prompts'
+import { AssistantPrompt, TestPingPrompt, TestPrompt } from '@/assistant-ai/prompts'
 import { makeExtractionTools } from '@/assistant-ai/tools/assistant-extraction-tools'
 import { makeTestTools } from '@/assistant-ai/tools/test-tools'
 import * as schema from '@/db/schema'

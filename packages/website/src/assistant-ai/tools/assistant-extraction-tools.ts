@@ -9,6 +9,7 @@ import { SandboxManager } from '@vibescraper/sandbox'
 import { tool } from 'ai'
 import debug from 'debug'
 import { eq as sqlEq } from 'drizzle-orm'
+import type { JsonObject } from 'type-fest'
 
 import { db as database } from '@/db/db'
 import * as dbSchema from '@/db/schema'
@@ -421,13 +422,39 @@ export function makeExtractionTools(
         try {
           switch (input.file) {
             case 'schema.json': {
-              if (typeof input.content !== 'object') {
+              let schema: JsonObject | null = null
+
+              if (typeof input.content === 'string') {
+                try {
+                  schema = JSON.parse(input.content)
+                } catch (e) {
+                  if (e instanceof Error) {
+                    return {
+                      success: false,
+                      problems: `JSON Parsing Error: ${e.message}`
+                    }
+                  } else {
+                    return {
+                      success: false,
+                      problems: `Unknown Error: ${e}`
+                    }
+                  }
+                }
+              } else if (typeof input.content === 'object') {
+                schema = input.content
+              } else {
                 return {
                   success: false,
                   problems: "Incorrect 'content' key type, expected typeof object"
                 }
               }
-              const schemaValidation = compileJsonSchema(input.content)
+              if (!schema) {
+                return {
+                  success: false,
+                  problems: 'Malformed schema given as input'
+                }
+              }
+              const schemaValidation = compileJsonSchema(schema)
               if (!schemaValidation.success) {
                 return {
                   success: false,
@@ -454,7 +481,7 @@ export function makeExtractionTools(
               await db.insert(dbSchema.projectSchema).values({
                 projectId: project.id,
                 version: newVersion,
-                schemaJson: input.content,
+                schemaJson: schema,
                 message: input.message
               })
 
